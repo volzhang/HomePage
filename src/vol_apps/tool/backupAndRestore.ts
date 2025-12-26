@@ -1,3 +1,4 @@
+import {refreshAtoms} from "@/vol_apps/atomStorage/atomStorage";
 import {download, timeStamp} from "@/vol_apps/tool/download";
 import type {JsonFile} from "@/vol_apps/tool/filePicker";
 import {isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeParse, validTypeStringify} from "@/vol_apps/tool/isType";
@@ -22,11 +23,12 @@ export const downloadAsJsonFile = async (
 
 export const localforageRestore = async (file: JsonFile, clearFirst: boolean = false): Promise<void> => {
 	const text = await file.text();
-	const obj = await validTypeParse(text)
-	if (isPlainObject(obj)){
+	const obj = await validTypeParse(text);
+	if (isPlainObject(obj)) {
 		if (clearFirst) await localforage.clear();
 		await Promise.all(Array.from(Object.entries(obj), ([k, v]) => localforage.setItem(k, v)));
 	}
+	await refreshAtoms();//这里必须手动刷新，不然不会自动刷新，即使atom和localforage已经成功换值
 };
 
 export const localforageBackup = async (): Promise<void> => {
@@ -35,6 +37,6 @@ export const localforageBackup = async (): Promise<void> => {
 		if (isValidTypeExt(value)) {
 			result[key] = value;
 		}
-	})
+	});
 	await downloadAsJsonFile(result, `DB-${timeStamp()}.json`);
 };

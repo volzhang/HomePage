@@ -10,7 +10,7 @@ export const isJsonFile = (file: any): file is JsonFile => {
 };
 
 interface Props {
-	onPick?: (file: JsonFile) => void;
+	onPick?: (file: File) => void;
 	children?: ReactElement;
 }
 
@@ -29,6 +29,25 @@ export const JsonFilePickerBtn = ({onPick, children}: Props) => {
 			<div onClick={handleClick}>
 				{children || <button className={"border border-black p-1"}>选择JSON文件</button>}
 				<input ref={inputRef} type="file" accept=".json,application/json" onChange={handleChange} hidden/>
+			</div>
+		</>
+	);
+};
+
+export const ImgFilePickerBtn = ({onPick, children}: Props) => {
+	const inputRef = useRef<HTMLInputElement>(null);
+	const handleClick = () => inputRef.current?.click();
+	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0] as File;
+		onPick?.(file);
+		e.target.value = "";
+	};
+
+	return (
+		<>
+			<div onClick={handleClick}>
+				{children || <button className={"border border-black p-1"}>选择图片文件</button>}
+				<input ref={inputRef} type="file" accept="image/*" onChange={handleChange} hidden/>
 			</div>
 		</>
 	);

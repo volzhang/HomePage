@@ -12,7 +12,7 @@ type TileType = {
 
 export const defaultTile: TileType = {
 	id: 0,
-	name: "哔哩哔哩",
+	name: "",
 	href: "https://bilibili.com",
 	meta: {
 		alt: "BiliBili",
@@ -20,6 +20,7 @@ export const defaultTile: TileType = {
 	},
 };
 
+// 测试数据，不用在意
 const defaultTiles: TileType[] = [
 	{...defaultTile, id: 0, name: "0"},
 	{...defaultTile, id: 1, name: "1"},
@@ -42,6 +43,7 @@ export const useTileStore = () => {
 
 	const removeTile = (id: number) => {
 		const newTiles = tiles.filter((tile: TileType) => tile.id !== id);
+		if (newTiles.length === 0) {addTile()}
 		reorderTiles(newTiles);
 	};
 

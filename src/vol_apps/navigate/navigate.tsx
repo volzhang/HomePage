@@ -1,7 +1,8 @@
 import {useBgStore} from "@/vol_apps/bg/bg_atom";
-import {localforageBackup} from "@/vol_apps/tool/backupAndRestore";
-import * as React from "react"
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react"
+import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
+import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
+import * as React from "react";
+import {CircleCheckIcon, CircleHelpIcon, CircleIcon} from "lucide-react";
 
 import {
 	NavigationMenu,
@@ -11,7 +12,7 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+} from "@/components/ui/navigation-menu";
 
 const components: { title: string; href: string; description: string }[] = [
 	{
@@ -49,10 +50,10 @@ const components: { title: string; href: string; description: string }[] = [
 		description:
 			"A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
 	},
-]
+];
 
 export const Navigation = () => {
-	const {setBgUi} = useBgStore()
+	const {setBgUi} = useBgStore();
 	return (
 		// 注意，viewport 表示是否在移动端
 		<NavigationMenu viewport={false} className={"z-10"}>
@@ -143,43 +144,25 @@ export const Navigation = () => {
 					</NavigationMenuContent>
 				</NavigationMenuItem>
 				<NavigationMenuItem className="hidden md:block">
-					<NavigationMenuTrigger>菜单</NavigationMenuTrigger>
-					<NavigationMenuContent>
-						<ul className="grid w-[200px] gap-4">
-							<li>
-								<NavigationMenuLink asChild>
-									<a href="#" onClick={()=>{setBgUi(true)}}>设置背景</a>
-								</NavigationMenuLink>
-								<NavigationMenuLink asChild>
-									<a href="#" onClick={async ()=>{await localforageBackup()}}>下载存档</a>
-								</NavigationMenuLink>
-								<NavigationMenuLink asChild>
-									<a href="#">Blocks</a>
-								</NavigationMenuLink>
-							</li>
-						</ul>
-					</NavigationMenuContent>
-				</NavigationMenuItem>
-				<NavigationMenuItem className="hidden md:block">
 					<NavigationMenuTrigger>With Icon</NavigationMenuTrigger>
 					<NavigationMenuContent>
 						<ul className="grid w-[200px] gap-4">
 							<li>
 								<NavigationMenuLink asChild>
 									<a href="#" className="flex-row items-center gap-2">
-										<CircleHelpIcon />
+										<CircleHelpIcon/>
 										Backlog
 									</a>
 								</NavigationMenuLink>
 								<NavigationMenuLink asChild>
 									<a href="#" className="flex-row items-center gap-2">
-										<CircleIcon />
+										<CircleIcon/>
 										To Do
 									</a>
 								</NavigationMenuLink>
 								<NavigationMenuLink asChild>
 									<a href="#" className="flex-row items-center gap-2">
-										<CircleCheckIcon />
+										<CircleCheckIcon/>
 										Done
 									</a>
 								</NavigationMenuLink>
@@ -187,10 +170,30 @@ export const Navigation = () => {
 						</ul>
 					</NavigationMenuContent>
 				</NavigationMenuItem>
+				<NavigationMenuItem className="hidden md:block">
+					<NavigationMenuTrigger>菜单</NavigationMenuTrigger>
+					<NavigationMenuContent>
+						<ul className="grid w-[200px] gap-4">
+							<li>
+								<NavigationMenuLink asChild>
+									<a href="#" onClick={() => {
+										setBgUi(true);
+									}}>设置背景</a>
+								</NavigationMenuLink>
+								<NavigationMenuLink asChild>
+									<a href="#" onClick={async () => {await localforageBackup();}}>下载备份</a>
+								</NavigationMenuLink>
+								<NavigationMenuLink asChild>
+									<a href="#" onClick={async () => {await localforageRestore(await jsonFilePickerAPI());}}>备份恢复</a>
+								</NavigationMenuLink>
+							</li>
+						</ul>
+					</NavigationMenuContent>
+				</NavigationMenuItem>
 			</NavigationMenuList>
 		</NavigationMenu>
-	)
-}
+	);
+};
 
 function ListItem({
 					  title,
@@ -209,5 +212,5 @@ function ListItem({
 				</a>
 			</NavigationMenuLink>
 		</li>
-	)
+	);
 }

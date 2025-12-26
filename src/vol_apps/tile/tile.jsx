@@ -1,5 +1,6 @@
 import {cn}                                                              from "@/lib/utils";
 import {useTileStore}                                                    from "@/vol_apps/tile/tile_atom";
+import {useTileUiStore}                                                  from "@/vol_apps/tile/tile_ui_atom";
 import {closestCenter, DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import {arrayMove, rectSortingStrategy, SortableContext, useSortable}    from "@dnd-kit/sortable";
 import {CSS}                                                             from "@dnd-kit/utilities";
@@ -11,9 +12,8 @@ export const Tile = ({
 						 tile,
 						 onRightClick = () => null,
 					 }) => {
-
-	const handleRightClick = () => {
-		onRightClick();
+	const handleRightClick = (e) => {
+		onRightClick(e);
 	};
 
 	const handleKeyDown = (e) => {
@@ -24,6 +24,7 @@ export const Tile = ({
 	const TileInner = () => (
 		<div
 			draggable={false}
+			onContextMenu={handleRightClick}
 			className={cn(
 				"select-none w-36 h-36 mx-auto border-4 border-white/40 rounded-[10%] flex flex-col items-center justify-between pt-2 pb-px bg-white",
 				"transition-[shadow, transform] duration-250 delay-0 ease-linear",
@@ -40,7 +41,7 @@ export const Tile = ({
 		return (
 			<a
 				draggable={false} className={`w-fit h-fit flex`} target="_blank" href={tile.href} rel="noopener noreferrer"
-				onContextMenu={handleRightClick} onKeyDown={handleKeyDown}
+				onKeyDown={handleKeyDown}
 			>
 				{children}
 			</a>
@@ -74,15 +75,24 @@ const SortableTile = ({tile}) => {
 			? "10%"
 			: undefined,
 		boxShadow: isDragging
-			? '0 15px 15px -3px rgba(0, 120, 215, 0.6)'
+			? "0 15px 15px -3px rgba(0, 120, 215, 0.6)"
 			: undefined,
 		zIndex: isDragging
 			? "1"
 			: "auto"
 	};
+
+	const {setTileUiInEdit, setTileUiVisible} = useTileUiStore();
+
 	return (
 		<div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-			<Tile tile={tile} isDragging={isDragging} editable={true}/>
+			<Tile tile={tile} isDragging={isDragging} editable={true} onRightClick={
+				(e) => {
+					e.preventDefault();
+					setTileUiInEdit(tile.id);
+					setTileUiVisible(true);
+				}
+			}/>
 		</div>
 	);
 };
