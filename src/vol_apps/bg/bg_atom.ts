@@ -26,7 +26,7 @@ const atom_bg_size = await createAtom<bgSizeType>("atom_bg_size", "auto");
 const atom_bg_size_slider = await createAtom<bgSizeSlider>("atom_bg_size_slider", bgSizeSliderInit);
 
 const atom_bg_center = await createAtom<Boolean>("atom_bg_center", false);
-const atom_bg_ui = await createAtom<Boolean>("atom_bg_ui", true);
+const atom_bg_ui = await createAtom<Boolean>("atom_bg_ui", false);
 
 const atom_url = atom<string>("");
 

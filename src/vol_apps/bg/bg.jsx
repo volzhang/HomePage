@@ -9,7 +9,7 @@ export function BgApp() {
 	const bg = <div
 		style={{
 			backgroundImage: `url(${url})`,
-			...(bgSize == "custom" ? {backgroundSize: bgSizeSlider} : {}),
+			...(bgSize === "custom" ? {backgroundSize: bgSizeSlider} : {}),
 		}}
 		className={cn(
 			bgStyle,

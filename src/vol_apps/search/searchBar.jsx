@@ -3,19 +3,15 @@ import {ButtonGroup} from "@/components/ui/button-group";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {cn}             from "@/lib/utils";
-import {createAtom}     from "@/vol_apps/atomStorage/atomStorage";
-import {SEARCH_ENGINES} from "@/vol_apps/search/searchBar_atom";
-import {useAtom} from "jotai";
+import {SEARCH_ENGINES, useEngineStore} from "@/vol_apps/search/searchBar_atom";
 import {SearchIcon} from "lucide-react";
 
-const atom_engine = await createAtom("atom_engine", "bing");
-
 export const SearchBar = () => {
-	const [engine, setEngine] = useAtom(atom_engine);
+	const {engine, setEngine} = useEngineStore()
 	const currentEngine = SEARCH_ENGINES[engine];
 	const handleOnValueChange = async (value) => {
-		if (value === "") return; //这里有个坑，OnValueChange会在mount时设置""
-		await setEngine(value);
+		if (value === "") return; //这里有个坑，OnValueChange会在mount时自动设置为""
+		await setEngine(value); //
 	};
 	return (
 		<>

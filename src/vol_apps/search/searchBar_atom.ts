@@ -1,3 +1,6 @@
+import {createAtom} from "@/vol_apps/atomStorage/atomStorage";
+import {useAtom} from "jotai";
+
 type SearchEngines = Record<string, SearchEngineCfg>;
 type SearchEngineCfg = {
 	name: string;
@@ -10,3 +13,10 @@ export const SEARCH_ENGINES: SearchEngines = {
 	baidu: {name: "Baidu", url: "https://www.baidu.com/s", param: "wd"},
 	duckduckgo: {name: "DuckDuckGo", url: "https://duckduckgo.com/", param: "q"},
 } as const;
+
+const atom_engine = await createAtom<string>("atom_engine", "bing");
+
+export const useEngineStore = () => {
+	const [engine, setEngine] = useAtom(atom_engine);
+	return {engine, setEngine} as const;
+};

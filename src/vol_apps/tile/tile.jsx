@@ -8,14 +8,10 @@ import {CSS}                                                             from "@
 export const Tile = ({
 						 isPreview = false,
 						 isDragging = false,
-						 editable = false,
 						 tile,
 						 onRightClick = () => null,
 					 }) => {
-	const handleRightClick = (e) => {
-		onRightClick(e);
-	};
-
+	const handleRightClick = (e) => {onRightClick(e);};
 	const handleKeyDown = (e) => {
 		if (e.key === "Enter") e.preventDefault();
 	};
@@ -49,17 +45,18 @@ export const Tile = ({
 	};
 
 	return (
-		isPreview || isDragging || editable
+		isPreview || isDragging
 			? <TileInner/>
 			: <Alink><TileInner/></Alink>
 	);
 };
 
-export const Tiles = () => {
+export const Tiles = ({showTiles}) => {
 	const {tiles} = useTileStore();
+	const displayTiles = showTiles ?? tiles;
 	return (
 		<div className="flex flex-wrap gap-5">
-			{tiles.map((tile) => (<Tile key={tile.id} tile={tile}/>))}
+			{displayTiles.map((tile) => (<Tile key={tile.id} tile={tile}/>))}
 		</div>
 	);
 };
@@ -82,14 +79,14 @@ const SortableTile = ({tile}) => {
 			: "auto"
 	};
 
-	const {setTileUiInEdit, setTileUiVisible} = useTileUiStore();
+	const {setTileUiInEditId, setTileUiVisible} = useTileUiStore();
 
 	return (
 		<div ref={setNodeRef} style={style} {...listeners} {...attributes}>
 			<Tile tile={tile} isDragging={isDragging} editable={true} onRightClick={
 				(e) => {
 					e.preventDefault();
-					setTileUiInEdit(tile.id);
+					setTileUiInEditId(tile.id);
 					setTileUiVisible(true);
 				}
 			}/>
@@ -98,20 +95,15 @@ const SortableTile = ({tile}) => {
 };
 
 // 参数 tiles，表示传入 TileType[]
-export const SortableTiles = () => {
-	const {tiles, setTiles} = useTileStore();
+export const SortableTiles = ({showTiles}) => {
+	const {tiles, setTiles, tilesSelectedByTag} = useTileStore();
+	// const displayTiles = showTiles ?? tiles;
+	const displayTiles = showTiles ?? tilesSelectedByTag();
 
-	const sensors = useSensors(
-		useSensor(PointerSensor, {
-			activationConstraint: {
-				delay: 0,
-				tolerance: 0
-			}
-		}));
+	const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {delay: 100, tolerance: 0}}));
 
 	const handleDragEnd = (event) => {
-		const {active, over} = event;
-
+		const { active, over } = event;
 		if (over && active.id !== over.id) {
 			const oldIndex = tiles.findIndex((t) => t.id === active.id);
 			const newIndex = tiles.findIndex((t) => t.id === over.id);
@@ -121,10 +113,10 @@ export const SortableTiles = () => {
 	};
 
 	return (
-		<div className="flex flex-wrap gap-5">
+		<div className="flex flex-wrap px-4 py-2 gap-5 w-[90%] mx-auto">
 			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 				<SortableContext items={tiles.map(tile => tile.id)} strategy={rectSortingStrategy}>
-					{tiles.map((tile) => (<SortableTile key={tile.id} tile={tile}/>))}
+					{displayTiles.map((tile) => (<SortableTile key={tile.id} tile={tile}/>))}
 				</SortableContext>
 			</DndContext>
 		</div>
