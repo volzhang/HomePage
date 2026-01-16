@@ -6,25 +6,25 @@ import {cn}                                                             from "@/
 import {Tile}                                                           from "@/vol_apps/tile/tile";
 import {useTileStore}                                                   from "@/vol_apps/tile/tile_atom";
 import {useTileUiStore}                                                 from "@/vol_apps/tile/tile_ui_atom";
-import {enhanceUrl}                                                       from "@/vol_apps/tool/enhanceUrl";
+import {enhanceUrl}                                                     from "@/vol_apps/tool/enhanceUrl";
 import {ImgFilePickerBtn}                                               from "@/vol_apps/tool/filePicker";
-import {fileToBase64}                                                   from "@/vol_apps/tool/isType";
+import {fileToBase64, isBlobString, stringToBlob}                       from "@/vol_apps/tool/isType";
 import {Info, ImageUp, Trash2}                                          from "lucide-react";
 
-import {
-	Dialog,
-	DialogContent, DialogDescription, DialogHeader, DialogTitle,
-
-} from "@/components/ui/dialog";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
+import {useEffect, useState}                                                  from "react";
 
 export function TileUi() {
 	const {tiles, updateTile, removeTile} = useTileStore();
-	const {
-		tileUiVisible, setTileUiVisible,
-		tileUiInEditId, setTileUiInEditId,
-	} = useTileUiStore();
-
+	const {tileUiVisible, setTileUiVisible, tileUiInEditId, setTileUiInEditId} = useTileUiStore();
 	const currentTile = tiles.find(tile => tile.id === tileUiInEditId);
+
+	const [displayBase64, setDisplayBase64] = useState("");
+	useEffect(() => {
+		if (currentTile.meta.icon) {
+			fileToBase64(currentTile.meta.icon).then(setDisplayBase64);
+		}
+	}, [currentTile?.id, currentTile?.meta.icon]);
 
 	const handleWebUrlChange = (e) => {
 		const url = e.target.value;
@@ -35,38 +35,31 @@ export function TileUi() {
 	const handleNameChange = (e) => {
 		updateTile(tileUiInEditId,
 			{
-				name: e.currentTarget.value,
-				meta: {...currentTile.meta, alt: e.currentTarget.value},
+				name: e.currentTarget.value, meta: {...currentTile.meta, alt: e.currentTarget.value},
 			}
 		);
 	};
 
 	const handleTagChange = (e) => {
-		const currentMeta = currentTile.meta;
-		updateTile(tileUiInEditId, {meta: {...currentMeta, tags: e.currentTarget.value.split(" "),},});
-
+		updateTile(tileUiInEditId, {meta: {...currentTile.meta, tags: e.currentTarget.value.split(" "),},});
 	};
 
-	const handleFileUrlChange = (e) => {
-		const currentMeta = currentTile.meta;
-		updateTile(tileUiInEditId, {meta: {...currentMeta, icon: e.currentTarget.value},});
+	const handleBase64Change = async (e) => {
+		const value = e.currentTarget.value;
+		if (isBlobString(value)) {
+			const blob = stringToBlob(value);
+			updateTile(tileUiInEditId, {meta: {...currentTile.meta, icon: blob},});
+		}
 	};
 
 	const handleIconChange = async (file) => {
-		const base64 = await fileToBase64(file);
-		const currentMeta = currentTile.meta;
-		updateTile(tileUiInEditId, {meta: {...currentMeta, icon: base64}});
-		// 优化方向：
-		// localforage+atom，使用blob
-		// 存档，使用base64，载入时还原成blob
-		// 最终实现，使用blob解析
-		// 但是当前的方案简单，暂时用着，后续根据内存使用再优化
+		updateTile(tileUiInEditId, {meta: {...currentTile.meta, icon: file}});
 	};
 
-	const handleRemove = () => {
-		removeTile(tileUiInEditId);
-		setTileUiInEditId(0);
+	const handleRemove = async () => {
 		setTileUiVisible(false);
+		setTileUiInEditId(0);
+		await removeTile(tileUiInEditId);
 	};
 
 	const handleSubmit = () => {
@@ -151,8 +144,8 @@ export function TileUi() {
 						{/* 这里处理Icon */}
 						<div className="grid grid-cols-[1fr_minmax(150px,auto)] gap-3 w-full">
 							<Input placeholder="图片资源 base64"
-								   onChange={handleFileUrlChange}
-								   value={currentTile.meta.icon}
+								   onChange={handleBase64Change}
+								   value={displayBase64}
 								// placeholder = {currentTile.meta.icon}
 								   className="text-gray-400 h-12! text-[16px]! pl-4"
 							/>
@@ -165,7 +158,9 @@ export function TileUi() {
 
 						</div>
 						<div className="pt-2"/>
+						{/*这里是预览*/}
 						<Tile tile={currentTile} isPreview={true}/>
+						{/*这里是删除按钮*/}
 						<Trash2 size={26}
 								onClick={handleRemove}
 								className={cn("absolute left-12 bottom-44 opacity-10",

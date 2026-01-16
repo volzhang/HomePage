@@ -18,7 +18,7 @@ export const test_tags: TagType[] = [
 	createTag("标签5",true),
 ];
 
-const atom_tag = await createAtom<TagType[]>("atom_tag", test_tags);
+const atom_tag = await createAtom<TagType[]>("atom_tag", []);
 
 export const useTagStore = () => {
 	const [tags, setTags] = useAtom(atom_tag);

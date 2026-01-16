@@ -15,7 +15,7 @@ const blobToString = (blob: Blob): Promise<string> => {
 
 type BlobString = `data:${string}`
 
-const isBlobString = (value: any): value is BlobString => {
+export const isBlobString = (value: any): value is BlobString => {
 	return typeof value === "string" && value.startsWith("data:");
 };
 
@@ -29,7 +29,7 @@ const isBlobString = (value: any): value is BlobString => {
 // 	return new Blob([binary], {type: mime});
 // };
 
-const stringToBlob = async (blobString: string): Promise<Blob> => {
+export const stringToBlob = async (blobString: string): Promise<Blob> => {
 	// base64 -> Blob 自动挡
 	const response = await fetch(blobString);
 	return await response.blob();

@@ -1,5 +1,5 @@
 import default_img from "@/assets/icon.png";
-import {createAtom} from "@/vol_apps/atomStorage/atomStorage";
+import {createAtom, refreshAtoms} from "@/vol_apps/atomStorage/atomStorage";
 import {type TagType, useTagStore} from "@/vol_apps/tag/tag_atom";
 import {useAtom} from "jotai";
 
@@ -9,53 +9,47 @@ export type TileType = {
 	href: string;
 	meta: { //这里用于扩展功能的信息, 为什么加这个meta，因为存档json可以折叠2级信息，方便人类阅读
 		alt: string;
-		icon: string,
+		icon: Blob,
 		tags?: string[],
 	};
 }
 
-const defaultMeta = {
-	alt: "BiliBili",
-	icon: default_img,
+const response = await fetch(default_img);
+const defaultIconBlob = await response.blob();
+
+// 默认 tile
+const createDefaultTile = async (
+	id: number,
+	name: string = "",
+	href: string = "",
+	tags: string[] = []
+): Promise<TileType> => {
+	const icon = defaultIconBlob;
+	return {
+		id, name, href,
+		meta: {alt: name, icon, tags,},
+	};
 };
 
-export const defaultTile: TileType = {
-	id: 0,
-	name: "",
-	href: "https://bilibili.com",
-	meta: {...defaultMeta},
-};
-
-const createDefaultTile = (id: number, name: string, tags: string[] = []): TileType => ({
-	...defaultTile, id, name,
-	meta: {...defaultMeta, tags},
-});
-
-// 测试数据，不用在意
-const defaultTiles: TileType[] = [
-	createDefaultTile(0, ""),
-];
+const defaultTiles: TileType[] = await Promise.all([createDefaultTile(0),]);
 
 const atom_tiles = await createAtom<TileType[]>("atom_tiles", defaultTiles);
 
 export const useTileStore = () => {
 	const [tiles, setTiles] = useAtom(atom_tiles);
 
-	const addTile = () => {
-		const newTile = {
-			...defaultTile,
-			id: tiles.length,
-			href: "",
-			meta: {...defaultMeta},
-		};
-		const newTiles = [...tiles, newTile];
-		setTiles(newTiles);
+	const addTile = async () => {
+		const newTile = await createDefaultTile(tiles.length);
+		// setTiles((prevTiles:TileType[]) => [...prevTiles, newTile]);
+		await setTiles([...tiles, newTile]);
+		await refreshAtoms()
 	};
 
-	const removeTile = (id: number) => {
-		const newTiles = tiles.filter((tile: TileType) => tile.id !== id);
+	const removeTile = async (id: number) => {
+		let newTiles:TileType[] = tiles.filter((tile: TileType) => tile.id !== id);
 		if (newTiles.length === 0) {
-			addTile();
+			const newDefaultTile = await createDefaultTile(0);
+			newTiles = [newDefaultTile];
 		}
 		reorderTiles(newTiles);
 	};

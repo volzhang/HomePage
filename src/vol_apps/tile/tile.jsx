@@ -3,18 +3,21 @@ import {useTileStore}                                                    from "@
 import {useTileUiStore}                                                  from "@/vol_apps/tile/tile_ui_atom";
 import {closestCenter, DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import {arrayMove, rectSortingStrategy, SortableContext, useSortable}    from "@dnd-kit/sortable";
-import {CSS}                                                             from "@dnd-kit/utilities";
+import {CSS}                from "@dnd-kit/utilities";
 
 export const Tile = ({
+						 tile,
 						 isPreview = false,
 						 isDragging = false,
-						 tile,
 						 onRightClick = () => null,
 					 }) => {
 	const handleRightClick = (e) => {onRightClick(e);};
 	const handleKeyDown = (e) => {
 		if (e.key === "Enter") e.preventDefault();
 	};
+
+	//这里可以优化成资源清理版本，实际意义可能不大（因为基本不变化），保持代码简单
+	const imgSrc = URL.createObjectURL(tile.meta.icon)
 
 // 内部内容组件
 	const TileInner = () => (
@@ -26,7 +29,7 @@ export const Tile = ({
 				"transition-[shadow, transform] duration-250 delay-0 ease-linear",
 				{"hover:shadow-[#0078d7]/50 hover:shadow-xl": !isDragging},
 			)}>
-			<img draggable={false} className={`mx-auto w-24 h-24 object-contain`} src={tile.meta.icon} alt={tile.meta.alt}/>
+			<img draggable={false} className={`mx-auto w-24 h-24 object-contain`} src={imgSrc} alt={tile.meta.alt}/>
 			<div className={`w-fit h-fit text-[14px] text-gray-700 font-[550]`}>
 				{tile.name}
 			</div>
@@ -51,15 +54,15 @@ export const Tile = ({
 	);
 };
 
-export const Tiles = ({showTiles}) => {
-	const {tiles} = useTileStore();
-	const displayTiles = showTiles ?? tiles;
-	return (
-		<div className="flex flex-wrap gap-5">
-			{displayTiles.map((tile) => (<Tile key={tile.id} tile={tile}/>))}
-		</div>
-	);
-};
+// export const Tiles = ({showTiles}) => {
+// 	const {tiles} = useTileStore();
+// 	const displayTiles = showTiles ?? tiles;
+// 	return (
+// 		<div className="flex flex-wrap gap-5">
+// 			{displayTiles.map((tile) => (<Tile key={tile.id} tile={tile}/>))}
+// 		</div>
+// 	);
+// };
 
 // 注意react组件的传参必须是形如{参数...}，即使只有1个参数。
 const SortableTile = ({tile}) => {
