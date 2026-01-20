@@ -1,25 +1,32 @@
-import {cn}                                                              from "@/lib/utils";
-import {useTileStore}                                                    from "@/vol_apps/tile/tile_atom";
-import {useTileUiStore}                                                  from "@/vol_apps/tile/tile_ui_atom";
-import {closestCenter, DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
-import {arrayMove, rectSortingStrategy, SortableContext, useSortable}    from "@dnd-kit/sortable";
-import {CSS}                from "@dnd-kit/utilities";
+import {cn} from "@/lib/utils";
+import {useTagStore} from "@/vol_apps/tag_zustand/tag_store";
+import {type Tile, useTileStore} from "@/vol_apps/tile_zustand/tile_store";
+import {closestCenter, DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
+import {arrayMove, rectSortingStrategy, SortableContext, useSortable} from "@dnd-kit/sortable";
+import {CSS} from "@dnd-kit/utilities";
+import type {MouseEvent, KeyboardEvent, JSX} from "react";
+import {TileUi} from "@/vol_apps/tile_zustand/tile_ui";
 
-export const Tile = ({
-						 tile,
-						 isPreview = false,
-						 isDragging = false,
-						 onRightClick = () => null,
-					 }) => {
-	const handleRightClick = (e) => {onRightClick(e);};
-	const handleKeyDown = (e) => {
+interface TileProps {
+	tile: Tile,
+	isPreview?: boolean,
+	isDragging?: boolean,
+	onRightClick?: (e: MouseEvent) => void,
+}
+
+export const TileComponent = ({
+								  tile,
+								  isPreview = false,
+								  isDragging = false,
+								  onRightClick = () => null
+							  }: TileProps) => {
+
+	const handleRightClick = (e: MouseEvent) => onRightClick(e);
+	const handleKeyDown = (e: KeyboardEvent) => {
 		if (e.key === "Enter") e.preventDefault();
 	};
-
 	//这里可以优化成资源清理版本，实际意义可能不大（因为基本不变化），保持代码简单
-	const imgSrc = URL.createObjectURL(tile.meta.icon)
-
-// 内部内容组件
+	const imgSrc = tile.meta.icon;
 	const TileInner = () => (
 		<div
 			draggable={false}
@@ -31,41 +38,22 @@ export const Tile = ({
 			)}>
 			<img draggable={false} className={`mx-auto w-24 h-24 object-contain`} src={imgSrc} alt={tile.meta.alt}/>
 			<div className={`w-fit h-fit text-[14px] text-gray-700 font-[550]`}>
-				{tile.name}
+				{tile.meta.name}
 			</div>
 		</div>
 	);
-
-	const Alink = ({children}) => {
+	const Alink = ({children}: { children: JSX.Element }) => {
 		return (
-			<a
-				draggable={false} className={`w-fit h-fit flex`} target="_blank" href={tile.href} rel="noopener noreferrer"
-				onKeyDown={handleKeyDown}
-			>
+			<a draggable={false} className={`w-fit h-fit flex`} target="_blank" href={tile.url} rel="noopener noreferrer"
+			   onKeyDown={handleKeyDown}>
 				{children}
 			</a>
 		);
 	};
-
-	return (
-		isPreview || isDragging
-			? <TileInner/>
-			: <Alink><TileInner/></Alink>
-	);
+	return (isPreview || isDragging ? <TileInner/> : <Alink><TileInner/></Alink>);
 };
 
-// export const Tiles = ({showTiles}) => {
-// 	const {tiles} = useTileStore();
-// 	const displayTiles = showTiles ?? tiles;
-// 	return (
-// 		<div className="flex flex-wrap gap-5">
-// 			{displayTiles.map((tile) => (<Tile key={tile.id} tile={tile}/>))}
-// 		</div>
-// 	);
-// };
-
-// 注意react组件的传参必须是形如{参数...}，即使只有1个参数。
-const SortableTile = ({tile}) => {
+const SortableTile = ({tile}: { tile: Tile }) => {
 	const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id: tile.id,});
 	// 注意，style和tailwindcss会竞争，这里，我们把阴影效果写成一式两份，独立处理。否则，dragging时，会有阴影闪烁
 	const style = {
@@ -82,14 +70,14 @@ const SortableTile = ({tile}) => {
 			: "auto"
 	};
 
-	const {setTileUiInEditId, setTileUiVisible} = useTileUiStore();
+	const {setTileInEditId, setTileUiVisible} = useTileStore();
 
 	return (
 		<div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-			<Tile tile={tile} isDragging={isDragging} editable={true} onRightClick={
+			<TileComponent tile={tile} isDragging={isDragging} onRightClick={
 				(e) => {
 					e.preventDefault();
-					setTileUiInEditId(tile.id);
+					setTileInEditId(tile.id);
 					setTileUiVisible(true);
 				}
 			}/>
@@ -97,16 +85,17 @@ const SortableTile = ({tile}) => {
 	);
 };
 
-// 参数 tiles，表示传入 TileType[]
-export const SortableTiles = ({showTiles}) => {
-	const {tiles, setTiles, tilesSelectedByTag} = useTileStore();
-	// const displayTiles = showTiles ?? tiles;
-	const displayTiles = showTiles ?? tilesSelectedByTag();
+export const SortableTiles = ({showTiles}: { showTiles: Tile[] }) => {
+	const {tiles, setTiles, tilesByTag} = useTileStore();
+
+	// 这里,与标签系统的对接，我直接硬编码了
+	const {selectedTags} = useTagStore();
+	const displayTiles = showTiles ?? tilesByTag(selectedTags(), "ANY");
 
 	const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {delay: 100, tolerance: 0}}));
 
-	const handleDragEnd = (event) => {
-		const { active, over } = event;
+	const handleDragEnd = (event: DragEndEvent) => {
+		const {active, over} = event;
 		if (over && active.id !== over.id) {
 			const oldIndex = tiles.findIndex((t) => t.id === active.id);
 			const newIndex = tiles.findIndex((t) => t.id === over.id);
@@ -116,12 +105,15 @@ export const SortableTiles = ({showTiles}) => {
 	};
 
 	return (
-		<div className="flex flex-wrap px-4 py-2 gap-5 w-[90%] mx-auto">
+		<>
+		<div className="flex flex-wrap px-6 py-6 gap-7 mx-auto">
 			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 				<SortableContext items={tiles.map(tile => tile.id)} strategy={rectSortingStrategy}>
 					{displayTiles.map((tile) => (<SortableTile key={tile.id} tile={tile}/>))}
 				</SortableContext>
 			</DndContext>
 		</div>
+		<TileUi/>
+		</>
 	);
 };

@@ -5,7 +5,7 @@ import {Switch} from "@/components/ui/switch";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {Slider} from "@/components/ui/slider";
 import {cn} from "@/lib/utils";
-import {type bgSizeType, bgSizeItems, useBgStore, bgSizeSliderInit} from "@/vol_apps/bg/bg_atom";
+import {bgSizeItems, useBgStore, bgSizeSliderInit} from "@/vol_apps/bg_jotai/bg_atom";
 import {FileImage} from "lucide-react";
 import {useRef, useId, useState, useEffect} from "react";
 
@@ -17,7 +17,7 @@ function BgImg() {
 
 	async function handleFileUpload(file: File) {
 		const blob = file.slice(0, file.size, file.type);
-		await setBgImg(blob);
+		setBgImg(blob);
 	}
 
 	return (
@@ -99,7 +99,7 @@ function BgSizeRadio() {
 		<>
 			<RadioGroup
 				defaultValue={bgSize}
-				onValueChange={async (value) => await setBgSize(value as bgSizeType)}
+				onValueChange={async (value) => setBgSize(value)}
 				className={cn(normal_style, "flex flex-col items-start")}>
 				{bgSizeItems.map(item => (
 					<div key={`${item.value}-content`} className={"flex items-center gap-4 p-1"}>

@@ -1,4 +1,7 @@
-import {refreshAtoms} from "@/vol_apps/atomStorage/atomStorage";
+import {useBgStore} from "@/vol_apps/bg_zustand/bg_store";
+import {useSearchStore} from "@/vol_apps/search_zustand/search_store";
+import {useTagStore} from "@/vol_apps/tag_zustand/tag_store";
+import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
 import {download, timeStamp} from "@/vol_apps/tool/download";
 import type {JsonFile} from "@/vol_apps/tool/filePicker";
 import {isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeParse, validTypeStringify} from "@/vol_apps/tool/isType";
@@ -28,7 +31,14 @@ export const localforageRestore = async (file: JsonFile, clearFirst: boolean = f
 		if (clearFirst) await localforage.clear();
 		await Promise.all(Array.from(Object.entries(obj), ([k, v]) => localforage.setItem(k, v)));
 	}
-	await refreshAtoms();//这里必须手动刷新，不然不会自动刷新，即使atom和localforage已经成功换值
+
+	await useTileStore.persist.rehydrate();
+	await useBgStore.persist.rehydrate();
+	await useSearchStore.persist.rehydrate();
+	await useTagStore.persist.rehydrate();
+	//后续写一个自定义的persist，方便遍历刷新，当前手动遍历
+	//或者写一个slice 工厂，共用一个store。
+	//这里必须手动刷新，不然不会自动刷新，即使atom和localforage已经成功换值
 };
 
 export const localforageBackup = async (): Promise<void> => {

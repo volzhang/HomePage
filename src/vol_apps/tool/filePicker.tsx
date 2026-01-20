@@ -38,8 +38,8 @@ export const ImgFilePickerBtn = ({onPick, children}: Props) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const handleClick = () => inputRef.current?.click();
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0] as File;
-		onPick?.(file);
+		const file = e.target.files?.[0];
+		onPick?.(file as File);
 		e.target.value = "";
 	};
 

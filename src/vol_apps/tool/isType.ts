@@ -5,15 +5,15 @@ type ValidBase = null | string | number | boolean;
 export type ValidType = ValidBase | Array<ValidType> | { [key: string]: ValidType };
 export type ValidTypeExt = ValidBase | Blob | Array<ValidTypeExt> | { [key: string]: ValidTypeExt };
 
-const blobToString = (blob: Blob): Promise<string> => {
+export const blobToString = (blob: Blob): Promise<BlobString> => {
 	return new Promise((resolve) => {
 		const reader = new FileReader();
-		reader.onloadend = () => resolve(reader.result as string);
+		reader.onloadend = () => resolve(reader.result as BlobString);
 		reader.readAsDataURL(blob);
 	});
 };
 
-type BlobString = `data:${string}`
+export type BlobString = `data:${string}`
 
 export const isBlobString = (value: any): value is BlobString => {
 	return typeof value === "string" && value.startsWith("data:");

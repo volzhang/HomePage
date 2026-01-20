@@ -1,77 +1,75 @@
-import {Button}                                                         from "@/components/ui/button";
-import {Input}                                                          from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {Input} from "@/components/ui/input";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
-import {Tooltip, TooltipContent, TooltipTrigger}                        from "@/components/ui/tooltip";
-import {cn}                                                             from "@/lib/utils";
-import {Tile}                                                           from "@/vol_apps/tile/tile";
-import {useTileStore}                                                   from "@/vol_apps/tile/tile_atom";
-import {useTileUiStore}                                                 from "@/vol_apps/tile/tile_ui_atom";
-import {enhanceUrl}                                                     from "@/vol_apps/tool/enhanceUrl";
-import {ImgFilePickerBtn}                                               from "@/vol_apps/tool/filePicker";
-import {fileToBase64, isBlobString, stringToBlob}                       from "@/vol_apps/tool/isType";
-import {Info, ImageUp, Trash2}                                          from "lucide-react";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {cn} from "@/lib/utils";
+import {TileComponent} from "@/vol_apps/tile_zustand/tile";
+import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
+import {enhanceUrl} from "@/vol_apps/tool/enhanceUrl";
+import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
+import {blobToString, isBlobString} from "@/vol_apps/tool/isType";
+import {ImageUp, Info, Trash2} from "lucide-react";
+import {type ChangeEvent, type KeyboardEvent} from "react";
 
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
-import {useEffect, useState}                                                  from "react";
-
-export function TileUi() {
-	const {tiles, updateTile, removeTile} = useTileStore();
-	const {tileUiVisible, setTileUiVisible, tileUiInEditId, setTileUiInEditId} = useTileUiStore();
-	const currentTile = tiles.find(tile => tile.id === tileUiInEditId);
-
-	const [displayBase64, setDisplayBase64] = useState("");
-	useEffect(() => {
-		if (currentTile.meta.icon) {
-			fileToBase64(currentTile.meta.icon).then(setDisplayBase64);
-		}
-	}, [currentTile?.id, currentTile?.meta.icon]);
-
-	const handleWebUrlChange = (e) => {
-		const url = e.target.value;
-		const url_enhanced = enhanceUrl(url);
-		updateTile(tileUiInEditId, {href: url_enhanced});
+export const TileUi = () => {
+	const {
+		tiles,
+		updateTile,
+		removeTile,
+		tileInEditId,
+		tileUiVisible, setTileUiVisible
+	} = useTileStore();
+	// global var
+	const currentTile = tiles.find(tile => tile.id === tileInEditId) || tiles[0];
+	const currentMeta = currentTile.meta;
+	// url
+	const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
+		updateTile(tileInEditId, {url: enhanceUrl(e.target.value)});
 	};
-
-	const handleNameChange = (e) => {
-		updateTile(tileUiInEditId,
-			{
-				name: e.currentTarget.value, meta: {...currentTile.meta, alt: e.currentTarget.value},
-			}
-		);
+	// name
+	const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+		updateTile(tileInEditId, {meta: {...currentMeta, name: e.currentTarget.value}});
 	};
-
-	const handleTagChange = (e) => {
-		updateTile(tileUiInEditId, {meta: {...currentTile.meta, tags: e.currentTarget.value.split(" "),},});
+	// tag
+	const handleTagChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const splitString = " ";
+		updateTile(tileInEditId, {meta: {...currentMeta, tags: e.currentTarget.value.split(splitString)}});
 	};
-
-	const handleBase64Change = async (e) => {
-		const value = e.currentTarget.value;
-		if (isBlobString(value)) {
-			const blob = stringToBlob(value);
-			updateTile(tileUiInEditId, {meta: {...currentTile.meta, icon: blob},});
-		}
+	// icon
+	const iconBase64 = currentTile.meta.icon;
+	const handleIconBase64Change = (e: ChangeEvent<HTMLInputElement>) => {
+		const stringValue = e.currentTarget.value;
+		if (isBlobString(stringValue)) updateTile(tileInEditId,
+			{meta: {...currentMeta, icon: stringValue}});
 	};
-
-	const handleIconChange = async (file) => {
-		updateTile(tileUiInEditId, {meta: {...currentTile.meta, icon: file}});
+	const handleIconUpload = async (file: File) => {
+		const blobString: string = await blobToString(file);
+		updateTile(tileInEditId, {meta: {...currentMeta, icon: blobString}});
 	};
-
-	const handleRemove = async () => {
+	// remove
+	const handleRemove = () => {
 		setTileUiVisible(false);
-		setTileUiInEditId(0);
-		await removeTile(tileUiInEditId);
+		removeTile(tileInEditId);
 	};
-
+	// close
 	const handleSubmit = () => {
 		setTileUiVisible(false);
 	};
 
+	// patch:原组件不支持enter后自动提交并关闭。
+	const handleEnterKeyDown = (e: KeyboardEvent) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			handleSubmit();
+		}
+	};
+
 	return (
-		<Dialog defaultOpen={false} open={tileUiVisible} onOpenChange={(open) => {
-			setTileUiVisible(open);
-		}}>
-			<form>
-				<DialogContent className="sm:max-w-[600px]">
+		<Dialog defaultOpen={false} open={tileUiVisible}
+				onOpenChange={(open) => setTileUiVisible(open)}>
+			<form onKeyDown={(e) => handleEnterKeyDown(e)}>
+				<DialogContent className="sm:max-w-[700px]">
 					<DialogHeader className={"hidden"}>
 						<DialogTitle>none.</DialogTitle>
 						<DialogDescription>none.</DialogDescription>
@@ -81,8 +79,8 @@ export function TileUi() {
 						<InputGroup className={"h-12! placeholder:text-base"}>
 							<InputGroupInput
 								className="pl-1! text-[20px]! placeholder:text-base"
-								onChange={handleWebUrlChange}
-								value={currentTile.href} //href
+								onChange={handleUrlChange}
+								value={currentTile.url}
 								placeholder={"https://"}
 							/>
 							<InputGroupAddon>
@@ -95,7 +93,7 @@ export function TileUi() {
 											<Info/>
 										</InputGroupButton>
 									</TooltipTrigger>
-									<TooltipContent>填写瓷砖网址</TooltipContent>
+									<TooltipContent>跳转地址</TooltipContent>
 								</Tooltip>
 							</InputGroupAddon>
 						</InputGroup>
@@ -103,7 +101,7 @@ export function TileUi() {
 						<InputGroup className={"h-12! placeholder:text-base"}>
 							<InputGroupInput
 								className="pl-1! text-[20px]! placeholder:text-base"
-								value={currentTile.name}
+								value={currentTile.meta.name}
 								onChange={handleNameChange}
 								placeholder={"显示名"}
 							/>
@@ -144,13 +142,13 @@ export function TileUi() {
 						{/* 这里处理Icon */}
 						<div className="grid grid-cols-[1fr_minmax(150px,auto)] gap-3 w-full">
 							<Input placeholder="图片资源 base64"
-								   onChange={handleBase64Change}
-								   value={displayBase64}
+								   onChange={handleIconBase64Change}
+								   value={iconBase64}
 								// placeholder = {currentTile.meta.icon}
 								   className="text-gray-400 h-12! text-[16px]! pl-4"
 							/>
 
-							<ImgFilePickerBtn onPick={(file) => (handleIconChange(file))} children={
+							<ImgFilePickerBtn onPick={(file) => (handleIconUpload(file))} children={
 								<Button type="button" className={"text-[15px] hover:text-primary-foreground h-[46px] bg-[#0078d7] w-full"}>
 									<ImageUp/>上传图标
 								</Button>
@@ -159,7 +157,7 @@ export function TileUi() {
 						</div>
 						<div className="pt-2"/>
 						{/*这里是预览*/}
-						<Tile tile={currentTile} isPreview={true}/>
+						<TileComponent tile={currentTile} isPreview={true}/>
 						{/*这里是删除按钮*/}
 						<Trash2 size={26}
 								onClick={handleRemove}
@@ -171,14 +169,15 @@ export function TileUi() {
 								)}/>
 
 						<div className="pt-4"/>
-						<Button type="submit" variant="default"
-								className={"bg-[#0078d7] text-[17px] h-[46px] w-full"}
-								onClick={handleSubmit}
-						>确定</Button>
+						<Button type="submit" variant="default" onClick={handleSubmit}
+								autoFocus={true} // 默认焦点
+								className={"bg-[#0078d7] text-[17px] h-[46px] w-full"}>
+							确定
+						</Button>
 						<div className="pd-[1px]"/>
 					</div>
 				</DialogContent>
 			</form>
 		</Dialog>
 	);
-}
+};

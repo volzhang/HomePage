@@ -2,16 +2,16 @@ import {Button} from "@/components/ui/button";
 import {ButtonGroup} from "@/components/ui/button-group";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {cn}             from "@/lib/utils";
-import {SEARCH_ENGINES, useEngineStore} from "@/vol_apps/search/searchBar_atom";
+import {cn} from "@/lib/utils";
+import {useSearchStore} from "@/vol_apps/search_zustand/search_store";
 import {SearchIcon} from "lucide-react";
 
-export const SearchBar = () => {
-	const {engine, setEngine} = useEngineStore()
-	const currentEngine = SEARCH_ENGINES[engine];
-	const handleOnValueChange = async (value) => {
-		if (value === "") return; //这里有个坑，OnValueChange会在mount时自动设置为""
-		await setEngine(value); //
+export const SearchComponent = () => {
+	const {engines, getEngineInUse, setEngineInUseByName} = useSearchStore();
+	const currentEngine = getEngineInUse();
+	const handleOnValueChange = (name: string) => {
+		if (name === "") return; //这里有个坑，OnValueChange会在mount时自动设置为""
+		setEngineInUseByName(name); //
 	};
 	return (
 		<>
@@ -60,7 +60,7 @@ export const SearchBar = () => {
 					/>
 
 					<Select
-						value={engine}
+						value={currentEngine.name}
 						onValueChange={handleOnValueChange}
 					>
 						<SelectTrigger className={cn("h-full! w-[fit] border border-l-0 border-[#0078d7] bg-white/90",
@@ -76,8 +76,8 @@ export const SearchBar = () => {
 						<SelectContent>
 							<SelectGroup>
 								<SelectLabel>选择搜索引擎</SelectLabel>
-								{Object.entries(SEARCH_ENGINES).map(([key, {name}]) => (
-									<SelectItem key={key} value={key}>{name}</SelectItem>
+								{engines.map(({id, name}) => (
+									<SelectItem key={id} value={name}>{name}</SelectItem>
 								))}
 							</SelectGroup>
 						</SelectContent>

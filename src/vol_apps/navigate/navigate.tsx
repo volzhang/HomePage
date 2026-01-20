@@ -1,6 +1,6 @@
 
-import {useBgStore} from "@/vol_apps/bg/bg_atom";
-import {useTileStore} from "@/vol_apps/tile/tile_atom";
+import {useBgStore} from "@/vol_apps/bg_zustand/bg_store";
+import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
 
@@ -14,11 +14,11 @@ import {
 } from "@/components/ui/navigation-menu";
 
 export const Navigation = () => {
-	const {setBgUi} = useBgStore();
+	const {setBgUiVisible} = useBgStore();
 	const {addTile} = useTileStore()
 	return (
 		// 注意，viewport 表示是否在移动端
-		<NavigationMenu viewport={false} className={"z-1 p-2"}>
+		<NavigationMenu viewport={false}>
 			<NavigationMenuList className="flex-wrap">
 				<NavigationMenuItem className="hidden md:block">
 					<NavigationMenuTrigger className={"bg-transparent text-white"}>
@@ -29,7 +29,7 @@ export const Navigation = () => {
 							<li>
 								<NavigationMenuLink asChild>
 									<a href="#" onClick={() => {
-										setBgUi(true);
+										setBgUiVisible(true);
 									}}>设置背景</a>
 								</NavigationMenuLink>
 								<NavigationMenuLink asChild>
