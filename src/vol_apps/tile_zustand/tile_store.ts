@@ -1,9 +1,8 @@
+import defaultIcon from "@/assets/icon.png";
 import {blobToString} from "@/vol_apps/tool/isType";
 import localforage from "localforage";
 import {create} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
-
-import defaultIcon from "@/assets/icon.png";
 
 const response = await fetch(defaultIcon);
 const blob = await response.blob();
@@ -49,6 +48,23 @@ const defaultTile = {
 
 type TileStore = TileStoreState & TileStoreActions;
 
+// const localforageStorage = createJSONStorage<TileStore>(() => ({
+// 	getItem: async (name: string) => {
+// 		const value = await localforage.getItem<string>(name);
+// 		if (value === null) return null;
+// 		return await validTypeParse(value);
+// 	},
+//
+// 	setItem: async (name: string, value: ValidTypeExt) => {
+// 		const valueString = await validTypeStringify(value);
+// 		await localforage.setItem(name, valueString);
+// 	},
+//
+// 	removeItem: async (name: string) => {
+// 		await localforage.removeItem(name);
+// 	},
+// }));
+
 export const useTileStore = create<TileStore>()(
 	persist(
 		(set, get) => ({
@@ -92,7 +108,8 @@ export const useTileStore = create<TileStore>()(
 		}),
 		{
 			name: "tile",
-			storage: createJSONStorage(() => localforage),
+			storage: createJSONStorage(() => localforage)
+
 			//zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。
 			//当然，最重要的是，值必须天然支持文本化，所以只能是基本类型。
 			//除此之外，没有其他吐槽点。

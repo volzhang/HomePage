@@ -60,7 +60,7 @@ export const TagUpdate = () => {
 export const TagComponent = () => {
 	const {tags, toggleTag} = useTagStore();
 	return (
-		<div className={"flex flex-wrap items-center px-8 pb-3 gap-3 w-[84%] mx-auto"}>
+		<div className={"flex flex-wrap items-center px-8 pb-3 gap-3 w-[85%] mx-auto"}>
 			{tags.map((tag) => (
 				<Button
 					key={tag.id} variant={tag.checked ? "default" : "link"} onClick={() => toggleTag(tag.id)}
@@ -69,7 +69,6 @@ export const TagComponent = () => {
 						: "text-white bg-transparent hover:bg-transparent "
 					}>
 					{tag.name}
-					{/*{tag.checked && <BadgeCheckIcon className={"opacity-60"}/>}*/}
 				</Button>
 			))}
 			<TagUpdate/>

@@ -21,7 +21,7 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 	return (
 		<ContextMenu>
 			<ContextMenuTrigger>
-				<div className={"fixed left-8/100 right-8/100 border border-[white]/25 rounded-xl"}>
+				<div className={"flex w-[85%] mx-auto border border-[white]/25 rounded-xl"}>
 					{children}
 				</div>
 			</ContextMenuTrigger>

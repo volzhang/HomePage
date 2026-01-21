@@ -1,6 +1,6 @@
 {
   "name": "自定义主页",
-  "version": "3.1",
+  "version": "3.2",
   "manifest_version": 3,
   "description": "个人自用浏览器主页，纯前端插件，干净清爽安全",
   "chrome_url_overrides": {

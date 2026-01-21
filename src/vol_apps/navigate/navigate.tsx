@@ -4,6 +4,7 @@ import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
 
+
 import {
 	NavigationMenu,
 	NavigationMenuContent,
@@ -12,6 +13,7 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+// import {backup_trans} from "@/vol_apps/tool_backup/backup_trans";
 
 export const Navigation = () => {
 	const {setBgUiVisible} = useBgStore();
@@ -41,6 +43,9 @@ export const Navigation = () => {
 								<NavigationMenuLink asChild>
 									<a href="#" onClick={addTile}>新增瓷砖</a>
 								</NavigationMenuLink>
+								{/*<NavigationMenuLink asChild>*/}
+								{/*	<a href="#" onClick={backup_trans}>使用V2存档</a>*/}
+								{/*</NavigationMenuLink>*/}
 							</li>
 						</ul>
 					</NavigationMenuContent>
@@ -50,22 +55,3 @@ export const Navigation = () => {
 	);
 };
 
-// function ListItem({
-// 					  title,
-// 					  children,
-// 					  href,
-// 					  ...props
-// 				  }: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
-// 	return (
-// 		<li {...props}>
-// 			<NavigationMenuLink asChild>
-// 				<a href={href}>
-// 					<div className="text-sm leading-none font-medium">{title}</div>
-// 					<p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
-// 						{children}
-// 					</p>
-// 				</a>
-// 			</NavigationMenuLink>
-// 		</li>
-// 	);
-// }

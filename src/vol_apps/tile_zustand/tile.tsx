@@ -106,7 +106,7 @@ export const SortableTiles = ({showTiles}: { showTiles: Tile[] }) => {
 
 	return (
 		<>
-		<div className="flex flex-wrap px-6 py-6 gap-7 mx-auto">
+		<div className="flex flex-wrap px-6 py-6 gap-7">
 			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 				<SortableContext items={tiles.map(tile => tile.id)} strategy={rectSortingStrategy}>
 					{displayTiles.map((tile) => (<SortableTile key={tile.id} tile={tile}/>))}
