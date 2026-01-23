@@ -8,8 +8,11 @@ import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
 import {blobToString} from "@/vol_apps/tool/isType";
 import {Folder} from "lucide-react";
 import {useId} from "react";
+import {useTranslation} from "react-i18next";
 
 export function BgUi() {
+	//i18n
+	const {t} = useTranslation("bg")
 
 	//不常用地功能，就不用写了
 	//目前代码还凑活，但还有一些优化
@@ -39,7 +42,8 @@ export function BgUi() {
 					<Button
 						variant="secondary"
 						className={"text-xl w-full h-16 gap-6 items-center"}>
-						<Folder className={`scale-180`}/> 上传图片
+						<Folder className={`scale-180`}/>
+						{t("Upload Image")}
 					</Button>
 				}/>
 			{/* 只看背景 */}
@@ -50,11 +54,15 @@ export function BgUi() {
 							flex flex-col items-start justify-center`}>
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="true" id={id1}/>
-					<Label htmlFor={id1} className={`text-xl`}>正常</Label>
+					<Label htmlFor={id1} className={`text-xl`}>
+						{t("Normal")}
+					</Label>
 				</div>
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="false" id={id2}/>
-					<Label htmlFor={id2} className={`text-xl`}>只看背景</Label>
+					<Label htmlFor={id2} className={`text-xl`}>
+						{t("Hide Others")}
+					</Label>
 				</div>
 			</RadioGroup>
 			{/* 重复显示 */}
@@ -66,11 +74,15 @@ export function BgUi() {
 							flex flex-col items-start justify-center`}>
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="repeat" id={id3}/>
-					<Label htmlFor={id3} className={`text-xl`}>重复平铺</Label>
+					<Label htmlFor={id3} className={`text-xl`}>
+						{t("Repeat")}
+					</Label>
 				</div>
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="no-repeat" id={id4}/>
-					<Label htmlFor={id4} className={`text-xl`}>单张</Label>
+					<Label htmlFor={id4} className={`text-xl`}>
+						{t("non-Repeat")}
+					</Label>
 				</div>
 			</RadioGroup>
 			{/* 居中显示 */}
@@ -82,11 +94,15 @@ export function BgUi() {
 							flex flex-col items-start justify-center`}>
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="not-center" id={id6}/>
-					<Label htmlFor={id6} className={`text-xl`}>左上角</Label>
+					<Label htmlFor={id6} className={`text-xl`}>
+						{t("Top Left")}
+					</Label>
 				</div>
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="center" id={id5}/>
-					<Label htmlFor={id5} className={`text-xl`}>居中</Label>
+					<Label htmlFor={id5} className={`text-xl`}>
+						{t("Center")}
+					</Label>
 				</div>
 			</RadioGroup>
 			{/* 自定义大小 */}

@@ -1,8 +1,8 @@
 {
-  "name": "自定义主页",
-  "version": "3.2",
+  "name": "Home Page",
+  "version": "3.3",
   "manifest_version": 3,
-  "description": "个人自用浏览器主页，纯前端插件，干净清爽安全",
+  "description": "一款美观、干净、保护隐私的本地浏览器主页。无广告、不联网。 / A beautiful, clean, and privacy-conscious local browser homepage. No ads, no network connection.",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },

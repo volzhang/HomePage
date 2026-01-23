@@ -13,18 +13,20 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import {useTranslation} from "react-i18next";
 // import {backup_trans} from "@/vol_apps/tool_backup/backup_trans";
 
 export const Navigation = () => {
 	const {setBgUiVisible} = useBgStore();
 	const {addTile} = useTileStore()
+	const {t} = useTranslation("navigation");
 	return (
 		// 注意，viewport 表示是否在移动端
 		<NavigationMenu viewport={false}>
 			<NavigationMenuList className="flex-wrap">
 				<NavigationMenuItem className="hidden md:block">
 					<NavigationMenuTrigger className={"bg-transparent text-white"}>
-						菜单
+						{t("Menu")}
 					</NavigationMenuTrigger>
 					<NavigationMenuContent>
 						<ul className="grid w-[200px] gap-4">
@@ -32,16 +34,18 @@ export const Navigation = () => {
 								<NavigationMenuLink asChild>
 									<a href="#" onClick={() => {
 										setBgUiVisible(true);
-									}}>设置背景</a>
+									}}>
+										{t("Set Background")}
+									</a>
 								</NavigationMenuLink>
 								<NavigationMenuLink asChild>
-									<a href="#" onClick={async () => {await localforageBackup();}}>下载备份</a>
+									<a href="#" onClick={async () => {await localforageBackup();}}>{t("Download Backup")}</a>
 								</NavigationMenuLink>
 								<NavigationMenuLink asChild>
-									<a href="#" onClick={async () => {await localforageRestore(await jsonFilePickerAPI());}}>备份恢复</a>
+									<a href="#" onClick={async () => {await localforageRestore(await jsonFilePickerAPI());}}>{t("Restore")}</a>
 								</NavigationMenuLink>
 								<NavigationMenuLink asChild>
-									<a href="#" onClick={addTile}>新增瓷砖</a>
+									<a href="#" onClick={addTile}>{t("Add Tile")}</a>
 								</NavigationMenuLink>
 								{/*<NavigationMenuLink asChild>*/}
 								{/*	<a href="#" onClick={backup_trans}>使用V2存档</a>*/}

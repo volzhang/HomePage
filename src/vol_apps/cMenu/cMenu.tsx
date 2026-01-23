@@ -14,10 +14,13 @@ import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
 
 import {Plus, Download, Upload, Image} from "lucide-react";
 import type {PropsWithChildren} from "react";
+import { useTranslation } from 'react-i18next';
 
 export function ContextMenuComponent({children}: PropsWithChildren) {
 	const {addTile} = useTileStore();
 	const {setBgUiVisible} = useBgStore();
+	const { t } = useTranslation("contextMenu");
+
 	return (
 		<ContextMenu>
 			<ContextMenuTrigger>
@@ -27,21 +30,28 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 			</ContextMenuTrigger>
 			<ContextMenuContent className="w-48">
 				<ContextMenuItem inset onClick={addTile} className={`h-10`}>
-					添加瓷砖
+					{t("Add Tile")}
 					<Plus className="ml-auto"/>
 				</ContextMenuItem>
 				<ContextMenuSub>
-					<ContextMenuSubTrigger inset className={`h-10`}>存档</ContextMenuSubTrigger>
+					<ContextMenuSubTrigger inset className={`h-10`}>
+						{t('Backup')}
+					</ContextMenuSubTrigger>
 					<ContextMenuSubContent className="w-44">
-						<ContextMenuItem onClick={localforageBackup} className={`h-10`}>下载 <Download className={`ml-auto`}/></ContextMenuItem>
-						<ContextMenuItem onClick={() => jsonFilePickerAPI().then(file => localforageRestore(file))} className={`h-10`}>上传 <Upload
-							className={`ml-auto`}/></ContextMenuItem>
+						<ContextMenuItem onClick={localforageBackup} className={`h-10`}>
+							{t("Download")}
+							<Download className={`ml-auto`}/>
+						</ContextMenuItem>
+						<ContextMenuItem onClick={() => jsonFilePickerAPI().then(file => localforageRestore(file))} className={`h-10`}>
+							{t("Restore")}
+							<Upload className={`ml-auto`}/>
+						</ContextMenuItem>
 					</ContextMenuSubContent>
 				</ContextMenuSub>
 				<ContextMenuItem inset onClick={() => {
 					setBgUiVisible(true);
 				}} className={`h-10`}>
-					设置背景
+					{t("Set Background")}
 					<Image className="ml-auto"/>
 				</ContextMenuItem>
 			</ContextMenuContent>

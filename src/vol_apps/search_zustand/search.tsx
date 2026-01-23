@@ -5,6 +5,7 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigg
 import {cn} from "@/lib/utils";
 import {useSearchStore} from "@/vol_apps/search_zustand/search_store";
 import {SearchIcon} from "lucide-react";
+import {useTranslation} from "react-i18next";
 
 export const SearchComponent = () => {
 	const {engines, getEngineInUse, setEngineInUseByName} = useSearchStore();
@@ -13,6 +14,7 @@ export const SearchComponent = () => {
 		if (name === "") return; //这里有个坑，OnValueChange会在mount时自动设置为""
 		setEngineInUseByName(name); //
 	};
+	const {t} = useTranslation("search")
 	return (
 		<>
 			<style>{`
@@ -71,11 +73,11 @@ export const SearchComponent = () => {
 							"focus-visible:ring-transparent",
 						)}
 						>
-							<SelectValue placeholder="选择搜索引擎"/>
+							<SelectValue placeholder={t("Select Engine")}/>
 						</SelectTrigger>
 						<SelectContent>
 							<SelectGroup>
-								<SelectLabel>选择搜索引擎</SelectLabel>
+								<SelectLabel>{t("Select Engine")}</SelectLabel>
 								{engines.map(({id, name}) => (
 									<SelectItem key={id} value={name}>{name}</SelectItem>
 								))}

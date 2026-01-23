@@ -11,8 +11,12 @@ import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
 import {blobToString, isBlobString} from "@/vol_apps/tool/isType";
 import {ImageUp, Info, Trash2} from "lucide-react";
 import {type ChangeEvent, type KeyboardEvent} from "react";
+import {useTranslation} from "react-i18next";
 
 export const TileUi = () => {
+	//i18n
+	const{t} = useTranslation("tile");
+
 	const {
 		tiles,
 		updateTile,
@@ -93,7 +97,7 @@ export const TileUi = () => {
 											<Info/>
 										</InputGroupButton>
 									</TooltipTrigger>
-									<TooltipContent>跳转地址</TooltipContent>
+									<TooltipContent>{t("Url")}</TooltipContent>
 								</Tooltip>
 							</InputGroupAddon>
 						</InputGroup>
@@ -103,7 +107,7 @@ export const TileUi = () => {
 								className="pl-1! text-[20px]! placeholder:text-base"
 								value={currentTile.meta.name}
 								onChange={handleNameChange}
-								placeholder={"显示名"}
+								placeholder={t("Name")}
 							/>
 							<InputGroupAddon>
 							</InputGroupAddon>
@@ -114,7 +118,7 @@ export const TileUi = () => {
 											<Info/>
 										</InputGroupButton>
 									</TooltipTrigger>
-									<TooltipContent>填写瓷砖显示</TooltipContent>
+									<TooltipContent>{t("Name")}</TooltipContent>
 								</Tooltip>
 							</InputGroupAddon>
 						</InputGroup>
@@ -124,7 +128,7 @@ export const TileUi = () => {
 								className="pl-1! text-[20px]! placeholder:text-base"
 								value={currentTile.meta?.tags?.join(" ") || ""}
 								onChange={handleTagChange}
-								placeholder={"标签1 标签2 ..."}
+								placeholder={t("Tag1 Tag2 ...")}
 							/>
 							<InputGroupAddon>
 							</InputGroupAddon>
@@ -135,13 +139,13 @@ export const TileUi = () => {
 											<Info/>
 										</InputGroupButton>
 									</TooltipTrigger>
-									<TooltipContent>填写标签，使用空格分隔</TooltipContent>
+									<TooltipContent>{t("Tags (space separated)")}</TooltipContent>
 								</Tooltip>
 							</InputGroupAddon>
 						</InputGroup>
 						{/* 这里处理Icon */}
 						<div className="grid grid-cols-[1fr_minmax(150px,auto)] gap-3 w-full">
-							<Input placeholder="图片资源 base64"
+							<Input placeholder="base64"
 								   onChange={handleIconBase64Change}
 								   value={iconBase64}
 								// placeholder = {currentTile.meta.icon}
@@ -150,7 +154,7 @@ export const TileUi = () => {
 
 							<ImgFilePickerBtn onPick={(file) => (handleIconUpload(file))} children={
 								<Button type="button" className={"text-[15px] hover:text-primary-foreground h-[46px] bg-[#0078d7] w-full"}>
-									<ImageUp/>上传图标
+									<ImageUp/>{t("Upload Icon")}
 								</Button>
 							}/>
 
@@ -172,7 +176,7 @@ export const TileUi = () => {
 						<Button type="submit" variant="default" onClick={handleSubmit}
 								autoFocus={true} // 默认焦点
 								className={"bg-[#0078d7] text-[17px] h-[46px] w-full"}>
-							确定
+							{t("Confirm")}
 						</Button>
 						<div className="pd-[1px]"/>
 					</div>
