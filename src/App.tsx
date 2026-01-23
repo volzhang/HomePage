@@ -9,8 +9,9 @@ import {TagComponent}          from "@/vol_apps/tag_zustand/tag";
 export const App = () => {
 	return (
 		<>
+			<div className={"flex"}>
 			<Navigation/>
-			<I18nUi/>
+			<I18nUi/></div>
 			<SearchComponent/>
 			<TagComponent/>
 			<ContextMenuComponent children={

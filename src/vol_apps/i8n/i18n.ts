@@ -14,7 +14,8 @@ const resources = {
 	cn: {
 		// 直接在这里维护双语显示：k,en;v,cn。
 		common: {
-			"Test": "测试"
+			"Language": "语言",
+			"Select Language": "选择语言"
 		},
 		search: {
 			"Select Engine": "选择搜索引擎",
