@@ -22,7 +22,7 @@ export const sizeItems = [
 	// {value: "contain", label: t("Contain")},
 	// {value: "cover", label: t("Cover")},
 
-	{value: "auto", label: "Default Size"},
+	{value: "auto", label: "Original Size"},
 	{value: "contain", label: "Contain"},
 	{value: "cover", label: "Cover"},
 	// {value: "100%", label: "放缩：自定义"},

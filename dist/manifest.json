@@ -1,8 +1,9 @@
 {
-  "name": "Home Page",
-  "version": "3.3",
+  "version": "3.3.1",
   "manifest_version": 3,
-  "description": "一款美观、干净、保护隐私的本地浏览器主页。无广告、不联网。 / A beautiful, clean, and privacy-conscious local browser homepage. No ads, no network connection.",
+  "default_locale": "en_US",
+  "name": "__MSG_extName__",
+  "description": "__MSG_extDescription__",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },

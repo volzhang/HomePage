@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {useTagStore} from "@/vol_apps/tag_zustand/tag_store";
 import {type Tile, useTileStore} from "@/vol_apps/tile_zustand/tile_store";
 import {RefreshCw} from "lucide-react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 export const TagUpdate = () => {
 	const ani_time = 0.5;
@@ -12,7 +12,7 @@ export const TagUpdate = () => {
 	//以后再优化，先用着
 
 	const {tiles} = useTileStore();
-	const {setTags} = useTagStore();
+	const {selectedTags, setTags} = useTagStore();
 
 	const handleClick = () => {
 		// 动画效果
@@ -20,11 +20,13 @@ export const TagUpdate = () => {
 			setIsSpinning(true);
 			setTimeout(() => setIsSpinning(false), ani_time * 1000);
 		}
-
 		// 更新tags
+		updateTags()
+	};
+
+	const updateTags = () => {
 		// 接受数组对象，item内含meta，meta内含tags(可选),
 		// tags:string[]
-
 		const allUniqueTags = [
 			...new Set(
 				tiles.flatMap((tile: Tile) => tile.meta.tags || [])
@@ -32,9 +34,18 @@ export const TagUpdate = () => {
 		].filter((tag) => tag !== "");
 		// console.log(allUniqueTags);
 		//注意，如果tile.meta.tags不存在，会返回一个undefined作为元素，所以我们直接用[] 兜底
-		const newTags = allUniqueTags.map((tag, index) => ({id: index, name: tag, checked: false}));
+
+		const newTags = allUniqueTags.map((name, id) => {
+			const checked = selectedTags().includes(name);
+			return{id, name, checked }
+		});
 		setTags(newTags);
-	};
+	}
+	
+	// tiles变化时可以自动更新，可以更精确，但是先这么用着。
+	useEffect(() => {
+		updateTags()
+	}, [tiles]);
 
 	return (
 		<>

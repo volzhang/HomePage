@@ -15,7 +15,7 @@ import {useTranslation} from "react-i18next";
 
 export const TileUi = () => {
 	//i18n
-	const{t} = useTranslation("tile");
+	const {t} = useTranslation("tile");
 
 	const {
 		tiles,
@@ -85,7 +85,7 @@ export const TileUi = () => {
 								className="pl-1! text-[20px]! placeholder:text-base"
 								onChange={handleUrlChange}
 								value={currentTile.url}
-								placeholder={"https://"}
+								placeholder={"https://..."}
 							/>
 							<InputGroupAddon>
 								{/*<InputGroupText className={`text-[16px]`}>https://</InputGroupText>*/}
@@ -97,7 +97,9 @@ export const TileUi = () => {
 											<Info/>
 										</InputGroupButton>
 									</TooltipTrigger>
-									<TooltipContent>{t("Url")}</TooltipContent>
+									<TooltipContent>
+										{t("Link")}
+									</TooltipContent>
 								</Tooltip>
 							</InputGroupAddon>
 						</InputGroup>
@@ -107,7 +109,8 @@ export const TileUi = () => {
 								className="pl-1! text-[20px]! placeholder:text-base"
 								value={currentTile.meta.name}
 								onChange={handleNameChange}
-								placeholder={t("Name")}
+								placeholder=
+									{t("Display Name")}
 							/>
 							<InputGroupAddon>
 							</InputGroupAddon>
@@ -118,7 +121,9 @@ export const TileUi = () => {
 											<Info/>
 										</InputGroupButton>
 									</TooltipTrigger>
-									<TooltipContent>{t("Name")}</TooltipContent>
+									<TooltipContent>
+										{t("Display Name")}
+									</TooltipContent>
 								</Tooltip>
 							</InputGroupAddon>
 						</InputGroup>
@@ -128,7 +133,7 @@ export const TileUi = () => {
 								className="pl-1! text-[20px]! placeholder:text-base"
 								value={currentTile.meta?.tags?.join(" ") || ""}
 								onChange={handleTagChange}
-								placeholder={t("Tag1 Tag2 ...")}
+								placeholder={t("tag1 tag2 tag3 ...")}
 							/>
 							<InputGroupAddon>
 							</InputGroupAddon>
@@ -139,7 +144,7 @@ export const TileUi = () => {
 											<Info/>
 										</InputGroupButton>
 									</TooltipTrigger>
-									<TooltipContent>{t("Tags (space separated)")}</TooltipContent>
+									<TooltipContent>{t("Tags (space-separated)")}</TooltipContent>
 								</Tooltip>
 							</InputGroupAddon>
 						</InputGroup>
@@ -176,7 +181,7 @@ export const TileUi = () => {
 						<Button type="submit" variant="default" onClick={handleSubmit}
 								autoFocus={true} // 默认焦点
 								className={"bg-[#0078d7] text-[17px] h-[46px] w-full"}>
-							{t("Confirm")}
+							{t("OK")}
 						</Button>
 						<div className="pd-[1px]"/>
 					</div>

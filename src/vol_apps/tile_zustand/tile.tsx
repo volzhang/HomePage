@@ -92,7 +92,7 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 	const {selectedTags} = useTagStore();
 	const displayTiles = showTiles ?? tilesByTag(selectedTags(), "ANY")!;
 
-	const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {delay: 100, tolerance: 0}}));
+	const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {delay: 150, tolerance: 20}}));
 
 	const handleDragEnd = (event: DragEndEvent) => {
 		const {active, over} = event;

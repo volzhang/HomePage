@@ -77,7 +77,9 @@ export const SearchComponent = () => {
 						</SelectTrigger>
 						<SelectContent>
 							<SelectGroup>
-								<SelectLabel>{t("Select Engine")}</SelectLabel>
+								<SelectLabel>
+									{t("Select Search Engine")}
+								</SelectLabel>
 								{engines.map(({id, name}) => (
 									<SelectItem key={id} value={name}>{name}</SelectItem>
 								))}

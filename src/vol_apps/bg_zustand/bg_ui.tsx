@@ -55,7 +55,7 @@ export function BgUi() {
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="true" id={id1}/>
 					<Label htmlFor={id1} className={`text-xl`}>
-						{t("Normal")}
+						{t("Default View")}
 					</Label>
 				</div>
 				<div className={`flex h-8 items-center gap-2`}>
@@ -81,7 +81,7 @@ export function BgUi() {
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="no-repeat" id={id4}/>
 					<Label htmlFor={id4} className={`text-xl`}>
-						{t("non-Repeat")}
+						{t("Single")}
 					</Label>
 				</div>
 			</RadioGroup>
@@ -151,7 +151,7 @@ export function BgUi() {
 				type="button"
 				variant="default"
 				className={`h-16 text-xl`}>
-				完成
+				{t("OK")}
 			</Button>
 		</div>
 	);

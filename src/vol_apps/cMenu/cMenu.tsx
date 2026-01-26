@@ -8,6 +8,7 @@ import {
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import {useBgStore} from "@/vol_apps/bg_zustand/bg_store";
+import {useTagStore} from "@/vol_apps/tag_zustand/tag_store";
 import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
@@ -17,9 +18,17 @@ import type {PropsWithChildren} from "react";
 import { useTranslation } from 'react-i18next';
 
 export function ContextMenuComponent({children}: PropsWithChildren) {
-	const {addTile} = useTileStore();
+	const {tiles, addTile_auto, setTileInEditId, setTileUiVisible} = useTileStore();
 	const {setBgUiVisible} = useBgStore();
+	const {selectedTags} = useTagStore()
 	const { t } = useTranslation("contextMenu");
+
+	const OnAddTile = () => {
+		const newTileId = tiles.length
+		addTile_auto(selectedTags())
+		setTileInEditId(newTileId)
+		setTileUiVisible(true)
+	}
 
 	return (
 		<ContextMenu>
@@ -29,7 +38,7 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 				</div>
 			</ContextMenuTrigger>
 			<ContextMenuContent className="w-48">
-				<ContextMenuItem inset onClick={addTile} className={`h-10`}>
+				<ContextMenuItem inset onClick={OnAddTile} className={`h-10`}>
 					{t("Add Tile")}
 					<Plus className="ml-auto"/>
 				</ContextMenuItem>
@@ -43,7 +52,7 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 							<Download className={`ml-auto`}/>
 						</ContextMenuItem>
 						<ContextMenuItem onClick={() => jsonFilePickerAPI().then(file => localforageRestore(file))} className={`h-10`}>
-							{t("Restore")}
+							{t("Import")}
 							<Upload className={`ml-auto`}/>
 						</ContextMenuItem>
 					</ContextMenuSubContent>

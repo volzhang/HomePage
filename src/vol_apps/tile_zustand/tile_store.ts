@@ -40,6 +40,11 @@ type TileStoreActions = {
 	//Ui相关
 	setTileUiVisible: (value: TileStoreState["tileUiVisible"]) => void;
 	setTileInEditId: (value: TileStoreState["tileInEditId"]) => void;
+
+	//进阶API
+	// 自动填充 tags，后续根据剪切板文本，如果是合法的url自动补全URL和name
+
+	addTile_auto: (tags: string[]) => void;
 }
 
 const defaultTile = {
@@ -104,7 +109,13 @@ export const useTileStore = create<TileStore>()(
 						return tags.some((tag) => tile.meta.tags.includes(tag));
 					}
 				});
-			}
+			},
+
+			addTile_auto: (tags) => set((state) => {
+				const id = state.tiles.length;
+				const newTiles = [...state.tiles, {...defaultTile, id, meta: {...defaultTile.meta, tags: tags}}];
+				return {tiles: newTiles};
+			}),
 		}),
 		{
 			name: "tile",

@@ -29,6 +29,7 @@ export const useTagStore = create<TagStore>()(
 	persist(
 		(set, get) => ({
 			tags: [],
+
 			allTags: () => get().tags.map((tag) => tag.name),
 			selectedTags: () => {
 				const tags = get().tags.filter((tag) => tag.checked) || [];
@@ -44,6 +45,7 @@ export const useTagStore = create<TagStore>()(
 				const tags = state.tags.map((tag) => tag.id === id ? {...tag, checked: !tag.checked} : tag);
 				return {tags};
 			})
+
 
 		}),
 		{
