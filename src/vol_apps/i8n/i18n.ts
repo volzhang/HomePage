@@ -8,7 +8,8 @@ const resources = {
 		tile: {},
 		navigation: {},
 		contextMenu: {},
-		bg: {}
+		bg: {},
+		version:{}
 	},
 	cn: {
 		// 直接在这里维护双语显示：k,en_US;v,cn。
@@ -55,6 +56,9 @@ const resources = {
 			"Contain": "扩展至边缘",
 			"Cover": "扩展至覆盖",
 			"OK": "确定"
+		},
+		version:{
+			"Version":"版本"
 		}
 	}
 };
