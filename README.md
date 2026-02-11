@@ -33,5 +33,8 @@
 
 注意，请关闭其他修改起始页功能的插件，避免冲突。
 
+## 欢迎反馈
+喜欢的话点个 ⭐，有建议/问题欢迎提 👉 [Issue](https://github.com/volzhang/HomePage/issues)～
+
 
 
