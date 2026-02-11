@@ -5,16 +5,19 @@
 [![Stars](https://img.shields.io/github/stars/volzhang/HomePage?style=social)](https://github.com/volzhang/HomePage)
 
 个人学习项目：纯前端实现的浏览器新标签页。
+不收集数据，隐私安全。
+美观，干净，无广告。
 
 ## 截图
 ![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
 
 ## 功能
-- **搜索引擎**：支持 Google、Bing 等多引擎快速切换
-- **自定义壁纸**：支持上传壁纸，修改起始页背景
-- **自定义瓷砖**：拖拽排序、可视化快捷链接，像桌面图标一样方便
-- **支持 中文/英语**：自动检测或手动切换，双语界面
+- 🚀 **极致简洁**：无广告、无追踪、纯前端
+- 🎨 **高度自定义**：壁纸、瓷砖、搜索引擎 可自定义
+- 💾 **跨设备无缝**：一键导出/导入 JSON 存档
+- 🌍 **中英双语** 自动检测或手动切换
 
+- 
 ## 技术栈
 - Vite + TypeScript
 - React
@@ -22,21 +25,12 @@
 - Zustand + Localforage
 - i18n
 
-## 如何本地运行
+## 立即体验
 
-方法1） 直接体验
-https://volzhang.com
+👉 **[https://volzhang.com](https://volzhang.com)** ← 免安装、秒开
 
-方法2） 下载edge插件
-https://microsoftedge.microsoft.com/addons/detail/%E4%B8%BB%E9%A1%B5/gblipikohcegedalbnljafomaadhdjdp
-
-方法3）
-```bash
-git clone https://github.com/volzhang/HomePage.git
-cd HomePage
-pnpm install
-pnpm dev
-```
+或在 Edge 应用商店安装：
+[Edge 扩展商店链接](https://microsoftedge.microsoft.com/addons/detail/%E4%B8%BB%E9%A1%B5/gblipikohcegedalbnljafomaadhdjdp)
 
 ## 作为 Edge/Chrome 扩展安装（开发者模式）
 1. 下载本仓库中 dist 文件夹
