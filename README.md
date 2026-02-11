@@ -4,10 +4,6 @@
 [![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Stars](https://img.shields.io/github/stars/volzhang/HomePage?style=social)](https://github.com/volzhang/HomePage)
 
-个人学习项目：纯前端实现的浏览器新标签页。
-不收集数据，隐私安全。
-美观，干净，无广告。
-
 ## 截图
 ![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
 
