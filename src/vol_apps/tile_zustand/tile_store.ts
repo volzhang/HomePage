@@ -16,15 +16,25 @@ export type Meta = {
 }
 
 export type Tile = {
-	id: number; //必须位移，且尽量等于index
+	id: number; //必须唯一，且尽量等于index
 	url: string;
 	meta: Meta;
 }
 
+export type Tag = {
+	id: number; //唯一
+	name: string;
+	checked: boolean;
+}
+
 type TileStoreState = {
+	//基本
 	tiles: Tile[],
 	tileUiVisible: boolean,
 	tileInEditId: Tile["id"],
+
+	//tag系统
+	tags: Tag[];
 }
 
 type TileStoreActions = {
@@ -43,8 +53,15 @@ type TileStoreActions = {
 
 	//进阶API
 	// 自动填充 tags，后续根据剪切板文本，如果是合法的url自动补全URL和name
-
 	addTile_auto: (tags: string[]) => void;
+
+	//tag系统
+	setTags: (tags: TileStoreState["tags"]) => void;
+	updateTag: (id: Tag["id"], updates: Partial<Tag>) => void;
+	toggleTag: (id: Tag["id"]) => void;
+
+	allTags: () => Tag["name"][];
+	selectedTags: () => Tag["name"][];
 }
 
 const defaultTile = {
@@ -52,23 +69,6 @@ const defaultTile = {
 };
 
 type TileStore = TileStoreState & TileStoreActions;
-
-// const localforageStorage = createJSONStorage<TileStore>(() => ({
-// 	getItem: async (name: string) => {
-// 		const value = await localforage.getItem<string>(name);
-// 		if (value === null) return null;
-// 		return await validTypeParse(value);
-// 	},
-//
-// 	setItem: async (name: string, value: ValidTypeExt) => {
-// 		const valueString = await validTypeStringify(value);
-// 		await localforage.setItem(name, valueString);
-// 	},
-//
-// 	removeItem: async (name: string) => {
-// 		await localforage.removeItem(name);
-// 	},
-// }));
 
 export const useTileStore = create<TileStore>()(
 	persist(
@@ -116,6 +116,25 @@ export const useTileStore = create<TileStore>()(
 				const newTiles = [...state.tiles, {...defaultTile, id, meta: {...defaultTile.meta, tags: tags}}];
 				return {tiles: newTiles};
 			}),
+
+			tags: [],
+
+			setTags: (tags) => set({tags}),
+			updateTag: (id, updates) => set((state) => {
+				const tags = state.tags.map((tag) => tag.id === id ? {...tag, ...updates} : tag);
+				return {tags};
+			}),
+			toggleTag: (id) => set((state) => {
+				const tags = state.tags.map((tag) => tag.id === id ? {...tag, checked: !tag.checked} : tag);
+				return {tags};
+			}),
+
+			allTags: () => get().tags.map((tag) => tag.name),
+			selectedTags: () => {
+				const tags = get().tags.filter((tag) => tag.checked) || [];
+				return tags.map((tag) => tag.name);
+			},
+
 		}),
 		{
 			name: "tile",

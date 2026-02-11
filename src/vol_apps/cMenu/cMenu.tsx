@@ -8,7 +8,6 @@ import {
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import {useBgStore} from "@/vol_apps/bg_zustand/bg_store";
-import {useTagStore} from "@/vol_apps/tag_zustand/tag_store";
 import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
@@ -20,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 export function ContextMenuComponent({children}: PropsWithChildren) {
 	const {tiles, addTile_auto, setTileInEditId, setTileUiVisible} = useTileStore();
 	const {setBgUiVisible} = useBgStore();
-	const {selectedTags} = useTagStore()
+	const {selectedTags} = useTileStore()
 	const { t } = useTranslation("contextMenu");
 
 	const OnAddTile = () => {

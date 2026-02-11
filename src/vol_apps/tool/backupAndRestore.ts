@@ -1,7 +1,6 @@
 import {useBgStore} from "@/vol_apps/bg_zustand/bg_store";
 import {useI18nStore} from "@/vol_apps/i8n/i18n_store";
 import {useSearchStore} from "@/vol_apps/search_zustand/search_store";
-import {useTagStore} from "@/vol_apps/tag_zustand/tag_store";
 import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
 import {download, timeStamp} from "@/vol_apps/tool/download";
 import type {JsonFile} from "@/vol_apps/tool/filePicker";
@@ -36,7 +35,6 @@ export const localforageRestore = async (file: JsonFile, clearFirst: boolean = f
 	await useTileStore.persist.rehydrate();
 	await useBgStore.persist.rehydrate();
 	await useSearchStore.persist.rehydrate();
-	await useTagStore.persist.rehydrate();
 	await useI18nStore.persist.rehydrate();
 	//后续写一个自定义的persist，方便遍历刷新，当前手动遍历
 	//或者写一个slice 工厂，共用一个store。

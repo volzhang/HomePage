@@ -1,5 +1,5 @@
 import {cn} from "@/lib/utils";
-import {useTagStore} from "@/vol_apps/tag_zustand/tag_store";
+
 import {type Tile, useTileStore} from "@/vol_apps/tile_zustand/tile_store";
 import {closestCenter, DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import {arrayMove, rectSortingStrategy, SortableContext, useSortable} from "@dnd-kit/sortable";
@@ -89,7 +89,7 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 	const {tiles, setTiles, tilesByTag} = useTileStore();
 
 	// 这里,与标签系统的对接，我直接硬编码了
-	const {selectedTags} = useTagStore();
+	const {selectedTags} = useTileStore();
 	const displayTiles = showTiles ?? tilesByTag(selectedTags(), "ANY")!;
 
 	const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {delay: 150, tolerance: 20}}));
