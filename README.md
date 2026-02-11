@@ -3,6 +3,7 @@
 [![Vite](https://img.shields.io/badge/built%20with-Vite-%23646CFF.svg)](https://vitejs.dev/)
 [![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Stars](https://img.shields.io/github/stars/volzhang/HomePage?style=social)](https://github.com/volzhang/HomePage)
+[![GitHub issues](https://img.shields.io/github/issues/volzhang/HomePage)](https://github.com/volzhang/HomePage/issues)
 
 ![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
 
