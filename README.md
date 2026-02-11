@@ -4,7 +4,6 @@
 [![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Stars](https://img.shields.io/github/stars/volzhang/HomePage?style=social)](https://github.com/volzhang/HomePage)
 
-## 截图
 ![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
 
 ## 功能
