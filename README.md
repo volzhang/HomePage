@@ -1,4 +1,9 @@
-# HomePage - Edge 主页插件
+<div align="right">
+  <a href="./README.en.md">English</a> | 简体中文
+</div>
+
+# 主页 | HomePage  
+简洁 · 美观 · 完全本地 · 现代浏览器起始页
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/volzhang/HomePage/blob/main/LICENSE)
 [![Vite](https://img.shields.io/badge/built%20with-Vite-%23646CFF.svg)](https://vitejs.dev/)
 [![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
