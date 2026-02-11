@@ -37,8 +37,7 @@ No data collection, privacy-first, no ads.
 
 Instant experience 👉 **[https://volzhang.com](https://volzhang.com)**  
 
-Or install directly in Edge:  
-👉 [Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/%E4%B8%BB%E9%A1%B5/gblipikohcegedalbnljafomaadhdjdp)
+Or install directly in Edge 👉 **[Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/%E4%B8%BB%E9%A1%B5/gblipikohcegedalbnljafomaadhdjdp)**
 
 ## Install as Unpacked Extension (Developer Mode)
 

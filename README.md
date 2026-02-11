@@ -31,7 +31,7 @@
 
 立即体验👉 **[https://volzhang.com](https://volzhang.com)**
 
-或在 Edge 浏览器中安装本插件：👉 [Edge扩展链接](https://microsoftedge.microsoft.com/addons/detail/%E4%B8%BB%E9%A1%B5/gblipikohcegedalbnljafomaadhdjdp)
+或在 Edge 浏览器中安装本插件 👉 **[Edge扩展链接](https://microsoftedge.microsoft.com/addons/detail/%E4%B8%BB%E9%A1%B5/gblipikohcegedalbnljafomaadhdjdp)**
 
 ## 作为 Edge/Chrome 扩展安装（开发者模式）
 1. 下载本仓库中 dist 文件夹
