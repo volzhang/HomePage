@@ -35,7 +35,7 @@ import{r as e}from"./rolldown-runtime-CeubTPu9.js";import{a as t,c as n,f as r,i
                 .animate-fade-in-scale {
                   animation: fade-in-scale 0.5s ease-out;
                 }
-            `}),(0,M.jsxs)(`div`,{className:`animate-fade-in-scale flex flex-wrap items-center px-8 pb-3 gap-3 w-[85%] mx-auto`,children:[e.map(e=>(0,M.jsx)(N,{variant:e.checked?`default`:`link`,onClick:()=>t(e.id),className:e.checked?`text-white bg-[#0078d7] hover:bg-[#0078d7]`:`text-white bg-transparent hover:bg-transparent `,children:e.name},e.id)),(0,M.jsx)(Tn,{})]})]})};function Dn(){let[e,t]=(0,T.useState)(!1);return(0,T.useEffect)(()=>{let e=setTimeout(()=>t(!0),100);return()=>clearTimeout(e)},[]),e?(0,M.jsx)(En,{}):(0,M.jsxs)(M.Fragment,{children:[(0,M.jsx)(`style`,{children:`
+            `}),(0,M.jsxs)(`div`,{className:`animate-fade-in-scale flex flex-wrap items-center px-8 pb-3 gap-3 w-[85%] mx-auto`,children:[e.map(e=>(0,M.jsx)(N,{variant:e.checked?`default`:`link`,onClick:()=>t(e.id),className:e.checked?`text-white bg-[#0078d7] hover:bg-[#0078d7]`:`text-white bg-transparent hover:bg-transparent `,children:e.name},e.id)),(0,M.jsx)(Tn,{})]})]})};function Dn(){let[e,t]=(0,T.useState)(!1);return(0,T.useEffect)(()=>{let e=setTimeout(()=>t(!0),120);return()=>clearTimeout(e)},[]),e?(0,M.jsx)(En,{}):(0,M.jsxs)(M.Fragment,{children:[(0,M.jsx)(`style`,{children:`
                 @keyframes fade-in-scale {
                   0% { opacity: 0; transform: scale(0.98); }
                   100% { opacity: 1; transform: scale(1); }

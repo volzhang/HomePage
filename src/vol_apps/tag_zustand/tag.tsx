@@ -104,7 +104,7 @@ export function DelayedTags() {
 	const [ready, setReady] = useState(false);
 
 	useEffect(() => {
-		const t = setTimeout(() => setReady(true), 100); // 80~150ms 通常够了
+		const t = setTimeout(() => setReady(true), 120); // 80~150ms 通常够了
 		return () => clearTimeout(t);
 	}, []);
 
