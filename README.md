@@ -7,7 +7,7 @@
 个人学习项目：纯前端实现的浏览器新标签页。
 
 ## 截图
-- 待添加
+![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
 
 ## 功能
 - **搜索引擎**：支持 Google、Bing 等多引擎快速切换
@@ -36,11 +36,12 @@ pnpm dev
 ```
 
 ## 作为 Edge/Chrome 扩展安装（开发者模式）
-1. 下载本仓库或 release 中的 dist 文件夹
+1. 下载本仓库中 dist 文件夹
 2. 打开 Edge → 扩展 → 打开“开发者模式”
 3. 点击“加载已解压的扩展程序” → 选择 dist 文件夹
-4. 设置为新标签页默认（edge://extensions/）
+4. 在"来自其他源"中找到本扩展（Home Page 或 主页），点击启用
 
+注意，请关闭其他修改起始页功能的插件，避免冲突。
 
 
 
