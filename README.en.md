@@ -10,12 +10,20 @@ Clean · Beautiful · Fully Local · Customizable Browser Start Page
 A personal project: a pure frontend new tab / start page for modern browsers (Edge/Chrome).  
 No data collection, privacy-first, no ads.
 
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/volzhang/HomePage/blob/main/LICENSE)
+[![Vite](https://img.shields.io/badge/built%20with-Vite-%23646CFF.svg)](https://vitejs.dev/)
+[![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Stars](https://img.shields.io/github/stars/volzhang/HomePage?style=social)](https://github.com/volzhang/HomePage)
+[![GitHub issues](https://img.shields.io/github/issues/volzhang/HomePage)](https://github.com/volzhang/HomePage/issues)
+
+![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
+
 ## ✨ Features
 
-- **Ultra Clean** — No ads, no tracking, 100% frontend  
-- **Highly Customizable** — Custom wallpapers, draggable tiles, multiple search engines  
-- **Seamless Cross-Device** — One-click export/import all settings & layout as JSON backup  
-- **Bilingual Support** — Auto-detect or manually switch between Chinese & English
+- 🚀 **Ultra Clean** — No ads, no tracking, 100% frontend  
+- 🎨 **Highly Customizable** — Custom wallpapers, tiles, search engines  
+- 💾 **Seamless Cross-Device** — One-click export/import JSON backup  
+- 🌍 **Bilingual Support** — Auto-detect or manually switch between Chinese & English  
 
 ## Tech Stack
 
@@ -23,13 +31,13 @@ No data collection, privacy-first, no ads.
 - React  
 - TailwindCSS + Shadcn  
 - Zustand + localForage  
-- i18n
+- i18n  
 
 ## Try It Now
 
-Instant experience 👉 **https://volzhang.com**
+Instant experience 👉 **[https://volzhang.com](https://volzhang.com)**  
 
-Or install the extension directly in Edge:  
+Or install directly in Edge:  
 👉 [Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/%E4%B8%BB%E9%A1%B5/gblipikohcegedalbnljafomaadhdjdp)
 
 ## Install as Unpacked Extension (Developer Mode)
@@ -43,12 +51,21 @@ For Edge / Chrome:
 
 **Note:** Disable any other new tab / start page replacement extensions to avoid conflicts.
 
-## License
+## 🗺️ Roadmap
 
-MIT License
+The project is still in its early stage. Here are the planned features (roughly prioritized):
 
----
+- 🌙 Dark/Light mode + themes + custom UI text colors  
+- 🔍 Search enhancements: Add custom engines manually + search local tiles + advanced search modes  
+- ⚙️ Tile icons: Auto-fetch favicons from mainstream websites or use pre-stored icons  
+- 💡 Useful local widgets, e.g., todo list, sticky notes  
+- 📱 Mobile / tablet adaptation (responsive layout)  
+
+## Welcome Feedback
+
+Feel free to suggest features you want most in [Issues](https://github.com/volzhang/HomePage/issues).  
+I'll adjust priorities based on your feedback～
 
 Made with ❤️ by volzhang  
-Feedback and stars are welcome! ⭐  
-Any suggestions or issues? Feel free to open an [Issue](https://github.com/volzhang/HomePage/issues).
+If you like it, a star ⭐ would be greatly appreciated!  
+Any suggestions or issues? Open an [Issue](https://github.com/volzhang/HomePage/issues) anytime.
