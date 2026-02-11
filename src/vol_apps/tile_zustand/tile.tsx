@@ -106,14 +106,24 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 
 	return (
 		<>
-		<div className="flex flex-wrap px-6 py-6 gap-7">
-			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-				<SortableContext items={tiles.map(tile => tile.id)} strategy={rectSortingStrategy}>
-					{displayTiles.map((tile) => (<SortableTile key={tile.id} tile={tile}/>))}
-				</SortableContext>
-			</DndContext>
-		</div>
-		<TileUi/>
+			<style>{`
+                @keyframes fade-in-scale {
+                  0% { opacity: 0; transform: scale(0.98); }
+                  100% { opacity: 1; transform: scale(1); }
+                }
+                .animate-fade-in-scale {
+                  animation: fade-in-scale 0.5s ease-out;
+                }
+            `}</style>
+
+			<div className="flex flex-wrap px-6 py-6 gap-7 animate-fade-in-scale">
+				<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+					<SortableContext items={tiles.map(tile => tile.id)} strategy={rectSortingStrategy}>
+						{displayTiles.map((tile) => (<SortableTile key={tile.id} tile={tile}/>))}
+					</SortableContext>
+				</DndContext>
+			</div>
+			<TileUi/>
 		</>
 	);
 };

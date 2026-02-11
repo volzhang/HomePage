@@ -21,7 +21,7 @@ export const TagUpdate = () => {
 			setTimeout(() => setIsSpinning(false), ani_time * 1000);
 		}
 		// 更新tags
-		updateTags()
+		updateTags();
 	};
 
 	const updateTags = () => {
@@ -37,14 +37,14 @@ export const TagUpdate = () => {
 
 		const newTags = allUniqueTags.map((name, id) => {
 			const checked = selectedTags().includes(name);
-			return{id, name, checked }
+			return {id, name, checked};
 		});
 		setTags(newTags);
-	}
-	
+	};
+
 	// tiles变化时可以自动更新，可以更精确，但是先这么用着。
 	useEffect(() => {
-		updateTags()
+		updateTags();
 	}, [tiles]);
 
 	return (
@@ -71,18 +71,60 @@ export const TagUpdate = () => {
 export const TagComponent = () => {
 	const {tags, toggleTag} = useTagStore();
 	return (
-		<div className={"flex flex-wrap items-center px-8 pb-3 gap-3 w-[85%] mx-auto"}>
-			{tags.map((tag) => (
-				<Button
-					key={tag.id} variant={tag.checked ? "default" : "link"} onClick={() => toggleTag(tag.id)}
-					className={tag.checked
-						? "text-white bg-[#0078d7] hover:bg-[#0078d7]"
-						: "text-white bg-transparent hover:bg-transparent "
-					}>
-					{tag.name}
-				</Button>
-			))}
-			<TagUpdate/>
-		</div>
+		<>
+			<style>{`
+                @keyframes fade-in-scale {
+                  0% { opacity: 0; transform: scale(0.98); }
+                  100% { opacity: 1; transform: scale(1); }
+                }
+                .animate-fade-in-scale {
+                  animation: fade-in-scale 0.5s ease-out;
+                }
+            `}</style>
+
+			<div className={"animate-fade-in-scale flex flex-wrap items-center px-8 pb-3 gap-3 w-[85%] mx-auto"}>
+				{tags.map((tag) => (
+					<Button
+						key={tag.id} variant={tag.checked ? "default" : "link"} onClick={() => toggleTag(tag.id)}
+						className={tag.checked
+							? "text-white bg-[#0078d7] hover:bg-[#0078d7]"
+							: "text-white bg-transparent hover:bg-transparent "
+						}>
+						{tag.name}
+					</Button>
+				))}
+				<TagUpdate/>
+			</div>
+		</>
+
 	);
 };
+
+export function DelayedTags() {
+	const [ready, setReady] = useState(false);
+
+	useEffect(() => {
+		const t = setTimeout(() => setReady(true), 100); // 80~150ms 通常够了
+		return () => clearTimeout(t);
+	}, []);
+
+	if (!ready) return (
+
+		<>
+			<style>{`
+                @keyframes fade-in-scale {
+                  0% { opacity: 0; transform: scale(0.98); }
+                  100% { opacity: 1; transform: scale(1); }
+                }
+                .animate-fade-in-scale {
+                  animation: fade-in-scale 0.5s ease-out;
+                }
+            `}</style>
+			<div className={"animate-fade-in-scale flex flex-wrap items-center px-8 pb-3 gap-3 w-[85%] mx-auto"}>
+				<TagUpdate/>
+			</div>
+		</>
+	);
+
+	return <TagComponent/>;
+}

@@ -4,7 +4,7 @@ import {I18nUi}               from "@/vol_apps/i8n/i18n_ui";
 import {SearchComponent}      from "@/vol_apps/search_zustand/search";
 import {Navigation}           from "@/vol_apps/navigate/navigate";
 import {SortableTiles}        from "@/vol_apps/tile_zustand/tile";
-import {TagComponent}         from "@/vol_apps/tag_zustand/tag";
+import {DelayedTags}          from "@/vol_apps/tag_zustand/tag";
 import {Version}              from "@/vol_apps/version/version";
 
 export const App = () => {
@@ -16,7 +16,7 @@ export const App = () => {
 			</div>
 			<Version/>
 			<SearchComponent/>
-			<TagComponent/>
+			<DelayedTags/>
 			<ContextMenuComponent children={
 				<SortableTiles/>
 			}/>
