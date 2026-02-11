@@ -4,8 +4,6 @@
 
 # 主页 | HomePage  
 
-简洁 · 美观 · 完全本地 · 现代浏览器起始页
-
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/volzhang/HomePage/blob/main/LICENSE)
 [![Vite](https://img.shields.io/badge/built%20with-Vite-%23646CFF.svg)](https://vitejs.dev/)
 [![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -13,6 +11,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/volzhang/HomePage)](https://github.com/volzhang/HomePage/issues)
 
 ![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
+
+简洁 · 美观 · 完全本地 · 现代浏览器起始页
 
 ## 功能
 - 🚀 **极致简洁**：无广告、无追踪、纯前端
