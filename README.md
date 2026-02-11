@@ -16,8 +16,11 @@
 - **支持 中文/英语**：自动检测或手动切换，双语界面
 
 ## 技术栈
-- Vite TypeScript React
-- Localforage Zustand i18n
+- Vite + TypeScript
+- React
+- TailwindCSS + Shadcn
+- Zustand + Localforage
+- i18n
 
 ## 如何本地运行
 
