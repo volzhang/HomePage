@@ -29,7 +29,7 @@
 
 ## 立即体验
 
-理解体验👉 **[https://volzhang.com](https://volzhang.com)**
+立即体验👉 **[https://volzhang.com](https://volzhang.com)**
 
 或在 Edge 浏览器中安装本插件：👉 [Edge扩展链接](https://microsoftedge.microsoft.com/addons/detail/%E4%B8%BB%E9%A1%B5/gblipikohcegedalbnljafomaadhdjdp)
 
@@ -41,8 +41,18 @@
 
 注意，请关闭其他修改起始页功能的插件，避免冲突。
 
+## 🗺️ 后续计划 
+
+目前项目还处于早期阶段，未来计划大致如下（按优先级排序）：
+
+- 🌙 深色/浅色模式 + 主题 + 自定义 UI 文字颜色
+- 🔍 搜索引擎增强：手动添加引擎 + 本地瓷砖搜索 + 高级模式
+- ⚙️ 瓷砖图标：自动抓取主流网站 favicon 或预存
+- 💡 实用的本地小工具，比如，待办，便利贴。
+- 📱 移动端 / 平板适配
+
 ## 欢迎反馈
-喜欢的话点个 ⭐，有建议/问题欢迎提 👉 [Issue](https://github.com/volzhang/HomePage/issues)～
+欢迎在👉 [Issues](https://github.com/volzhang/HomePage/issues) 提出你最想要的功能，我会根据反馈调整优先级～
 
 
 
