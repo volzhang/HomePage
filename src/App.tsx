@@ -1,6 +1,7 @@
 import {BgApp}                from "@/vol_apps/bg_zustand/bg";
 import {ContextMenuComponent} from "@/vol_apps/cMenu/cMenu";
 import {I18nUi}               from "@/vol_apps/i8n/i18n_ui";
+import {LinkGithub}           from "@/vol_apps/link_github/link_github";
 import {SearchComponent}      from "@/vol_apps/search_zustand/search";
 import {Navigation}           from "@/vol_apps/navigate/navigate";
 import {SortableTiles}        from "@/vol_apps/tile_zustand/tile";
@@ -13,6 +14,8 @@ export const App = () => {
 			<div className={"flex"}>
 				<Navigation/>
 				<I18nUi/>
+				{/*<LinkPrivacy/>*/}
+				<LinkGithub/>
 			</div>
 			<Version/>
 			<SearchComponent/>

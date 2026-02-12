@@ -12,6 +12,7 @@ import {
 	NavigationMenuLink,
 	NavigationMenuList,
 	NavigationMenuTrigger,
+
 } from "@/components/ui/navigation-menu";
 import {useTranslation} from "react-i18next";
 // import {backup_trans} from "@/vol_apps/tool_backup/backup_trans";
@@ -61,6 +62,11 @@ export const Navigation = () => {
 								<NavigationMenuLink asChild>
 									<a href="#" onClick={OnAddTile}>{t("Add Tile")}</a>
 								</NavigationMenuLink>
+
+								<NavigationMenuLink asChild>
+									<a href="/privacy">{t("Privacy Policy")}</a>
+								</NavigationMenuLink>
+
 								{/*<NavigationMenuLink asChild>*/}
 								{/*	<a href="#" onClick={backup_trans}>使用V2存档【dev only】</a>*/}
 								{/*</NavigationMenuLink>*/}

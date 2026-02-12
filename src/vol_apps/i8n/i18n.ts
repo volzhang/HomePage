@@ -36,6 +36,8 @@ const resources = {
 			"Download Backup": "下载存档",
 			"Import Backup": "恢复存档",
 			"Add Tile": "添加瓷砖",
+
+			"Privacy Policy":"隐私政策"
 		},
 		contextMenu: {
 			"Add Tile": "添加瓷砖",
@@ -59,6 +61,9 @@ const resources = {
 		},
 		version:{
 			"Version":"版本"
+		},
+		privacy:{
+			"Privacy Policy":"隐私政策"
 		}
 	}
 };
