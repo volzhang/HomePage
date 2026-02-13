@@ -1,11 +1,10 @@
 import {cn} from "@/lib/utils";
 
-import {type Tile, useTileStore} from "@/vol_apps/tile_zustand/tile_store";
+import {type Tile, useTileStore} from "@/vol_apps/tile/tile_store";
 import {closestCenter, DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import {arrayMove, rectSortingStrategy, SortableContext, useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import type {MouseEvent, KeyboardEvent, JSX} from "react";
-import {TileUi} from "@/vol_apps/tile_zustand/tile_ui";
 
 interface TileProps {
 	tile: Tile,
@@ -123,7 +122,6 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 					</SortableContext>
 				</DndContext>
 			</div>
-			<TileUi/>
 		</>
 	);
 };

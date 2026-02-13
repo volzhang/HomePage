@@ -1,6 +1,6 @@
 
 import {useBgStore} from "@/vol_apps/bg_zustand/bg_store";
-import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
+import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
 
@@ -64,7 +64,7 @@ export const Navigation = () => {
 								</NavigationMenuLink>
 
 								<NavigationMenuLink asChild>
-									<a href="/privacy">{t("Privacy Policy")}</a>
+									<a href="/privacy" target={"_blank"}>{t("Privacy Policy")}</a>
 								</NavigationMenuLink>
 
 								{/*<NavigationMenuLink asChild>*/}

@@ -8,7 +8,7 @@ import {
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import {useBgStore} from "@/vol_apps/bg_zustand/bg_store";
-import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
+import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
 

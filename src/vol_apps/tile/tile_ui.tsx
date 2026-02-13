@@ -4,12 +4,12 @@ import {Input} from "@/components/ui/input";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {cn} from "@/lib/utils";
-import {TileComponent} from "@/vol_apps/tile_zustand/tile";
-import {useTileStore} from "@/vol_apps/tile_zustand/tile_store";
+import {TileComponent} from "@/vol_apps/tile/tile";
+import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {enhanceUrl} from "@/vol_apps/tool/enhanceUrl";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
 import {blobToString, isBlobString} from "@/vol_apps/tool/isType";
-import {ImageUp, Info, Trash2} from "lucide-react";
+import {ImageUp, Info, Trash2, FileSearchCorner } from "lucide-react";
 import {type ChangeEvent, type KeyboardEvent} from "react";
 import {useTranslation} from "react-i18next";
 
@@ -61,6 +61,15 @@ export const TileUi = () => {
 		setTileUiVisible(false);
 	};
 
+	// get_icon
+	const handleIcon = async () => {
+		const domain = new URL(currentTile.url).hostname
+		const format = "png"
+		const size = 96
+		// console.log(domain)
+		window.open(`https://favicon.vemetric.com/${domain}?format=${format}&size=${size}`)
+	};
+
 	// patch:原组件不支持enter后自动提交并关闭。
 	const handleEnterKeyDown = (e: KeyboardEvent) => {
 		if (e.key === "Enter") {
@@ -78,7 +87,7 @@ export const TileUi = () => {
 						<DialogTitle>none.</DialogTitle>
 						<DialogDescription>none.</DialogDescription>
 					</DialogHeader>
-					<div className="flex flex-col items-start gap-6 pt-4 px-4">
+					<div className="flex flex-col items-start gap-6 pt-6 px-4">
 						{/* 这里是网址 */}
 						<InputGroup className={"h-12! placeholder:text-base"}>
 							<InputGroupInput
@@ -174,8 +183,18 @@ export const TileUi = () => {
 									"transition-all duration-200",
 									"hover:opacity-100",
 									"hover:text-red-500",
-									"hover:scale-120"
+									"hover:scale-125"
 								)}/>
+						{/*这里是自动获取icon按钮*/}
+						<FileSearchCorner  size={26}
+								   onClick={handleIcon}
+								   className={cn("absolute right-12 bottom-44 opacity-10",
+									   "transition-all duration-200",
+									   "hover:opacity-100",
+									   "hover:text-[#0078d7]",
+									   "hover:scale-120"
+								   )}/>
+
 
 						<div className="pt-4"/>
 						<Button type="submit" variant="default" onClick={handleSubmit}
@@ -184,6 +203,7 @@ export const TileUi = () => {
 							{t("OK")}
 						</Button>
 						<div className="pd-[1px]"/>
+
 					</div>
 				</DialogContent>
 			</form>

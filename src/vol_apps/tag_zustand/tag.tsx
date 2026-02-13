@@ -1,5 +1,5 @@
 import {Button} from "@/components/ui/button";
-import {type Tile, useTileStore} from "@/vol_apps/tile_zustand/tile_store";
+import {type Tile, useTileStore} from "@/vol_apps/tile/tile_store";
 import {RefreshCw} from "lucide-react";
 import {useEffect, useState} from "react";
 

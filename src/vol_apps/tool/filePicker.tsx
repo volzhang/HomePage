@@ -1,4 +1,5 @@
-import {type ChangeEvent, type ReactElement, useRef} from "react";
+import {cn} from "@/lib/utils";
+import React, {type ChangeEvent, type ReactElement, useRef, useState} from "react";
 
 export type JsonFile = File & { type: "application/json" };
 
@@ -43,10 +44,54 @@ export const ImgFilePickerBtn = ({onPick, children}: Props) => {
 		e.target.value = "";
 	};
 
+	//新增：支持拖拽上传图片
+	const [isDragging, setIsDragging] = useState(false);
+	// --- 新增：拖拽相关事件 ---
+	const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setIsDragging(true);
+	};
+	const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setIsDragging(false);
+	};
+	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+		e.dataTransfer.dropEffect = 'copy'; // 鼠标光标显示「复制」图标
+		setIsDragging(true);
+	};
+	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setIsDragging(false);
+
+		// 获取拖拽的文件列表
+		const files = Array.from(e.dataTransfer.files);
+		// 过滤出图片文件（可根据需要放宽条件）
+		const imageFile = files.find(file => file.type.startsWith('image/'));
+
+		if (imageFile) {
+			onPick?.(imageFile);
+		} else {
+			// 可选：提示用户只能拖入图片
+			console.warn('请拖入图片文件');
+		}
+	};
+
 	return (
 		<>
-			<div onClick={handleClick}>
-				{children || <button className={"border border-black p-1"}>选择图片文件</button>}
+			<div
+				onClick={handleClick}
+				onDragEnter={handleDragEnter}
+				onDragLeave={handleDragLeave}
+				onDragOver={handleDragOver}
+				onDrop={handleDrop}
+				className={cn({"ring ring-blue-500 ring-offset-3 rounded-sm":isDragging}, "")}
+			>
+				{children || <button className={"border border-black p-1 ring-secondary-foreground"}>选择图片文件</button>}
 				<input ref={inputRef} type="file" accept="image/*" onChange={handleChange} hidden/>
 			</div>
 		</>
