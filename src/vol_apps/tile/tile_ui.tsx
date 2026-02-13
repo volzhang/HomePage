@@ -41,7 +41,6 @@ export const TileUi = () => {
 		updateTile(tileInEditId, {meta: {...currentMeta, tags: e.currentTarget.value.split(splitString)}});
 	};
 	// icon
-	const iconBase64 = currentTile.meta.icon;
 	const handleIconBase64Change = (e: ChangeEvent<HTMLInputElement>) => {
 		const stringValue = e.currentTarget.value;
 		if (isBlobString(stringValue)) updateTile(tileInEditId,
@@ -66,7 +65,6 @@ export const TileUi = () => {
 		const domain = new URL(currentTile.url).hostname
 		const format = "png"
 		const size = 96
-		// console.log(domain)
 		window.open(`https://favicon.vemetric.com/${domain}?format=${format}&size=${size}`)
 	};
 
@@ -159,11 +157,12 @@ export const TileUi = () => {
 						</InputGroup>
 						{/* 这里处理Icon */}
 						<div className="grid grid-cols-[1fr_minmax(150px,auto)] gap-3 w-full">
-							<Input placeholder="base64"
-								   onChange={handleIconBase64Change}
-								   value={iconBase64}
-								// placeholder = {currentTile.meta.icon}
-								   className="text-gray-400 h-12! text-[16px]! pl-4"
+							<Input
+								// placeholder="base64"
+								onClick={(e) => e.currentTarget.select()}
+								onChange={handleIconBase64Change}
+								placeholder = {currentTile.meta.icon}
+								className="text-gray-400 h-12! text-[16px]! pl-4"
 							/>
 
 							<ImgFilePickerBtn onPick={(file) => (handleIconUpload(file))} children={
