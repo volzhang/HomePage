@@ -64,7 +64,7 @@ export const Navigation = () => {
 								</NavigationMenuLink>
 
 								<NavigationMenuLink asChild>
-									<a href="/privacy" target={"_blank"}>{t("Privacy Policy")}</a>
+									<a href="privacy.html" target={"_blank"}>{t("Privacy Policy")}</a>
 								</NavigationMenuLink>
 
 								{/*<NavigationMenuLink asChild>*/}
