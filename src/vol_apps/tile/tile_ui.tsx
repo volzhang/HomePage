@@ -7,7 +7,7 @@ import {cn} from "@/lib/utils";
 import {TileComponent} from "@/vol_apps/tile/tile";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {apiFaviconVemetric} from "@/vol_apps/tool/apiFaviconVemetric";
-import {enhanceUrl, extractMainDomain, looksLikeDomain} from "@/vol_apps/tool/enhanceUrl";
+import {enhanceUrl, extractMainDomain, looksLikeDomain, openInNewTab} from "@/vol_apps/tool/enhanceUrl";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
 import {blobToString, isBlobString} from "@/vol_apps/tool/isType";
 import {
@@ -233,8 +233,10 @@ export const TileUi = () => {
 										  onClick={async () => {
 											  await try_handle_icon(currentTile.url);
 											  const name = currentTile.meta.name;
-											  window.open(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
+											  // window.open(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
+											  openInNewTab(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`)
 										  }}
+
 										  className={cn("absolute right-12 bottom-44 opacity-10",
 											  "transition-all duration-200",
 											  "hover:opacity-100",

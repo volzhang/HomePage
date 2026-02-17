@@ -31,3 +31,14 @@ export function extractMainDomain(input: string): string {
 	}
 	return withoutWww; // 如果域名太短，直接返回
 }
+
+export function openInNewTab(url:string) {
+	const link = document.createElement('a');
+	link.href = url;
+	link.target = '_blank'; // 强制在新标签页打开
+	// 可选：添加 rel='noopener' 以提高安全性，防止新页面访问 window.opener
+	link.rel = 'noopener noreferrer';
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+}
