@@ -6,11 +6,17 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {cn} from "@/lib/utils";
 import {TileComponent} from "@/vol_apps/tile/tile";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {enhanceUrl} from "@/vol_apps/tool/enhanceUrl";
+import {apiFaviconVemetric} from "@/vol_apps/tool/apiFaviconVemetric";
+import {enhanceUrl, extractMainDomain, looksLikeDomain} from "@/vol_apps/tool/enhanceUrl";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
 import {blobToString, isBlobString} from "@/vol_apps/tool/isType";
-import {ImageUp, Info, Trash2, FileSearchCorner } from "lucide-react";
-import {type ChangeEvent, type KeyboardEvent} from "react";
+import {
+	ImageUp, Info, Trash2,
+	// RefreshCw
+	FileSearchCorner
+} from "lucide-react";
+
+import {type ChangeEvent, type KeyboardEvent, useRef} from "react";
 import {useTranslation} from "react-i18next";
 
 export const TileUi = () => {
@@ -27,10 +33,18 @@ export const TileUi = () => {
 	// global var
 	const currentTile = tiles.find(tile => tile.id === tileInEditId) || tiles[0];
 	const currentMeta = currentTile.meta;
+
 	// url
+
 	const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
-		updateTile(tileInEditId, {url: enhanceUrl(e.target.value)});
+		const url = e.target.value;
+		if (URL.canParse(url)) {
+			updateTile(tileInEditId, {...currentTile, url});
+		} else {
+			updateTile(tileInEditId, {...currentTile, url: enhanceUrl(url)});
+		}
 	};
+
 	// name
 	const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
 		updateTile(tileInEditId, {meta: {...currentMeta, name: e.currentTarget.value}});
@@ -40,6 +54,7 @@ export const TileUi = () => {
 		const splitString = " ";
 		updateTile(tileInEditId, {meta: {...currentMeta, tags: e.currentTarget.value.split(splitString)}});
 	};
+
 	// icon
 	const handleIconBase64Change = (e: ChangeEvent<HTMLInputElement>) => {
 		const stringValue = e.currentTarget.value;
@@ -50,29 +65,54 @@ export const TileUi = () => {
 		const blobString: string = await blobToString(file);
 		updateTile(tileInEditId, {meta: {...currentMeta, icon: blobString}});
 	};
+
 	// remove
 	const handleRemove = () => {
 		setTileUiVisible(false);
 		removeTile(tileInEditId);
 	};
+
 	// close
 	const handleSubmit = () => {
 		setTileUiVisible(false);
 	};
 
 	// get_icon
-	const handleIcon = async () => {
-		const domain = new URL(currentTile.url).hostname
-		const format = "png"
-		const size = 96
-		window.open(`https://favicon.vemetric.com/${domain}?format=${format}&size=${size}`)
+	const try_handle_name = (url: string) => {
+		if (URL.canParse(url)) {
+			const name = extractMainDomain(url);
+			const state = useTileStore.getState();
+			const latestTile = state.tiles.find(t => t.id === tileInEditId);
+			updateTile(tileInEditId, {meta: {...latestTile!.meta, name}});
+		}
 	};
 
+	const try_handle_icon = async (url: string) => {
+		if (URL.canParse(url) && looksLikeDomain(url)) {
+			const icon = await apiFaviconVemetric(url, 96);
+			if (icon) {
+				const state = useTileStore.getState();
+				const latestTile = state.tiles.find(t => t.id === tileInEditId);
+				updateTile(tileInEditId, {meta: {...latestTile!.meta, icon}});
+			}
+		}
+	};
+
+
+
 	// patch:原组件不支持enter后自动提交并关闭。
+	// 在焦点在input中，先聚焦btn。
+	// 当焦点在btn时，触发提交和关闭。
+	const ref = useRef<HTMLButtonElement | null>(null);
 	const handleEnterKeyDown = (e: KeyboardEvent) => {
 		if (e.key === "Enter") {
 			e.preventDefault();
-			handleSubmit();
+			if (document.activeElement === ref.current) {
+				handleSubmit();
+			} else {
+				ref.current!.focus();
+				console.log(ref.current)
+			}
 		}
 	};
 
@@ -91,6 +131,10 @@ export const TileUi = () => {
 							<InputGroupInput
 								className="pl-1! text-[20px]! placeholder:text-base"
 								onChange={handleUrlChange}
+								onBlur={async () => {
+									await try_handle_icon(currentTile.url);
+									try_handle_name(currentTile.url);
+								}}
 								value={currentTile.url}
 								placeholder={"https://..."}
 							/>
@@ -161,7 +205,7 @@ export const TileUi = () => {
 								// placeholder="base64"
 								onClick={(e) => e.currentTarget.select()}
 								onChange={handleIconBase64Change}
-								placeholder = {currentTile.meta.icon}
+								placeholder={currentTile.meta.icon}
 								className="text-gray-400 h-12! text-[16px]! pl-4"
 							/>
 
@@ -185,19 +229,24 @@ export const TileUi = () => {
 									"hover:scale-125"
 								)}/>
 						{/*这里是自动获取icon按钮*/}
-						<FileSearchCorner  size={26}
-								   onClick={handleIcon}
-								   className={cn("absolute right-12 bottom-44 opacity-10",
-									   "transition-all duration-200",
-									   "hover:opacity-100",
-									   "hover:text-[#0078d7]",
-									   "hover:scale-120"
-								   )}/>
+						<FileSearchCorner size={26}
+										  onClick={async () => {
+											  await try_handle_icon(currentTile.url);
+											  const name = currentTile.meta.name;
+											  window.open(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
+										  }}
+										  className={cn("absolute right-12 bottom-44 opacity-10",
+											  "transition-all duration-200",
+											  "hover:opacity-100",
+											  "hover:text-[#0078d7]",
+											  "hover:scale-120"
+										  )}/>
 
 
 						<div className="pt-4"/>
 						<Button type="submit" variant="default" onClick={handleSubmit}
 								autoFocus={true} // 默认焦点
+								ref={ref}
 								className={"bg-[#0078d7] text-[17px] h-[46px] w-full"}>
 							{t("OK")}
 						</Button>

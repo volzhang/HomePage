@@ -14,6 +14,11 @@ export function Domain(input: string): string {
 	return input.replace(/^https:\/\//, "");
 }
 
+export function looksLikeDomain(url:string) {
+	const hostname = new URL(url).hostname;
+	return !(!hostname.includes('.') || hostname.startsWith('.') || hostname.endsWith('.'));
+}
+
 export function extractMainDomain(input: string): string {
 	const url = new URL(enhanceUrl(input));
 	const hostname = url.hostname;
