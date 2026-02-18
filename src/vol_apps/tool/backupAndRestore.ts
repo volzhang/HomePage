@@ -1,6 +1,6 @@
-import {useBgStore} from "@/vol_apps/bg_zustand/bg_store";
+import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useI18nStore} from "@/vol_apps/i8n/i18n_store";
-import {useSearchStore} from "@/vol_apps/search_zustand/search_store";
+import {useSearchStore} from "@/vol_apps/search/search_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {download, timeStamp} from "@/vol_apps/tool/download";
 import type {JsonFile} from "@/vol_apps/tool/filePicker";

@@ -3,7 +3,7 @@ import {Label} from "@/components/ui/label";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 import {cn} from "@/lib/utils";
-import {sizeItems, useBgStore} from "@/vol_apps/bg_zustand/bg_store";
+import {sizeItems, useBgStore} from "@/vol_apps/bg/bg_store";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
 import {blobToString} from "@/vol_apps/tool/isType";
 import {Folder} from "lucide-react";

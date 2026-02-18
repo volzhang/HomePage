@@ -143,7 +143,6 @@ export const validTypeParse = async (str: string): Promise<ValidTypeExt> => {
 	return await restoreBlob(parsed);
 };
 
-
 export const fileToBase64 = (file: File): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
@@ -152,7 +151,3 @@ export const fileToBase64 = (file: File): Promise<string> => {
 		reader.readAsDataURL(file);
 	});
 };
-
-
-
-

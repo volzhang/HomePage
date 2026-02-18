@@ -1,6 +1,6 @@
 import {cn}         from "@/lib/utils";
-import {useBgStore} from "@/vol_apps/bg_zustand/bg_store"
-import {BgUi} from "@/vol_apps/bg_zustand/bg_ui";
+import {useBgStore} from "@/vol_apps/bg/bg_store"
+import {BgUi} from "@/vol_apps/bg/bg_ui";
 
 export function BgApp() {
 	const bgStyle = "fixed inset-0 opacity-100 bg-gray";

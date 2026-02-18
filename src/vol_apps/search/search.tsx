@@ -3,7 +3,7 @@ import {ButtonGroup} from "@/components/ui/button-group";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {cn} from "@/lib/utils";
-import {useSearchStore} from "@/vol_apps/search_zustand/search_store";
+import {useSearchStore} from "@/vol_apps/search/search_store";
 import {SearchIcon} from "lucide-react";
 import {useTranslation} from "react-i18next";
 
