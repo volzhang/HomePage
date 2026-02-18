@@ -1,4 +1,3 @@
-// import {WeatherTest} from "@/vol_apps/api_weather/WeatherTest";
 import {BgApp}                from "@/vol_apps/bg/bg";
 import {ContextMenuComponent} from "@/vol_apps/cMenu/cMenu";
 import {I18nUi}               from "@/vol_apps/i8n/i18n_ui";
@@ -16,7 +15,6 @@ export const App = () => {
 			<div className={"flex"}>
 				<Navigation/>
 				<I18nUi/>
-				{/*<LinkPrivacy/>*/}
 				<LinkGithub/>
 			</div>
 			<Version/>
@@ -26,7 +24,6 @@ export const App = () => {
 				<SortableTiles/>
 			}/>
 			<TileUi/>
-			{/*<WeatherTest/>*/}
 			<BgApp/>
 			{/*	推荐BG放到最下面（这样不用设置z-index）*/}
 		</>);
