@@ -102,7 +102,7 @@ export default function PrivacyPage() {
 						This privacy policy is subject to change, and any updates will be reflected on this page.
 					</p>
 					<a
-						href="/"
+						href="index.html"
 						className="text-primary hover:underline inline-flex items-center gap-1.5 font-medium"
 					>
 						← Back to Home Page
