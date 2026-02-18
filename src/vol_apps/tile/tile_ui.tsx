@@ -2,6 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
+import {Spinner} from "@/components/ui/spinner";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {cn} from "@/lib/utils";
 import {TileComponent} from "@/vol_apps/tile/tile";
@@ -10,17 +11,14 @@ import {apiFaviconVemetric} from "@/vol_apps/tool/apiFaviconVemetric";
 import {enhanceUrl, extractMainDomain, looksLikeDomain, openInNewTab} from "@/vol_apps/tool/enhanceUrl";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
 import {blobToString, isBlobString} from "@/vol_apps/tool/isType";
-import {
-	ImageUp, Info, Trash2,
-	// RefreshCw
-	FileSearchCorner
-} from "lucide-react";
+import {HoverCard, HoverCardContent, HoverCardTrigger,} from "@/components/ui/hover-card";
+import {ImageUp, Info, Trash2, FileSearchCorner} from "lucide-react";
 
-import {type ChangeEvent, type KeyboardEvent, useRef} from "react";
+import {type ChangeEvent, type KeyboardEvent, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 
 export const TileUi = () => {
-	//i18n
+	// i18n
 	const {t} = useTranslation("tile");
 
 	const {
@@ -81,24 +79,30 @@ export const TileUi = () => {
 	const try_handle_name = (url: string) => {
 		if (URL.canParse(url)) {
 			const name = extractMainDomain(url);
-			const state = useTileStore.getState();
-			const latestTile = state.tiles.find(t => t.id === tileInEditId);
+			const latestTile = useTileStore.getState().tiles.find(t => t.id === tileInEditId);
 			updateTile(tileInEditId, {meta: {...latestTile!.meta, name}});
 		}
 	};
 
 	const try_handle_icon = async (url: string) => {
-		if (URL.canParse(url) && looksLikeDomain(url)) {
-			const icon = await apiFaviconVemetric(url, 96);
-			if (icon) {
-				const state = useTileStore.getState();
-				const latestTile = state.tiles.find(t => t.id === tileInEditId);
-				updateTile(tileInEditId, {meta: {...latestTile!.meta, icon}});
+
+		if (urlChanged){
+			if (!URL.canParse(url) || !looksLikeDomain(url)) return;
+			setIsFetchingIcon(true);
+			try {
+				const icon = await apiFaviconVemetric(url, 96);
+				if (icon) {
+					const latestTile = useTileStore.getState().tiles.find(t => t.id === tileInEditId);
+					updateTile(tileInEditId, {meta: {...latestTile!.meta, icon}});
+				}
+			} finally {
+				setUrlChanged(false);
+				setIsFetchingIcon(false);
 			}
 		}
+
+
 	};
-
-
 
 	// patch:原组件不支持enter后自动提交并关闭。
 	// 在焦点在input中，先聚焦btn。
@@ -111,10 +115,13 @@ export const TileUi = () => {
 				handleSubmit();
 			} else {
 				ref.current!.focus();
-				console.log(ref.current)
 			}
 		}
 	};
+
+	// 用于 fetch icon 时的状态
+	const [isFetchingIcon, setIsFetchingIcon] = useState<boolean>(false);
+	const [urlChanged, setUrlChanged] = useState<boolean>(false);
 
 	return (
 		<Dialog defaultOpen={false} open={tileUiVisible}
@@ -130,10 +137,13 @@ export const TileUi = () => {
 						<InputGroup className={"h-12! placeholder:text-base"}>
 							<InputGroupInput
 								className="pl-1! text-[20px]! placeholder:text-base"
-								onChange={handleUrlChange}
+								onChange={(e) => {
+									handleUrlChange(e);
+									try_handle_name(e.target.value);
+									setUrlChanged(true);
+								}}
 								onBlur={async () => {
 									await try_handle_icon(currentTile.url);
-									try_handle_name(currentTile.url);
 								}}
 								value={currentTile.url}
 								placeholder={"https://..."}
@@ -218,32 +228,51 @@ export const TileUi = () => {
 						</div>
 						<div className="pt-2"/>
 						{/*这里是预览*/}
-						<TileComponent tile={currentTile} isPreview={true}/>
+						<TileComponent tile={currentTile} isPreview={true}
+									   customIcon={isFetchingIcon ? <Spinner className={"size-24 text-[#0078d7]"}/> : null}
+									   customName={isFetchingIcon ? t("Fetching Icon") : ""}
+						/>
 						{/*这里是删除按钮*/}
-						<Trash2 size={26}
-								onClick={handleRemove}
-								className={cn("absolute left-12 bottom-44 opacity-10",
-									"transition-all duration-200",
-									"hover:opacity-100",
-									"hover:text-red-500",
-									"hover:scale-125"
-								)}/>
+						<HoverCard openDelay={0} closeDelay={0}>
+							<HoverCardTrigger asChild>
+								<Trash2 size={26}
+										onClick={handleRemove}
+										className={cn("absolute left-12 bottom-44 opacity-10",
+											"transition-all duration-200",
+											"hover:opacity-100",
+											"hover:text-red-500",
+											"hover:scale-125"
+										)}/>
+							</HoverCardTrigger>
+							<HoverCardContent className="w-auto" side="top" sideOffset={16}>
+								<div className={"text-gray-400 text-[13px]"}>
+									{t("Delete Tile")}
+								</div>
+							</HoverCardContent>
+						</HoverCard>
 						{/*这里是自动获取icon按钮*/}
-						<FileSearchCorner size={26}
-										  onClick={async () => {
-											  await try_handle_icon(currentTile.url);
-											  const name = currentTile.meta.name;
-											  // window.open(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
-											  openInNewTab(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`)
-										  }}
+						<HoverCard openDelay={0} closeDelay={0}>
+							<HoverCardTrigger asChild>
+								<FileSearchCorner size={26}
+												  onClick={async () => {
+													  const name = currentTile.meta.name;
+													  // window.open(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
+													  openInNewTab(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
+												  }}
 
-										  className={cn("absolute right-12 bottom-44 opacity-10",
-											  "transition-all duration-200",
-											  "hover:opacity-100",
-											  "hover:text-[#0078d7]",
-											  "hover:scale-120"
-										  )}/>
-
+												  className={cn("absolute right-12 bottom-44 opacity-10",
+													  "transition-all duration-200",
+													  "hover:opacity-100",
+													  "hover:text-[#0078d7]",
+													  "hover:scale-120"
+												  )}/>
+							</HoverCardTrigger>
+							<HoverCardContent className="w-auto" side="top" sideOffset={16}>
+								<div className={"text-gray-400 text-[13px]"}>
+									{t("Search Icon")}
+								</div>
+							</HoverCardContent>
+						</HoverCard>
 
 						<div className="pt-4"/>
 						<Button type="submit" variant="default" onClick={handleSubmit}
@@ -253,6 +282,7 @@ export const TileUi = () => {
 							{t("OK")}
 						</Button>
 						<div className="pd-[1px]"/>
+
 
 					</div>
 				</DialogContent>

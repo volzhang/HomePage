@@ -11,13 +11,17 @@ interface TileProps {
 	isPreview?: boolean,
 	isDragging?: boolean,
 	onRightClick?: (e: MouseEvent) => void,
+	customIcon?: JSX.Element | null,
+	customName?: string,
 }
 
 export const TileComponent = ({
 								  tile,
 								  isPreview = false,
 								  isDragging = false,
-								  onRightClick = () => null
+								  onRightClick = () => null,
+								  customIcon = null,
+								  customName = "",
 							  }: TileProps) => {
 
 	const handleRightClick = (e: MouseEvent) => onRightClick(e);
@@ -35,9 +39,18 @@ export const TileComponent = ({
 				"transition-[shadow, transform] duration-250 delay-0 ease-linear",
 				{"hover:shadow-[#0078d7]/50 hover:shadow-xl": !isDragging},
 			)}>
-			<img draggable={false} className={`mx-auto w-24 h-24 object-contain`} src={imgSrc} alt={tile.meta.alt}/>
-			<div className={`w-fit h-fit text-[14px] text-gray-700 font-[550]`}>
-				{tile.meta.name}
+			{customIcon
+				? <div className={"mx-auto w-24 h-24"}>
+					{customIcon}
+				</div>
+				: <img draggable={false} className={"mx-auto w-24 h-24 object-contain"} src={imgSrc} alt={tile.meta.alt}/>
+			}
+
+			<div className={"w-fit h-fit text-[14px] text-gray-700 font-[550]"}>
+				{customName
+					? customName
+					: tile.meta.name
+				}
 			</div>
 		</div>
 	);

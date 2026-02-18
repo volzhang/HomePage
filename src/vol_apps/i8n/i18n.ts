@@ -21,13 +21,18 @@ const resources = {
 			"Select Search Engine": "选择搜索引擎",
 		},
 		tile: {
-			"Upload Icon": "上传图标",
+			"Upload Icon": "自定义图标",
 			"OK": "确定",
 
 			"Link": "跳转地址",
 			"Display Name": "显示名",
 			"Tags (space-separated)": "添加标签，用空格分隔",
-			"tag1 tag2 tag3 ...": "标签1 标签2 标签3 ..."
+			"tag1 tag2 tag3 ...": "标签1 标签2 标签3 ...",
+
+			"Delete Tile": "删除瓷砖",
+			"Search Icon": "搜索图标",
+			"Fetching Icon": "正在获取图标"
+
 		},
 		navigation: {
 			"Menu": "菜单",
