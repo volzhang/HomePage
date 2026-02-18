@@ -1,6 +1,4 @@
-import localforage from "localforage";
-import {create} from "zustand";
-import {createJSONStorage, persist} from "zustand/middleware";
+import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
 
 type Engine = {
 	id: number;
@@ -25,31 +23,30 @@ type SearchStore = SearchStoreState & SearchStoreActions;
 const SEARCH_ENGINES: Engine[] = [
 	{id: 0, name: "Bing", url: "https://www.bing.com/search", param: "q"},
 	{id: 1, name: "Google", url: "https://www.google.com/search", param: "q"},
-	{id: 2, name: "Baidu", url: "https://www.baidu.com/s", param: "wd"},
-	{id: 3, name: "DuckDuckGo", url: "https://duckduckgo.com/", param: "q"},
-	{id: 4, name: "Yandex", url: "https://yandex.com/search", param: "text"},
+	{id: 2, name: "DuckDuckGo", url: "https://duckduckgo.com/", param: "q"},
+	{id: 3, name: "Yandex", url: "https://yandex.com/search", param: "text"},
+	{id: 4, name: "Baidu", url: "https://www.baidu.com/s", param: "wd"},
 ] as const;
 
-export const useSearchStore = create<SearchStore>()(
-	persist(
-		(set, get) => ({
-			engines: SEARCH_ENGINES,
-			engineInUseId: 0,
+export const useSearchStore = createPersistedStore<SearchStore>(
+	"search",
+	(set, get) => ({
+		engines: SEARCH_ENGINES,
+		engineInUseId: 0,
 
-			setEngineInUseByID: (engineInUseId) => set({engineInUseId}),
-			setEngineInUseByName: (engineInUseName) => {
-				const engine = get().engines.find((engine) => engine.name === engineInUseName);
-				if (engine) set({engineInUseId: engine.id});
-			},
-			getEngineInUse: () => {
-				const inUseId = get().engineInUseId;
-				return get().engines.find(e => e.id === inUseId) || SEARCH_ENGINES[0];
-			},
-		}),
+		setEngineInUseByID: (engineInUseId: Engine["id"]) =>
+			set({ engineInUseId }),
 
-		{
-			name: "search",
-			storage: createJSONStorage(() => localforage),
-		}
-	)
+		setEngineInUseByName: (engineInUseName: Engine["name"]) => {
+			const engine = get().engines.find((e) => e.name === engineInUseName);
+			if (engine) {
+				set({ engineInUseId: engine.id });
+			}
+		},
+
+		getEngineInUse: () => {
+			const inUseId = get().engineInUseId;
+			return get().engines.find((e) => e.id === inUseId) || SEARCH_ENGINES[0];
+		},
+	})
 );

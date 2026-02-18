@@ -1,7 +1,4 @@
-import {useBgStore} from "@/vol_apps/bg/bg_store";
-import {useI18nStore} from "@/vol_apps/i8n/i18n_store";
-import {useSearchStore} from "@/vol_apps/search/search_store";
-import {useTileStore} from "@/vol_apps/tile/tile_store";
+import {persistedStoresRehydrate} from "@/vol_apps/tool/createPersistedStore";
 import {download, timeStamp} from "@/vol_apps/tool/download";
 import type {JsonFile} from "@/vol_apps/tool/filePicker";
 import {isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeParse, validTypeStringify} from "@/vol_apps/tool/isType";
@@ -32,14 +29,12 @@ export const localforageRestore = async (file: JsonFile, clearFirst: boolean = f
 		await Promise.all(Array.from(Object.entries(obj), ([k, v]) => localforage.setItem(k, v)));
 	}
 
-	await useTileStore.persist.rehydrate();
-	await useBgStore.persist.rehydrate();
-	await useSearchStore.persist.rehydrate();
-	await useI18nStore.persist.rehydrate();
-	//后续写一个自定义的persist，方便遍历刷新，当前手动遍历
-	//或者写一个slice 工厂，共用一个store。
-	//这里必须手动刷新，不然不会自动刷新，即使atom和localforage已经成功换值
+	await persistedStoresRehydrate();
 };
+
+//zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。
+//当然，最重要的是，值必须天然支持文本化，所以只能是基本类型。
+//除此之外，没有其他吐槽点。
 
 export const localforageBackup = async (): Promise<void> => {
 	const result: Record<string, any> = {};

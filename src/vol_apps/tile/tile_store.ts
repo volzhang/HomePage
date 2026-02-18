@@ -1,8 +1,6 @@
 import defaultIcon from "@/assets/icon.png";
+import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
 import {blobToString} from "@/vol_apps/tool/isType";
-import localforage from "localforage";
-import {create} from "zustand";
-import {createJSONStorage, persist} from "zustand/middleware";
 
 const response = await fetch(defaultIcon);
 const blob = await response.blob();
@@ -109,79 +107,75 @@ const TutorialsTiles: Tile[] = [
 
 type TileStore = TileStoreState & TileStoreActions;
 
-export const useTileStore = create<TileStore>()(
-	persist(
-		(set, get) => ({
-			tiles: TutorialsTiles,
-			tileUiVisible: false,
-			tileInEditId: 0,
-			updateTile: (id, updates) => set((state) => {
-				const newTiles = state.tiles.map((tile) => (tile.id === id ? {...tile, ...updates} : tile));
-				return {tiles: newTiles};
-			}),
-			addTile: () => set((state) => {
-				const id = state.tiles.length;
-				const newTiles = [...state.tiles, {...defaultTile, id}];
-				return {tiles: newTiles};
-			}),
-			//考虑到东西不多，所以小函数也尽量无依赖
-			removeTile: (id) => set((state) => {
-				let newTiles = state.tiles.filter((tile) => tile.id !== id);
-				if (newTiles.length === 0) {
-					newTiles = [defaultTile];
-				} else {
-					newTiles = newTiles.map((tile, index) => ({...tile, id: index}));
-				}
-				return {tiles: newTiles};
-			}),
-			setTiles: (newTiles) => set({tiles: newTiles}),
-			setTileUiVisible: (tileUiVisible) => set({tileUiVisible}),
-			setTileInEditId: (tileInEditId) => set({tileInEditId}),
-
-			tilesByTag: (tags, mode = "ANY") => {
-				const tiles = get().tiles;
-				if (!tags || tags.length === 0) return tiles;
-				return tiles.filter((tile) => {
-					if (mode === "AND") {
-						return tags.every((tag) => tile.meta.tags.includes(tag));
-					} else {
-						return tags.some((tag) => tile.meta.tags.includes(tag));
-					}
-				});
-			},
-
-			addTile_auto: (tags) => set((state) => {
-				const id = state.tiles.length;
-				const newTiles = [...state.tiles, {...defaultTile, id, meta: {...defaultTile.meta, tags: tags}}];
-				return {tiles: newTiles};
-			}),
-
-			tags: [],
-
-			setTags: (tags) => set({tags}),
-			updateTag: (id, updates) => set((state) => {
-				const tags = state.tags.map((tag) => tag.id === id ? {...tag, ...updates} : tag);
-				return {tags};
-			}),
-			toggleTag: (id) => set((state) => {
-				const tags = state.tags.map((tag) => tag.id === id ? {...tag, checked: !tag.checked} : tag);
-				return {tags};
-			}),
-
-			allTags: () => get().tags.map((tag) => tag.name),
-			selectedTags: () => {
-				const tags = get().tags.filter((tag) => tag.checked) || [];
-				return tags.map((tag) => tag.name);
-			},
-
+export const useTileStore = createPersistedStore<TileStore>(
+	"tile",
+	(set, get) => ({
+		tiles: TutorialsTiles,
+		tileUiVisible: false,
+		tileInEditId: 0,
+		updateTile: (id, updates) => set((state) => {
+			const newTiles = state.tiles.map((tile) => (tile.id === id ? {...tile, ...updates} : tile));
+			return {tiles: newTiles};
 		}),
-		{
-			name: "tile",
-			storage: createJSONStorage(() => localforage)
+		addTile: () => set((state) => {
+			const id = state.tiles.length;
+			const newTiles = [...state.tiles, {...defaultTile, id}];
+			return {tiles: newTiles};
+		}),
+		//考虑到东西不多，所以小函数也尽量无依赖
+		removeTile: (id) => set((state) => {
+			let newTiles = state.tiles.filter((tile) => tile.id !== id);
+			if (newTiles.length === 0) {
+				newTiles = [defaultTile];
+			} else {
+				newTiles = newTiles.map((tile, index) => ({...tile, id: index}));
+			}
+			return {tiles: newTiles};
+		}),
+		setTiles: (newTiles) => set({tiles: newTiles}),
+		setTileUiVisible: (tileUiVisible) => set({tileUiVisible}),
+		setTileInEditId: (tileInEditId) => set({tileInEditId}),
 
-			//zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。
-			//当然，最重要的是，值必须天然支持文本化，所以只能是基本类型。
-			//除此之外，没有其他吐槽点。
-		}
-	)
+		tilesByTag: (tags, mode = "ANY") => {
+			const tiles = get().tiles;
+			if (!tags || tags.length === 0) return tiles;
+			return tiles.filter((tile) => {
+				if (mode === "AND") {
+					return tags.every((tag) => tile.meta.tags.includes(tag));
+				} else {
+					return tags.some((tag) => tile.meta.tags.includes(tag));
+				}
+			});
+		},
+
+		addTile_auto: (tags) => set((state) => {
+			const id = state.tiles.length;
+			const newTiles = [...state.tiles, {...defaultTile, id, meta: {...defaultTile.meta, tags: tags}}];
+			return {tiles: newTiles};
+		}),
+
+		tags: [],
+
+		setTags: (tags) => set({tags}),
+		updateTag: (id, updates) => set((state) => {
+			const tags = state.tags.map((tag) => tag.id === id ? {...tag, ...updates} : tag);
+			return {tags};
+		}),
+		toggleTag: (id) => set((state) => {
+			const tags = state.tags.map((tag) => tag.id === id ? {...tag, checked: !tag.checked} : tag);
+			return {tags};
+		}),
+
+		allTags: () => get().tags.map((tag) => tag.name),
+		selectedTags: () => {
+			const tags = get().tags.filter((tag) => tag.checked) || [];
+			return tags.map((tag) => tag.name);
+		},
+
+	}),
 );
+
+//zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。
+//当然，最重要的是，值必须天然支持文本化，所以只能是基本类型。
+//除此之外，没有其他吐槽点。
+

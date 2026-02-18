@@ -1,8 +1,5 @@
-import localforage from "localforage";
-// import {useTranslation} from "react-i18next";
-import {create} from "zustand";
+import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
 import defaultImg from "@/assets/wild_oliva.png";
-import {persist, createJSONStorage} from "zustand/middleware";
 import {type BlobString, blobToString} from "@/vol_apps/tool/isType";
 
 const response = await fetch(defaultImg);
@@ -53,37 +50,26 @@ type BgStoreActions = {
 
 type BgStore = BgStoreState & BgStoreActions;
 
-export const useBgStore = create<BgStore>()(
-	persist(
-		(set) => ({
-			bgImg: img,
-			bgSize: "auto",
-			bgRepeat: true,
-			bgCenter: false,
-			otherVisible: true,
-			bgUiVisible: false,
+export const useBgStore = createPersistedStore<BgStore>(
+	"bg",
+	(set) => ({
+		bgImg: img,
+		bgSize: "auto",
+		bgRepeat: true,
+		bgCenter: false,
+		otherVisible: true,
+		bgUiVisible: false,
 
-			setBgImg: (bgImg) => set({bgImg}),
-			setBgSize: (bgSize) => {
-				set({bgSize});
-				//调试用
-			},
-			setBgRepeat: (bgRepeat) => set({bgRepeat}),
-			setBgCenter: (bgCenter) => set({bgCenter}),
+		setBgImg: (bgImg) => set({bgImg}),
+		setBgSize: (bgSize) => {
+			set({bgSize});
+			//调试用
+		},
+		setBgRepeat: (bgRepeat) => set({bgRepeat}),
+		setBgCenter: (bgCenter) => set({bgCenter}),
 
-			setOtherVisible: (otherVisible) => set({otherVisible}),
-			setBgUiVisible: (bgUiVisible) => set({bgUiVisible}),
-		}),
-		{
-			name: "bg",
-			storage: createJSONStorage(() => localforage),
-			// partialize: (state) => ({
-			// 	bgImg: state.bgImg,
-			// 	bgSize: state.bgSize,
-			// 	bgRepeat: state.bgRepeat,
-			// 	bgCenter: state.bgCenter,
-			// }),
-		}
-	)
-);
+		setOtherVisible: (otherVisible) => set({otherVisible}),
+		setBgUiVisible: (bgUiVisible) => set({bgUiVisible}),
+	}),
+)
 
