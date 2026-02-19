@@ -91,8 +91,8 @@ const TutorialsTiles: Tile[] = [
 	{
 		id: 2, url: "",
 		meta: {
-			name: "Right-Click Beside",
-			alt: "Tutorial: Click beside the tile to open the context menu",
+			name: "Right-Click Nearby",
+			alt: "Tutorial: Right-click beside the tile to open the context menu",
 			icon: defaultIconBase64,
 			tags: ["tutorial", "step3"],
 		},
@@ -100,7 +100,7 @@ const TutorialsTiles: Tile[] = [
 	{
 		id: 3, url: "https://github.com/volzhang/HomePage",
 		meta: {
-			name: "Click Me to Open",
+			name: "Click Me to Link",
 			alt: "Tutorial: Click the tile to open link in a new tab",
 			icon: defaultIconBase64,
 			tags: ["tutorial", "step4"],
