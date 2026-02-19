@@ -98,11 +98,11 @@ const SortableTile = ({tile}: { tile: Tile }) => {
 };
 
 export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
-	const {tiles, setTiles, tilesByTag} = useTileStore();
+	const {tiles, setTiles, tilesByTag, isBroadMatches} = useTileStore();
 
 	// 这里,与标签系统的对接，我直接硬编码了
 	const {selectedTags} = useTileStore();
-	const displayTiles = showTiles ?? tilesByTag(selectedTags(), "ANY")!;
+	const displayTiles = showTiles ?? tilesByTag(selectedTags(), isBroadMatches?"ANY":"ALL")!;
 
 	const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {delay: 150, tolerance: 20}}));
 

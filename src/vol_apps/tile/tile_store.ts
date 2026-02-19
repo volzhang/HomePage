@@ -33,6 +33,7 @@ type TileStoreState = {
 
 	//tag系统
 	tags: Tag[];
+	isBroadMatches: boolean
 }
 
 type TileStoreActions = {
@@ -43,7 +44,7 @@ type TileStoreActions = {
 	setTiles: (newTiles: TileStoreState["tiles"]) => void;
 
 	//选择视图
-	tilesByTag: (tags: Meta["tags"], mode: "AND" | "ANY") => TileStoreState["tiles"] | undefined;
+	tilesByTag: (tags: Meta["tags"], mode: "ALL" | "ANY") => TileStoreState["tiles"] | undefined;
 
 	//Ui相关
 	setTileUiVisible: (value: TileStoreState["tileUiVisible"]) => void;
@@ -60,6 +61,8 @@ type TileStoreActions = {
 
 	allTags: () => Tag["name"][];
 	selectedTags: () => Tag["name"][];
+
+	setIsBroadMatches: (isBroadMatches: boolean) => void;
 }
 
 const defaultTile = {
@@ -140,13 +143,14 @@ export const useTileStore = createPersistedStore<TileStore>(
 			const tiles = get().tiles;
 			if (!tags || tags.length === 0) return tiles;
 			return tiles.filter((tile) => {
-				if (mode === "AND") {
+				if (mode === "ALL") {
 					return tags.every((tag) => tile.meta.tags.includes(tag));
 				} else {
 					return tags.some((tag) => tile.meta.tags.includes(tag));
 				}
 			});
 		},
+
 
 		addTile_auto: (tags) => set((state) => {
 			const id = state.tiles.length;
@@ -171,6 +175,9 @@ export const useTileStore = createPersistedStore<TileStore>(
 			const tags = get().tags.filter((tag) => tag.checked) || [];
 			return tags.map((tag) => tag.name);
 		},
+
+		isBroadMatches: true,
+		setIsBroadMatches: (t)=>set({isBroadMatches: t}),
 
 	}),
 );

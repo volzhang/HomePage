@@ -34,6 +34,15 @@ const resources = {
 			"Fetching Icon": "正在获取图标"
 
 		},
+		tag:{
+			"Click to toggle mode \nCurrently: tiles match {{mode}} selected tags":
+				"点击切换模式\n当前：瓷砖匹配{{mode}}选中标签",
+
+			"ANY": "任一",
+			"ALL": "全部",
+
+			"Refresh Tags": "刷新标签",
+		},
 		navigation: {
 			"Menu": "菜单",
 
