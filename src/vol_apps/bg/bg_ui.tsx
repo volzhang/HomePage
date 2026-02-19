@@ -138,7 +138,10 @@ export function BgUi() {
 				</RadioGroup>
 			</div>
 			<Button
-				onClick={() => setBgUiVisible(false)}
+				onClick={() => {
+					setBgUiVisible(false);
+					setOtherVisible(true);
+				}}
 				type="button"
 				variant={"outline"}
 				className={`h-16 text-xl`}>
