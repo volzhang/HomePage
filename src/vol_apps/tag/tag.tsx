@@ -48,7 +48,7 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
 							  )}/>
 			</HoverCardTrigger>
 			<HoverCardContent className="w-auto" side="top" sideOffset={16}>
-				<div className="text-muted-foreground text-[15px]">
+				<div className="text-[13px]">
 					{t(
 						"Click to toggle mode \nCurrently: tiles match {{mode}} selected tags",
 						{mode: isBroadMatches ? t("ANY") : t("ALL")}

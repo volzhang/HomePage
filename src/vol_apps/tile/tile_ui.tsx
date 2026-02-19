@@ -3,7 +3,6 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} fro
 import {Input} from "@/components/ui/input";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
 import {Spinner} from "@/components/ui/spinner";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {cn} from "@/lib/utils";
 import {TileComponent} from "@/vol_apps/tile/tile";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
@@ -86,7 +85,7 @@ export const TileUi = () => {
 
 	const try_handle_icon = async (url: string) => {
 
-		if (urlChanged){
+		if (urlChanged) {
 			if (!URL.canParse(url) || !looksLikeDomain(url)) return;
 			setIsFetchingIcon(true);
 			try {
@@ -101,20 +100,29 @@ export const TileUi = () => {
 			}
 		}
 
-
 	};
 
 	// patch:原组件不支持enter后自动提交并关闭。
 	// 在焦点在input中，先聚焦btn。
 	// 当焦点在btn时，触发提交和关闭。
-	const ref = useRef<HTMLButtonElement | null>(null);
+	const ref_url = useRef<HTMLInputElement | null>(null);
+	const ref_name = useRef<HTMLInputElement | null>(null);
+	const ref_tags = useRef<HTMLInputElement | null>(null);
+	const ref_icon = useRef<HTMLInputElement | null>(null);
+
+	const ref_ok = useRef<HTMLButtonElement | null>(null);
+
 	const handleEnterKeyDown = (e: KeyboardEvent) => {
 		if (e.key === "Enter") {
 			e.preventDefault();
-			if (document.activeElement === ref.current) {
-				handleSubmit();
+			if (document.activeElement === ref_url.current
+				|| document.activeElement === ref_name.current
+				|| document.activeElement === ref_tags.current
+				|| document.activeElement === ref_icon.current
+			) {
+				ref_ok.current!.focus();
 			} else {
-				ref.current!.focus();
+				handleSubmit();
 			}
 		}
 	};
@@ -122,21 +130,26 @@ export const TileUi = () => {
 	// 用于 fetch icon 时的状态
 	const [isFetchingIcon, setIsFetchingIcon] = useState<boolean>(false);
 	const [urlChanged, setUrlChanged] = useState<boolean>(false);
+	// const bg_and_text_color = "bg-secondary text-secondary-foreground"
 
 	return (
 		<Dialog defaultOpen={false} open={tileUiVisible}
 				onOpenChange={(open) => setTileUiVisible(open)}>
 			<form onKeyDown={(e) => handleEnterKeyDown(e)}>
-				<DialogContent className="sm:max-w-[700px]">
+				<DialogContent className={cn("sm:max-w-[700px]",
+					// 这里是UI颜色
+					"bg-card text-card-foreground"
+				)}>
 					<DialogHeader className={"hidden"}>
-						<DialogTitle>none.</DialogTitle>
-						<DialogDescription>none.</DialogDescription>
+						<DialogTitle></DialogTitle>
+						<DialogDescription></DialogDescription>
 					</DialogHeader>
 					<div className="flex flex-col items-start gap-6 pt-6 px-4">
 						{/* 这里是网址 */}
 						<InputGroup className={"h-12! placeholder:text-base"}>
 							<InputGroupInput
-								className="pl-1! text-[20px]! placeholder:text-base"
+								ref={ref_url}
+								className="pl-4! text-[20px]!"
 								onChange={(e) => {
 									handleUrlChange(e);
 									try_handle_name(e.target.value);
@@ -148,71 +161,81 @@ export const TileUi = () => {
 								value={currentTile.url}
 								placeholder={"https://..."}
 							/>
-							<InputGroupAddon>
-								{/*<InputGroupText className={`text-[16px]`}>https://</InputGroupText>*/}
-							</InputGroupAddon>
 							<InputGroupAddon align="inline-end">
-								<Tooltip>
-									<TooltipTrigger asChild>
+								<HoverCard openDelay={0} closeDelay={0}>
+									<HoverCardTrigger asChild>
 										<InputGroupButton className="rounded-full" size="icon-xs">
 											<Info/>
 										</InputGroupButton>
-									</TooltipTrigger>
-									<TooltipContent>
-										{t("Link")}
-									</TooltipContent>
-								</Tooltip>
+									</HoverCardTrigger>
+									<HoverCardContent className="w-auto"
+													  side="right"
+													  sideOffset={6}>
+										<div className={"text-[13px]"}>
+											{t("Link")}
+										</div>
+									</HoverCardContent>
+								</HoverCard>
 							</InputGroupAddon>
 						</InputGroup>
 						{/* 这里是名字 */}
 						<InputGroup className={"h-12! placeholder:text-base"}>
 							<InputGroupInput
-								className="pl-1! text-[20px]! placeholder:text-base"
+								ref={ref_name}
+								className="pl-4! text-[20px]!"
 								value={currentTile.meta.name}
 								onChange={handleNameChange}
 								placeholder=
 									{t("Display Name")}
 							/>
-							<InputGroupAddon>
-							</InputGroupAddon>
 							<InputGroupAddon align="inline-end">
-								<Tooltip>
-									<TooltipTrigger asChild>
+								<HoverCard openDelay={0} closeDelay={0}>
+									<HoverCardTrigger asChild>
 										<InputGroupButton className="rounded-full" size="icon-xs">
 											<Info/>
 										</InputGroupButton>
-									</TooltipTrigger>
-									<TooltipContent>
-										{t("Display Name")}
-									</TooltipContent>
-								</Tooltip>
+									</HoverCardTrigger>
+									<HoverCardContent className="w-auto"
+													  side="right"
+													  sideOffset={6}>
+										<div className={"text-[13px]"}>
+											{t("Display Name")}
+										</div>
+									</HoverCardContent>
+								</HoverCard>
 							</InputGroupAddon>
 						</InputGroup>
 						{/* 这里处理tags */}
 						<InputGroup className={"h-12! placeholder:text-base"}>
 							<InputGroupInput
-								className="pl-1! text-[20px]! placeholder:text-base"
+								ref={ref_tags}
+								className="pl-4! text-[20px]!"
 								value={currentTile.meta?.tags?.join(" ") || ""}
 								onChange={handleTagChange}
 								placeholder={t("tag1 tag2 tag3 ...")}
 							/>
-							<InputGroupAddon>
-							</InputGroupAddon>
 							<InputGroupAddon align="inline-end">
-								<Tooltip>
-									<TooltipTrigger asChild>
+								<HoverCard openDelay={0} closeDelay={0}>
+									<HoverCardTrigger asChild>
 										<InputGroupButton className="rounded-full" size="icon-xs">
 											<Info/>
 										</InputGroupButton>
-									</TooltipTrigger>
-									<TooltipContent>{t("Tags (space-separated)")}</TooltipContent>
-								</Tooltip>
+									</HoverCardTrigger>
+									<HoverCardContent className="w-auto"
+													  side="right"
+													  sideOffset={6}>
+										<div className={"text-[13px]"}>
+											{t("Tags (space-separated)")}
+										</div>
+									</HoverCardContent>
+								</HoverCard>
 							</InputGroupAddon>
 						</InputGroup>
 						{/* 这里处理Icon */}
 						<div className="grid grid-cols-[1fr_minmax(150px,auto)] gap-3 w-full">
 							<Input
 								// placeholder="base64"
+								ref={ref_icon}
 								onClick={(e) => e.currentTarget.select()}
 								onChange={handleIconBase64Change}
 								placeholder={currentTile.meta.icon}
@@ -220,8 +243,13 @@ export const TileUi = () => {
 							/>
 
 							<ImgFilePickerBtn onPick={(file) => (handleIconUpload(file))} children={
-								<Button type="button" className={"text-[15px] hover:text-primary-foreground h-[46px] bg-[#0078d7] w-full"}>
-									<ImageUp/>{t("Upload Icon")}
+								<Button type="button" variant={"secondary"} className={cn(
+									"text-[15px] h-[46px] w-full",
+									"hover:bg-[#0078d7]",
+									"hover:text-white",)
+								}>
+									<ImageUp/>
+									{t("Upload Icon")}
 								</Button>
 							}/>
 
@@ -256,7 +284,6 @@ export const TileUi = () => {
 								<FileSearchCorner size={26}
 												  onClick={async () => {
 													  const name = currentTile.meta.name;
-													  // window.open(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
 													  openInNewTab(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
 												  }}
 
@@ -267,7 +294,7 @@ export const TileUi = () => {
 													  "hover:scale-120"
 												  )}/>
 							</HoverCardTrigger>
-							<HoverCardContent className="w-auto" side="top" sideOffset={16}>
+							<HoverCardContent className="w-auto" side={"top"} sideOffset={16}>
 								<div className={"text-gray-400 text-[13px]"}>
 									{t("Search Icon")}
 								</div>
@@ -275,15 +302,15 @@ export const TileUi = () => {
 						</HoverCard>
 
 						<div className="pt-4"/>
-						<Button type="submit" variant="default" onClick={handleSubmit}
-								autoFocus={true} // 默认焦点
-								ref={ref}
-								className={"bg-[#0078d7] text-[17px] h-[46px] w-full"}>
+						<Button type="submit" variant={"secondary"} onClick={handleSubmit}
+								autoFocus={true}
+								ref={ref_ok}
+								className={cn("text-[17px]! h-[46px]! w-full!",
+									"hover:bg-[#0078d7]",
+									"hover:text-white",)}>
 							{t("OK")}
 						</Button>
 						<div className="pd-[1px]"/>
-
-
 					</div>
 				</DialogContent>
 			</form>

@@ -184,7 +184,7 @@ export const useTileStore = createPersistedStore<TileStore>(
 	{
 		partialize: (state) => ({
 			tiles: state.tiles,
-			tags: [],
+			tags: state.tags,
 			isBroadMatches: state.isBroadMatches,
 		}),
 	}
