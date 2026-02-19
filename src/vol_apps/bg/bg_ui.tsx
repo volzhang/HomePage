@@ -12,7 +12,7 @@ import {useTranslation} from "react-i18next";
 
 export function BgUi() {
 	//i18n
-	const {t} = useTranslation("bg")
+	const {t} = useTranslation("bg");
 
 	//不常用地功能，就不用写了
 	//目前代码还凑活，但还有一些优化
@@ -40,7 +40,7 @@ export function BgUi() {
 				onPick={async (file) => setBgImg(await blobToString(file))}
 				children={
 					<Button
-						variant="secondary"
+						variant={"outline"}
 						className={"text-xl w-full h-16 gap-6 items-center"}>
 						<Folder className={`scale-180`}/>
 						{t("Upload Image")}
@@ -50,17 +50,20 @@ export function BgUi() {
 			<RadioGroup
 				defaultValue={otherVisible ? "true" : "false"}
 				onValueChange={(value) => setOtherVisible(value === "true")}
-				className={`w-full p-6 gap-4 border rounded-md bg-secondary border-secondary
-							flex flex-col items-start justify-center`}>
-				<div className={`flex h-8 items-center gap-2`}>
+				className={cn(
+					"w-full p-6 gap-4 border rounded-md",
+					"flex flex-col items-start justify-center",
+					"bg-secondary border-secondary text-secondary-foreground"
+				)}>
+				<div className={"flex h-8 items-center gap-2"}>
 					<RadioGroupItem value="true" id={id1}/>
-					<Label htmlFor={id1} className={`text-xl`}>
+					<Label htmlFor={id1} className={"text-xl"}>
 						{t("Default View")}
 					</Label>
 				</div>
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="false" id={id2}/>
-					<Label htmlFor={id2} className={`text-xl`}>
+					<Label htmlFor={id2} className={"text-xl"}>
 						{t("Hide Others")}
 					</Label>
 				</div>
@@ -69,18 +72,20 @@ export function BgUi() {
 			<RadioGroup
 				value={bgRepeat ? "repeat" : "no-repeat"}
 				onValueChange={(value) => setBgRepeat(value === "repeat")}
-				className={
-					`w-full p-6 gap-4 border rounded-md border-secondary bg-secondary
-							flex flex-col items-start justify-center`}>
-				<div className={`flex h-8 items-center gap-2`}>
+				className={cn(
+					"w-full p-6 gap-4 border rounded-md ",
+					"border-secondary bg-secondary",
+					"flex flex-col items-start justify-center"
+				)}>
+				<div className={"flex h-8 items-center gap-2"}>
 					<RadioGroupItem value="repeat" id={id3}/>
-					<Label htmlFor={id3} className={`text-xl`}>
+					<Label htmlFor={id3} className={"text-xl"}>
 						{t("Repeat")}
 					</Label>
 				</div>
-				<div className={`flex h-8 items-center gap-2`}>
+				<div className={"flex h-8 items-center gap-2"}>
 					<RadioGroupItem value="no-repeat" id={id4}/>
-					<Label htmlFor={id4} className={`text-xl`}>
+					<Label htmlFor={id4} className={"text-xl"}>
 						{t("Single")}
 					</Label>
 				</div>
@@ -110,8 +115,9 @@ export function BgUi() {
 				<RadioGroup
 					value={bgSize}
 					onValueChange={(value) => setBgSize(value)}
-					className={`w-full p-6 gap-4 rounded-md border border-secondary bg-secondary
-				flex flex-col items-start justify-center`}>
+					className={cn("w-full p-6 gap-4 rounded-md",
+						"border border-secondary bg-secondary",
+						"flex flex-col items-start justify-center")}>
 					{sizeItems.map(item => (
 						<div key={`${item.value}-content`}
 							 className={`flex h-8 items-center gap-2`}>
@@ -130,26 +136,11 @@ export function BgUi() {
 						</div>
 					))}
 				</RadioGroup>
-
-				{/*<div className={`flex flex-col gap-4`}>*/}
-				{/*	<Slider*/}
-				{/*		disabled={sliderDisable}*/}
-				{/*		defaultValue={[parseInt(bgSizeSliderInit, 10)]}*/}
-				{/*		min={10}*/}
-				{/*		max={500}*/}
-				{/*		step={1}*/}
-				{/*		className={"w-full"}*/}
-				{/*		onValueChange={async (value) => await setBgSizeSlider(`${value[0]}%`)}*/}
-				{/*	/>*/}
-				{/*	<Label className={`text-xl font-semibold ${sliderDisable ? "opacity-40" : ""}`}>*/}
-				{/*		自定义比例: {sliderDisable ? "已禁用" : bgSizeSlider}*/}
-				{/*	</Label>*/}
-				{/*</div>*/}
 			</div>
 			<Button
 				onClick={() => setBgUiVisible(false)}
 				type="button"
-				variant="default"
+				variant={"outline"}
 				className={`h-16 text-xl`}>
 				{t("OK")}
 			</Button>

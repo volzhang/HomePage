@@ -180,6 +180,14 @@ export const useTileStore = createPersistedStore<TileStore>(
 		setIsBroadMatches: (t)=>set({isBroadMatches: t}),
 
 	}),
+
+	{
+		partialize: (state) => ({
+			tiles: state.tiles,
+			tags: [],
+			isBroadMatches: state.isBroadMatches,
+		}),
+	}
 );
 
 //zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。

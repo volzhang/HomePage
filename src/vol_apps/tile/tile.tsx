@@ -5,6 +5,7 @@ import {closestCenter, DndContext, type DragEndEvent, PointerSensor, useSensor, 
 import {arrayMove, rectSortingStrategy, SortableContext, useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import type {MouseEvent, KeyboardEvent, JSX} from "react";
+import {useTranslation} from "react-i18next";
 
 interface TileProps {
 	tile: Tile,
@@ -35,7 +36,10 @@ export const TileComponent = ({
 			draggable={false}
 			onContextMenu={handleRightClick}
 			className={cn(
-				"select-none w-36 h-36 mx-auto border-4 border-white/40 rounded-[10%] flex flex-col items-center justify-between pt-2 pb-px bg-white",
+				"border border-[#eeeeee] bg-[#f9f9f9]",
+				"text-black text-[13.5px] font-[550]",
+				"select-none w-36 h-36 mx-auto",
+				"rounded-[10%] flex flex-col items-center justify-between pt-2 pb-px",
 				"transition-[shadow, transform] duration-250 delay-0 ease-linear",
 				{"hover:shadow-[#0078d7]/50 hover:shadow-xl": !isDragging},
 			)}>
@@ -46,7 +50,7 @@ export const TileComponent = ({
 				: <img draggable={false} className={"mx-auto w-24 h-24 object-contain"} src={imgSrc} alt={tile.meta.alt}/>
 			}
 
-			<div className={"w-fit h-fit text-[14px] text-gray-700 font-[550]"}>
+			<div className={"w-fit h-fit"}>
 				{customName
 					? customName
 					: tile.meta.name
@@ -99,10 +103,12 @@ const SortableTile = ({tile}: { tile: Tile }) => {
 
 export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 	const {tiles, setTiles, tilesByTag, isBroadMatches} = useTileStore();
+	const {t} = useTranslation("tile");
 
 	// 这里,与标签系统的对接，我直接硬编码了
 	const {selectedTags} = useTileStore();
 	const displayTiles = showTiles ?? tilesByTag(selectedTags(), isBroadMatches?"ANY":"ALL")!;
+	const filteredTiles = displayTiles.map((tile) => (<SortableTile key={tile.id} tile={tile}/>))
 
 	const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {delay: 150, tolerance: 20}}));
 
@@ -131,7 +137,7 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 			<div className="flex flex-wrap px-6 py-6 gap-7 animate-fade-in-scale">
 				<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 					<SortableContext items={tiles.map(tile => tile.id)} strategy={rectSortingStrategy}>
-						{displayTiles.map((tile) => (<SortableTile key={tile.id} tile={tile}/>))}
+						{filteredTiles.length > 0 ? filteredTiles : <div className={"text-muted-foreground"}>{t("No matched tile")}</div>}
 					</SortableContext>
 				</DndContext>
 			</div>

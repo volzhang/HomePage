@@ -31,7 +31,9 @@ const resources = {
 
 			"Delete Tile": "删除瓷砖",
 			"Search Icon": "搜索图标",
-			"Fetching Icon": "正在获取图标"
+			"Fetching Icon": "正在获取图标",
+
+			"No matched tile":"没有匹配的瓷砖"
 
 		},
 		tag:{

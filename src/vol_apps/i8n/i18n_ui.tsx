@@ -13,9 +13,8 @@ export const I18nUi = () => {
 	const {t} = useTranslation("common");
 	return (
 		<Select value={language} onValueChange={setLanguage}>
-			<SelectTrigger className="text-white border-none focus-visible:ring-transparent">
-				{/*{t("Language")} :*/}
-				<Languages color={"#c8c8c8"} size={32}/>
+			<SelectTrigger className={"w-36 bg-background"}>
+				<Languages className={"text-foreground"}/>
 				<SelectValue />
 			</SelectTrigger>
 			<SelectContent>

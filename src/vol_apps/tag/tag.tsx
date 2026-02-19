@@ -2,37 +2,24 @@ import {Button} from "@/components/ui/button";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 import {cn} from "@/lib/utils";
 import {type Tile, useTileStore} from "@/vol_apps/tile/tile_store";
-import {RefreshCw, BookmarkIcon} from "lucide-react";
-import {
-	useEffect, useState,
-	// useId
-} from "react";
+import {BookmarkIcon} from "lucide-react";
+import {useEffect} from "react";
 import {useTranslation} from "react-i18next";
 
-export const TagUpdate = () => {
-	const ani_time = 0.5;
-	const [isSpinning, setIsSpinning] = useState(false);
+export const BroadMatches = ({isBroadMatches, handleOnClick}: {
+	isBroadMatches: boolean,
+	handleOnClick?: () => void,
+}) => {
+	const {t} = useTranslation("tag");
 	const {tiles, selectedTags, setTags} = useTileStore();
 
-	const handleClick = () => {
-		// 动画效果
-		if (!isSpinning) {
-			setIsSpinning(true);
-			setTimeout(() => setIsSpinning(false), ani_time * 1000);
-		}
-		// 更新tags
-		updateTags();
-	};
-
 	const updateTags = () => {
-		// 接受数组对象，item内含meta，meta内含tags,
 		// tags:string[]
 		const allUniqueTags = [
 			...new Set(
 				tiles.flatMap((tile: Tile) => tile.meta.tags || [])
 			)
 		].filter((tag) => tag !== "");
-		// console.log(allUniqueTags);
 		//注意，如果tile.meta.tags不存在，会返回一个undefined作为元素，所以我们直接用[] 兜底
 
 		const newTags = allUniqueTags.map((name, id) => {
@@ -48,48 +35,20 @@ export const TagUpdate = () => {
 	}, [tiles]);
 
 	return (
-		<>
-			<style>{`
-                    @keyframes spin-once {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(720deg); }
-                    }
-                    .animate-spin-once {
-                        animation: spin-once ${ani_time}s ease-out;
-                        animation-iteration-count: 1;
-                    }
-                `}
-			</style>
-			<Button variant={"ghost"} className={"bg-transparent hover:bg-transparent"} onClick={handleClick} disabled={isSpinning}>
-				<RefreshCw color={"white"} className={isSpinning ? "animate-spin-once" : ""}/>
-			</Button>
-		</>
-
-	);
-};
-
-export const BroadMatches = ({isBroadMatches, handleOnClick}: {
-	isBroadMatches: boolean,
-	handleOnClick?: () => void,
-}) => {
-	const {t} = useTranslation("tag");
-	return (
 		<HoverCard openDelay={0} closeDelay={0}>
 			<HoverCardTrigger asChild>
 				<BookmarkIcon onClick={handleOnClick}
 							  className={cn(
 								  "transition-all duration-100",
 								  "hover:opacity-100",
-								  "scale-75",
-								  {"text-white": isBroadMatches},
-								  {"hover:text-[#0078d7]": isBroadMatches},
-
-								  {"text-[#0078d7]": !isBroadMatches},
-								  {"fill-[#0078d7]": !isBroadMatches}
+								  "scale-90",
+								  isBroadMatches
+									  ? "text-ring hover:text-[#0078d7]"
+									  : "text-[#0078d7] fill-[#0078d7]",
 							  )}/>
 			</HoverCardTrigger>
 			<HoverCardContent className="w-auto" side="top" sideOffset={16}>
-				<div className="text-gray-600 text-[15px]">
+				<div className="text-muted-foreground text-[15px]">
 					{t(
 						"Click to toggle mode \nCurrently: tiles match {{mode}} selected tags",
 						{mode: isBroadMatches ? t("ANY") : t("ALL")}
@@ -124,7 +83,7 @@ export const TagComponent = () => {
 						key={tag.id} variant={tag.checked ? "default" : "link"} onClick={() => toggleTag(tag.id)}
 						className={tag.checked
 							? "text-white bg-[#0078d7] hover:bg-[#0078d7]"
-							: "text-white bg-transparent hover:bg-transparent "
+							: "text-foreground! bg-transparent! hover:bg-transparent!"
 						}>
 						{tag.name}
 					</Button>
@@ -132,7 +91,6 @@ export const TagComponent = () => {
 				<BroadMatches isBroadMatches={isBroadMatches} handleOnClick={
 					() => setIsBroadMatches(!isBroadMatches)
 				}/>
-				<TagUpdate/>
 			</div>
 		</>
 

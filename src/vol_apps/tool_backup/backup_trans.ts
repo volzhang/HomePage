@@ -1,5 +1,4 @@
 import localforage from "localforage";
-// import tiles_v2 from "./";
 
 const tiles_v2 = [
 	{
@@ -52,6 +51,5 @@ export const backup_trans = async (): Promise<void> => {
 
 	const jsonString = JSON.stringify(persisted);
 	await localforage.setItem("tile", jsonString);
-
 	// await downloadAsJsonFile({tiles:tiles});
 };

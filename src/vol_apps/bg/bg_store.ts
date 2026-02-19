@@ -31,7 +31,7 @@ type SizeType = string
 // 以后再处理，当前够用
 
 type BgStoreState = {
-	bgImg: BlobString;
+	bgImg: BlobString | null;
 	bgSize: SizeType;
 	bgRepeat: boolean;
 	bgCenter: boolean;
@@ -57,6 +57,7 @@ export const useBgStore = createPersistedStore<BgStore>(
 		bgSize: "auto",
 		bgRepeat: true,
 		bgCenter: false,
+
 		otherVisible: true,
 		bgUiVisible: false,
 
@@ -71,5 +72,13 @@ export const useBgStore = createPersistedStore<BgStore>(
 		setOtherVisible: (otherVisible) => set({otherVisible}),
 		setBgUiVisible: (bgUiVisible) => set({bgUiVisible}),
 	}),
+	{
+		partialize: (state) => ({
+			bgImg: state.bgImg,
+			bgSize: state.bgSize,
+			bgRepeat: state.bgRepeat,
+			bgCenter: state.bgCenter,
+		}),
+	}
 )
 

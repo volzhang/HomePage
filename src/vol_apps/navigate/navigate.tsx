@@ -1,4 +1,5 @@
 
+import {cn} from "@/lib/utils";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
@@ -30,13 +31,15 @@ export const Navigation = () => {
 		setTileUiVisible(true)
 	}
 
-
 	return (
 		// 注意，viewport 表示是否在移动端
-		<NavigationMenu viewport={false}>
-			<NavigationMenuList className="flex-wrap">
-				<NavigationMenuItem className="hidden md:block">
-					<NavigationMenuTrigger className={"bg-transparent text-white"}>
+		<NavigationMenu>
+			<NavigationMenuList>
+				<NavigationMenuItem>
+					<NavigationMenuTrigger className={cn("w-24",
+						"border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
+						//这里手动复制了Button的secondary样式
+					)}>
 						{t("Menu")}
 					</NavigationMenuTrigger>
 					<NavigationMenuContent>

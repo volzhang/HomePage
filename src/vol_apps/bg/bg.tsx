@@ -3,15 +3,17 @@ import {useBgStore} from "@/vol_apps/bg/bg_store"
 import {BgUi} from "@/vol_apps/bg/bg_ui";
 
 export function BgApp() {
-	const bgStyle = "fixed inset-0 opacity-100 bg-gray";
-	const {bgImg, bgRepeat, bgSize, bgCenter, otherVisible} = useBgStore();
+	const {
+		bgImg,
+		bgRepeat, bgSize, bgCenter, otherVisible} = useBgStore();
 
 	const bg = <div
 		style={{
 			backgroundImage: `url(${bgImg})`,
+			// backgroundImage: "none",
 		}}
 		className={cn(
-			bgStyle,
+			"fixed inset-0 opacity-100 bg-background",
 			otherVisible ? "-z-1" : "z-1",
 			bgRepeat ? "bg-repeat" : "bg-no-repeat",
 			{

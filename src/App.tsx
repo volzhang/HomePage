@@ -1,23 +1,27 @@
 import {BgApp}                from "@/vol_apps/bg/bg";
 import {ContextMenuComponent} from "@/vol_apps/cMenu/cMenu";
 import {I18nUi}               from "@/vol_apps/i8n/i18n_ui";
-import {LinkGithub}      from "@/vol_apps/link_github/link_github";
-import {SearchComponent} from "@/vol_apps/search/search";
-import {Navigation}      from "@/vol_apps/navigate/navigate";
-import {SortableTiles} from "@/vol_apps/tile/tile";
-import {TagComponent}  from "@/vol_apps/tag/tag";
-import {TileUi}        from "@/vol_apps/tile/tile_ui";
+import {LinkGithub}           from "@/vol_apps/link_github/link_github";
+import {SearchComponent}      from "@/vol_apps/search/search";
+import {Navigation}           from "@/vol_apps/navigate/navigate";
+import {Theme}                from "@/vol_apps/theme/theme";
+import {SortableTiles}        from "@/vol_apps/tile/tile";
+import {TagComponent}         from "@/vol_apps/tag/tag";
+import {TileUi}               from "@/vol_apps/tile/tile_ui";
 import {Version}              from "@/vol_apps/version/version";
 
 export const App = () => {
 	return (
 		<>
-			<div className={"flex"}>
+			<div className={"flex gap-2 p-2"}>
 				<Navigation/>
 				<I18nUi/>
 				<LinkGithub/>
+				<Theme/>
 			</div>
-			<Version/>
+			<div className={"absolute top-1 right-1"}>
+				<Version/>
+			</div>
 			<SearchComponent/>
 			<TagComponent/>
 			<ContextMenuComponent children={

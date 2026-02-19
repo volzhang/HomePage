@@ -1,6 +1,7 @@
+import {Button} from "@/components/ui/button";
+import {cn} from "@/lib/utils";
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {Label} from "@/components/ui/label";
 
 export const Version = () => {
 	const {t} = useTranslation("version");
@@ -13,8 +14,14 @@ export const Version = () => {
 	}, []);
 
 	return (
-		<Label className={"absolute right-2.5 top-2.5 text-[#c8c8c8]"}>
+		<Button
+			variant={"outline"}
+			disabled={true}
+			className={cn(
+				"border-0! ring-0! bg-transparent!",
+				"text-foreground",
+			)}>
 			{t("Version")}：{version}
-		</Label>
+		</Button>
 	);
 };
