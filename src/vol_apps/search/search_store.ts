@@ -48,8 +48,5 @@ export const useSearchStore = createPersistedStore<SearchStore>(
 			const inUseId = get().engineInUseId;
 			return get().engines.find((e) => e.id === inUseId) || SEARCH_ENGINES[0];
 		},
-	}),
-	{
-		partialize:(state)=>({engineInUseId: state.engineInUseId}),
-	}
+	})
 );

@@ -71,14 +71,6 @@ export const useBgStore = createPersistedStore<BgStore>(
 
 		setOtherVisible: (otherVisible) => set({otherVisible}),
 		setBgUiVisible: (bgUiVisible) => set({bgUiVisible}),
-	}),
-	{
-		partialize: (state) => ({
-			bgImg: state.bgImg,
-			bgSize: state.bgSize,
-			bgRepeat: state.bgRepeat,
-			bgCenter: state.bgCenter,
-		}),
-	}
+	})
 )
 

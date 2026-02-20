@@ -1,7 +1,12 @@
 import {persistedStoresRehydrate} from "@/vol_apps/tool/createPersistedStore";
 import {download, timeStamp} from "@/vol_apps/tool/download";
 import type {JsonFile} from "@/vol_apps/tool/filePicker";
-import {isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeParse, validTypeStringify} from "@/vol_apps/tool/isType";
+import {
+	isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeParse,
+	// validTypeParse,
+	validTypeStringify
+} from "@/vol_apps/tool/isType";
+import {fetchVersion} from "@/vol_apps/version/version";
 import localforage from "localforage";
 
 export const downloadAsJsonFile = async (
@@ -24,6 +29,8 @@ export const downloadAsJsonFile = async (
 export const localforageRestore = async (file: JsonFile, clearFirst: boolean = false): Promise<void> => {
 	const text = await file.text();
 	const obj = await validTypeParse(text);
+	// const obj = JSON.parse(text);
+
 	if (isPlainObject(obj)) {
 		if (clearFirst) await localforage.clear();
 		await Promise.all(Array.from(Object.entries(obj), ([k, v]) => localforage.setItem(k, v)));
@@ -43,5 +50,8 @@ export const localforageBackup = async (): Promise<void> => {
 			result[key] = value;
 		}
 	});
-	await downloadAsJsonFile(result, `DB-${timeStamp()}.json`);
+
+	const version = await fetchVersion();
+	const filename = `DB[${version}]${timeStamp()}.json`;
+	await downloadAsJsonFile(result, filename);
 };

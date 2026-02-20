@@ -119,8 +119,6 @@ type TileStoreActions = {
 
 }
 
-
-
 type TileStore = TileStoreState & TileStoreActions;
 
 export const useTileStore = createPersistedStore<TileStore>(
@@ -245,17 +243,17 @@ export const useTileStore = createPersistedStore<TileStore>(
 		setIsBroadMatches: (isChecked)=>set({isBroadMatches: isChecked}),
 
 	}),
-
 	{
-		partialize: (state) => ({
-			tiles: state.tiles,
-			tags: state.tags,
-			untaggedChecked:state.untaggedChecked,
-			isBroadMatches: state.isBroadMatches,
-		}),
+		// 水和后立即更新tags，不要用useEffect了
+		onRehydrateStorage: (_state) => (hydratedState) => {
+			// _state 是水合前的状态，
+			// hydratedState 是水合后的状态
+			if (hydratedState) {
+				hydratedState.updateTags(hydratedState.tiles);
+			}
+		}
 	}
 );
-
 
 //zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。
 //当然，最重要的是，值必须天然支持文本化，所以只能是基本类型。
