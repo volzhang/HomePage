@@ -9,7 +9,7 @@ export const LinkGithub = () => {
 			onClick={() => {
 				window.open(LINK, "_blank", "noopener noreferrer");
 			}}>
-			<Github className={"text-primary"}/>
+			<Github/>
 		</Button>
 	);
 };
