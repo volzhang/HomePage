@@ -32,19 +32,30 @@ type TileStoreState = {
 	tileInEditId: Tile["id"],
 
 	//tag系统
-	tags: Tag[];
-	isBroadMatches: boolean
+	tags: Tag[],
+	isBroadMatches: boolean,
+
+	//查看无标签tile
+	untaggedChecked:boolean,
 }
 
 type TileStoreActions = {
 	//基本API
 	updateTile: (id: Tile["id"], updates: Partial<Tile>) => void;
-	addTile: () => void;
 	removeTile: (id: Tile["id"]) => void;
 	setTiles: (newTiles: TileStoreState["tiles"]) => void;
 
+	updateTags: (newTiles:TileStoreState["tiles"]) => void;
+
 	//选择视图
-	tilesByTag: (tags: Meta["tags"], mode: "ALL" | "ANY") => TileStoreState["tiles"] | undefined;
+	selectedTags: () => Tag["name"][];
+	effectiveTags:() => Tag["name"][];
+	hasUntaggedTiles: () => boolean;
+	tilesByTag: (mode: "ALL" | "ANY") => TileStoreState["tiles"];
+
+	//查看无标签tile
+	setUntaggedChecked: (isChecked:boolean)=>void;
+	tilesNoTag: () => TileStoreState["tiles"];
 
 	//Ui相关
 	setTileUiVisible: (value: TileStoreState["tileUiVisible"]) => void;
@@ -52,15 +63,12 @@ type TileStoreActions = {
 
 	//进阶API
 	// 自动填充 tags，后续根据剪切板文本，如果是合法的url自动补全URL和name
-	addTile_auto: (tags: string[]) => void;
+	addTile: () => void;
 
 	//tag系统
 	setTags: (tags: TileStoreState["tags"]) => void;
 	updateTag: (id: Tag["id"], updates: Partial<Tag>) => void;
 	toggleTag: (id: Tag["id"]) => void;
-
-	allTags: () => Tag["name"][];
-	selectedTags: () => Tag["name"][];
 
 	setIsBroadMatches: (isBroadMatches: boolean) => void;
 }
@@ -116,68 +124,118 @@ export const useTileStore = createPersistedStore<TileStore>(
 		tiles: TutorialsTiles,
 		tileUiVisible: false,
 		tileInEditId: 0,
-		updateTile: (id, updates) => set((state) => {
-			const newTiles = state.tiles.map((tile) => (tile.id === id ? {...tile, ...updates} : tile));
+
+		tags: [],
+		untaggedChecked:false,
+		isBroadMatches: true,
+
+		// 所有修改tiles的函数，都植入updateTags
+		updateTags: (newTiles)=>set((state)=>{
+			const allUniqueTags = [
+				...new Set(
+					newTiles.flatMap((tile: Tile) => tile.meta.tags || [])
+				)
+			].filter((name) => name !== "");
+			//上面之所有删除了""，就是因为两种情况，
+			//1，不做处理时，input输入string，至少输入一个""
+			//2，“tag1 tag2 ”会生成3个元素的数组["tag1","tag2",""], 其中包含一个""
+			const newTags = allUniqueTags.map((name, id) => {
+				const checked = state.selectedTags().includes(name);
+				return {id, name, checked};
+			});
+
+			return {tags:newTags};
+		}),
+
+		//Tiles的修改函数，都依赖setTiles
+		setTiles: (newTiles) => set((state)=>{
+			//处理tags依赖！
+			state.updateTags(newTiles);
 			return {tiles: newTiles};
 		}),
-		addTile: () => set((state) => {
-			const id = state.tiles.length;
-			const newTiles = [...state.tiles, {...defaultTile, id}];
-			return {tiles: newTiles};
-		}),
-		//考虑到东西不多，所以小函数也尽量无依赖
-		removeTile: (id) => set((state) => {
-			let newTiles = state.tiles.filter((tile) => tile.id !== id);
+
+		// 衍生入口
+		updateTile: (id, updates) => {
+			const newTiles = get().tiles.map((tile) => (tile.id === id ? {...tile, ...updates} : tile));
+			get().setTiles(newTiles);
+		},
+
+		addTile: () => {
+			const id = get().tiles.length;
+			const tags = get().selectedTags();
+			const newTiles = [...get().tiles, {...defaultTile, id, meta: {...defaultTile.meta, tags: tags}}];
+			get().setTiles(newTiles);
+		},
+
+		removeTile: (id) =>{
+			let newTiles = get().tiles.filter((tile) => tile.id !== id);
 			if (newTiles.length === 0) {
-				newTiles = [defaultTile];
-			} else {
-				newTiles = newTiles.map((tile, index) => ({...tile, id: index}));
-			}
-			return {tiles: newTiles};
-		}),
-		setTiles: (newTiles) => set({tiles: newTiles}),
+						newTiles = [defaultTile];
+					} else {
+						newTiles = newTiles.map((tile, index) => ({...tile, id: index}));
+					}
+			get().setTiles(newTiles);
+		},
+
 		setTileUiVisible: (tileUiVisible) => set({tileUiVisible}),
 		setTileInEditId: (tileInEditId) => set({tileInEditId}),
 
-		tilesByTag: (tags, mode = "ANY") => {
+		//真实标签
+		selectedTags: () => get().tags.filter(tag => tag.checked).map(tag => tag.name),
+		//考虑虚拟标签
+		effectiveTags:()=>{
+			const selectedRealTags = get().selectedTags()
+			const showUntagged = get().untaggedChecked;
+			return showUntagged
+				? [...selectedRealTags, "__UNTAGGED__"]
+				: selectedRealTags;
+		},
+
+		hasUntaggedTiles: () => get().tiles.some(tile => tile.meta.tags.length === 0),
+
+		// 重写这个视图，加入tilesNoTagChecked
+		tilesByTag: (mode: "ALL" | "ANY") => {
 			const tiles = get().tiles;
-			if (!tags || tags.length === 0) return tiles;
-			return tiles.filter((tile) => {
-				if (mode === "ALL") {
-					return tags.every((tag) => tile.meta.tags.includes(tag));
-				} else {
-					return tags.some((tag) => tile.meta.tags.includes(tag));
-				}
+			const effectiveTags = get().effectiveTags();
+			if (effectiveTags.length === 0) return tiles;
+
+			return tiles.filter(tile => {
+				const isUntagged = (tile.meta.tags.length === 0);
+				const matchesAny = effectiveTags.some(tag =>
+					tag === "__UNTAGGED__" ? isUntagged : tile.meta.tags.includes(tag)
+				);
+
+				const matchesAll = effectiveTags.every(tag =>
+					tag === "__UNTAGGED__" ? isUntagged : tile.meta.tags.includes(tag)
+				);
+
+				return mode === "ALL" ? matchesAll : matchesAny;
 			});
 		},
 
+		//查看无标签tile
+		setUntaggedChecked:(untaggedChecked)=>set({untaggedChecked}),
 
-		addTile_auto: (tags) => set((state) => {
-			const id = state.tiles.length;
-			const newTiles = [...state.tiles, {...defaultTile, id, meta: {...defaultTile.meta, tags: tags}}];
-			return {tiles: newTiles};
-		}),
-
-		tags: [],
-
-		setTags: (tags) => set({tags}),
-		updateTag: (id, updates) => set((state) => {
-			const tags = state.tags.map((tag) => tag.id === id ? {...tag, ...updates} : tag);
-			return {tags};
-		}),
-		toggleTag: (id) => set((state) => {
-			const tags = state.tags.map((tag) => tag.id === id ? {...tag, checked: !tag.checked} : tag);
-			return {tags};
-		}),
-
-		allTags: () => get().tags.map((tag) => tag.name),
-		selectedTags: () => {
-			const tags = get().tags.filter((tag) => tag.checked) || [];
-			return tags.map((tag) => tag.name);
+		tilesNoTag: () => {
+			const tiles = get().tiles;
+			return tiles.filter((tile)=> (tile.meta.tags.length === 0))
 		},
 
-		isBroadMatches: true,
-		setIsBroadMatches: (t)=>set({isBroadMatches: t}),
+		//核心tag函数
+		setTags: (tags) => set({tags}),
+
+		//派生修改
+		updateTag: (id, updates) => {
+			const tags = get().tags.map((tag) => tag.id === id ? {...tag, ...updates} : tag);
+			get().setTags(tags);
+		},
+
+		toggleTag: (id) => {
+			const tags = get().tags.map((tag) => tag.id === id ? {...tag, checked: !tag.checked} : tag);
+			get().setTags(tags);
+		},
+
+		setIsBroadMatches: (isChecked)=>set({isBroadMatches: isChecked}),
 
 	}),
 
@@ -185,12 +243,13 @@ export const useTileStore = createPersistedStore<TileStore>(
 		partialize: (state) => ({
 			tiles: state.tiles,
 			tags: state.tags,
+			untaggedChecked:state.untaggedChecked,
 			isBroadMatches: state.isBroadMatches,
 		}),
 	}
 );
 
+
 //zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。
 //当然，最重要的是，值必须天然支持文本化，所以只能是基本类型。
 //除此之外，没有其他吐槽点。
-

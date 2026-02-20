@@ -5,7 +5,6 @@ import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
 
-
 import {
 	NavigationMenu,
 	NavigationMenuContent,
@@ -20,20 +19,18 @@ import {useTranslation} from "react-i18next";
 
 export const Navigation = () => {
 	const {setBgUiVisible} = useBgStore();
-	const {tiles, addTile_auto, setTileInEditId, setTileUiVisible} = useTileStore()
-	const {selectedTags} = useTileStore()
+	const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore()
 	const {t} = useTranslation("navigation");
 
 	const OnAddTile = () => {
 		const newTileId = tiles.length
-		addTile_auto(selectedTags())
+		addTile()
 		setTileInEditId(newTileId)
 		setTileUiVisible(true)
 	}
 
 	return (
-		// 注意，viewport 表示是否在移动端
-		<NavigationMenu>
+		<NavigationMenu delayDuration={999999} skipDelayDuration={0}>
 			<NavigationMenuList>
 				<NavigationMenuItem>
 					<NavigationMenuTrigger className={cn("w-24",

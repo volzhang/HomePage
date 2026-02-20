@@ -18,14 +18,13 @@ import type {PropsWithChildren} from "react";
 import {useTranslation} from "react-i18next";
 
 export function ContextMenuComponent({children}: PropsWithChildren) {
-	const {tiles, addTile_auto, setTileInEditId, setTileUiVisible} = useTileStore();
+	const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
 	const {setBgUiVisible} = useBgStore();
-	const {selectedTags} = useTileStore();
 	const {t} = useTranslation("contextMenu");
 
 	const OnAddTile = () => {
 		const newTileId = tiles.length;
-		addTile_auto(selectedTags());
+		addTile();
 		setTileInEditId(newTileId);
 		setTileUiVisible(true);
 	};

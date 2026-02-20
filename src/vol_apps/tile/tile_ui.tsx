@@ -48,8 +48,13 @@ export const TileUi = () => {
 	};
 	// tag
 	const handleTagChange = (e: ChangeEvent<HTMLInputElement>) => {
+		//这里其实很有意思，就是input组件输入一个string值时，至少输入的是""，
+		//不会输入完全的空值
 		const splitString = " ";
-		updateTile(tileInEditId, {meta: {...currentMeta, tags: e.currentTarget.value.split(splitString)}});
+		let newTags = e.target.value.split(splitString);
+		const inputIsEmpty = (newTags.length === 1 && newTags[0] === "")
+		if (inputIsEmpty) newTags = []
+		updateTile(tileInEditId, {meta: {...currentMeta, tags: newTags}});
 	};
 
 	// icon

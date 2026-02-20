@@ -43,7 +43,7 @@ const resources = {
 			"ANY": "任一",
 			"ALL": "全部",
 
-			"Refresh Tags": "刷新标签",
+			"Untagged": "未标签"
 		},
 		navigation: {
 			"Menu": "菜单",

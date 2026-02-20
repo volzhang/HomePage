@@ -106,8 +106,8 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 	const {t} = useTranslation("tile");
 
 	// 这里,与标签系统的对接，我直接硬编码了
-	const {selectedTags} = useTileStore();
-	const displayTiles = showTiles ?? tilesByTag(selectedTags(), isBroadMatches?"ANY":"ALL")!;
+	// const {selectedRealTags} = useTileStore();
+	const displayTiles = showTiles ?? tilesByTag(isBroadMatches?"ANY":"ALL")!;
 	const filteredTiles = displayTiles.map((tile) => (<SortableTile key={tile.id} tile={tile}/>))
 
 	const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {delay: 150, tolerance: 20}}));
