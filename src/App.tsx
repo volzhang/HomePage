@@ -19,7 +19,7 @@ export const App = () => {
 				<LinkGithub/>
 				<Theme/>
 			</div>
-			<div className={"absolute top-1 right-1"}>
+			<div className={"absolute top-2 right-2"}>
 				<Version/>
 			</div>
 			<SearchComponent/>

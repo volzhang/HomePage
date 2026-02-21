@@ -1,8 +1,10 @@
 import {Button} from "@/components/ui/button";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
+import {Spinner} from "@/components/ui/spinner";
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {BookmarkIcon} from "lucide-react";
+import {BookmarkIcon, LoaderCircle} from "lucide-react";
+import {useState} from "react";
 import {useTranslation} from "react-i18next";
 
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
@@ -15,9 +17,7 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
 			<HoverCardTrigger asChild>
 				<BookmarkIcon onClick={handleOnClick}
 							  className={cn(
-								  "transition-all duration-100",
-								  "hover:opacity-100",
-								  "scale-90",
+								  "size-6",
 								  isBroadMatches
 									  ? "text-ring hover:text-[#0078d7]"
 									  : "text-[#0078d7] fill-[#0078d7]",
@@ -38,10 +38,42 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
 	);
 };
 
+export const TagUpdate = () => {
+	const {t} = useTranslation("tag");
+	const {tiles, updateTags} = useTileStore();
+	const [isUpdate, setIsUpdate] = useState<boolean>(false);
+
+	const handleClick = () => {
+		setIsUpdate(true);
+		const timerPromise = new Promise(resolve => setTimeout(resolve, 1000));
+		const updatePromise = Promise.resolve().then(() => updateTags(tiles));
+		Promise.all([timerPromise, updatePromise]).finally(() => {
+			setIsUpdate(false);
+		});
+	};
+
+	return (
+		<HoverCard openDelay={0} closeDelay={0}>
+			<HoverCardTrigger asChild>
+				{isUpdate
+					? <Spinner className={"size-5 text-[#0078d7]"}></Spinner>
+					: <LoaderCircle className={"size-5 text-ring hover:text-[#0078d7]"} onClick={handleClick}/>}
+			</HoverCardTrigger>
+			<HoverCardContent className="w-auto" side="top" sideOffset={16}>
+				<div className="text-[13px]">
+					{t("Click to sync tags")}
+				</div>
+			</HoverCardContent>
+		</HoverCard>
+	);
+};
+
 export const TagComponent = () => {
 	const {t} = useTranslation("tag");
-	const {tags, toggleTag, isBroadMatches, setIsBroadMatches,
-		untaggedChecked, setUntaggedChecked, hasUntaggedTiles} = useTileStore();
+	const {
+		tags, toggleTag, isBroadMatches, setIsBroadMatches,
+		untaggedChecked, setUntaggedChecked, hasUntaggedTiles
+	} = useTileStore();
 
 	return (
 		<>
@@ -63,7 +95,7 @@ export const TagComponent = () => {
 						className={cn(tag.checked
 							? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none"
 							: "border-none"
-							)
+						)
 
 						}>
 						{tag.name}
@@ -80,11 +112,12 @@ export const TagComponent = () => {
 								}>
 							{t("Untagged")}
 						</Button>
-						:null
+						: null
 				}
 				<BroadMatches isBroadMatches={isBroadMatches} handleOnClick={
 					() => setIsBroadMatches(!isBroadMatches)
 				}/>
+				<TagUpdate/>
 			</div>
 		</>
 

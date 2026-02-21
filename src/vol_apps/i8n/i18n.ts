@@ -43,7 +43,8 @@ const resources = {
 			"ANY": "任一",
 			"ALL": "全部",
 
-			"Untagged": "未标签"
+			"Untagged": "未标签",
+			"Click to sync tags": "同步标签"
 		},
 		navigation: {
 			"Menu": "菜单",
