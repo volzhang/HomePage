@@ -56,14 +56,16 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 
 			<ContextMenu>
 				<ContextMenuTrigger className= {cn(
-					"flex mx-auto",
-					// "items-center justify-center ",
+					"flex flex-col mx-auto",
 					"border border-border rounded-xl",
-					"max-h-[70vh] max-w-[85%]")}>
+					"max-h-[70vh] w-[85%]" )}>
 					<ScrollArea
 						type="scroll"
 						scrollHideDelay={600}
-						viewportClassName={"mask-fade max-h-[70vh] min-h-[192px]"}
+						viewportClassName={cn(
+							"mask-fade max-h-[70vh] min-h-[192px] max-w-full",
+							// "border border-red-500"
+						)}
 					>
 						{children}
 					</ScrollArea>

@@ -18,19 +18,12 @@ export const SearchComponent = () => {
 	const {t} = useTranslation("search")
 	return (
 		<>
-			<style>{`
-                @keyframes fade-in-scale {
-                  0% { opacity: 0; transform: scale(0.98); }
-                  100% { opacity: 1; transform: scale(1); }
-                }
-                .animate-fade-in-scale {
-                  animation: fade-in-scale 0.5s ease-out;
-                }
-            `}</style>
-
 			<form
 				action={currentEngine.url} method="GET" target="_blank"
-				className={cn("animate-fade-in-scale flex mt-16 mb-16 w-fit h-fit mx-auto rounded-xl",
+				className={cn(
+					"animate-fade-in-scale-1000",
+					"flex mt-16 mb-16 w-fit h-fit mx-auto rounded-xl",
+
 					"transition-all duration-200 delay-0 ease-linear",
 					"hover:shadow-[#0078d7]/30",
 					"hover:shadow-[0_10px_30px_rgba(0,0,0,0.2)]"

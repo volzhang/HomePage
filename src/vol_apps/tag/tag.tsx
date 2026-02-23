@@ -75,32 +75,27 @@ export const TagComponent = () => {
 		untaggedChecked, setUntaggedChecked, hasUntaggedTiles
 	} = useTileStore();
 
+	const Tags = tags.map((tag) => (
+		<Button
+			key={tag.id} variant={tag.checked ? "default" : "outline"}
+			onClick={() => toggleTag(tag.id)}
+			className={cn(tag.checked
+				? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none"
+				: "border-none"
+			)}>
+			{tag.name}
+		</Button>
+	))
+
 	return (
 		<>
-			<style>{`
-                @keyframes fade-in-scale {
-                  0% { opacity: 0; transform: scale(0.98); }
-                  100% { opacity: 1; transform: scale(1); }
-                }
-                .animate-fade-in-scale {
-                  animation: fade-in-scale 0.5s ease-out;
-                }
-            `}</style>
-			<div className={"animate-fade-in-scale flex flex-wrap items-center px-8 pb-3 gap-3 w-[85%] mx-auto"}>
-				{tags.map((tag) => (
-					<Button
-						key={tag.id} variant={tag.checked ? "default" : "outline"}
-						onClick={() => toggleTag(tag.id)}
-						// onContextMenu={(e) => e.preventDefault()}
-						className={cn(tag.checked
-							? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none"
-							: "border-none"
-						)
-
-						}>
-						{tag.name}
-					</Button>
-				))}
+			<div className={cn(
+				"animate-fade-in-scale-1000",
+				"flex flex-wrap items-center px-8 pb-3 gap-3 mx-auto",
+				"w-[85%] min-h-9",
+				// "border border-border",
+			)}>
+				{Tags}
 				{
 					hasUntaggedTiles() || untaggedChecked ?
 						<Button variant={untaggedChecked ? "default" : "outline"}

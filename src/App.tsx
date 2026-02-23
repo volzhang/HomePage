@@ -7,7 +7,6 @@ import {Navigation}           from "@/vol_apps/navigate/navigate";
 import {Theme}                from "@/vol_apps/theme/theme";
 import {SortableTiles}        from "@/vol_apps/tile/tile";
 import {TagComponent}         from "@/vol_apps/tag/tag";
-// import {TileTest}             from "@/vol_apps/tile/tile_test";
 import {TileUi}               from "@/vol_apps/tile/tile_ui";
 import {Version}              from "@/vol_apps/version/version";
 
@@ -30,7 +29,6 @@ export const App = () => {
 			}/>
 			<TileUi/>
 			<BgApp/>
-			{/*<TileTest />*/}
 			{/*	推荐BG放到最下面（这样不用设置z-index）*/}
 		</>);
 };

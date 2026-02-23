@@ -13,7 +13,7 @@ export const I18nUi = () => {
 	const {t} = useTranslation("common");
 	return (
 		<Select value={language} onValueChange={setLanguage}>
-			<SelectTrigger className={"w-36 bg-background"}>
+			<SelectTrigger className={"w-36 bg-background animate-fade-in-scale-1000"}>
 				<Languages className={"text-foreground"}/>
 				<SelectValue />
 			</SelectTrigger>
