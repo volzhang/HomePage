@@ -16,6 +16,13 @@ interface TileProps {
 	customName?: string,
 }
 
+// const tile_width = 144
+// const tile_height = 144
+// const p_x = 24
+// const p_y = 24
+// gap = 28
+
+
 export const TileComponent = ({
 								  tile,
 								  isPreview = false,
@@ -89,15 +96,27 @@ const SortableTile = ({tile}: { tile: Tile }) => {
 	const {setTileInEditId, setTileUiVisible} = useTileStore();
 
 	return (
-		<div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-			<TileComponent tile={tile} isDragging={isDragging} onRightClick={
-				(e) => {
-					e.preventDefault();
-					setTileInEditId(tile.id);
-					setTileUiVisible(true);
-				}
-			}/>
-		</div>
+		<>
+			<style>{`
+                @keyframes fade-in-scale {
+                  0% { opacity: 0; transform: scale(0.98); }
+                  100% { opacity: 1; transform: scale(1); }
+                }
+                .animate-fade-in-scale {
+                  animation: fade-in-scale 0.6s ease-in-out;
+                }
+            `}</style>
+			<div className={"animate-fade-in-scale"}
+				 ref={setNodeRef} style={style} {...listeners} {...attributes}>
+				<TileComponent tile={tile} isDragging={isDragging} onRightClick={
+					(e) => {
+						e.preventDefault();
+						setTileInEditId(tile.id);
+						setTileUiVisible(true);
+					}
+				}/>
+			</div>
+		</>
 	);
 };
 
@@ -130,14 +149,18 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
                   100% { opacity: 1; transform: scale(1); }
                 }
                 .animate-fade-in-scale {
-                  animation: fade-in-scale 0.5s ease-out;
+                  animation: fade-in-scale 0.6s ease-in-out;
                 }
             `}</style>
 
 			<div className="flex flex-wrap px-6 py-6 gap-7 animate-fade-in-scale">
 				<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 					<SortableContext items={tiles.map(tile => tile.id)} strategy={rectSortingStrategy}>
-						{filteredTiles.length > 0 ? filteredTiles : <div className={"text-muted-foreground"}>{t("No matched tile")}</div>}
+						{filteredTiles.length > 0 ? filteredTiles : <div className={cn(
+							"animate-fade-in-scale flex mx-auto items-center justify-center",
+							// "border border-black",
+							// 注意192px = 48，刚好是一行tiles的高度
+							"text-3xl text-border min-h-48 ")}>{t("No matched tile")}</div>}
 					</SortableContext>
 				</DndContext>
 			</div>
