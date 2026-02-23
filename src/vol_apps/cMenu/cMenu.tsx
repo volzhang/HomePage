@@ -56,7 +56,8 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 
 			<ContextMenu>
 				<ContextMenuTrigger className= {cn(
-					"flex mx-auto items-center justify-center ",
+					"flex mx-auto",
+					// "items-center justify-center ",
 					"border border-border rounded-xl",
 					"max-h-[70vh] max-w-[85%]")}>
 					<ScrollArea
