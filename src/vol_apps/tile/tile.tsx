@@ -2,6 +2,7 @@ import {cn} from "@/lib/utils";
 
 import {type Tile, useTileStore} from "@/vol_apps/tile/tile_store";
 import {closestCenter, DndContext, type DragEndEvent, DragOverlay, type DragStartEvent, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
+import {restrictToFirstScrollableAncestor} from "@dnd-kit/modifiers";
 import {arrayMove, rectSortingStrategy, SortableContext, useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {type MouseEvent, type KeyboardEvent, type JSX, useEffect, useState, memo, useMemo} from "react";
@@ -168,7 +169,18 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 						collisionDetection={closestCenter}
 						onDragStart={handleDragStart}
 						onDragEnd={handleDragEnd}
+
+						// modifiers={}
 						// autoScroll={false}  //使用了DragOverlay，可以默认开了。
+						// autoScroll={{
+						// 	// threshold: {
+						// 	// 	x: 0.2, // 水平方向触发区域占容器宽度的百分比，值越小越早触发
+						// 	// 	y: 0.1, // 垂直方向触发区域，可以调小一点让滚动更灵敏
+						// 	// },
+						// 	// acceleration: 100, // 滚动加速度，值越大滚动越快（默认值可能较低）
+						// 	// 还可以通过 canScroll 函数限制哪些元素可以自动滚动
+						// 	// canScroll: (element) => element.id !== 'no-scroll',
+						// }}
 			>
 				<SortableContext
 					items={displayTiles.map(tile => tile.id)}
@@ -178,19 +190,17 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 					) : (
 						<div className={cn(
 							"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",
-							"animate-fade-in-scale-300"
+							"animate-fade-in-scale-1000"
 						)}>
 							{t("No matched tile")}
 						</div>
 					)}
 				</SortableContext>
-				<DragOverlay>
-					{activeTile ? (
-						<TileComponent
-							tile={activeTile}
-							isDragging={true}
-						/>
-					) : null}
+				<DragOverlay modifiers={[restrictToFirstScrollableAncestor]}>
+					{activeTile && <TileComponent
+						tile={activeTile}
+						isDragging={true}
+					/>}
 				</DragOverlay>
 			</DndContext>
 		</div>

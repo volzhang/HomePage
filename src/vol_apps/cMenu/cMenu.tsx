@@ -59,14 +59,16 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 					"flex flex-col mx-auto",
 					"border border-border rounded-xl",
 					"max-h-[70vh] w-[85%]",
+					"overflow: visible"
 				)}>
 					<ScrollArea
 						type="scroll"
-						scrollHideDelay={600}
+						scrollHideDelay={500}
 						viewportClassName={cn(
 							"mask-fade",
 							"max-h-[70vh] min-h-[192px] ",
 							"max-w-full",
+							"overflow: visible!",
 							// "border border-red-500"
 						)}
 					>
