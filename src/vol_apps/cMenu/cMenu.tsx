@@ -44,7 +44,7 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 						rgba(0,0,0,0.8) 20px,
 						black 24px,
 						black calc(100% - 24px),
-						rgba(0,0,0,0.8) calc(100% - 20px),
+						rgba(0,0,0,0.9) calc(100% - 20px),
 						rgba(0,0,0,0.6) calc(100% - 16px),
 						rgba(0,0,0,0.4) calc(100% - 12px),
 						rgba(0,0,0,0.2) calc(100% - 8px),
@@ -58,12 +58,15 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 				<ContextMenuTrigger className= {cn(
 					"flex flex-col mx-auto",
 					"border border-border rounded-xl",
-					"max-h-[70vh] w-[85%]" )}>
+					"max-h-[70vh] w-[85%]",
+				)}>
 					<ScrollArea
 						type="scroll"
 						scrollHideDelay={600}
 						viewportClassName={cn(
-							"mask-fade max-h-[70vh] min-h-[192px] max-w-full",
+							"mask-fade",
+							"max-h-[70vh] min-h-[192px] ",
+							"max-w-full",
 							// "border border-red-500"
 						)}
 					>
