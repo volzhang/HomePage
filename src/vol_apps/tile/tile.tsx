@@ -89,7 +89,7 @@ const SortableTile = memo(({ tile, allowFadeIn }: { tile: Tile; allowFadeIn: boo
 	return (
 		<div
 			className={cn(
-				{"animate-fade-in-scale": shouldAnimate},
+				{"animate-fade-in-scale-1000": shouldAnimate},
 				{"no-animation": isDragging},
 				{"opacity-25": isDragging}    //使用了DragOverlay，把拖拽时的本体虚化，更美观
 			)}
@@ -169,18 +169,6 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 						collisionDetection={closestCenter}
 						onDragStart={handleDragStart}
 						onDragEnd={handleDragEnd}
-
-						// modifiers={}
-						// autoScroll={false}  //使用了DragOverlay，可以默认开了。
-						// autoScroll={{
-						// 	// threshold: {
-						// 	// 	x: 0.2, // 水平方向触发区域占容器宽度的百分比，值越小越早触发
-						// 	// 	y: 0.1, // 垂直方向触发区域，可以调小一点让滚动更灵敏
-						// 	// },
-						// 	// acceleration: 100, // 滚动加速度，值越大滚动越快（默认值可能较低）
-						// 	// 还可以通过 canScroll 函数限制哪些元素可以自动滚动
-						// 	// canScroll: (element) => element.id !== 'no-scroll',
-						// }}
 			>
 				<SortableContext
 					items={displayTiles.map(tile => tile.id)}
