@@ -3,7 +3,7 @@ import { persist, createJSONStorage, type PersistOptions} from "zustand/middlewa
 import localforage from "localforage";
 
 // 用于收集所有 persist store 实例
-const persistedStores = new Map<string, any>();
+export const persistedStores = new Map<string, any>();
 
 // 统一rehydrate 给localforageRestore用的
 export const persistedStoresRehydrate = async () => {
