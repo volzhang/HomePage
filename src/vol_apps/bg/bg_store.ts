@@ -1,5 +1,5 @@
 import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
-import defaultImg from "@/assets/wild_oliva.png";
+import defaultImg from "@/assets/bg-dark.png";
 import {type BlobString, blobToString} from "@/vol_apps/tool/isType";
 
 const response = await fetch(defaultImg);

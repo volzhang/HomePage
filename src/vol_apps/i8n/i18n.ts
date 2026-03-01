@@ -40,6 +40,8 @@ const resources = {
 			"Click to toggle mode \nCurrently: tiles match {{mode}} selected tags":
 				"点击切换模式\n当前：瓷砖匹配{{mode}}选中标签",
 
+			"Left-click a tag to select only this one.\nRight-click to toggle its selection.\nClick me to toggle mode.\nCurrently: tiles match {{mode}} selected tags":
+				"左键点击标签，则唯一选中此标签。\n右键点击标签，则切换此标签的选中状态。\n点击我切换模式。\n当前：瓷砖匹配{{mode}}选中标签。",
 			"ANY": "任一",
 			"ALL": "全部",
 

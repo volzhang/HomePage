@@ -8,6 +8,7 @@ import {Theme}                from "@/vol_apps/theme/theme";
 import {SortableTiles}        from "@/vol_apps/tile/tile";
 import {TagComponent}         from "@/vol_apps/tag/tag";
 import {TileUi}               from "@/vol_apps/tile/tile_ui";
+// import {TiptapEditor} from "@/vol_apps/tiptap/TiptapEditor";
 import {Version}              from "@/vol_apps/version/version";
 
 export const App = () => {
@@ -28,6 +29,7 @@ export const App = () => {
 				<SortableTiles/>
 			}/>
 			<TileUi/>
+			{/*<TiptapEditor />*/}
 			<BgApp/>
 			{/*	推荐BG放到最下面（这样不用设置z-index）*/}
 		</>);

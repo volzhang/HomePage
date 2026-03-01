@@ -1,4 +1,4 @@
-import defaultIcon from "@/assets/icon.png";
+import defaultIcon from "@/assets/icon-100.png";
 import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
 import {blobToString} from "@/vol_apps/tool/isType";
 

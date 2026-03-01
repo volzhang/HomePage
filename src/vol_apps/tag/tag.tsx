@@ -3,7 +3,7 @@ import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hov
 import {Spinner} from "@/components/ui/spinner";
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {BookmarkIcon, LoaderCircle} from "lucide-react";
+import {BookmarkIcon, LoaderCircle } from "lucide-react";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
 
@@ -26,8 +26,7 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
 			<HoverCardContent className="w-auto" side="top" sideOffset={16}>
 				<div className="text-[13px]">
 					{t(
-						// "Click to toggle mode \nCurrently: tiles match {{mode}} selected tags",
-						"Click to toggle mode. Currently: tiles match {{mode}} selected tags",
+						"Left-click a tag to select only this one.\nRight-click to toggle its selection.\nClick me to toggle mode.\nCurrently: tiles match {{mode}} selected tags",
 						{mode: isBroadMatches ? t("ANY") : t("ALL")}
 					)
 						.split("\n").map((line, i) => (
@@ -72,21 +71,29 @@ export const TagUpdate = () => {
 export const TagComponent = () => {
 	const {t} = useTranslation("tag");
 	const {
-		tags, toggleTag, isBroadMatches, setIsBroadMatches,
+		tags, updateTag, toggleTag, isBroadMatches, setIsBroadMatches,
 		untaggedChecked, setUntaggedChecked, hasUntaggedTiles
 	} = useTileStore();
 
 	const Tags = tags.map((tag) => (
 		<Button
 			key={tag.id} variant={tag.checked ? "default" : "outline"}
-			onClick={() => toggleTag(tag.id)}
+			onClick={() => {
+				tags.map(items=>{updateTag(items.id, {checked: items.id === tag.id})});
+			}
+			}
+			onContextMenu={(e) => {
+				e.preventDefault();
+				toggleTag(tag.id);
+			}
+			}
 			className={cn(tag.checked
 				? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none"
 				: "border-none"
 			)}>
 			{tag.name}
 		</Button>
-	))
+	));
 
 	return (
 		<>
