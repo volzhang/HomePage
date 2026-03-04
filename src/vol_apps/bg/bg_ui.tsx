@@ -9,6 +9,7 @@ import {blobToString} from "@/vol_apps/tool/isType";
 import {Folder} from "lucide-react";
 import {useId} from "react";
 import {useTranslation} from "react-i18next";
+import {img} from "@/vol_apps/bg/bg_store";
 
 export function BgUi() {
 	//i18n
@@ -46,6 +47,20 @@ export function BgUi() {
 						{t("Upload Image")}
 					</Button>
 				}/>
+			{/*恢复默认设置*/}
+			<Button
+				onClick={() => {
+					setBgImg(img);
+					setBgRepeat(true);
+					setBgCenter(false);
+					setBgSize("auto")
+					setOtherVisible(true);
+				}}
+				type="button"
+				variant={"outline"}
+				className={`h-16 text-xl`}>
+				{t("Reset Defaults")}
+			</Button>
 			{/* 只看背景 */}
 			<RadioGroup
 				defaultValue={otherVisible ? "true" : "false"}

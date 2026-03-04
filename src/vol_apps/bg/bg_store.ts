@@ -4,7 +4,7 @@ import {type BlobString, blobToString} from "@/vol_apps/tool/isType";
 
 const response = await fetch(defaultImg);
 const blob = await response.blob();
-const img = await blobToString(blob);
+export const img = await blobToString(blob);
 
 // const {t} = useTranslation("bg");
 

@@ -250,7 +250,7 @@ export const TileUi = () => {
 							<ImgFilePickerBtn onPick={(file) => (handleIconUpload(file))} children={
 								<Button type="button" variant={"secondary"} className={cn(
 									"text-[15px] h-[46px] w-full",
-									"hover:bg-[#0078d7]",
+									"hover:bg-sBlue",
 									"hover:text-white",)
 								}>
 									<ImageUp/>

@@ -67,6 +67,7 @@ const resources = {
 		},
 		bg: {
 			"Upload Image": "上传图片",
+			"Reset Defaults":"恢复默认设置",
 			"Default View": "正常",
 			"Hide Others": "只看背景",
 			"Repeat": "重复平铺",
