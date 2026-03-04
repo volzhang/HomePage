@@ -26,19 +26,6 @@ export const downloadAsJsonFile = async (
 	}
 };
 
-// export const localforageRestore_old = async (file: JsonFile, clearFirst: boolean = false): Promise<void> => {
-// 	const text = await file.text();
-// 	const obj = await validTypeParse(text);
-// 	// const obj = JSON.parse(text);
-//
-// 	if (isPlainObject(obj)) {
-// 		if (clearFirst) await localforage.clear();
-// 		await Promise.all(Array.from(Object.entries(obj), ([k, v]) => localforage.setItem(k, v)));
-// 	}
-//
-// 	await persistedStoresRehydrate();
-// };
-
 // ------------------ 恢复 ------------------
 /*
  * 只恢复备份文件中存在的、且当前已注册的 persistedStores 的 key
@@ -52,14 +39,45 @@ export const localforageRestore = async (
 	const backupData = await validTypeParse(text);
 	if (!isPlainObject(backupData)) throw new Error("invalid backupData");
 
-	const registeredKeys = new Set(persistedStores.keys()); // 已注册的 store 名称集合
-	if (clearFirst) await Promise.all(Array.from(registeredKeys).map(key => localforage.removeItem(key)));
+	// const registeredKeys = new Set(persistedStores.keys()); // 已注册的 store 名称集合
+
+	// 已注册的 store 信息（包含 storageType）
+	const registered = new Map(persistedStores); // name → { store, storageType }
+	// if (clearFirst) await Promise.all(Array.from(registeredKeys).map(key => localforage.removeItem(key)));
+
+	// 先清空（只清已注册的）
+	if (clearFirst) {
+		await Promise.all(
+			Array.from(registered.keys()).map(async (key) => {
+				const { storageType } = registered.get(key)!;
+				if (storageType === 'localforage') {
+					await localforage.removeItem(key);
+				} else if (storageType === 'localStorage') {
+					localStorage.removeItem(key);
+				}
+			})
+		);
+	}
 
 	const restorePromises = Object.entries(backupData)
-		.filter(([key]) => registeredKeys.has(key))        // 只处理已注册的
+		.filter(([key]) => registered.has(key))
 		.map(async ([key, value]) => {
-			if (isValidTypeExt(value)) await localforage.setItem(key, value);
+			if (!isValidTypeExt(value)) return;
+			const { storageType } = registered.get(key)!;
+			if (storageType === 'localforage') {
+				await localforage.setItem(key, value);
+			} else if (storageType === 'localStorage') {
+				localStorage.setItem(key, JSON.stringify(value));
+			}
 		});
+
+
+
+	// const restorePromises = Object.entries(backupData)
+	// 	.filter(([key]) => registeredKeys.has(key))        // 只处理已注册的
+	// 	.map(async ([key, value]) => {
+	// 		if (isValidTypeExt(value)) await localforage.setItem(key, value);
+	// 	});
 
 	await Promise.all(restorePromises);
 	await persistedStoresRehydrate();
@@ -87,18 +105,50 @@ export const localforageRestore = async (
 /**
  * 只备份已注册到 persistedStores 的那些 key
  */
+// export const localforageBackup_old = async (): Promise<void> => {
+// 	const registeredKeys = Array.from(persistedStores.keys()); // 所有注册过的 store name 就是 key 前缀
+//
+// 	const result: Record<string, any> = {};
+//
+// 	// 只迭代我们关心的 key
+// 	await Promise.all(
+// 		registeredKeys.map(async (key) => {
+// 			const value = await localforage.getItem(key);
+// 			if (value !== null && isValidTypeExt(value)) {
+// 				result[key] = value;
+// 			}
+// 		})
+// 	);
+//
+// 	// 如果没有任何数据，也生成一个空备份（视需求可调整）
+// 	const version = await fetchVersion();
+// 	const filename = `DB[${version}]${timeStamp()}.json`;
+// 	await downloadAsJsonFile(result, filename);
+// };
+
+// ------------------ 备份 ------------------
+
+/**
+ * 只备份已注册到 persistedStores 的那些 key
+ * 根据 storageType 从 localforage 或 localStorage 分别读取
+ */
 export const localforageBackup = async (): Promise<void> => {
-	const registeredKeys = Array.from(persistedStores.keys()); // 所有注册过的 store name 就是 key 前缀
+	const registered = new Map(persistedStores); // name → { store, storageType }
 
 	const result: Record<string, any> = {};
 
-	// 只迭代我们关心的 key
+	// 遍历所有已注册的 store，根据类型从对应存储读取
 	await Promise.all(
-		registeredKeys.map(async (key) => {
-			const value = await localforage.getItem(key);
-			if (value !== null && isValidTypeExt(value)) {
-				result[key] = value;
+		Array.from(registered.entries()).map(async ([key, { storageType }]) => {
+			let value: any = null;
+
+			if (storageType === 'localforage') {
+				value = await localforage.getItem(key);
+			} else if (storageType === 'localStorage') {
+				const raw = localStorage.getItem(key);
+				value = raw ? JSON.parse(raw ?? 'null') : null;
 			}
+			if (value !== null && isValidTypeExt(value)) result[key] = value;
 		})
 	);
 

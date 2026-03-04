@@ -1,4 +1,4 @@
-import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
+import {createLocalStoragePersistedStore} from "@/vol_apps/tool/createPersistedStore";
 
 type ThemeStoreState = {
 	theme: "light" | "dark"
@@ -10,7 +10,7 @@ type ThemeStoreActions = {
 
 type SearchStore = ThemeStoreState & ThemeStoreActions;
 
-export const useThemeStore = createPersistedStore<SearchStore>(
+export const useThemeStore = createLocalStoragePersistedStore<SearchStore>(
 	"theme",
 	(set) => ({
 		theme: "dark",

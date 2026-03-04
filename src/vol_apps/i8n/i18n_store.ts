@@ -1,4 +1,4 @@
-import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
+import {createLocalStoragePersistedStore} from "@/vol_apps/tool/createPersistedStore";
 import i18n from "i18next";
 
 type I18nStoreState = {
@@ -11,7 +11,7 @@ type I18nStoreActions = {
 
 type I18nStore = I18nStoreState & I18nStoreActions;
 
-export const useI18nStore = createPersistedStore<I18nStore>(
+export const useI18nStore = createLocalStoragePersistedStore<I18nStore>(
 	"i18n",
 	(set,) => ({
 		language: i18n.language || "en",
