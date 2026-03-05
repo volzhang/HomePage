@@ -135,10 +135,6 @@
     animation: fade-in-scale 0.6s ease-in-out;
   }
 
-  .animate-fade-in-scale-300 {
-    animation: fade-in-scale 0.3s ease-in-out;
-  }
-
   .animate-fade-in-scale-1000 {
     animation: fade-in-scale 1.0s ease-in-out;
   }
@@ -154,4 +150,10 @@
   .animation-disable {
     animation-duration: 0s !important;
   }
+
+  /* bg组件功能：其他可见 */
+  .hide-others #root > :not(.bg-ui-panel) {
+    display: none !important;
+  }
+
 }

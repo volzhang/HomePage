@@ -1,4 +1,4 @@
-import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
+import {createLocalStoragePersistedStore} from "@/vol_apps/tool/createPersistedStore";
 import defaultImg from "@/assets/bg-dark.png";
 import {type BlobString, blobToString} from "@/vol_apps/tool/isType";
 
@@ -50,7 +50,7 @@ type BgStoreActions = {
 
 type BgStore = BgStoreState & BgStoreActions;
 
-export const useBgStore = createPersistedStore<BgStore>(
+export const useBgStore = createLocalStoragePersistedStore<BgStore>(
 	"bg",
 	(set) => ({
 		bgImg: img,

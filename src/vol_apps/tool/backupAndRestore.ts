@@ -2,9 +2,7 @@ import {persistedStoresRehydrate, persistedStores} from "@/vol_apps/tool/createP
 import {download, timeStamp} from "@/vol_apps/tool/download";
 import type {JsonFile} from "@/vol_apps/tool/filePicker";
 import {
-	isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeParse,
-	// validTypeParse,
-	validTypeStringify
+	isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeParse, validTypeStringify
 } from "@/vol_apps/tool/isType";
 import {fetchVersion} from "@/vol_apps/version/version";
 import localforage from "localforage";
@@ -148,7 +146,7 @@ export const localforageBackup = async (): Promise<void> => {
 				const raw = localStorage.getItem(key);
 				value = raw ? JSON.parse(raw ?? 'null') : null;
 			}
-			if (value !== null && isValidTypeExt(value)) result[key] = value;
+			if (value !== null) result[key] = value;
 		})
 	);
 
