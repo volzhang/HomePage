@@ -43,8 +43,12 @@ export function BgUi() {
 				onPick={async (file) => setBgImg(await blobToString(file))}
 				children={
 					<Button
-						variant={"outline"}
-						className={"text-xl w-full h-16 gap-6 items-center"}>
+						variant={"default"}
+						className={cn("text-xl w-full h-16 gap-6 items-center",
+							"bg-secondary border-secondary",
+							"text-secondary-foreground",
+							"hover:bg-background hover:text-secondary-foreground"
+							)}>
 						<Folder className={`scale-180`}/>
 						{t("Upload Image")}
 					</Button>
@@ -59,8 +63,13 @@ export function BgUi() {
 					setOtherVisible(true);
 				}}
 				type="button"
-				variant={"outline"}
-				className={`h-16 text-xl`}>
+				variant={"default"}
+				className={cn(
+					"h-16 text-xl",
+					"bg-secondary border-secondary",
+					"text-secondary-foreground",
+					"hover:bg-background hover:text-secondary-foreground"
+					)}>
 				{t("Reset Defaults")}
 			</Button>
 			{/* 只看背景 */}
@@ -70,7 +79,7 @@ export function BgUi() {
 				className={cn(
 					"w-full p-6 gap-4 border rounded-md",
 					"flex flex-col items-start justify-center",
-					"bg-secondary border-secondary text-secondary-foreground"
+					"bg-secondary border-secondary text-secondary-foreground hover:bg-background"
 				)}>
 				<div className={"flex h-8 items-center gap-2"}>
 					<RadioGroupItem value="true" id={id1}/>
@@ -91,8 +100,8 @@ export function BgUi() {
 				onValueChange={(value) => setBgRepeat(value === "repeat")}
 				className={cn(
 					"w-full p-6 gap-4 border rounded-md ",
-					"border-secondary bg-secondary",
-					"flex flex-col items-start justify-center"
+					"border-secondary bg-secondary hover:bg-background",
+					"flex flex-col items-start justify-center",
 				)}>
 				<div className={"flex h-8 items-center gap-2"}>
 					<RadioGroupItem value="repeat" id={id3}/>
@@ -111,9 +120,11 @@ export function BgUi() {
 			<RadioGroup
 				value={bgCenter ? "center" : "not-center"}
 				onValueChange={(value) => setBgCenter(value === "center")}
-				className={
-					`w-full p-6 gap-4 border rounded-md border-secondary bg-secondary
-							flex flex-col items-start justify-center`}>
+				className={cn(
+					"w-full p-6 gap-4 border rounded-md",
+					"border-secondary bg-secondary hover:bg-background",
+					"flex flex-col items-start justify-center"
+				)}>
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="not-center" id={id6}/>
 					<Label htmlFor={id6} className={`text-xl`}>
@@ -133,7 +144,7 @@ export function BgUi() {
 					value={bgSize}
 					onValueChange={(value) => setBgSize(value)}
 					className={cn("w-full p-6 gap-4 rounded-md",
-						"border border-secondary bg-secondary",
+						"border border-secondary bg-secondary hover:bg-background",
 						"flex flex-col items-start justify-center")}>
 					{sizeItems.map(item => (
 						<div key={`${item.value}-content`}
@@ -160,8 +171,13 @@ export function BgUi() {
 					setOtherVisible(true);
 				}}
 				type="button"
-				variant={"outline"}
-				className={`h-16 text-xl`}>
+				variant={"default"}
+				className={cn(
+					"h-16 text-xl",
+					"bg-secondary border-secondary",
+					"text-secondary-foreground",
+					"hover:bg-background hover:text-secondary-foreground"
+				)}>
 				{t("OK")}
 			</Button>
 		</div>

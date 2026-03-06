@@ -244,6 +244,7 @@ export const useTileStore = createPersistedStore<TileStore>(
 
 	}),
 	{
+
 		// 水和后立即更新tags，不要用useEffect了
 		onRehydrateStorage: (_state) => (hydratedState) => {
 			// _state 是水合前的状态，

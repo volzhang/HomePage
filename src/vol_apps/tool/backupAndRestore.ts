@@ -57,18 +57,36 @@ export const localforageRestore = async (
 		);
 	}
 
+	const tryParsedValue = (value:any)=>{
+		let result
+		if (typeof value === "string") {
+			try {
+				result = JSON.parse(value);
+			} catch {
+				result = value;
+			}
+		}
+		return result;
+	}
+
 	const restorePromises = Object.entries(backupData)
 		.filter(([key]) => registered.has(key))
 		.map(async ([key, value]) => {
 			if (!isValidTypeExt(value)) return;
 			const { storageType } = registered.get(key)!;
+			//这段需要解释下，原则上，我们默认使用localforage
+			//少数情况下，用户数据会从localforage迁移到localStorage，那么
+			//localStorage的set需要注意，先把old——value解析后再JSON.stringify存入，否则，格式会无法识别
+			//存在\斜杠
+
+			//反过来，我们不用处理localforage的set，因为，不存在localStorage到localforage的数据迁移
 			if (storageType === 'localforage') {
 				await localforage.setItem(key, value);
 			} else if (storageType === 'localStorage') {
-				localStorage.setItem(key, JSON.stringify(value));
+				const parsedValue = tryParsedValue(value);
+				localStorage.setItem(key, JSON.stringify(parsedValue));
 			}
 		});
-
 
 
 	// const restorePromises = Object.entries(backupData)

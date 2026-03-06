@@ -1,4 +1,4 @@
-import {createLocalStoragePersistedStore} from "@/vol_apps/tool/createPersistedStore";
+import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
 import defaultImg from "@/assets/bg-dark.png";
 import {type BlobString, blobToString} from "@/vol_apps/tool/isType";
 
@@ -50,7 +50,7 @@ type BgStoreActions = {
 
 type BgStore = BgStoreState & BgStoreActions;
 
-export const useBgStore = createLocalStoragePersistedStore<BgStore>(
+export const useBgStore = createPersistedStore<BgStore>(
 	"bg",
 	(set) => ({
 		bgImg: img,
@@ -71,6 +71,10 @@ export const useBgStore = createLocalStoragePersistedStore<BgStore>(
 
 		setOtherVisible: (otherVisible) => set({otherVisible}),
 		setBgUiVisible: (bgUiVisible) => set({bgUiVisible}),
-	})
+	}),
+	{
+		storageType: "localStorage",
+		migrateFromLocalForage: true,
+	}
 )
 
