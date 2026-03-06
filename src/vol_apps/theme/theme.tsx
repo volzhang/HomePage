@@ -19,7 +19,7 @@ export const Theme = () => {
 	return (
 		<>
 			<Button
-				className={"animate-fade-in-scale-1000"}
+				className={"animate-fade-in-scale"}
 				variant={"outline"}
 				size={"icon"}
 				onClick={toggleTheme}>

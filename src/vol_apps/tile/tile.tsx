@@ -89,7 +89,7 @@ const SortableTile = memo(({ tile, allowFadeIn }: { tile: Tile; allowFadeIn: boo
 	return (
 		<div
 			className={cn(
-				{"animate-fade-in-scale-1000": shouldAnimate},
+				{"animate-fade-in-scale": shouldAnimate},
 				{"no-animation": isDragging},
 				{"opacity-25": isDragging}    //使用了DragOverlay，把拖拽时的本体虚化，更美观
 			)}
@@ -178,7 +178,7 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 					) : (
 						<div className={cn(
 							"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",
-							"animate-fade-in-scale-1000"
+							"animate-fade-in-scale"
 						)}>
 							{t("No matched tile")}
 						</div>

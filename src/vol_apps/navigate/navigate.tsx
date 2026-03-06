@@ -30,7 +30,7 @@ export const Navigation = () => {
 	}
 
 	return (
-		<NavigationMenu delayDuration={999999} skipDelayDuration={0} className={"animate-fade-in-scale-1000"}>
+		<NavigationMenu delayDuration={999999} skipDelayDuration={0} className={"animate-fade-in-scale"}>
 			<NavigationMenuList>
 				<NavigationMenuItem>
 					<NavigationMenuTrigger className={cn("w-24",

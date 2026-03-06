@@ -98,9 +98,10 @@ export const TagComponent = () => {
 	return (
 		<>
 			<div className={cn(
-				"animate-fade-in-scale-1000",
+				"animate-fade-in-scale",
 				"flex flex-wrap items-center px-8 pb-3 gap-3 mx-auto",
 				"w-[85%] min-h-9",
+				"select-none"
 				// "border border-border",
 			)}>
 				{Tags}

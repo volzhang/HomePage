@@ -5,7 +5,7 @@ const LINK = "https://github.com/volzhang/HomePage";
 export const LinkGithub = () => {
 	return (
 		<Button
-			className={"animate-fade-in-scale-1000"}
+			className={"animate-fade-in-scale"}
 			variant={"outline"}
 			onClick={() => {
 				window.open(LINK, "_blank", "noopener noreferrer");

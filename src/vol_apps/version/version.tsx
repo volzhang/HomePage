@@ -26,7 +26,7 @@ export const Version = () => {
 			variant={"outline"}
 			disabled={true}
 			className={cn(
-				"border-none animate-fade-in-scale-1000 w-32",
+				"border-none animate-fade-in-scale w-32",
 				"select-none",
 				"pointer-events-none" //只要样式不要交互
 			)}>
