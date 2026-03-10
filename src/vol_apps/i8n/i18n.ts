@@ -88,11 +88,24 @@ const resources = {
 	}
 };
 
+function getInitialLanguage() {
+	try {
+		const raw = localStorage.getItem("i18n");
+		if (!raw) return "en";
+		const data = JSON.parse(raw);
+		return data?.state?.language || "en";
+	} catch {
+		return "en";
+	}
+}
+
+export const initialLng = getInitialLanguage();
+
 await i18n
 	.use(initReactI18next)
 	.init({
 		resources,
-		lng: "en",
+		lng: initialLng,
 		fallbackLng: "en",
 		interpolation: {escapeValue: false},
 	});

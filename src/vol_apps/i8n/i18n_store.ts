@@ -1,3 +1,4 @@
+import {initialLng} from "@/vol_apps/i8n/i18n";
 import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
 import i18n from "i18next";
 
@@ -14,7 +15,7 @@ type I18nStore = I18nStoreState & I18nStoreActions;
 export const useI18nStore = createPersistedStore<I18nStore>(
 	"i18n",
 	(set,) => ({
-		language: "en",
+		language: initialLng || "en",
 		setLanguage: async (language) => {
 			await i18n.changeLanguage(language);
 			set({language});
@@ -24,15 +25,6 @@ export const useI18nStore = createPersistedStore<I18nStore>(
 	{
 		storageType: "localStorage",
 		migrateFromLocalForage: true,
-		onRehydrateStorage: () => {
-			return async (state) => {
-				if (state?.language && state.language !== i18n.language) {
-					await i18n.changeLanguage(state.language);
-					updateDocumentLanguage(state.language);
-					// i18n 比较特殊，需要手动changeLanguage恢复历史设置
-				}
-			};
-		}
 	}
 );
 
