@@ -111,10 +111,9 @@ const SortableTile = memo(({ tile, allowFadeIn }: { tile: Tile; allowFadeIn: boo
 	);
 });
 
-SortableTile.displayName = "SortableTile"; //这是react调试用的，没什么用
-
 export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
-	const {tiles, setTiles, tilesByTag, isBroadMatches} = useTileStore();
+	const {_hydrated,
+		tiles, setTiles, tilesByTag, isBroadMatches} = useTileStore();
 	const {t} = useTranslation("tile");
 
 	const displayTiles = showTiles ?? tilesByTag(isBroadMatches ? "ANY" : "ALL")!;
@@ -162,7 +161,6 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 		setActiveId(event.active.id);
 	};
 
-
 	return (
 		<div className="flex flex-wrap px-6 py-6 gap-7">
 			<DndContext sensors={sensors}
@@ -174,7 +172,21 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 					items={displayTiles.map(tile => tile.id)}
 					strategy={rectSortingStrategy}>
 					{filteredTiles.length > 0 ? (
-						filteredTiles
+						_hydrated
+							? (filteredTiles)
+							// ?(<div className={cn(
+							// 	"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",
+							// 	"animate-fade-in-scale"
+							// )}>
+							// 	{t("Loading...")}
+							// </div>)
+							:(<div className={cn(
+								"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",
+								"animate-fade-in-scale"
+							)}>
+								{t("Loading")}
+							</div>
+						)
 					) : (
 						<div className={cn(
 							"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",

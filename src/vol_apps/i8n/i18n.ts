@@ -9,7 +9,7 @@ const resources = {
 		navigation: {},
 		contextMenu: {},
 		bg: {},
-		version:{}
+		version: {}
 	},
 	cn: {
 		// 直接在这里维护双语显示：k,en_US;v,cn。
@@ -33,10 +33,11 @@ const resources = {
 			"Search Icon": "搜索图标",
 			"Fetching Icon": "正在获取图标",
 
-			"No matched tile":"没有匹配的瓷砖"
+			"No matched tile": "没有匹配的瓷砖",
+			"Loading...": "正在加载..."
 
 		},
-		tag:{
+		tag: {
 			"Click to toggle mode \nCurrently: tiles match {{mode}} selected tags":
 				"点击切换模式\n当前：瓷砖匹配{{mode}}选中标签",
 
@@ -56,7 +57,7 @@ const resources = {
 			"Import Backup": "恢复存档",
 			"Add Tile": "添加瓷砖",
 
-			"Privacy Policy":"隐私政策"
+			"Privacy Policy": "隐私政策"
 		},
 		contextMenu: {
 			"Add Tile": "添加瓷砖",
@@ -67,7 +68,7 @@ const resources = {
 		},
 		bg: {
 			"Upload Image": "上传图片",
-			"Reset Defaults":"恢复默认设置",
+			"Reset Defaults": "恢复默认设置",
 			"Default View": "正常",
 			"Hide Others": "只看背景",
 			"Repeat": "重复平铺",
@@ -79,11 +80,11 @@ const resources = {
 			"Cover": "扩展至覆盖",
 			"OK": "确定"
 		},
-		version:{
-			"Version":"版本"
+		version: {
+			"Version": "版本"
 		},
-		privacy:{
-			"Privacy Policy":"隐私政策"
+		privacy: {
+			"Privacy Policy": "隐私政策"
 		}
 	}
 };

@@ -123,7 +123,7 @@
   @keyframes fade-in-scale {
     0% {
       opacity: 0;
-      transform: scale(0.96);
+      transform: scale(0.97);
     }
     100% {
       opacity: 1;
@@ -132,7 +132,7 @@
   }
 
   .animate-fade-in-scale {
-    animation: fade-in-scale 0.3s ease-in-out;
+    animation: fade-in-scale 0.2s ease-in-out;
   }
 
   .no-animation {
