@@ -2,7 +2,7 @@ import {persistedStoresRehydrate, persistedStores} from "@/vol_apps/tool/createP
 import {download, timeStamp} from "@/vol_apps/tool/download";
 import type {JsonFile} from "@/vol_apps/tool/filePicker";
 import {
-	isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeParse, validTypeStringify
+	isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeStringify
 } from "@/vol_apps/tool/isType";
 import {fetchVersion} from "@/vol_apps/version/version";
 import localforage from "localforage";
@@ -34,7 +34,7 @@ export const localforageRestore = async (
 	clearFirst: boolean = false
 ): Promise<void> => {
 	const text = await file.text();
-	const backupData = await validTypeParse(text);
+	const backupData = await JSON.parse(text);
 	if (!isPlainObject(backupData)) throw new Error("invalid backupData");
 
 	// const registeredKeys = new Set(persistedStores.keys()); // 已注册的 store 名称集合

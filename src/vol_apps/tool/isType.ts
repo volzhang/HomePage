@@ -16,11 +16,11 @@ export const isBlobString = (value: any): value is BlobString => {
 	return typeof value === "string" && value.startsWith("data:");
 };
 
-export const stringToBlob = async (blobString: string): Promise<Blob> => {
-	// base64 -> Blob 自动挡
-	const response = await fetch(blobString);
-	return await response.blob();
-};
+// export const stringToBlob = async (blobString: string): Promise<Blob> => {
+// 	// base64 -> Blob 自动挡
+// 	const response = await fetch(blobString);
+// 	return await response.blob();
+// };
 
 // 判断是否为[...]
 const isArray = (value: any): value is Array<any> => {
@@ -85,19 +85,19 @@ export const validTypeStringify = async (value: any): Promise<string> => {
 	return JSON.stringify(value, null, 4);  // 2 是缩进，可改成 0 或 4
 };
 
-export const validTypeParse = async (str: string): Promise<any> => {
-	try {
-		return JSON.parse(str);
-	} catch (e) {
-		throw new Error(`JSON 解析失败: ${e}`);
-	}
-};
+// export const validTypeParse = async (str: string): Promise<any> => {
+// 	try {
+// 		return JSON.parse(str);
+// 	} catch (e) {
+// 		throw new Error(`JSON 解析失败: ${e}`);
+// 	}
+// };
 
-export const fileToBase64 = (file: File): Promise<string> => {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = () => resolve(reader.result as string);
-		reader.onerror = reject;
-		reader.readAsDataURL(file);
-	});
-};
+// export const fileToBase64 = (file: File): Promise<string> => {
+// 	return new Promise((resolve, reject) => {
+// 		const reader = new FileReader();
+// 		reader.onload = () => resolve(reader.result as string);
+// 		reader.onerror = reject;
+// 		reader.readAsDataURL(file);
+// 	});
+// };
