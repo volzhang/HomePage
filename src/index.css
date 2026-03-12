@@ -132,7 +132,7 @@
   }
 
   .animate-fade-in-scale {
-    animation: fade-in-scale 0.6s ease-in-out;
+    animation: fade-in-scale 0.5s ease-in-out;
   }
 
   .no-animation {

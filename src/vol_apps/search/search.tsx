@@ -21,7 +21,7 @@ export const SearchComponent = () => {
 			<form
 				action={currentEngine.url} method="GET" target="_blank"
 				className={cn(
-					"animate-fade-in-scale-1000",
+					"animate-fade-in-scale",
 					"flex mt-16 mb-16 w-fit h-fit mx-auto rounded-xl",
 
 					"transition-all duration-200 delay-0 ease-linear",
