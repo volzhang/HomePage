@@ -174,17 +174,11 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 					{filteredTiles.length > 0 ? (
 						_hydrated
 							? (filteredTiles)
-							// ?(<div className={cn(
-							// 	"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",
-							// 	"animate-fade-in-scale"
-							// )}>
-							// 	{t("Loading...")}
-							// </div>)
 							:(<div className={cn(
 								"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",
 								"animate-fade-in-scale"
 							)}>
-								{t("Loading")}
+								{t("Loading...")}
 							</div>
 						)
 					) : (

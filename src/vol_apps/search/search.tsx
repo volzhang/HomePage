@@ -9,7 +9,8 @@ import {SearchIcon} from "lucide-react";
 import {useTranslation} from "react-i18next";
 
 export const SearchComponent = () => {
-	const {engines, getEngineInUse, setEngineInUseByName} = useSearchStore();
+	const {_hydrated,
+		engines, getEngineInUse, setEngineInUseByName} = useSearchStore();
 	const currentEngine = getEngineInUse();
 	const handleOnValueChange = (name: string) => {
 		if (name === "") return; //这里有个坑，OnValueChange会在mount时自动设置为""
@@ -18,7 +19,8 @@ export const SearchComponent = () => {
 	const {t} = useTranslation("search")
 	return (
 		<>
-			<form
+			{_hydrated
+				? (<form
 				action={currentEngine.url} method="GET" target="_blank"
 				className={cn(
 					"animate-fade-in-scale",
@@ -32,12 +34,12 @@ export const SearchComponent = () => {
 				<ButtonGroup className="w-[680px] h-14">
 					<Button
 						type="submit" variant="outline" aria-label="Search"
-							className={cn("h-full! w-16 flex-col items-center",
-								" border border-r-0 border-[#0078d7]! text-[#0078d7]! ",
-								"bg-white!",
-								"hover:bg-[#0078d7]!",
-								"hover:text-white!"
-							)}>
+						className={cn("h-full! w-16 flex-col items-center",
+							" border border-r-0 border-[#0078d7]! text-[#0078d7]! ",
+							"bg-white!",
+							"hover:bg-[#0078d7]!",
+							"hover:text-white!"
+						)}>
 						<SearchIcon className={"scale-160"} strokeWidth={3}/>
 					</Button>
 
@@ -84,7 +86,9 @@ export const SearchComponent = () => {
 						</SelectContent>
 					</Select>
 				</ButtonGroup>
-			</form>
+			</form>)
+			: <div className={"mt-16 mb-16 min-h-15"}></div>
+			}
 		</>
 	);
 };

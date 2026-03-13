@@ -2,22 +2,6 @@ import { create, type StateCreator, type StoreApi } from "zustand";
 import { persist, createJSONStorage, type PersistOptions } from "zustand/middleware";
 import localforage from "localforage";
 
-// 用于收集所有 persist store 实例
-export const persistedStores = new Map<string, {
-	store: any;
-	storageType: "localforage" | "localStorage";
-}>();
-
-// 统一 rehydrate 给 localforageRestore 使用
-export const persistedStoresRehydrate = async () => {
-	const promises: Promise<void>[] = [];
-	for (const entry of persistedStores.values()) {
-		const result = entry.store.persist.rehydrate();
-		if (result && typeof result.then === "function") promises.push(result);
-	}
-	if (promises.length) await Promise.all(promises);
-};
-
 // ==================== 带 _hydrated 的状态类型 ====================
 type StateWithHydrated<S> = S & { _hydrated: boolean };
 
@@ -35,6 +19,23 @@ type CreatePersistedStoreOptions<S> =
 	ExtraOptions &
 	Partial<Omit<PersistOptions<S, Partial<S>>, "name" | "storage">>;
 
+// 用于收集所有 persist store 实例
+export const persistedStores = new Map<string, {
+	store: any;
+	storageType: "localforage" | "localStorage";
+}>();
+
+export const persistedStoresRehydrate = async () => {
+	const promises: Promise<any>[] = [];
+	for (const entry of persistedStores.values()) {
+		const rehydrateResult = entry.store.persist.rehydrate();
+		if (isPromise(rehydrateResult)) {
+			promises.push(rehydrateResult);
+		}
+	}
+	if (promises.length) await Promise.all(promises);
+};
+
 // ==================== 主工厂 ====================
 export function createPersistedStore<S>(
 	name: string,
@@ -45,15 +46,18 @@ export function createPersistedStore<S>(
 		storageType = "localforage",
 		migrateFromLocalForage = false,
 		onRehydrateStorage: userOnRehydrateStorage,
-		partialize: userPartialize,
-		merge: userMerge,                           // [FIXED] 提取用户 merge
-		...restPersistOptions                        // 剩余选项（不包含 merge）
+		...restPersistOptions
 	} = options;
 
 	let storeSet!: StoreApi<StateWithHydrated<S>>["setState"];
 
 	// 包装 initializer，注入 _hydrated: false，并捕获 storeSet
-	const wrappedInitializer: StateCreator<StateWithHydrated<S>, [], [], StateWithHydrated<S>> = (set, get, api) => {
+	const wrappedInitializer: StateCreator<
+		StateWithHydrated<S>,
+		[],
+		[],
+		StateWithHydrated<S>
+	> = (set, get, api) => {
 		storeSet = set;
 		const userState = initializer(set, get, api);
 		return { ...userState, _hydrated: false };
@@ -108,15 +112,15 @@ export function createPersistedStore<S>(
 				storeSet((s) => ({ ...s }));
 			}
 
-			// 3. 调用用户自定义的 post-rehydration 函数（传入 S 部分），并等待其异步完成（如果返回 Promise）
+			// 3. 调用用户自定义的 post-rehydration 函数
 			if (userPostFn) {
-				const result = userPostFn(state as unknown as S, error);
+				const result:unknown = userPostFn(state, error);
 				if (isPromise(result)) {
 					await result;
 				}
 			}
 
-			// 4. 最后设置 _hydrated = true，以匹配 v1 行为（在用户 post 函数之后）
+			// 4. 最后设置 _hydrated = true
 			storeSet((current) => ({ ...current, _hydrated: true }));
 		};
 	};
@@ -154,38 +158,19 @@ export function createPersistedStore<S>(
 	 *   to avoid unnecessary writes on every hydration.
 	 */
 
-	// 构建 storage，显式指定泛型为 Partial<S> 以解决类型错误
+		// 构建 storage，显式指定泛型为 Partial<S> 以解决类型错误
 	const storage =
-		storageType === "localforage"
-			? createJSONStorage<Partial<S>>(() => localforage)
-			: createJSONStorage<Partial<S>>(() => localStorage);
+			storageType === "localforage"
+				? createJSONStorage<Partial<S>>(() => localforage)
+				: createJSONStorage<Partial<S>>(() => localStorage);
 
-	// 创建 partialize 函数，自动排除 _hydrated
-	const partialize = (state: StateWithHydrated<S>): Partial<S> => {
-		const { _hydrated, ...rest } = state;
-		return userPartialize ? userPartialize(rest as S) : (rest as Partial<S>);
-	};
-
-	// [FIXED] 包装用户提供的 merge 函数，使其适配 StateWithHydrated<S>
-	const merge = userMerge
-		? (persistedState: unknown, currentState: StateWithHydrated<S>): StateWithHydrated<S> => {
-			const mergedUserState = userMerge(persistedState, currentState as unknown as S);
-			return {
-				...mergedUserState,
-				_hydrated: currentState._hydrated, // 保留原有的 _hydrated 状态
-			} as StateWithHydrated<S>;
-		}
-		: undefined;
-
-	// 构建 persist 配置，只包含需要的选项
+	// 构建 persist 配置，直接使用用户传入的选项（通过类型断言简化，用户自行保证类型兼容）
 	const persistConfig: PersistOptions<StateWithHydrated<S>, Partial<S>> = {
 		name,
 		storage,
-		partialize,
 		onRehydrateStorage: combinedOnRehydrateStorage,
-		...(merge !== undefined && { merge }),      // 有条件地加入包装后的 merge
-		...restPersistOptions,                       // 其余选项（version, migrate, serialize, deserialize 等）
-	};
+		...restPersistOptions,
+	} as PersistOptions<StateWithHydrated<S>, Partial<S>>;
 
 	// 创建 store
 	const store = create<StateWithHydrated<S>>()(
