@@ -3,7 +3,7 @@ import {Label} from "@/components/ui/label";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 import {cn} from "@/lib/utils";
-import {sizeItems, useBgStore} from "@/vol_apps/bg/bg_store";
+import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
 import {blobToString} from "@/vol_apps/tool/isType";
 import {Folder} from "lucide-react";
@@ -12,13 +12,7 @@ import {useTranslation} from "react-i18next";
 import {img} from "@/vol_apps/bg/bg_store";
 
 export function BgUi() {
-	//i18n
 	const {t} = useTranslation("bg");
-
-	//不常用地功能，就不用写了
-	//目前代码还凑活，但还有一些优化
-	// 1 id
-	// 2 统一map来处理RadioGroup选项，统一初始化配置
 
 	const id1 = useId();
 	const id2 = useId();
@@ -26,6 +20,10 @@ export function BgUi() {
 	const id4 = useId();
 	const id5 = useId();
 	const id6 = useId();
+
+	const id7 = useId();
+	const id8 = useId();
+	const id9 = useId();
 
 	const {
 		bgRepeat, bgCenter, otherVisible, bgUiVisible, bgSize,
@@ -146,23 +144,26 @@ export function BgUi() {
 					className={cn("w-full p-6 gap-4 rounded-md",
 						"border border-secondary bg-secondary hover:bg-background",
 						"flex flex-col items-start justify-center")}>
-					{sizeItems.map(item => (
-						<div key={`${item.value}-content`}
-							 className={`flex h-8 items-center gap-2`}>
-							<RadioGroupItem
-								key={`${item.value}-item`}
-								value={item.value}
-								id={`${item.value}-${item.label}`}
-							/>
-							<Label
-								className="h-full w-full text-xl"
-								key={`${item.value}-label`}
-								htmlFor={`${item.value}-${item.label}`}
-							>
-								{item.label}
-							</Label>
-						</div>
-					))}
+					<div className={`flex h-8 items-center gap-2`}>
+						<RadioGroupItem value="auto" id={id7}/>
+						<Label htmlFor={id7} className={`text-xl`}>
+							{t("Original Size")}
+						</Label>
+					</div>
+
+					<div className={`flex h-8 items-center gap-2`}>
+						<RadioGroupItem value="contain" id={id8}/>
+						<Label htmlFor={id8} className={`text-xl`}>
+							{t("Contain")}
+						</Label>
+					</div>
+
+					<div className={`flex h-8 items-center gap-2`}>
+						<RadioGroupItem value="cover" id={id9}/>
+						<Label htmlFor={id9} className={`text-xl`}>
+							{t("Cover")}
+						</Label>
+					</div>
 				</RadioGroup>
 			</div>
 			<Button

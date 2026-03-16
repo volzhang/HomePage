@@ -31,8 +31,6 @@ export const TileUi = () => {
 	const currentTile = tiles.find(tile => tile.id === tileInEditId) || tiles[0];
 	const currentMeta = currentTile.meta;
 
-	// url
-
 	const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const url = e.target.value;
 		if (URL.canParse(url)) {
