@@ -13,6 +13,7 @@ type CmStoreState = {
 	enableLineWrapping: boolean;
 
 	fontPx: number,
+	fontWeight: number,
 	fontMeta: { fullName: string, family: string },
 	fontBase64: string,
 }
@@ -28,6 +29,7 @@ type CmStoreActions = {
 	setEnableLineWrapping: (lineWrapping: CmStoreState["enableLineWrapping"]) => void;
 
 	setFontPx: (fontPx: CmStoreState["fontPx"]) => void;
+	setFontWeight: (fontWeight: CmStoreState["fontWeight"]) => void;
 	setFontMeta: (fontFamily: CmStoreState["fontMeta"]) => void;
 	setFontBase64: (fontBase64: CmStoreState["fontBase64"]) => void;
 }
@@ -46,6 +48,7 @@ export const useCmStore = createPersistedStore<CmStore>(
 		enableLineWrapping: false,
 
 		fontPx: 32,
+		fontWeight: 400,
 		fontMeta: {fullName: "monospace", family: "monospace"},
 		fontBase64: "",
 
@@ -59,6 +62,7 @@ export const useCmStore = createPersistedStore<CmStore>(
 		setEnableLineWrapping: (enableLineWrapping) => set({enableLineWrapping}),
 
 		setFontPx: (fontPx) => set({fontPx}),
+		setFontWeight: (fontWeight) => set({fontWeight}),
 		setFontMeta: (fontMeta) => set({fontMeta}),
 		setFontBase64: (fontBase64) => set({fontBase64}),
 	})

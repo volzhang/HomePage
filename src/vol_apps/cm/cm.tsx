@@ -2,8 +2,7 @@ import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {CmClose} from "@/vol_apps/cm/cm_open";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
-import {CmUiFontFamily} from "@/vol_apps/cm/cm_ui_font_family";
-import {CmUiFontSize} from "@/vol_apps/cm/cm_ui_font_size";
+import {CmUiFont} from "@/vol_apps/cm/cm_ui_font";
 import {CmUiOpenDoc} from "@/vol_apps/cm/cm_ui_open_doc";
 import {CmUiSaveAsBtn} from "@/vol_apps/cm/cm_ui_save_as";
 import {CmUiSearchPanelOpen} from "@/vol_apps/cm/cm_ui_search_panel_open";
@@ -31,6 +30,7 @@ export const Cm = () => {
 		doc, setDoc,
 
 		fontPx,
+		fontWeight,
 		fontMeta, setFontMeta,
 
 		enableLineNumbers, setEnableLineNumbers,
@@ -71,6 +71,7 @@ export const Cm = () => {
 		"& .cm-content": {
 			fontSize,
 			fontFamily,
+			fontWeight,
 			background: "var(--background)",
 			color: "var(--foreground)",
 			caretColor: "var(--foreground)",
@@ -172,7 +173,6 @@ export const Cm = () => {
 						<Theme/>
 						<CmUiOpenDoc/>
 						<CmUiSaveAsBtn/>
-						<CmUiFontFamily/>
 						<Button variant={"outline"} className={"w-20"}
 								onClick={() => setEnableLineNumbers(!enableLineNumbers)}>
 							{enableLineNumbers ? "显示行号" : "无行号"}
@@ -182,7 +182,7 @@ export const Cm = () => {
 						>
 							{enableLineWrapping ? "自动换行" : "不换行"}
 						</Button>
-						<CmUiFontSize/>
+						<CmUiFont/>
 						<CmUiSearchPanelOpen viewRef={viewRef}/>
 
 						<CmClose className={"absolute right-2"}/>
