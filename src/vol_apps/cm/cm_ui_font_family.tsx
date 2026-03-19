@@ -5,7 +5,7 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {useState} from "react";
 import { cn } from "@/lib/utils";
 
-export const CmUiFontFamily = ({className}:{className:string}) => {
+export const CmUiFontFamily = ({className}:{className?:string}) => {
 
 	const {fontMeta, setFontMeta} = useCmStore();
 	const [open, setOpen] = useState(false);
@@ -74,7 +74,7 @@ export const CmUiFontFamily = ({className}:{className:string}) => {
 		<>
 			<Popover open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
-					<Button variant={"link"} className={cn(className)}
+					<Button variant={"outline"} className={cn(className)}
 							onClick={async () => await loadFonts()}>
 						{fontMeta.fullName}
 					</Button>

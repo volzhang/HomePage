@@ -1,8 +1,10 @@
-import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {CmClose} from "@/vol_apps/cm/cm_open";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
 import {CmUiFont} from "@/vol_apps/cm/cm_ui_font";
+import {CmUiFontFamily} from "@/vol_apps/cm/cm_ui_font_family";
+import {CmUiLineNumbers} from "@/vol_apps/cm/cm_ui_linenumbers";
+import {CmUiLineWrapping} from "@/vol_apps/cm/cm_ui_linewrapping";
 import {CmUiOpenDoc} from "@/vol_apps/cm/cm_ui_open_doc";
 import {CmUiSaveAsBtn} from "@/vol_apps/cm/cm_ui_save_as";
 import {CmUiSearchPanelOpen} from "@/vol_apps/cm/cm_ui_search_panel_open";
@@ -14,7 +16,6 @@ import {Compartment} from "@codemirror/state";
 import {searchKeymap, highlightSelectionMatches, search,} from "@codemirror/search";
 import {EditorView, lineNumbers, keymap,} from "@codemirror/view";
 
-import {Toaster} from "@/components/ui/sonner";
 import {toast} from "sonner";
 
 export const Cm = () => {
@@ -33,8 +34,8 @@ export const Cm = () => {
 		fontWeight,
 		fontMeta, setFontMeta,
 
-		enableLineNumbers, setEnableLineNumbers,
-		enableLineWrapping, setEnableLineWrapping,
+		enableLineNumbers,
+		enableLineWrapping,
 	} = useCmStore();
 
 	// 在组件内替换原来的字体检查 Effect
@@ -167,24 +168,16 @@ export const Cm = () => {
 			 )}>
 			{_hydrated
 				? (<div className="flex flex-col h-full">
-					<Toaster position={"top-center"}/>
 					{/* toolbar */}
 					<div className={"flex m-2 gap-2"}>
 						<Theme/>
 						<CmUiOpenDoc/>
 						<CmUiSaveAsBtn/>
-						<Button variant={"outline"} className={"w-20"}
-								onClick={() => setEnableLineNumbers(!enableLineNumbers)}>
-							{enableLineNumbers ? "显示行号" : "无行号"}
-						</Button>
-						<Button variant={"outline"} className={"w-20"}
-								onClick={() => setEnableLineWrapping(!enableLineWrapping)}
-						>
-							{enableLineWrapping ? "自动换行" : "不换行"}
-						</Button>
+						<CmUiLineNumbers />
+						<CmUiLineWrapping/>
+						<CmUiFontFamily/>
 						<CmUiFont/>
 						<CmUiSearchPanelOpen viewRef={viewRef}/>
-
 						<CmClose className={"absolute right-2"}/>
 					</div>
 					{/* editor area */}

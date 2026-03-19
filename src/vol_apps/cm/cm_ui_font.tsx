@@ -54,28 +54,23 @@ export const CmUiFont = () => {
 		<>
 			<Popover>
 				<PopoverTrigger asChild>
-					<Button variant="outline">Font</Button>
+					<Button variant="outline">{fontPx}</Button>
 				</PopoverTrigger>
-				<PopoverContent className="w-96">
+				<PopoverContent className="w-100">
 					<div className="grid gap-4">
-						{/*<div className="space-y-2">*/}
-							{/*<h4 className="leading-none font-medium">Dimensions</h4>*/}
-							{/*<p className="text-sm text-muted-foreground">*/}
-							{/*	设置字体，字号，粗细。*/}
-							{/*</p>*/}
-						{/*</div>*/}
 						<div className="grid gap-3">
+							{/* 字体 */}
 							<div className="flex flex-row items-center gap-[7px]">
 								<Label className={"w-8"}>字体</Label>
-								<CmUiFontFamily className={cn("w-fit text-[18px]",
+								<CmUiFontFamily className={cn("w-fit text-sm border-none",
 									// "text-[#0078d7]"
 								)}/>
 							</div>
 							{/* 字号 */}
 							<div className="flex flex-row items-center gap-[11px] ">
-								<Label className={"w-8"}>字号</Label>
+								<Label className={"w-8"} autoFocus={true}>字号</Label>
 								<Input
-									defaultValue="32"
+									// defaultValue="32"
 									className={cn("w-14 h-8  text-[16px]! border-none",
 										// "text-[#0078d7]"
 									)}
@@ -85,7 +80,7 @@ export const CmUiFont = () => {
 									onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
 								/>
 								<Slider
-									defaultValue={[fontPx]}
+									// defaultValue={[fontPx]}
 									value={[fontPx]}
 									onValueChange={(value) => setFontPx(value[0])}
 									max={MAX_FONT_SIZE}
@@ -98,7 +93,7 @@ export const CmUiFont = () => {
 							<div className="flex flex-row items-center gap-[11px]">
 								<Label className={"w-8"}>粗细</Label>
 								<Input
-									defaultValue="400"
+									// defaultValue="400"
 									className={cn("w-14 h-8 text-[16px]! border-none",
 										// "text-[#0078d7]"
 										)}
@@ -108,7 +103,7 @@ export const CmUiFont = () => {
 									onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
 								/>
 								<Slider
-									defaultValue={[fontWeight]}
+									// defaultValue={[fontWeight]}
 									value={[fontWeight]}
 									onValueChange={(value) => setFontWeight(value[0])}
 									max={MAX_FONT_WEIGHT}
