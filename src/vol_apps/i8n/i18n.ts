@@ -74,7 +74,12 @@ const resources = {
 		},
 		bg: {
 			"Upload Image": "上传图片",
-			"Reset Defaults": "恢复默认设置",
+
+			"Reset Defaults":"默认设置",
+			"Custom":"自定义",
+			"DailyBing":"Bing每日壁纸",
+
+			// "Reset Defaults": "恢复默认设置",
 			"Default View": "正常",
 			"Hide Others": "只看背景",
 			"Repeat": "重复平铺",

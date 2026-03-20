@@ -42,7 +42,10 @@ export function BgUi() {
 			)}>
 			{/* 上传背景图 */}
 			<ImgFilePickerBtn
-				onPick={async (file) => setBgImg(await blobToString(file))}
+				onPick={async (file) => {
+					setBgImg(await blobToString(file))
+					setBgType("Custom")
+				}}
 				children={
 					<Button
 						variant={"default"}
@@ -73,12 +76,7 @@ export function BgUi() {
 				className={cn("w-full p-6 gap-4 rounded-md",
 					"border border-secondary bg-secondary hover:bg-background",
 					"flex flex-col items-start justify-center")}>
-				<div className={`flex h-8 items-center gap-2`}>
-					<RadioGroupItem value="custom" id={id10}/>
-					<Label htmlFor={id10} className={`text-xl`}>
-						{t("Custom")}
-					</Label>
-				</div>
+
 
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="bing" id={id11}/>
@@ -90,9 +88,17 @@ export function BgUi() {
 				<div className={`flex h-8 items-center gap-2`}>
 					<RadioGroupItem value="default" id={id12}/>
 					<Label htmlFor={id12} className={`text-xl`}>
-						{t("Default")}
+						{t("Reset Defaults")}
 					</Label>
 				</div>
+
+				<div className={`flex h-8 items-center gap-2`}>
+					<RadioGroupItem value="custom" id={id10}/>
+					<Label htmlFor={id10} className={`text-xl`}>
+						{t("Custom")}
+					</Label>
+				</div>
+
 			</RadioGroup>
 
 			{/* 只看背景 */}
