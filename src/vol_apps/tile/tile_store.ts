@@ -71,6 +71,7 @@ export type Tag = {
 type TileStoreState = {
 	//基本
 	tiles: Tile[],
+	tilesVisible: boolean,
 	tileUiVisible: boolean,
 	tileInEditId: Tile["id"],
 
@@ -84,6 +85,8 @@ type TileStoreState = {
 
 type TileStoreActions = {
 	//基本API
+	setTilesVisible: (value: TileStoreState["tilesVisible"]) => void,
+
 	updateTile: (id: Tile["id"], updates: Partial<Tile>) => void;
 	removeTile: (id: Tile["id"]) => void;
 	setTiles: (newTiles: TileStoreState["tiles"]) => void;
@@ -125,12 +128,15 @@ export const useTileStore = createPersistedStore<TileStore>(
 	"tile",
 	(set, get) => ({
 		tiles: TutorialsTiles,
-		tileUiVisible: false,
+		tilesVisible: true,
 		tileInEditId: 0,
 
 		tags: [],
 		untaggedChecked:false,
 		isBroadMatches: true,
+
+		tileUiVisible: false,
+		setTilesVisible: (tilesVisible) => set({tilesVisible}),
 
 		// 所有修改tiles的函数，都植入updateTags
 		updateTags: (newTiles)=>set((state)=>{

@@ -70,7 +70,7 @@ export const TileComponent = ({
 	return (isPreview || isDragging ? <TileInner/> : <Alink><TileInner/></Alink>);
 };
 
-const SortableTile = memo(({ tile, allowFadeIn }: { tile: Tile; allowFadeIn: boolean }) => {
+const SortableTile = memo(({tile, allowFadeIn}: { tile: Tile; allowFadeIn: boolean }) => {
 	const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id: tile.id});
 
 	// 注意，style和tailwindcss会竞争，这里，我们把阴影效果写成一式两份，独立处理。否则，dragging时，会有阴影闪烁
@@ -112,8 +112,10 @@ const SortableTile = memo(({ tile, allowFadeIn }: { tile: Tile; allowFadeIn: boo
 });
 
 export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
-	const {_hydrated,
-		tiles, setTiles, tilesByTag, isBroadMatches} = useTileStore();
+	const {
+		_hydrated,
+		tiles, setTiles, tilesByTag, isBroadMatches
+	} = useTileStore();
 	const {t} = useTranslation("tile");
 
 	const displayTiles = showTiles ?? tilesByTag(isBroadMatches ? "ANY" : "ALL")!;
@@ -174,13 +176,13 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 					{filteredTiles.length > 0 ? (
 						_hydrated
 							? (filteredTiles)
-							:(<div className={cn(
-								"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",
-								"animate-fade-in-scale"
-							)}>
-								{t("Loading...")}
-							</div>
-						)
+							: (<div className={cn(
+									"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",
+									"animate-fade-in-scale"
+								)}>
+									{t("Loading...")}
+								</div>
+							)
 					) : (
 						<div className={cn(
 							"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",

@@ -9,7 +9,7 @@ import {blobToString} from "@/vol_apps/tool/isType";
 import {Folder} from "lucide-react";
 import {useId} from "react";
 import {useTranslation} from "react-i18next";
-import {img} from "@/vol_apps/bg/bg_store";
+// import {img} from "@/vol_apps/bg/bg_store";
 
 export function BgUi() {
 	const {t} = useTranslation("bg");
@@ -25,9 +25,13 @@ export function BgUi() {
 	const id8 = useId();
 	const id9 = useId();
 
+	const id10 = useId();
+	const id11 = useId();
+	const id12 = useId();
+
 	const {
-		bgRepeat, bgCenter, otherVisible, bgUiVisible, bgSize,
-		setBgRepeat, setOtherVisible, setBgCenter, setBgImg, setBgSize, setBgUiVisible
+		bgRepeat, bgCenter, otherVisible, bgUiVisible, bgSize, bgType,
+		setBgType, setBgRepeat, setOtherVisible, setBgCenter, setBgImg, setBgSize, setBgUiVisible
 	} = useBgStore();
 
 	return (
@@ -51,25 +55,46 @@ export function BgUi() {
 						{t("Upload Image")}
 					</Button>
 				}/>
-			{/*恢复默认设置*/}
-			<Button
-				onClick={() => {
-					setBgImg(img);
-					setBgRepeat(true);
-					setBgCenter(false);
-					setBgSize("auto")
-					setOtherVisible(true);
+			{/* 背景类型 */}
+			<RadioGroup
+				value={bgType}
+				onValueChange={(value) => {
+					if (value === "default") {
+						setBgRepeat(true)
+						setBgSize("auto")
+						setBgCenter(false)
+					} else if (value === "bing") {
+						setBgRepeat(false)
+						setBgSize("cover")
+						setBgCenter(true)
+					}
+					setBgType(value);
 				}}
-				type="button"
-				variant={"default"}
-				className={cn(
-					"h-16 text-xl",
-					"bg-secondary border-secondary",
-					"text-secondary-foreground",
-					"hover:bg-background hover:text-secondary-foreground"
-					)}>
-				{t("Reset Defaults")}
-			</Button>
+				className={cn("w-full p-6 gap-4 rounded-md",
+					"border border-secondary bg-secondary hover:bg-background",
+					"flex flex-col items-start justify-center")}>
+				<div className={`flex h-8 items-center gap-2`}>
+					<RadioGroupItem value="custom" id={id10}/>
+					<Label htmlFor={id10} className={`text-xl`}>
+						{t("Custom")}
+					</Label>
+				</div>
+
+				<div className={`flex h-8 items-center gap-2`}>
+					<RadioGroupItem value="bing" id={id11}/>
+					<Label htmlFor={id11} className={`text-xl`}>
+						{t("DailyBing")}
+					</Label>
+				</div>
+
+				<div className={`flex h-8 items-center gap-2`}>
+					<RadioGroupItem value="default" id={id12}/>
+					<Label htmlFor={id12} className={`text-xl`}>
+						{t("Default")}
+					</Label>
+				</div>
+			</RadioGroup>
+
 			{/* 只看背景 */}
 			<RadioGroup
 				defaultValue={otherVisible ? "true" : "false"}

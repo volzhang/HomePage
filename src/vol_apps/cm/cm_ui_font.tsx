@@ -6,6 +6,7 @@ import {Slider} from "@/components/ui/slider";
 import {cn} from "@/lib/utils";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
 import {CmUiFontFamily} from "@/vol_apps/cm/cm_ui_font_family";
+import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
 
 const MIN_FONT_SIZE = 8;
@@ -15,6 +16,8 @@ const MIN_FONT_WEIGHT = 100;
 const MAX_FONT_WEIGHT = 900;
 
 export const CmUiFont = () => {
+	const {t} = useTranslation("codemirror")
+
 	const {
 		fontPx, setFontPx,
 		fontWeight, setFontWeight,
@@ -60,15 +63,15 @@ export const CmUiFont = () => {
 					<div className="grid gap-4">
 						<div className="grid gap-3">
 							{/* 字体 */}
-							<div className="flex flex-row items-center gap-[7px]">
-								<Label className={"w-8"}>字体</Label>
+							<div className="flex flex-row items-center gap-[12px]">
+								<Label className={"w-10"}>{t("Font")}</Label>
 								<CmUiFontFamily className={cn("w-fit text-sm border-none",
 									// "text-[#0078d7]"
 								)}/>
 							</div>
 							{/* 字号 */}
-							<div className="flex flex-row items-center gap-[11px] ">
-								<Label className={"w-8"} autoFocus={true}>字号</Label>
+							<div className="flex flex-row items-center gap-[16px] ">
+								<Label className={"w-10"} autoFocus={true}>{t("Size")}</Label>
 								<Input
 									// defaultValue="32"
 									className={cn("w-14 h-8  text-[16px]! border-none",
@@ -90,8 +93,8 @@ export const CmUiFont = () => {
 								/>
 							</div>
 							{/* 粗细 */}
-							<div className="flex flex-row items-center gap-[11px]">
-								<Label className={"w-8"}>粗细</Label>
+							<div className="flex flex-row items-center gap-[16px]">
+								<Label className={"w-10"}>{t("Weight")}</Label>
 								<Input
 									// defaultValue="400"
 									className={cn("w-14 h-8 text-[16px]! border-none",
@@ -112,7 +115,6 @@ export const CmUiFont = () => {
 									className={"w-52"}
 								/>
 							</div>
-
 						</div>
 					</div>
 				</PopoverContent>

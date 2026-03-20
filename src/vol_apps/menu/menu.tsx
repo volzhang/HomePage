@@ -5,6 +5,10 @@ import {
 	MenubarItem,
 	MenubarMenu,
 	MenubarTrigger,
+
+	MenubarSub,
+	MenubarSubTrigger,
+	MenubarSubContent
 } from "@/components/ui/menubar";
 import {cn} from "@/lib/utils";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
@@ -18,6 +22,8 @@ const cn_str = "border bg-background shadow-xs hover:bg-accent hover:text-accent
 
 export function Menu() {
 	const {setBgUiVisible} = useBgStore();
+	const {tilesVisible, setTilesVisible} = useTileStore();
+
 	const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
 	const {t} = useTranslation("navigation");
 
@@ -27,6 +33,7 @@ export function Menu() {
 		setTileInEditId(newTileId);
 		setTileUiVisible(true);
 	};
+
 	return (
 		<Menubar className={cn("w-24 flex justify-center", cn_str, "animate-fade-in-scale")}>
 			<MenubarMenu>
@@ -35,20 +42,44 @@ export function Menu() {
 				</MenubarTrigger>
 				<MenubarContent side={"bottom"} align={"center"} className={"ml-2"}>
 					<MenubarGroup>
+
+						<MenubarSub>
+							<MenubarSubTrigger>{t("Tiles")}</MenubarSubTrigger>
+							<MenubarSubContent>
+								<MenubarGroup>
+									<MenubarItem onClick={OnAddTile} disabled={!tilesVisible}>
+										{t("Add Tile")}
+									</MenubarItem>
+									<MenubarItem onClick={() => setTilesVisible(!tilesVisible)}>
+										{
+											tilesVisible
+												? t("Hide Tiles")
+												: t("Show Tiles")
+										}
+									</MenubarItem>
+								</MenubarGroup>
+							</MenubarSubContent>
+						</MenubarSub>
+						<MenubarSub>
+							<MenubarSubTrigger>{t("Backup")}</MenubarSubTrigger>
+							<MenubarSubContent>
+								<MenubarGroup>
+									<MenubarItem onClick={async () => await localforageBackup()}>
+										{t("Download Backup")}
+									</MenubarItem>
+									<MenubarItem onClick={async () => await localforageRestore(await jsonFilePickerAPI())}>
+										{t("Import Backup")}
+									</MenubarItem>
+								</MenubarGroup>
+							</MenubarSubContent>
+						</MenubarSub>
 						<MenubarItem onClick={() => setBgUiVisible(true)}>
 							{t("Set Background")}
 						</MenubarItem>
-						<MenubarItem onClick={async () => await localforageBackup()}>
-							{t("Download Backup")}
-						</MenubarItem>
-						<MenubarItem onClick={async () => await localforageRestore(await jsonFilePickerAPI())}>
-							{t("Import Backup")}
-						</MenubarItem>
-						<MenubarItem onClick={OnAddTile}>
-							{t("Add Tile")}
-						</MenubarItem>
-						<MenubarItem>
-							<a href="privacy.html" target={"_blank"}>{t("Privacy Policy")}</a>
+						<MenubarItem asChild>
+							<a href="privacy.html" target="_blank" rel="noopener noreferrer">
+								{t("Privacy Policy")}
+							</a>
 						</MenubarItem>
 					</MenubarGroup>
 				</MenubarContent>

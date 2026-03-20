@@ -60,19 +60,46 @@
         const bgData = JSON.parse(rawBg);
         const state = bgData?.state || {};
         const bgImg = state.bgImg;
+		const bgType = state.bgType;
 
-        if (bgImg && typeof bgImg === "string" && bgImg.startsWith("data:image/")) {
-          html.style.backgroundImage = `url("${bgImg}")`;
-          html.style.backgroundSize = state.bgSize || "auto";
-          html.style.backgroundPosition = state.bgCenter ? "center" : "top left";
-          html.style.backgroundRepeat = state.bgRepeat ? "repeat" : "no-repeat";
+		if (bgType === "custom") {
+			if (bgImg) {
+				html.style.backgroundImage = `url("${bgImg}")`;
+				html.style.backgroundSize = state.bgSize || "auto";
+				html.style.backgroundPosition = state.bgCenter ? "center" : "top left";
+				html.style.backgroundRepeat = state.bgRepeat ? "repeat" : "no-repeat";
 
-          html.style.minHeight = "100vh";
-          body.style.minHeight = "100vh";
-          body.style.margin = "0";
-          body.style.padding = "0";
-          body.style.background = "transparent";
-        }
+				html.style.minHeight = "100vh";
+				body.style.minHeight = "100vh";
+				body.style.margin = "0";
+				body.style.padding = "0";
+				body.style.background = "transparent";
+			}
+		} else if (bgType === "bing") {
+			html.style.backgroundImage = `url(https://bing.biturl.top/?resolution=1920&format=image)`;
+			html.style.backgroundSize = "cover";
+			html.style.backgroundRepeat = "no-repeat";
+			html.style.backgroundPosition = "center";
+
+			html.style.minHeight = "100vh";
+			body.style.minHeight = "100vh";
+			body.style.margin = "0";
+			body.style.padding = "0";
+			body.style.background = "transparent";
+		} else if (bgType === "default") {
+			if (bgImg) {
+				html.style.backgroundImage = `url("${bgImg}")`;
+				html.style.backgroundSize = "auto";
+				html.style.backgroundRepeat = "repeat";
+				html.style.backgroundPosition = "top left";
+
+				html.style.minHeight = "100vh";
+				body.style.minHeight = "100vh";
+				body.style.margin = "0";
+				body.style.padding = "0";
+				body.style.background = "transparent";
+			}
+		}
         // 若无有效背景，保持重置状态，让 CSS 类 bg-background 生效
       }
     } catch (err) {

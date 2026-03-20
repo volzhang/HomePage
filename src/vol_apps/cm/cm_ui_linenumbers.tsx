@@ -1,12 +1,15 @@
 import {Button} from "@/components/ui/button";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
+import {useTranslation} from "react-i18next";
 
 export const CmUiLineNumbers = () => {
+	const {t} = useTranslation("codemirror")
+
 	const {enableLineNumbers, setEnableLineNumbers} = useCmStore();
 
 	const buttonText = enableLineNumbers
-		? "Line Numbers"
-		: "No Numbers";
+		? t("Line Numbers")
+		: t("No Numbers");
 
 	return (
 		<>

@@ -51,20 +51,26 @@ const resources = {
 		},
 		navigation: {
 			"Menu": "菜单",
-
 			"Set Background": "设置背景",
+
+			"Tiles": "瓷砖",
+			"Add Tile": "添加瓷砖",
+			"Show Tiles": "显示瓷砖",
+			"Hide Tiles": "隐藏瓷砖",
+
+			"Backup": "存档",
 			"Download Backup": "下载存档",
 			"Import Backup": "恢复存档",
-			"Add Tile": "添加瓷砖",
 
 			"Privacy Policy": "隐私政策"
 		},
 		contextMenu: {
 			"Add Tile": "添加瓷砖",
 			"Backup": "存档",
-			"Download": "下载",
-			"Import": "上传",
+			"Download Backup": "下载存档",
+			"Import Backup": "恢复存档",
 			"Set Background": "设置背景",
+			"Hide Tiles": "隐藏瓷砖",
 		},
 		bg: {
 			"Upload Image": "上传图片",
@@ -85,6 +91,17 @@ const resources = {
 		},
 		privacy: {
 			"Privacy Policy": "隐私政策"
+		},
+		codemirror: {
+			"Font": "字体",
+			"Size": "字号",
+			"Weight": "粗细",
+
+			"Line Numbers": "显示行号",
+			"No Numbers": "无行号",
+
+			"Word Wrap": "换行显示",
+			"No Wrap": "不换行",
 		}
 	}
 };

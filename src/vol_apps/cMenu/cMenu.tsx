@@ -11,7 +11,7 @@ import type {PropsWithChildren} from "react";
 import {useTranslation} from "react-i18next";
 
 export function ContextMenuComponent({children}: PropsWithChildren) {
-	const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
+	const {tiles, addTile, setTileInEditId, setTileUiVisible, setTilesVisible} = useTileStore();
 	const {setBgUiVisible} = useBgStore();
 	const {t} = useTranslation("contextMenu");
 
@@ -79,11 +79,11 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 						</ContextMenuSubTrigger>
 						<ContextMenuSubContent className="w-44">
 							<ContextMenuItem onClick={localforageBackup} className={"h-10"}>
-								{t("Download")}
+								{t("Download Backup")}
 								<Download className={"ml-auto"}/>
 							</ContextMenuItem>
 							<ContextMenuItem onClick={() => jsonFilePickerAPI().then(file => localforageRestore(file))} className={`h-10`}>
-								{t("Import")}
+								{t("Import Backup")}
 								<Upload className={"ml-auto"}/>
 							</ContextMenuItem>
 						</ContextMenuSubContent>
@@ -93,6 +93,9 @@ export function ContextMenuComponent({children}: PropsWithChildren) {
 					}} className={"h-10"}>
 						{t("Set Background")}
 						<Image className="ml-auto"/>
+					</ContextMenuItem>
+					<ContextMenuItem inset onClick={()=>setTilesVisible(false)} className={"h-10"}>
+						{t("Hide Tiles")}
 					</ContextMenuItem>
 				</ContextMenuContent>
 			</ContextMenu>
