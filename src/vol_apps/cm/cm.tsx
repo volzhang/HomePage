@@ -150,7 +150,6 @@ export const Cm = () => {
 	//ESC 关闭
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			console.log(111)
 			if (e.key === "Escape") {
 				setIsVisible(false);
 			}
