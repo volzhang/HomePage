@@ -43,8 +43,7 @@
       const rawBg = localStorage.getItem("bg");
       const html = document.documentElement;
       const body = document.body;
-
-      // 先重置所有可能的内联样式
+      // 先重置内联样式
       html.style.minHeight = "";
       body.style.minHeight = "";
       body.style.margin = "";
@@ -55,44 +54,15 @@
       html.style.backgroundRepeat = "";
       html.style.backgroundPosition = "";
       html.style.backgroundAttachment = "";
-
-      if (rawBg) {
-        const bgData = JSON.parse(rawBg);
-        const state = bgData?.state || {};
-        const bgImg = state.bgImg;
-		const bgType = state.bgType;
-
-		if (bgType === "custom") {
+		if (rawBg) {
+			const bgData = JSON.parse(rawBg);
+			const state = bgData?.state || {};
+			const bgImg = state.bgImg;
 			if (bgImg) {
 				html.style.backgroundImage = `url("${bgImg}")`;
 				html.style.backgroundSize = state.bgSize || "auto";
 				html.style.backgroundPosition = state.bgCenter ? "center" : "top left";
 				html.style.backgroundRepeat = state.bgRepeat ? "repeat" : "no-repeat";
-
-				html.style.minHeight = "100vh";
-				body.style.minHeight = "100vh";
-				body.style.margin = "0";
-				body.style.padding = "0";
-				body.style.background = "transparent";
-			}
-		} else if (bgType === "bing") {
-			html.style.backgroundImage = `url(https://bing.biturl.top/?resolution=1920&format=image)`;
-			html.style.backgroundSize = "cover";
-			html.style.backgroundRepeat = "no-repeat";
-			html.style.backgroundPosition = "center";
-
-			html.style.minHeight = "100vh";
-			body.style.minHeight = "100vh";
-			body.style.margin = "0";
-			body.style.padding = "0";
-			body.style.background = "transparent";
-		} else if (bgType === "default") {
-			if (bgImg) {
-				html.style.backgroundImage = `url("${bgImg}")`;
-				html.style.backgroundSize = "auto";
-				html.style.backgroundRepeat = "repeat";
-				html.style.backgroundPosition = "top left";
-
 				html.style.minHeight = "100vh";
 				body.style.minHeight = "100vh";
 				body.style.margin = "0";
@@ -100,8 +70,6 @@
 				body.style.background = "transparent";
 			}
 		}
-        // 若无有效背景，保持重置状态，让 CSS 类 bg-background 生效
-      }
     } catch (err) {
       console.warn("Failed to read bg", err);
     }

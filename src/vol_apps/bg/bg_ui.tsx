@@ -3,13 +3,13 @@ import {Label} from "@/components/ui/label";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 import {cn} from "@/lib/utils";
-import {useBgStore} from "@/vol_apps/bg/bg_store";
+import {img, useBgStore} from "@/vol_apps/bg/bg_store";
+import {useBing} from "@/vol_apps/bg/bg_useBing";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/filePicker";
 import {blobToString} from "@/vol_apps/tool/isType";
 import {Folder} from "lucide-react";
 import {useId} from "react";
 import {useTranslation} from "react-i18next";
-// import {img} from "@/vol_apps/bg/bg_store";
 
 export function BgUi() {
 	const {t} = useTranslation("bg");
@@ -34,6 +34,8 @@ export function BgUi() {
 		setBgType, setBgRepeat, setOtherVisible, setBgCenter, setBgImg, setBgSize, setBgUiVisible
 	} = useBgStore();
 
+	const { consumeCacheAndReloadBing, reLoadImgToCache} = useBing()
+
 	return (
 
 		<div className={cn("fixed right-1 top-1 w-64 p-5 gap-5 flex flex-col z-1",
@@ -43,8 +45,9 @@ export function BgUi() {
 			{/* 上传背景图 */}
 			<ImgFilePickerBtn
 				onPick={async (file) => {
+					void reLoadImgToCache()
 					setBgImg(await blobToString(file))
-					setBgType("Custom")
+					setBgType("custom")
 				}}
 				children={
 					<Button
@@ -63,13 +66,18 @@ export function BgUi() {
 				value={bgType}
 				onValueChange={(value) => {
 					if (value === "default") {
+						void reLoadImgToCache()
+						setBgImg(img)
 						setBgRepeat(true)
 						setBgSize("auto")
 						setBgCenter(false)
 					} else if (value === "bing") {
+						void consumeCacheAndReloadBing()
 						setBgRepeat(false)
 						setBgSize("cover")
 						setBgCenter(true)
+					} else {
+						void reLoadImgToCache()
 					}
 					setBgType(value);
 				}}
@@ -86,16 +94,16 @@ export function BgUi() {
 				</div>
 
 				<div className={`flex h-8 items-center gap-2`}>
-					<RadioGroupItem value="default" id={id12}/>
-					<Label htmlFor={id12} className={`text-xl`}>
-						{t("Reset Defaults")}
+					<RadioGroupItem value="custom" id={id10}/>
+					<Label htmlFor={id10} className={`text-xl`}>
+						{t("Custom")}
 					</Label>
 				</div>
 
 				<div className={`flex h-8 items-center gap-2`}>
-					<RadioGroupItem value="custom" id={id10}/>
-					<Label htmlFor={id10} className={`text-xl`}>
-						{t("Custom")}
+					<RadioGroupItem value="default" id={id12}/>
+					<Label htmlFor={id12} className={`text-xl`}>
+						{t("Reset Defaults")}
 					</Label>
 				</div>
 

@@ -21,14 +21,18 @@ export const Version = () => {
 		loadVersion().then(() => {});
 	}, []);
 
+	const LINK = "https://github.com/volzhang/HomePage";
+
 	return (
 		<Button
 			variant={"outline"}
-			disabled={true}
+			// disabled={true}
+			onClick={() => {
+				window.open(LINK, "_blank", "noopener noreferrer");
+			}}
 			className={cn(
-				"border-none animate-fade-in-scale w-32",
+				"animate-fade-in-scale w-30",
 				"select-none",
-				"pointer-events-none" //只要样式不要交互
 			)}>
 			{t("Version")}：{version}
 		</Button>

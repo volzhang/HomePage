@@ -8,6 +8,7 @@ export const CmOpen = () => {
 	return (
 		<>
 			<Button variant="outline" size={"icon"}
+					className={"animate-fade-in-scale"}
 					onClick={()=>{setIsVisible(true)}}
 			>
 				<SquarePen/>
