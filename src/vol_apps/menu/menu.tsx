@@ -14,7 +14,7 @@ import {cn} from "@/lib/utils";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
-import {jsonFilePickerAPI} from "@/vol_apps/tool/filePicker";
+import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 import {useTranslation} from "react-i18next";
 
 //这里手动复制了Button的secondary样式

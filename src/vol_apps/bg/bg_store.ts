@@ -1,6 +1,7 @@
+import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
 import defaultImg from "@/assets/bg-dark.png";
-import {blobToString} from "@/vol_apps/tool/isType";
+
 
 
 // 用的vite，支持顶层await，已测试过，没问题。

@@ -1,4 +1,4 @@
-import {type BlobString, blobToString} from "@/vol_apps/tool/isType";
+import {type BlobString, blobToString} from "@/vol_apps/tool/a2b/blobToString";
 
 export const apiFaviconVemetric = async (url: string, size: number): Promise<null | BlobString> => {
 		try {

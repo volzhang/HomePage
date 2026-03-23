@@ -1,6 +1,6 @@
 import defaultIcon from "@/assets/icon-100.png";
+import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
-import {blobToString} from "@/vol_apps/tool/isType";
 
 const response = await fetch(defaultIcon);
 const blob = await response.blob();

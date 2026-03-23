@@ -1,8 +1,7 @@
 import {persistedStoresRehydrate, persistedStores} from "@/vol_apps/tool/createPersistedStore";
-import {download, timeStamp} from "@/vol_apps/tool/download";
-import {
-	isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeStringify
-} from "@/vol_apps/tool/isType";
+import {download, timeStamp} from "@/vol_apps/tool/action/download";
+import {isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeStringify} from "@/vol_apps/tool/isType/isPlainObject";
+
 import {fetchVersion} from "@/vol_apps/version/version";
 import { type Tile } from "@/vol_apps/tile/tile_store";
 import localforage from "localforage";
@@ -11,7 +10,7 @@ export const downloadAsJsonFile = async (
 	obj: ValidTypeExt,
 	file_name = timeStamp(),
 ): Promise<void> => {
-	const jsonContent = await validTypeStringify(obj);
+	const jsonContent = validTypeStringify(obj);
 	const blob = new Blob([jsonContent], {
 		type: "application/json;charset=utf-8",
 	});

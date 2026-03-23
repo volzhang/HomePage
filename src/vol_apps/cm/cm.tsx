@@ -9,7 +9,7 @@ import {CmUiOpenDoc} from "@/vol_apps/cm/cm_ui_open_doc";
 import {CmUiSaveAsBtn} from "@/vol_apps/cm/cm_ui_save_as";
 import {CmUiSearchPanelOpen} from "@/vol_apps/cm/cm_ui_search_panel_open";
 import {Theme} from "@/vol_apps/theme/theme";
-import {isFontAvailable} from "@/vol_apps/tool/isFontAvailable";
+import {isFontAvailable} from "@/vol_apps/tool/isAvailable/isFontAvailable";
 import {useEffect, useRef} from "react";
 
 import {Compartment} from "@codemirror/state";

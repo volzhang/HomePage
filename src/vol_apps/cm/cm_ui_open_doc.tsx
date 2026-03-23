@@ -1,5 +1,5 @@
 import {useCmStore} from "@/vol_apps/cm/cm_store";
-import {getFileExt} from "@/vol_apps/tool/file";
+import {getFileExt} from "@/vol_apps/tool/phase/file";
 import {Button} from "@/components/ui/button";
 import {FolderOpen} from "lucide-react";
 import {toast} from "sonner";

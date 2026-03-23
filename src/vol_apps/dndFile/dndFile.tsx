@@ -2,10 +2,10 @@ import {Button} from "@/components/ui/button";
 import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
 import {handleCmSaveAs} from "@/vol_apps/cm/cm_ui_save_as";
-import {getFileExt} from "@/vol_apps/tool/file";
+import {getFileExt} from "@/vol_apps/tool/phase/file";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {toast} from "sonner";
-import {isLikelyTextFile} from "@/vol_apps/tool/isType";
+import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile";
 import {useTranslation} from "react-i18next";
 
 export const DndFile: React.FC = () => {
