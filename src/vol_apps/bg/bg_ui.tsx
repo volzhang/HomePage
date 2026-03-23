@@ -4,14 +4,17 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 import {cn} from "@/lib/utils";
 import {img, useBgStore} from "@/vol_apps/bg/bg_store";
-import {useBing} from "@/vol_apps/bg/bg_useBing";
+// import {useBing} from "@/vol_apps/bg/bg_useBing";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/action/filePicker";
 import {Folder} from "lucide-react";
 import {useId} from "react";
 import {useTranslation} from "react-i18next";
 
-export function BgUi() {
+export function BgUi(
+	{consumeCacheAndReloadBing, reLoadImgToCache}:
+	{consumeCacheAndReloadBing:Function, reLoadImgToCache:Function}
+) {
 	const {t} = useTranslation("bg");
 
 	const id1 = useId();
@@ -34,7 +37,7 @@ export function BgUi() {
 		setBgType, setBgRepeat, setOtherVisible, setBgCenter, setBgImg, setBgSize, setBgUiVisible
 	} = useBgStore();
 
-	const { consumeCacheAndReloadBing, reLoadImgToCache} = useBing()
+	// const { consumeCacheAndReloadBing, reLoadImgToCache} = useBing()
 
 	return (
 

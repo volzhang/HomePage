@@ -27,10 +27,9 @@ export const setBackground = (
 	body.style.background = "transparent";
 };
 
-
 export function BgApp() {
 	const {bgImg, bgType, bgSize, bgRepeat, bgCenter, otherVisible, bgBingCopyright} = useBgStore();
-	const {isLoading, handleNextBing} = useBing();
+	const {isLoading, handleNextBing, consumeCacheAndReloadBing, reLoadImgToCache} = useBing();
 
 	// 更新背景样式
 	useEffect(() => {
@@ -45,7 +44,10 @@ export function BgApp() {
 
 	return (
 		<>
-			<BgUi/>
+			<BgUi
+				consumeCacheAndReloadBing={consumeCacheAndReloadBing}
+				reLoadImgToCache={reLoadImgToCache}
+			/>
 			{bgType === "bing" ? (
 				<div className="absolute bottom-2 right-2">
 					<div className="flex flex-row justify-center items-center w-fit gap-0 select-none">
