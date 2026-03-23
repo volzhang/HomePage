@@ -1,3 +1,5 @@
+import {persistedStores} from "@/vol_apps/tool/createPersistedStore";
+
 type ValidBase = null | string | number | boolean;
 export type ValidType = ValidBase | Array<ValidType> | { [key: string]: ValidType };
 export type ValidTypeExt = ValidBase | Blob | Array<ValidTypeExt> | { [key: string]: ValidTypeExt };
@@ -85,7 +87,7 @@ export const validTypeStringify = async (value: any): Promise<string> => {
 	return JSON.stringify(value, null, 4);  // 2 是缩进，可改成 0 或 4
 };
 
-export const isLikelyTextFile = async (file: File, options: { sampleBytes?: number } = {}): Promise<boolean>  => {
+export const isLikelyTextFile = async (file: File, options: { sampleBytes?: number } = {}): Promise<boolean> => {
 	const SAMPLE_SIZE = options.sampleBytes ?? 8192; // 建议 4–16KB
 
 	if (file.size === 0) return true;           // 空文件算文本
@@ -106,7 +108,7 @@ export const isLikelyTextFile = async (file: File, options: { sampleBytes?: numb
 
 	// ── 阶段 2：尝试 UTF-8 解码，看是否合法
 	try {
-		const decoder = new TextDecoder("utf-8", { fatal: true }); // 改成 fatal: true !
+		const decoder = new TextDecoder("utf-8", {fatal: true}); // 改成 fatal: true !
 		const text = decoder.decode(bytes);
 
 		// ── 阶段 3：统计可疑控制字符（更严格一点）
@@ -134,4 +136,45 @@ export const isLikelyTextFile = async (file: File, options: { sampleBytes?: numb
 		// 解码失败 → 不是合法 UTF-8 → 大概率二进制
 		return false;
 	}
-}
+};
+
+export const isLikelyBackUpFile = async (file: File): Promise<boolean> => {
+	// 1. 必须是文本
+	if (!(await isLikelyTextFile(file))) return false;
+
+	let text: string;
+	try {
+		text = await file.text();
+	} catch {
+		return false;
+	}
+
+	// 2. 必须能 parse 成 JSON
+	let data: any;
+	try {
+		data = JSON.parse(text);
+	} catch {
+		return false;
+	}
+
+	// 3. 必须是 plain object
+	if (!isPlainObject(data)) return false;
+
+	// 4. 至少有一个 key（空文件可按需求放开）
+	const entries = Object.entries(data);
+	if (entries.length === 0) return false;
+
+	// 5. key + value 校验
+	for (const [key, value] of entries) {
+		// key 必须是已注册 store（核心特征）
+		if (!persistedStores.has(key)) continue;
+
+		// value 必须合法
+		if (!isValidTypeExt(value)) return false;
+
+		// 命中一个合法 store 就可以判定为 backup
+		return true;
+	}
+
+	return false;
+};

@@ -122,7 +122,7 @@ type TileStoreActions = {
 
 }
 
-type TileStore = TileStoreState & TileStoreActions;
+export type TileStore = TileStoreState & TileStoreActions;
 
 export const useTileStore = createPersistedStore<TileStore>(
 	"tile",

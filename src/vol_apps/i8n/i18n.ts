@@ -75,9 +75,9 @@ const resources = {
 		bg: {
 			"Upload Image": "上传图片",
 
-			"Reset Defaults":"默认设置",
-			"Custom":"自定义",
-			"DailyBing":"Bing每日壁纸",
+			"Reset Defaults": "默认设置",
+			"Custom": "自定义",
+			"DailyBing": "Bing每日壁纸",
 
 			// "Reset Defaults": "恢复默认设置",
 			"Default View": "正常",
@@ -107,6 +107,22 @@ const resources = {
 
 			"Word Wrap": "换行显示",
 			"No Wrap": "不换行",
+		},
+		dndFile: {
+			"Drop a file here": "等待释放文件到窗口内...",
+			"Not a file": "未知内容",
+
+			"Detected File:": "检测到文件：",
+
+			"Open in editor?": "打开到编辑器？",
+			"Editor content will be replaced.": "编辑器内容会被替换。",
+			"Unsaved changes will be lost.": "未保存的内容将丢失。",
+			"Export first to avoid loss.": "建议先导出以备份",
+
+			"Unable to read file": "不支持查看此文件",
+
+			"Export Editor content": "导出编辑器内容",
+			"Continue": "继续",
 		}
 	}
 };

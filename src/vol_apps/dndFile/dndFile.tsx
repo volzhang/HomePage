@@ -3,11 +3,13 @@ import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Dia
 import {useCmStore} from "@/vol_apps/cm/cm_store";
 import {handleCmSaveAs} from "@/vol_apps/cm/cm_ui_save_as";
 import {getFileExt} from "@/vol_apps/tool/file";
-import React, {type JSX, useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {toast} from "sonner";
 import {isLikelyTextFile} from "@/vol_apps/tool/isType";
+import {useTranslation} from "react-i18next";
 
 export const DndFile: React.FC = () => {
+	const {t} = useTranslation("dndFile");
 	const {doc, name, type, setDoc, setName, setType, setIsVisible} = useCmStore();
 
 	const dragCounter = useRef(0);
@@ -15,8 +17,26 @@ export const DndFile: React.FC = () => {
 	const [file, setFile] = useState<File | null>(null);
 	const [open, setOpen] = useState<boolean>(false);
 
-	const [title, setTitle] =  useState<JSX.Element>(<></>);
-	const [label, setLabel] = useState<JSX.Element>(<></>);
+	const [fileType, setFileType] = useState<"textFile">("textFile");
+
+
+	const dialogConfig = {
+		"textFile": {
+			title: t("Detected File:"),
+			label: (
+				<>
+					<span className={"font-bold text-foreground"}>{file?.name}</span><br/>
+					{t("Open in editor?")}<br/>
+					<br/>
+					{t("Editor content will be replaced.")}<br/>
+					{t("Unsaved changes will be lost.")}<br/>
+					<span className={"font-bold text-[green]"}>{t("Export first to avoid loss.")}</span><br/>
+					<br/>
+				</>
+			)
+		},
+	}[fileType];
+
 
 	const dismissToast = () => {
 		if (toastId.current) toast.dismiss(toastId.current);
@@ -25,7 +45,7 @@ export const DndFile: React.FC = () => {
 
 	const waitingToast = {
 		// message: "等待文件释放到窗口...",
-		message: "Drop a file here",
+		message: t("Drop a file here"),
 		data: {duration: Infinity}
 	};
 
@@ -65,7 +85,7 @@ export const DndFile: React.FC = () => {
 
 		const item = e.dataTransfer?.items?.[0];
 		if (!item || item.kind !== "file") {
-			updateOrCreateToast("Not a file", "error");
+			updateOrCreateToast(t("Not a file"), "error");
 			return;
 		}
 
@@ -75,28 +95,15 @@ export const DndFile: React.FC = () => {
 				setFile(_file);
 				//开始写逻辑分支
 				if (await isLikelyTextFile(_file)) {
-					setTitle(
-						<>
-							File Detected
-						</>
-					)
-
-					setLabel(
-						<>
-							Selected: {_file.name}.<br />
-							Open in editor?<br />
-							Note: The editor content will be replaced.<br />
-							Unsaved changes will be lost.
-						</>
-					);
+					setFileType("textFile");
 					setOpen(true);
 				}
 				dismissToast();
 			} else {
-				updateOrCreateToast("Unable to read file", "error");
+				updateOrCreateToast(t("Unable to read file"), "error");
 			}
 		} catch (err) {
-			updateOrCreateToast(`${err instanceof Error ? err.message : "Unknown error"}`, "error");
+			updateOrCreateToast(t("Unable to read file"), "error");
 		}
 	}, []);
 
@@ -115,12 +122,11 @@ export const DndFile: React.FC = () => {
 		};
 	}, [handleDragEnter, handleDragLeave, handleDrop]);
 
-
-	const readInCm =async ()=>{
+	const readInCm = async () => {
 		if (!file) return;
 
 		const doc = await file.text();
-		const name = file.name
+		const name = file.name;
 		const ext = getFileExt(file.name);
 
 		setDoc(doc);
@@ -128,7 +134,7 @@ export const DndFile: React.FC = () => {
 		setType(ext);
 
 		setIsVisible(true);
-	}
+	};
 
 	return (
 		<>
@@ -136,32 +142,32 @@ export const DndFile: React.FC = () => {
 				<DialogTrigger asChild>
 					{/*<Button variant="outline">Open Dialog</Button>*/}
 				</DialogTrigger>
-				<DialogContent className="sm:max-w-sm">
+				<DialogContent className="w-fit">
 					<DialogHeader>
 						<DialogTitle>
-							{title}
+							{dialogConfig["title"]}
 						</DialogTitle>
 						<DialogDescription>
-							{label}
+							{dialogConfig["label"]}
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
 						<DialogClose asChild>
 							<Button variant={"default"}
-							onClick={
-								async ()=> {
-									await handleCmSaveAs(doc, name, type);
-									setOpen(true); //手动重新打开模态窗口
-								}}>
-								Export Editor content
+									onClick={
+										async () => {
+											await handleCmSaveAs(doc, name, type);
+											setOpen(true); //手动重新打开模态窗口
+										}}>
+								{t("Export Editor content")}
 							</Button>
 						</DialogClose>
 						<Button variant={"destructive"} onClick={
-							async ()=>{
+							async () => {
 								await readInCm();
 								setOpen(false);
 							}
-						}>Just Go On</Button>
+						}>{t("Continue")}</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
