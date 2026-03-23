@@ -26,7 +26,6 @@ export const Version = () => {
 	return (
 		<Button
 			variant={"outline"}
-			// disabled={true}
 			onClick={() => {
 				window.open(LINK, "_blank", "noopener noreferrer");
 			}}

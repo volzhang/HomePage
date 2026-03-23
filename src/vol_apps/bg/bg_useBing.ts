@@ -7,9 +7,7 @@ import {useCallback, useEffect, useRef, useState} from "react";
 export const useBing = () => {
 	const {language} = useI18nStore();
 	const {
-		// bgImg,
 		bgBingIndex, bgType, bgSize, bgRepeat, bgCenter,
-		// bgBingCopyright,
 		setBgImg, setBgBingIndex, setBgBingCopyright
 	} = useBgStore();
 
@@ -74,9 +72,6 @@ export const useBing = () => {
 
 	//注意，需要提前使用
 	const reLoadImgToCache = async () => {
-		// cachedBingImgRef.current = bgImg
-		// cachedBingCopyrightRef.current = bgBingCopyright
-		// cachedIndexRef.current = bgBingIndex;
 		await preloadBing(bgBingIndex)
 	};
 
