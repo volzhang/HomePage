@@ -1,8 +1,8 @@
 import {VERSION} from "@/vol_apps/tool/action/fetch";
-import {persistedStoresRehydrate, persistedStores} from "@/vol_apps/tool/createPersistedStore";
+import {persistedStores} from "@/vol_apps/tool/createPersistedStore";
 import {download, timeStamp} from "@/vol_apps/tool/action/download";
 import {isValidType, tryStringify, type ValidType} from "@/vol_apps/tool/isType/isValidType";
-import { type Tile } from "@/vol_apps/tile/tile_store";
+import {type Tile} from "@/vol_apps/tile/tile_store";
 import localforage from "localforage";
 
 export const downloadAsJsonFile = async (
@@ -27,15 +27,19 @@ export const downloadAsJsonFile = async (
  * 只恢复备份文件中存在的、且当前已注册的 persistedStores 的 key
  */
 
+// ------------------ 恢复 ------------------
+/*
+ * 只恢复备份文件中存在的、且当前已注册的 persistedStores 的 key
+ */
 export const localforageRestore = async (
 	file: File,
 	clearFirst: boolean = false,
-	mergeTileTiles: boolean = true,
+	mergeTileTiles: boolean = false,
 ): Promise<void> => {
 	const text = await file.text();
 	const backupData = await JSON.parse(text);
 	if (!isValidType(backupData)) {
-		console.error("invalid backupData")
+		console.error("invalid backupData");
 	}
 
 	// 已注册的 store 信息（包含 storageType）
@@ -46,17 +50,17 @@ export const localforageRestore = async (
 		await Promise.all(
 			Array.from(registered.keys()).map(async (key) => {
 				const { storageType } = registered.get(key)!;
-				if (storageType === 'localforage') {
+				if (storageType === "localforage") {
 					await localforage.removeItem(key);
-				} else if (storageType === 'localStorage') {
+				} else if (storageType === "localStorage") {
 					localStorage.removeItem(key);
 				}
 			})
 		);
 	}
 
-	const tryParsedValue = (value:any)=>{
-		let result
+	const tryParsedValue = (value: any) => {
+		let result;
 		if (typeof value === "string") {
 			try {
 				result = JSON.parse(value);
@@ -65,27 +69,21 @@ export const localforageRestore = async (
 			}
 		}
 		return result;
-	}
+	};
 
 	const restorePromises = Object.entries(backupData)
 		.filter(([key]) => registered.has(key))
 		.map(async ([key, value]) => {
 			if (!isValidType(value)) return;
 			const { storageType } = registered.get(key)!;
-			//这段需要解释下，原则上，我们默认使用localforage
-			//少数情况下，用户数据会从localforage迁移到localStorage，那么
-			//localStorage的set需要注意，先把old——value解析后再JSON.stringify存入，否则，格式会无法识别
-			//存在\斜杠
 
-			//反过来，我们不用处理localforage的set，因为，不存在localStorage到localforage的数据迁移
-			if (storageType === 'localforage') {
+			if (storageType === "localforage") {
 				await localforage.setItem(key, value);
-			} else if (storageType === 'localStorage') {
+			} else if (storageType === "localStorage") {
 				const parsedValue = tryParsedValue(value);
 				localStorage.setItem(key, JSON.stringify(parsedValue));
 			}
 		});
-
 
 	// ------------------ 普通恢复 ------------------
 	await Promise.all(restorePromises);
@@ -94,12 +92,9 @@ export const localforageRestore = async (
 	if (mergeTileTiles && backupData["tile"]) {
 		try {
 			let raw: any = backupData["tile"];
-
-			// 第一层解析
 			if (typeof raw === "string") raw = JSON.parse(raw);
 			if (!raw || typeof raw !== "object") return;
 
-			// 提取 state
 			let backupState = raw.state ?? raw;
 			if (typeof backupState === "string") backupState = JSON.parse(backupState);
 			if (!Array.isArray(backupState.tiles)) return;
@@ -111,7 +106,6 @@ export const localforageRestore = async (
 			const currentTiles = store.getState().tiles;
 			const incomingTiles = backupState.tiles as Tile[];
 
-			// 稳定的序列化（排序键）
 			const stableStringify = (obj: any): string => {
 				if (obj && typeof obj === "object" && !Array.isArray(obj)) {
 					const sortedKeys = Object.keys(obj).sort();
@@ -124,7 +118,6 @@ export const localforageRestore = async (
 				return JSON.stringify(obj);
 			};
 
-			// 去重：忽略 id，比较其他所有字段（属性顺序无关）
 			const currentSet = new Set(
 				currentTiles.map((t: Tile) => {
 					const { id, ...rest } = t;
@@ -144,7 +137,6 @@ export const localforageRestore = async (
 				}));
 				store.getState().setTiles(merged);
 
-				// 将合并后的完整存储对象写回 localforage
 				const newRaw = JSON.parse(JSON.stringify(raw));
 				if (newRaw.state) {
 					newRaw.state.tiles = merged;
@@ -153,13 +145,43 @@ export const localforageRestore = async (
 				}
 				await localforage.setItem("tile", newRaw);
 			}
-		} catch (err) {
+		} catch {
 			// 静默失败
 		}
 	}
 
-	// ------------------ 完成后触发 rehydrate ------------------
-	await persistedStoresRehydrate();
+	// ------------------ localStorage 再写一遍，破坏缓存判断 ------------------
+	for (const [key, { storageType }] of registered.entries()) {
+		if (storageType === "localStorage") {
+			const value = localStorage.getItem(key);
+			if (value !== null) {
+				localStorage.removeItem(key);
+				localStorage.setItem(key, value);
+			}
+		}
+	}
+
+	// ------------------ 核心：触发 _restoreSignal ------------------
+	for (const [key, { store }] of registered.entries()) {
+		const value = backupData[key];
+		if (!value) continue;
+
+		let parsed = value;
+		if (typeof parsed === "string") {
+			try {
+				parsed = JSON.parse(parsed);
+			} catch {}
+		}
+		if (parsed?.state) parsed = parsed.state;
+
+		if (parsed && typeof parsed === "object") {
+			store.setState((prev: any) => ({
+				...prev,
+				...parsed,
+				_restoreSignal: (prev._restoreSignal || 0) + 1 // 🚨 增量触发刷新
+			}), true);
+		}
+	}
 };
 
 //zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。
@@ -179,19 +201,18 @@ export const localforageBackup = async (): Promise<void> => {
 
 	// 遍历所有已注册的 store，根据类型从对应存储读取
 	await Promise.all(
-		Array.from(registered.entries()).map(async ([key, { storageType }]) => {
+		Array.from(registered.entries()).map(async ([key, {storageType}]) => {
 			let value: any = null;
 
-			if (storageType === 'localforage') {
+			if (storageType === "localforage") {
 				value = await localforage.getItem(key);
-			} else if (storageType === 'localStorage') {
+			} else if (storageType === "localStorage") {
 				const raw = localStorage.getItem(key);
-				value = raw ? JSON.parse(raw ?? 'null') : null;
+				value = raw ? JSON.parse(raw ?? "null") : null;
 			}
 			if (value !== null) result[key] = value;
 		})
 	);
-
 
 	// 如果没有任何数据，也生成一个空备份（视需求可调整）
 	const filename = `DB[${VERSION}]${timeStamp()}.json`;

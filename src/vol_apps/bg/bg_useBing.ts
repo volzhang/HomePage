@@ -7,7 +7,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 export const useBing = () => {
 	const {language} = useI18nStore();
 	const {bgBingIndex, bgType, bgSize, bgRepeat, bgCenter,
-		setBgImg, setBgBingIndex, setBgBingCopyright,
+		setBgImg, setBgBingIndex, setBgBingCopyright, setBgType,
 	} = useBgStore();
 
 	const cachedBingRef = useRef({img: "", copyright: "", index: 0,});
@@ -42,6 +42,8 @@ export const useBing = () => {
 		setBgImg(cachedBingRef.current.img);
 		setBgBingCopyright(cachedBingRef.current.copyright);
 		setBgBingIndex(cachedBingRef.current.index);
+
+		setBgType("bing");
 
 		setBackground(cachedBingRef.current.img, bgSize, bgRepeat, bgCenter);
 	}, [bgSize, bgRepeat, bgCenter]);

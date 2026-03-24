@@ -1,123 +1,17 @@
-import {Button} from "@/components/ui/button";
-import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
 import {handleCmSaveAs} from "@/vol_apps/cm/cm_ui_save_as";
+import {DndFileUiModal} from "@/vol_apps/dndFile/dndFile_ui_modal";
+import {useFileDnD} from "@/vol_apps/dndFile/useFileDnD";
 import {getFileExt} from "@/vol_apps/tool/action/getFileExt";
-import React, {useEffect, useRef, useState} from "react";
-import {toast} from "sonner";
-import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile";
+import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
 import {useTranslation} from "react-i18next";
+import {DialogClose} from "@/components/ui/dialog";
+import {Button} from "@/components/ui/button";
 
-export const DndFile: React.FC = () => {
+export const DndFile = () => {
 	const {t} = useTranslation("dndFile");
 	const {doc, name, type, setDoc, setName, setType, setIsVisible} = useCmStore();
-
-	const dragCounter = useRef(0);
-	const toastId = useRef<string | number | null>(null);
-	const [file, setFile] = useState<File | null>(null);
-	const [open, setOpen] = useState<boolean>(false);
-
-	const [fileType, setFileType] = useState<"textFile">("textFile");
-
-	const dialogConfig = {
-		"textFile": {
-			title: t("Detected File:"),
-			label: (
-				<>
-					<span className={"font-bold text-foreground"}>{file?.name}</span><br/>
-					{t("Open in editor?")}<br/>
-					<br/>
-					{t("Editor content will be replaced.")}<br/>
-					{t("Unsaved changes will be lost.")}<br/>
-					<span className={"font-bold text-[green]"}>{t("Export first to avoid loss.")}</span><br/>
-					<br/>
-				</>
-			)
-		},
-	}[fileType];
-
-	const dismissToast = () => {
-		if (toastId.current) toast.dismiss(toastId.current);
-		toastId.current = null;
-	};
-
-	const waitingToast = {
-		message: t("Drop a file here"),
-		data: {duration: Infinity}
-	};
-
-	const updateOrCreateToast = (content: string, type: "success" | "error") => {
-		const options = {
-			id: toastId.current ?? undefined,
-			duration: 3000,
-		};
-		if (type === "success") {
-			toastId.current = toast.success(content, options);
-		} else {
-			toastId.current = toast.error(content, options);
-		}
-	};
-
-	const handleDragEnter = (e: DragEvent) => {
-		e.preventDefault();
-		dragCounter.current++;
-		if (dragCounter.current === 1) {
-			dismissToast();
-			toastId.current = toast.info(waitingToast.message, waitingToast.data);
-		}
-	};
-
-	const handleDragLeave = (e: DragEvent) => {
-		e.preventDefault();
-		dragCounter.current--;
-		// 只有真正离开窗口时才关闭 toast
-		if (dragCounter.current === 0) {
-			dismissToast();
-		}
-	};
-
-	const handleDrop = async (e: DragEvent) => {
-		e.preventDefault();
-		dragCounter.current = 0;
-
-		const item = e.dataTransfer?.items?.[0];
-		if (!item || item.kind !== "file") {
-			updateOrCreateToast(t("Not a file"), "error");
-			return;
-		}
-
-		try {
-			const _file = item.getAsFile?.();
-			if (_file) {
-				setFile(_file);
-				//开始写逻辑分支
-				if (await isLikelyTextFile(_file)) {
-					setFileType("textFile");
-					setOpen(true);
-				}
-				dismissToast();
-			} else {
-				updateOrCreateToast(t("Unable to read file"), "error");
-			}
-		} catch (err) {
-			updateOrCreateToast(t("Unable to read file"), "error");
-		}
-	};
-
-	const handleDragOver = (e: DragEvent) => e.preventDefault();
-
-	useEffect(() => {
-		window.addEventListener("dragenter", handleDragEnter);
-		window.addEventListener("dragover", handleDragOver);
-		window.addEventListener("dragleave", handleDragLeave);
-		window.addEventListener("drop", handleDrop);
-		return () => {
-			window.removeEventListener("dragenter", handleDragEnter);
-			window.removeEventListener("dragover", handleDragOver);
-			window.removeEventListener("dragleave", handleDragLeave);
-			window.removeEventListener("drop", handleDrop);
-		};
-	}, [handleDragEnter, handleDragOver, handleDragLeave, handleDrop]);
+	const {file, openModal, setOpenModal, fileType} = useFileDnD();
 
 	const readInCm = async () => {
 		if (!file) return;
@@ -130,44 +24,73 @@ export const DndFile: React.FC = () => {
 		setName(name);
 		setType(ext);
 
+		setOpenModal(false);
 		setIsVisible(true);
 	};
 
+	const exportEditorContent = async () => {
+		await handleCmSaveAs(doc, name, type);
+		setOpenModal(true); //导出后，手动重新打开模态窗口
+	};
+
+	const dialogConfig = {
+		"textFile": {
+			title: (<>{t("Detected File:")}</>),
+			description: (<>
+				<span className={"font-bold text-foreground"}>{file?.name}</span><br/>
+				{t("Open in editor?")}<br/>
+				<br/>
+				{t("Editor content will be replaced.")}<br/>
+				{t("Unsaved changes will be lost.")}<br/>
+				<span className={"font-bold text-[green]"}>{t("Export first to avoid loss.")}</span><br/>
+				<br/>
+			</>),
+			footer: (<>
+				<DialogClose asChild>
+					<Button variant="default" onClick={exportEditorContent}>
+						{t("Export Editor content")}
+					</Button>
+				</DialogClose>
+				<Button variant="destructive" onClick={readInCm}>
+					{t("Continue")}
+				</Button>
+			</>),
+		},
+		"backupFile": {
+			title: (<>{t("检测到存档文件:")}</>),
+			description: (<>
+				<span className={"font-bold text-foreground"}>{file?.name}</span><br/>
+				{t("是否应用存档?")}<br/>
+				{t("瓷砖设置，会自动去重后添加")}<br/>
+				{t("其他设置，会被覆写")}<br/>
+				<span className={"font-bold text-[green]"}>{t("建议提前备份存档")}</span><br/>
+				<br/>
+			</>),
+			footer: (<>
+				<DialogClose asChild>
+					<Button variant="default" onClick={localforageBackup}>
+						{t("下载存档")}
+					</Button>
+				</DialogClose>
+				<Button variant="destructive" onClick={async ()=> {
+					if (!file) return; //理论上不可能
+					await localforageRestore(file, false, false);
+					setOpenModal(false);
+				}}>
+					{t("继续")}
+				</Button>
+			</>),
+		},
+		"": {}
+	}[fileType];
+
 	return (
-		<>
-			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogTrigger asChild>
-					{/*<Button variant="outline">Open Dialog</Button>*/}
-				</DialogTrigger>
-				<DialogContent className="w-fit">
-					<DialogHeader>
-						<DialogTitle>
-							{dialogConfig["title"]}
-						</DialogTitle>
-						<DialogDescription>
-							{dialogConfig["label"]}
-						</DialogDescription>
-					</DialogHeader>
-					<DialogFooter>
-						<DialogClose asChild>
-							<Button variant={"default"}
-									onClick={
-										async () => {
-											await handleCmSaveAs(doc, name, type);
-											setOpen(true); //手动重新打开模态窗口
-										}}>
-								{t("Export Editor content")}
-							</Button>
-						</DialogClose>
-						<Button variant={"destructive"} onClick={
-							async () => {
-								await readInCm();
-								setOpen(false);
-							}
-						}>{t("Continue")}</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
-		</>
+		<DndFileUiModal
+			open={openModal}
+			onOpenChange={setOpenModal}
+			title={dialogConfig.title}
+			description={dialogConfig.description}
+			footer={dialogConfig.footer}
+		/>
 	);
 };

@@ -182,3 +182,10 @@ export function createPersistedStore<S>(
 
 	return store;
 }
+
+export const restoringFlag = {
+	count: 0,
+	get current() {
+		return this.count > 0;
+	}
+};

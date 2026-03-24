@@ -1,0 +1,94 @@
+import {isLikelyBackUpFile} from "@/vol_apps/tool/isType/isLikelyBackUpFile";
+import {useEffect, useRef, useState} from "react";
+import {toast} from "sonner";
+import {useToast} from "./useToast";
+import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile";
+import {useTranslation} from "react-i18next";
+
+export const useFileDnD = () => {
+	const {t} = useTranslation("dndFile");
+	const dragCounter = useRef(0);
+	const {toastId, dismissToast, waitingToast, updateOrCreateToast} = useToast();
+
+	const [file, setFile] = useState<File | null>(null);
+	const [openModal, setOpenModal] = useState<boolean>(false);
+
+	type FileType = "textFile" | "backupFile" | "";
+	const [fileType, setFileType] = useState<FileType>("");
+
+	const handleDragEnter = (e: DragEvent) => {
+		e.preventDefault();
+		dragCounter.current++;
+		if (dragCounter.current === 1) {
+			dismissToast();
+			toastId.current = toast.info(waitingToast.message, waitingToast.data);
+		}
+	};
+
+	const handleDragLeave = (e: DragEvent) => {
+		e.preventDefault();
+		dragCounter.current--;
+		// 只有真正离开窗口时才关闭 toast
+		if (dragCounter.current === 0) {
+			dismissToast();
+		}
+	};
+
+	const handleDragOver = (e: DragEvent) => e.preventDefault();
+
+	const handleDrop = async (e: DragEvent) => {
+		e.preventDefault();
+		dragCounter.current = 0;
+
+		const item = e.dataTransfer?.items?.[0];
+		if (!item || item.kind !== "file") {
+			updateOrCreateToast(t("Not a file"), "error");
+			return;
+		}
+
+		try {
+			const _file = item.getAsFile?.();
+			if (_file) {
+				setFile(_file);
+				// 开始写逻辑分支
+
+				// 优先级1，存档文件
+				if (await isLikelyBackUpFile(_file)) {
+					setFileType("backupFile");
+					setOpenModal(true);
+
+				//优先级2，纯文本文件
+				} else if (await isLikelyTextFile(_file)) {
+					setFileType("textFile");
+					setOpenModal(true);
+				}
+
+				dismissToast();
+			} else {
+				updateOrCreateToast(t("Unable to read file"), "error");
+			}
+		} catch (err) {
+			updateOrCreateToast(t("Unable to read file"), "error");
+		}
+	};
+
+	useEffect(() => {
+		window.addEventListener("dragenter", handleDragEnter);
+		window.addEventListener("dragover", handleDragOver);
+		window.addEventListener("dragleave", handleDragLeave);
+		window.addEventListener("drop", handleDrop);
+		return () => {
+			window.removeEventListener("dragenter", handleDragEnter);
+			window.removeEventListener("dragover", handleDragOver);
+			window.removeEventListener("dragleave", handleDragLeave);
+			window.removeEventListener("drop", handleDrop);
+		};
+	}, [handleDragEnter, handleDragOver, handleDragLeave, handleDrop]);
+
+	return {
+		file,
+		fileType,
+		openModal,
+		setOpenModal,
+	};
+};
