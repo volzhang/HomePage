@@ -13,6 +13,7 @@ import {
 import {cn} from "@/lib/utils";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
+import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 import {useTranslation} from "react-i18next";
@@ -76,10 +77,8 @@ export function Menu() {
 						<MenubarItem onClick={() => setBgUiVisible(true)}>
 							{t("Set Background")}
 						</MenubarItem>
-						<MenubarItem asChild>
-							<a href="privacy.html" target="_blank" rel="noopener noreferrer">
-								{t("Privacy Policy")}
-							</a>
+						<MenubarItem onClick={() => openLinkInNewTab("privacy.html")}>
+							{t("Privacy Policy")}
 						</MenubarItem>
 					</MenubarGroup>
 				</MenubarContent>

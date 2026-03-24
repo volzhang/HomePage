@@ -18,8 +18,8 @@ export const blobToString = (blob: Blob): Promise<BlobString> =>
 		reader.readAsDataURL(blob);
 	});
 
-export const stringToBlob = async (blobString: string): Promise<Blob> => {
-	// base64 -> Blob 自动挡
-	const response = await fetch(blobString);
-	return await response.blob();
-};
+// export const stringToBlob = async (blobString: string): Promise<Blob> => {
+// 	// base64 -> Blob 自动挡
+// 	const response = await fetch(blobString);
+// 	return await response.blob();
+// };

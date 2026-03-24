@@ -1,6 +1,7 @@
 import {persistedStores} from "@/vol_apps/tool/createPersistedStore";
 import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile";
-import {isPlainObject, isValidTypeExt} from "@/vol_apps/tool/isType/isPlainObject";
+import {isPlainObject} from "@/vol_apps/tool/isType/isPlainObject";
+import {isValidType} from "@/vol_apps/tool/isType/isValidType";
 
 export const isLikelyBackUpFile = async (file: File): Promise<boolean> => {
 	// 1. 必须是文本
@@ -34,7 +35,7 @@ export const isLikelyBackUpFile = async (file: File): Promise<boolean> => {
 		if (!persistedStores.has(key)) continue;
 
 		// value 必须合法
-		if (!isValidTypeExt(value)) return false;
+		if (!isValidType(value)) return false;
 
 		// 命中一个合法 store 就可以判定为 backup
 		return true;

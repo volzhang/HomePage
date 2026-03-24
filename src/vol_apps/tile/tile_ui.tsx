@@ -7,8 +7,10 @@ import {cn} from "@/lib/utils";
 import {TileComponent} from "@/vol_apps/tile/tile";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {blobToString, isBlobString} from "@/vol_apps/tool/a2b/blobToString";
+import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {apiFaviconVemetric} from "@/vol_apps/tool/api/apiFaviconVemetric";
-import {enhanceUrl, extractMainDomain, looksLikeDomain, openInNewTab} from "@/vol_apps/tool/phase/enhanceUrl";
+import {isDomain} from "@/vol_apps/tool/isType/isDomain";
+import {enhanceUrl, extractMainDomain} from "@/vol_apps/tool/action/enhanceUrl";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/action/filePicker";
 import {HoverCard, HoverCardContent, HoverCardTrigger,} from "@/components/ui/hover-card";
 import {ImageUp, Info, Trash2, FileSearchCorner} from "lucide-react";
@@ -89,7 +91,7 @@ export const TileUi = () => {
 	const try_handle_icon = async (url: string) => {
 
 		if (urlChanged) {
-			if (!URL.canParse(url) || !looksLikeDomain(url)) return;
+			if (!URL.canParse(url) || !isDomain(url)) return;
 			setIsFetchingIcon(true);
 			try {
 				const icon = await apiFaviconVemetric(url, 96);
@@ -287,7 +289,7 @@ export const TileUi = () => {
 								<FileSearchCorner size={26}
 												  onClick={async () => {
 													  const name = currentTile.meta.name;
-													  openInNewTab(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
+													  openLinkInNewTab(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
 												  }}
 
 												  className={cn("absolute right-12 bottom-44 opacity-10",

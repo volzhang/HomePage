@@ -10,15 +10,6 @@ export function enhanceUrl(input: string): string {
 	return `https://${input}`;
 }
 
-export function Domain(input: string): string {
-	return input.replace(/^https:\/\//, "");
-}
-
-export function looksLikeDomain(url:string) {
-	const hostname = new URL(url).hostname;
-	return !(!hostname.includes('.') || hostname.startsWith('.') || hostname.endsWith('.'));
-}
-
 export function extractMainDomain(input: string): string {
 	const url = new URL(enhanceUrl(input));
 	const hostname = url.hostname;
@@ -30,14 +21,4 @@ export function extractMainDomain(input: string): string {
 		return parts[parts.length - 2];
 	}
 	return withoutWww;
-}
-
-export function openInNewTab(url:string) {
-	const link = document.createElement('a');
-	link.href = url;
-	link.target = '_blank';
-	link.rel = 'noopener noreferrer';
-	document.body.appendChild(link);
-	link.click();
-	document.body.removeChild(link);
 }

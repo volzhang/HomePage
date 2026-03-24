@@ -1,16 +1,15 @@
+import {VERSION} from "@/vol_apps/tool/action/fetch";
 import {persistedStoresRehydrate, persistedStores} from "@/vol_apps/tool/createPersistedStore";
 import {download, timeStamp} from "@/vol_apps/tool/action/download";
-import {isPlainObject, isValidTypeExt, type ValidTypeExt, validTypeStringify} from "@/vol_apps/tool/isType/isPlainObject";
-
-import {fetchVersion} from "@/vol_apps/version/version";
+import {isValidType, tryStringify, type ValidType} from "@/vol_apps/tool/isType/isValidType";
 import { type Tile } from "@/vol_apps/tile/tile_store";
 import localforage from "localforage";
 
 export const downloadAsJsonFile = async (
-	obj: ValidTypeExt,
+	obj: ValidType,
 	file_name = timeStamp(),
 ): Promise<void> => {
-	const jsonContent = validTypeStringify(obj);
+	const jsonContent = tryStringify(obj);
 	const blob = new Blob([jsonContent], {
 		type: "application/json;charset=utf-8",
 	});
@@ -35,7 +34,9 @@ export const localforageRestore = async (
 ): Promise<void> => {
 	const text = await file.text();
 	const backupData = await JSON.parse(text);
-	if (!isPlainObject(backupData)) throw new Error("invalid backupData");
+	if (!isValidType(backupData)) {
+		console.error("invalid backupData")
+	}
 
 	// 已注册的 store 信息（包含 storageType）
 	const registered = new Map(persistedStores);
@@ -69,7 +70,7 @@ export const localforageRestore = async (
 	const restorePromises = Object.entries(backupData)
 		.filter(([key]) => registered.has(key))
 		.map(async ([key, value]) => {
-			if (!isValidTypeExt(value)) return;
+			if (!isValidType(value)) return;
 			const { storageType } = registered.get(key)!;
 			//这段需要解释下，原则上，我们默认使用localforage
 			//少数情况下，用户数据会从localforage迁移到localStorage，那么
@@ -191,8 +192,8 @@ export const localforageBackup = async (): Promise<void> => {
 		})
 	);
 
+
 	// 如果没有任何数据，也生成一个空备份（视需求可调整）
-	const version = await fetchVersion();
-	const filename = `DB[${version}]${timeStamp()}.json`;
+	const filename = `DB[${VERSION}]${timeStamp()}.json`;
 	await downloadAsJsonFile(result, filename);
 };

@@ -2,8 +2,8 @@ import {Button} from "@/components/ui/button";
 import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
 import {handleCmSaveAs} from "@/vol_apps/cm/cm_ui_save_as";
-import {getFileExt} from "@/vol_apps/tool/phase/file";
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import {getFileExt} from "@/vol_apps/tool/action/getFileExt";
+import React, {useEffect, useRef, useState} from "react";
 import {toast} from "sonner";
 import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile";
 import {useTranslation} from "react-i18next";
@@ -18,7 +18,6 @@ export const DndFile: React.FC = () => {
 	const [open, setOpen] = useState<boolean>(false);
 
 	const [fileType, setFileType] = useState<"textFile">("textFile");
-
 
 	const dialogConfig = {
 		"textFile": {
@@ -37,14 +36,12 @@ export const DndFile: React.FC = () => {
 		},
 	}[fileType];
 
-
 	const dismissToast = () => {
 		if (toastId.current) toast.dismiss(toastId.current);
 		toastId.current = null;
 	};
 
 	const waitingToast = {
-		// message: "等待文件释放到窗口...",
 		message: t("Drop a file here"),
 		data: {duration: Infinity}
 	};
@@ -61,25 +58,25 @@ export const DndFile: React.FC = () => {
 		}
 	};
 
-	const handleDragEnter = useCallback((e: DragEvent) => {
+	const handleDragEnter = (e: DragEvent) => {
 		e.preventDefault();
 		dragCounter.current++;
 		if (dragCounter.current === 1) {
 			dismissToast();
 			toastId.current = toast.info(waitingToast.message, waitingToast.data);
 		}
-	}, []);
+	};
 
-	const handleDragLeave = useCallback((e: DragEvent) => {
+	const handleDragLeave = (e: DragEvent) => {
 		e.preventDefault();
 		dragCounter.current--;
 		// 只有真正离开窗口时才关闭 toast
 		if (dragCounter.current === 0) {
 			dismissToast();
 		}
-	}, []);
+	};
 
-	const handleDrop = useCallback(async (e: DragEvent) => {
+	const handleDrop = async (e: DragEvent) => {
 		e.preventDefault();
 		dragCounter.current = 0;
 
@@ -105,7 +102,7 @@ export const DndFile: React.FC = () => {
 		} catch (err) {
 			updateOrCreateToast(t("Unable to read file"), "error");
 		}
-	}, []);
+	};
 
 	const handleDragOver = (e: DragEvent) => e.preventDefault();
 
@@ -120,7 +117,7 @@ export const DndFile: React.FC = () => {
 			window.removeEventListener("dragleave", handleDragLeave);
 			window.removeEventListener("drop", handleDrop);
 		};
-	}, [handleDragEnter, handleDragLeave, handleDrop]);
+	}, [handleDragEnter, handleDragOver, handleDragLeave, handleDrop]);
 
 	const readInCm = async () => {
 		if (!file) return;

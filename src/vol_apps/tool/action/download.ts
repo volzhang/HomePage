@@ -11,5 +11,3 @@ export const download = (data_url: string, file_name: string = timeStamp()): voi
     a.click();
     document.body.removeChild(a);
 };
-
-
