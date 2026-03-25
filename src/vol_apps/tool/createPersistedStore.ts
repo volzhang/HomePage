@@ -1,191 +1,80 @@
-import { create, type StateCreator, type StoreApi } from "zustand";
-import { persist, createJSONStorage, type PersistOptions } from "zustand/middleware";
+import { create, type StateCreator } from "zustand";
+import { createJSONStorage, persist, type PersistOptions } from "zustand/middleware";
 import localforage from "localforage";
 
-// ==================== 带 _hydrated 的状态类型 ====================
-type StateWithHydrated<S> = S & { _hydrated: boolean };
+type StorageType = "localforage" | "localStorage";
 
-// 类型守卫：判断是否为 Promise
-function isPromise<T>(obj: any): obj is Promise<T> {
-	return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
-}
+/**
+ * 这里故意只抽象出当前项目真正依赖的 persist 能力：
+ * - rehydrate: restore 后手动回拉内存
+ * - hasHydrated / onHydrate / onFinishHydration: 提供 hydration 状态给 UI
+ *
+ * 不把整个 zustand store 类型写死，后续如果要扩展 persist 相关能力，
+ * 只需要在这里补充最小接口，不必把外部实现细节传染到全局。
+ */
 
-type ExtraOptions = {
-	storageType?: "localforage" | "localStorage";
-	migrateFromLocalForage?: boolean;
+type PersistController = {
+	rehydrate: () => void | Promise<void>;
+	hasHydrated: () => boolean;
+	onHydrate?: (fn: () => void) => () => void;
+	onFinishHydration: (fn: () => void) => () => void;
+};
+
+export type PersistStoreLike = {
+	persist: PersistController;
+	getState: () => Record<string, unknown>;
+};
+
+type PersistedStoreEntry = {
+	store: PersistStoreLike;
+	storageType: StorageType;
 };
 
 type CreatePersistedStoreOptions<S> =
-	ExtraOptions &
-	Partial<Omit<PersistOptions<S, Partial<S>>, "name" | "storage">>;
-
-// 用于收集所有 persist store 实例
-export const persistedStores = new Map<string, {
-	store: any;
-	storageType: "localforage" | "localStorage";
-}>();
-
-export const persistedStoresRehydrate = async () => {
-	const promises: Promise<any>[] = [];
-	for (const entry of persistedStores.values()) {
-		const rehydrateResult = entry.store.persist.rehydrate();
-		if (isPromise(rehydrateResult)) {
-			promises.push(rehydrateResult);
-		}
-	}
-	if (promises.length) await Promise.all(promises);
+	Partial<Omit<PersistOptions<S, Partial<S>>, "name" | "storage">> & {
+	storageType?: StorageType;
 };
 
-// ==================== 主工厂 ====================
+const isPromise = (value: unknown): value is Promise<unknown> =>
+	!!value && typeof (value as Promise<unknown>).then === "function";
+
+export const persistedStores = new Map<string, PersistedStoreEntry>();
+
+export const persistedStoresRehydrate = async (): Promise<void> => {
+	const promises: Promise<unknown>[] = [];
+	for (const entry of persistedStores.values()) {
+		const result = entry.store.persist.rehydrate();
+		if (isPromise(result)) promises.push(result);
+	}
+	if (promises.length > 0) await Promise.all(promises);
+};
+
 export function createPersistedStore<S>(
 	name: string,
-	initializer: StateCreator<StateWithHydrated<S>, [], [], S>,
-	options: CreatePersistedStoreOptions<S> = {}
+	initializer: StateCreator<S, [], [], S>,
+	options: CreatePersistedStoreOptions<S> = {},
 ) {
-	const {
-		storageType = "localforage",
-		migrateFromLocalForage = false,
-		onRehydrateStorage: userOnRehydrateStorage,
-		...restPersistOptions
-	} = options;
+	const { storageType = "localforage", ...restPersistOptions } = options;
 
-	let storeSet!: StoreApi<StateWithHydrated<S>>["setState"];
-
-	// 包装 initializer，注入 _hydrated: false，并捕获 storeSet
-	const wrappedInitializer: StateCreator<
-		StateWithHydrated<S>,
-		[],
-		[],
-		StateWithHydrated<S>
-	> = (set, get, api) => {
-		storeSet = set;
-		const userState = initializer(set, get, api);
-		return { ...userState, _hydrated: false };
-	};
-
-	// ==================== 核心：onRehydrateStorage 处理 ====================
-	const combinedOnRehydrateStorage = (preState: StateWithHydrated<S>) => {
-		const userPostFn = userOnRehydrateStorage?.(preState as unknown as S);
-
-		return async (state?: StateWithHydrated<S>, error?: unknown) => {
-			// 1. 迁移逻辑：localforage → localStorage
-			if (storageType === "localStorage" && migrateFromLocalForage) {
-				if (localStorage.getItem(name) === null) {
-					try {
-						const legacyRaw = await localforage.getItem(name);
-						if (legacyRaw !== null) {
-							let legacyState: any = legacyRaw;
-
-							if (typeof legacyRaw === "string") {
-								try {
-									const parsed = JSON.parse(legacyRaw);
-									if (parsed && typeof parsed === "object" && "state" in parsed) {
-										legacyState = parsed.state;
-									} else {
-										legacyState = parsed;
-									}
-								} catch {
-									// ignore parse error
-								}
-							}
-
-							if (legacyState && typeof legacyState === "object") {
-								storeSet((current) => ({
-									...current,
-									...legacyState,
-								}));
-							}
-						}
-					} catch (err) {
-						console.error(`Persist migration failed for "${name}"`, err);
-					}
-				}
-			}
-
-			// 2. 强制写入存储（确保存储键存在）
-			const storageEmpty =
-				storageType === "localStorage"
-					? localStorage.getItem(name) === null
-					: true; // localforage 无法同步检查
-
-			if (state && storageEmpty) {
-				storeSet((s) => ({ ...s }));
-			}
-
-			// 3. 调用用户自定义的 post-rehydration 函数
-			if (userPostFn) {
-				const result:unknown = userPostFn(state, error);
-				if (isPromise(result)) {
-					await result;
-				}
-			}
-
-			// 4. 最后设置 _hydrated = true
-			storeSet((current) => ({ ...current, _hydrated: true }));
-		};
-	};
-
-	/* -------------------------------------------------- */
-	/* ensure storage initialization                       */
-	/* -------------------------------------------------- */
-
-	/**
-	 * IMPORTANT: DO NOT REMOVE THIS BLOCK.
-	 *
-	 * Zustand persist will NOT write to storage if:
-	 *   - the store only contains its default initializer state
-	 *   - no setState has occurred yet
-	 *
-	 * In this project we REQUIRE that every persisted store
-	 * always exists in storage even when it only contains default values.
-	 *
-	 * Reasons:
-	 *   1. backup / restore infrastructure depends on key existence
-	 *   2. migration logic depends on storage presence
-	 *   3. store registry inspection relies on deterministic storage keys
-	 *
-	 * Without this forced write, a freshly initialized store would:
-	 *   - exist in memory
-	 *   - but NOT exist in storage
-	 *
-	 * This leads to inconsistent behavior in restore/migration systems.
-	 *
-	 * Therefore, we intentionally trigger a no-op setState
-	 * to force persist middleware to write the current state to storage.
-	 *
-	 * NOTE:
-	 *   We ONLY do this when the storage key does not exist,
-	 *   to avoid unnecessary writes on every hydration.
-	 */
-
-		// 构建 storage，显式指定泛型为 Partial<S> 以解决类型错误
 	const storage =
-			storageType === "localforage"
-				? createJSONStorage<Partial<S>>(() => localforage)
-				: createJSONStorage<Partial<S>>(() => localStorage);
+		storageType === "localforage"
+			? createJSONStorage<Partial<S>>(() => localforage)
+			: createJSONStorage<Partial<S>>(() => localStorage);
 
-	// 构建 persist 配置，直接使用用户传入的选项（通过类型断言简化，用户自行保证类型兼容）
-	const persistConfig: PersistOptions<StateWithHydrated<S>, Partial<S>> = {
+	const persistConfig = {
 		name,
 		storage,
-		onRehydrateStorage: combinedOnRehydrateStorage,
 		...restPersistOptions,
-	} as PersistOptions<StateWithHydrated<S>, Partial<S>>;
+	} as PersistOptions<S, Partial<S>>;
 
-	// 创建 store
-	const store = create<StateWithHydrated<S>>()(
-		persist(wrappedInitializer, persistConfig)
+	const store = create<S>()(
+		persist(initializer, persistConfig),
 	);
 
-	// 收集实例
-	persistedStores.set(name, { store, storageType });
+	persistedStores.set(name, {
+		store: store as PersistStoreLike,
+		storageType,
+	});
 
 	return store;
 }
-
-export const restoringFlag = {
-	count: 0,
-	get current() {
-		return this.count > 0;
-	}
-};

@@ -5,12 +5,14 @@ import {Select, SelectContent, SelectGroup, SelectItem,
 	SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {cn} from "@/lib/utils";
 import {useSearchStore} from "@/vol_apps/search/search_store";
+import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated";
 import {SearchIcon} from "lucide-react";
 import {useTranslation} from "react-i18next";
 
 export const SearchComponent = () => {
-	const {_hydrated,
-		engines, getEngineInUse, setEngineInUseByName} = useSearchStore();
+	const {engines, getEngineInUse, setEngineInUseByName} = useSearchStore();
+	const hydrated = useStoreHydrated(useSearchStore)
+
 	const currentEngine = getEngineInUse();
 	const handleOnValueChange = (name: string) => {
 		if (name === "") return; //这里有个坑，OnValueChange会在mount时自动设置为""
@@ -19,7 +21,7 @@ export const SearchComponent = () => {
 	const {t} = useTranslation("search")
 	return (
 		<>
-			{_hydrated
+			{hydrated
 				? (<form
 				action={currentEngine.url} method="GET" target="_blank"
 				className={cn(

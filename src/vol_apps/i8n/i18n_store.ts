@@ -24,7 +24,7 @@ export const useI18nStore = createPersistedStore<I18nStore>(
 	}),
 	{
 		storageType: "localStorage",
-		migrateFromLocalForage: true,
+		// migrateFromLocalForage: true,
 		skipHydration: true,
 		//i18n初始化很早，我们手动处理，不依赖加载时的Hydration了。
 	}

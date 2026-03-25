@@ -33,6 +33,17 @@ export const DndFile = () => {
 		setOpenModal(true); //导出后，手动重新打开模态窗口
 	};
 
+	const DownloadBackup = async () => {
+		await localforageBackup();
+		setOpenModal(true);
+	};
+
+	const ImportBackup = async () => {
+		if (!file) return; //理论上不可能
+		await localforageRestore(file, false);
+		setOpenModal(false);
+	}
+
 	const dialogConfig = {
 		"textFile": {
 			title: (<>{t("Detected File:")}</>),
@@ -68,15 +79,11 @@ export const DndFile = () => {
 			</>),
 			footer: (<>
 				<DialogClose asChild>
-					<Button variant="default" onClick={localforageBackup}>
+					<Button variant="default" onClick={DownloadBackup}>
 						{t("下载存档")}
 					</Button>
 				</DialogClose>
-				<Button variant="destructive" onClick={async ()=> {
-					if (!file) return; //理论上不可能
-					await localforageRestore(file, false, false);
-					setOpenModal(false);
-				}}>
+				<Button variant="destructive" onClick={ImportBackup}>
 					{t("继续")}
 				</Button>
 			</>),

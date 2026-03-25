@@ -10,6 +10,7 @@ import {CmUiSaveAsBtn} from "@/vol_apps/cm/cm_ui_save_as";
 import {CmUiSearchPanelOpen} from "@/vol_apps/cm/cm_ui_search_panel_open";
 import {Theme} from "@/vol_apps/theme/theme";
 import {isFontAvailable} from "@/vol_apps/tool/isAvailable/isFontAvailable";
+import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated";
 import {useEffect, useRef} from "react";
 
 import {Compartment} from "@codemirror/state";
@@ -26,7 +27,6 @@ export const Cm = () => {
 	const lineWrappingRef = useRef(new Compartment());
 
 	const {
-		_hydrated,
 		isVisible, setIsVisible,
 		doc, setDoc,
 
@@ -38,9 +38,11 @@ export const Cm = () => {
 		enableLineWrapping,
 	} = useCmStore();
 
+	const hydrated = useStoreHydrated(useCmStore)
+
 	// 在组件内替换原来的字体检查 Effect
 	useEffect(() => {
-		if (!_hydrated) return;
+		if (!hydrated) return;
 
 		let cancelled = false;
 		const checkFont = async () => {
@@ -60,7 +62,7 @@ export const Cm = () => {
 		return () => {
 			cancelled = true;
 		};
-	}, [_hydrated]); // 依赖项完整
+	}, [hydrated]); // 依赖项完整
 
 	const fontSize = fontPx.toString() + "px";
 	const fontFallback = "monospace";
@@ -119,7 +121,7 @@ export const Cm = () => {
 			view.destroy();
 			viewRef.current = null;
 		};
-	}, [_hydrated]);
+	}, [hydrated]);
 
 	//更新样式
 	useEffect(() => {
@@ -165,7 +167,7 @@ export const Cm = () => {
 				 "z-2",
 				 "animate-fade-in-scale"
 			 )}>
-			{_hydrated
+			{hydrated
 				? (<div className="flex flex-col h-full">
 					{/* toolbar */}
 					<div className={"flex m-2 gap-2"}>

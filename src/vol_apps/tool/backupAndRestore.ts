@@ -1,25 +1,27 @@
 import {VERSION} from "@/vol_apps/tool/action/fetch";
-import {persistedStores} from "@/vol_apps/tool/createPersistedStore";
-import {download, timeStamp} from "@/vol_apps/tool/action/download";
-import {isValidType, tryStringify, type ValidType} from "@/vol_apps/tool/isType/isValidType";
-import {type Tile} from "@/vol_apps/tile/tile_store";
+import {persistedStores, persistedStoresRehydrate} from "@/vol_apps/tool/createPersistedStore";
+import {downloadAsJsonFile, timeStamp} from "@/vol_apps/tool/action/download";
+import {isValidType} from "@/vol_apps/tool/isType/isValidType";
+import {type Tile, useTileStore} from "@/vol_apps/tile/tile_store";
 import localforage from "localforage";
 
-export const downloadAsJsonFile = async (
-	obj: ValidType,
-	file_name = timeStamp(),
-): Promise<void> => {
-	const jsonContent = tryStringify(obj);
-	const blob = new Blob([jsonContent], {
-		type: "application/json;charset=utf-8",
-	});
-	if (!file_name.endsWith(".json")) file_name += ".json";
-	const url = URL.createObjectURL(blob);
-	try {
-		download(url, file_name);
-	} finally {
-		URL.revokeObjectURL(url);
-	}
+export const clearRegisteredKV = async () : Promise<void>=>{
+	const registered = new Map(persistedStores);
+	await Promise.all(
+		Array.from(registered.keys()).map(async (key) => {
+			const { storageType } = registered.get(key)!;
+			if (storageType === "localforage") {
+				await localforage.removeItem(key);
+			} else if (storageType === "localStorage") {
+				localStorage.removeItem(key);
+			}
+		})
+	);
+}
+
+export const clearAllDBKV = async (): Promise<void> => {
+	await localforage.clear();
+	localStorage.clear();
 };
 
 // ------------------ 恢复 ------------------
@@ -27,13 +29,8 @@ export const downloadAsJsonFile = async (
  * 只恢复备份文件中存在的、且当前已注册的 persistedStores 的 key
  */
 
-// ------------------ 恢复 ------------------
-/*
- * 只恢复备份文件中存在的、且当前已注册的 persistedStores 的 key
- */
 export const localforageRestore = async (
 	file: File,
-	clearFirst: boolean = false,
 	mergeTileTiles: boolean = false,
 ): Promise<void> => {
 	const text = await file.text();
@@ -45,37 +42,21 @@ export const localforageRestore = async (
 	// 已注册的 store 信息（包含 storageType）
 	const registered = new Map(persistedStores);
 
-	// 先清空（只清已注册的）
-	if (clearFirst) {
-		await Promise.all(
-			Array.from(registered.keys()).map(async (key) => {
-				const { storageType } = registered.get(key)!;
-				if (storageType === "localforage") {
-					await localforage.removeItem(key);
-				} else if (storageType === "localStorage") {
-					localStorage.removeItem(key);
-				}
-			})
-		);
-	}
-
 	const tryParsedValue = (value: any) => {
-		let result;
-		if (typeof value === "string") {
-			try {
-				result = JSON.parse(value);
-			} catch {
-				result = value;
-			}
+		if (typeof value !== "string") return value;
+
+		try {
+			return JSON.parse(value);
+		} catch {
+			return value;
 		}
-		return result;
 	};
 
 	const restorePromises = Object.entries(backupData)
 		.filter(([key]) => registered.has(key))
 		.map(async ([key, value]) => {
 			if (!isValidType(value)) return;
-			const { storageType } = registered.get(key)!;
+			const {storageType} = registered.get(key)!;
 
 			if (storageType === "localforage") {
 				await localforage.setItem(key, value);
@@ -87,6 +68,7 @@ export const localforageRestore = async (
 
 	// ------------------ 普通恢复 ------------------
 	await Promise.all(restorePromises);
+	await persistedStoresRehydrate();
 
 	// ------------------ 可选 tile 补丁 ------------------
 	if (mergeTileTiles && backupData["tile"]) {
@@ -99,11 +81,13 @@ export const localforageRestore = async (
 			if (typeof backupState === "string") backupState = JSON.parse(backupState);
 			if (!Array.isArray(backupState.tiles)) return;
 
-			const tileEntry = persistedStores.get("tile");
-			if (!tileEntry) return;
-
-			const store = tileEntry.store;
+			// const tileEntry = persistedStores.get("tile");
+			// if (!tileEntry) return;
+			// const store = tileEntry.store;
+			// const currentTiles = store.getState().tiles;
+			const store = useTileStore;
 			const currentTiles = store.getState().tiles;
+
 			const incomingTiles = backupState.tiles as Tile[];
 
 			const stableStringify = (obj: any): string => {
@@ -120,13 +104,13 @@ export const localforageRestore = async (
 
 			const currentSet = new Set(
 				currentTiles.map((t: Tile) => {
-					const { id, ...rest } = t;
+					const {id, ...rest} = t;
 					return stableStringify(rest);
 				})
 			);
 
 			const appended = incomingTiles.filter((t: Tile) => {
-				const { id, ...rest } = t;
+				const {id, ...rest} = t;
 				return !currentSet.has(stableStringify(rest));
 			});
 
@@ -149,44 +133,7 @@ export const localforageRestore = async (
 			// 静默失败
 		}
 	}
-
-	// ------------------ localStorage 再写一遍，破坏缓存判断 ------------------
-	for (const [key, { storageType }] of registered.entries()) {
-		if (storageType === "localStorage") {
-			const value = localStorage.getItem(key);
-			if (value !== null) {
-				localStorage.removeItem(key);
-				localStorage.setItem(key, value);
-			}
-		}
-	}
-
-	// ------------------ 核心：触发 _restoreSignal ------------------
-	for (const [key, { store }] of registered.entries()) {
-		const value = backupData[key];
-		if (!value) continue;
-
-		let parsed = value;
-		if (typeof parsed === "string") {
-			try {
-				parsed = JSON.parse(parsed);
-			} catch {}
-		}
-		if (parsed?.state) parsed = parsed.state;
-
-		if (parsed && typeof parsed === "object") {
-			store.setState((prev: any) => ({
-				...prev,
-				...parsed,
-				_restoreSignal: (prev._restoreSignal || 0) + 1 // 🚨 增量触发刷新
-			}), true);
-		}
-	}
-};
-
-//zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。
-//当然，最重要的是，值必须天然支持文本化，所以只能是基本类型。
-//除此之外，没有其他吐槽点。
+}
 
 // ------------------ 备份 ------------------
 

@@ -1,6 +1,7 @@
 import {cn} from "@/lib/utils";
 
 import {type Tile, useTileStore} from "@/vol_apps/tile/tile_store";
+import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated";
 import {closestCenter, DndContext, type DragEndEvent, DragOverlay, type DragStartEvent, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import {restrictToFirstScrollableAncestor} from "@dnd-kit/modifiers";
 import {arrayMove, rectSortingStrategy, SortableContext, useSortable} from "@dnd-kit/sortable";
@@ -112,10 +113,8 @@ const SortableTile = memo(({tile, allowFadeIn}: { tile: Tile; allowFadeIn: boole
 });
 
 export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
-	const {
-		_hydrated,
-		tiles, setTiles, tilesByTag, isBroadMatches
-	} = useTileStore();
+	const {tiles, setTiles, tilesByTag, isBroadMatches} = useTileStore();
+	const hydrated = useStoreHydrated(useTileStore)
 	const {t} = useTranslation("tile");
 
 	const displayTiles = showTiles ?? tilesByTag(isBroadMatches ? "ANY" : "ALL")!;
@@ -174,7 +173,7 @@ export const SortableTiles = ({showTiles}: { showTiles?: Tile[] }) => {
 					items={displayTiles.map(tile => tile.id)}
 					strategy={rectSortingStrategy}>
 					{filteredTiles.length > 0 ? (
-						_hydrated
+						hydrated
 							? (filteredTiles)
 							: (<div className={cn(
 									"flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",
