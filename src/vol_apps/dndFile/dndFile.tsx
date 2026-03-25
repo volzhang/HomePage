@@ -4,6 +4,7 @@ import {DndFileUiModal} from "@/vol_apps/dndFile/dndFile_ui_modal";
 import {useFileDnD} from "@/vol_apps/dndFile/useFileDnD";
 import {getFileExt} from "@/vol_apps/tool/action/getFileExt";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
+import {bookmarksToTiles, buildBackupFileFromBookmarks, netscapeBookmarkFilePhaser} from "@/vol_apps/tool/isType/isLikelyBookmarkFile";
 import {useTranslation} from "react-i18next";
 import {DialogClose} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
@@ -13,79 +14,101 @@ export const DndFile = () => {
 	const {doc, name, type, setDoc, setName, setType, setIsVisible} = useCmStore();
 	const {file, openModal, setOpenModal, fileType} = useFileDnD();
 
+	//纯文本文件
+	const exportEditorContent = async () => await handleCmSaveAs(doc, name, type);
 	const readInCm = async () => {
 		if (!file) return;
-
-		const doc = await file.text();
-		const name = file.name;
-		const ext = getFileExt(file.name);
-
-		setDoc(doc);
-		setName(name);
-		setType(ext);
-
-		setOpenModal(false);
+		setDoc(await file.text());
+		setName(file.name);
+		setType(getFileExt(file.name));
 		setIsVisible(true);
 	};
 
-	const exportEditorContent = async () => {
-		await handleCmSaveAs(doc, name, type);
-		setOpenModal(true); //导出后，手动重新打开模态窗口
-	};
-
-	const DownloadBackup = async () => {
-		await localforageBackup();
-		setOpenModal(true);
-	};
-
+	//存档文件
+	const DownloadBackup = async () => await localforageBackup();
 	const ImportBackup = async () => {
 		if (!file) return; //理论上不可能
-		await localforageRestore(file, false);
-		setOpenModal(false);
-	}
+		await localforageRestore(file);
+	};
+
+	//书签文件
+	const HandleCancel = async () => {
+	};
+	const HandleContinue = async () => {
+		if (!file) return; //理论上不可能
+		const data = await netscapeBookmarkFilePhaser(file)
+		const tiles = bookmarksToTiles(data)
+		const fakeBackupFile = buildBackupFileFromBookmarks(tiles)
+		await localforageRestore(fakeBackupFile, true)
+	};
 
 	const dialogConfig = {
 		"textFile": {
-			title: (<>{t("Detected File:")}</>),
+			title: (<span>{t("Detected File:")}</span>),
 			description: (<>
 				<span className={"font-bold text-foreground"}>{file?.name}</span><br/>
-				{t("Open in editor?")}<br/>
+				<span className={"whitespace-nowrap"}>{t("Open in editor?")}</span><br/>
 				<br/>
-				{t("Editor content will be replaced.")}<br/>
-				{t("Unsaved changes will be lost.")}<br/>
-				<span className={"font-bold text-[green]"}>{t("Export first to avoid loss.")}</span><br/>
+				<span className={"whitespace-nowrap"}>{t("Editor content will be replaced.")}</span><br/>
+				<span className={"whitespace-nowrap"}>{t("Unsaved changes will be lost.")}</span><br/>
+				<span className={"font-bold text-green-600"}>{t("Export first to avoid loss.")}</span><br/>
 				<br/>
 			</>),
 			footer: (<>
+				<Button variant="default" onClick={exportEditorContent}>
+					{t("Export Editor content")}
+				</Button>
 				<DialogClose asChild>
-					<Button variant="default" onClick={exportEditorContent}>
-						{t("Export Editor content")}
+					<Button variant="destructive" onClick={readInCm}>
+						{t("Replace & Open")}
 					</Button>
 				</DialogClose>
-				<Button variant="destructive" onClick={readInCm}>
-					{t("Continue")}
-				</Button>
 			</>),
 		},
 		"backupFile": {
-			title: (<>{t("检测到存档文件:")}</>),
+			title: (<span>{t("Detected Backup File:")}</span>),
 			description: (<>
 				<span className={"font-bold text-foreground"}>{file?.name}</span><br/>
-				{t("是否应用存档?")}<br/>
-				{t("瓷砖设置，会自动去重后添加")}<br/>
-				{t("其他设置，会被覆写")}<br/>
-				<span className={"font-bold text-[green]"}>{t("建议提前备份存档")}</span><br/>
+				<span className={"whitespace-nowrap"}>{t("Restore this backup?")}</span><br/>
+				<br/>
+				<span className={"whitespace-nowrap"}>{t("All data and settings will be overwritten.")}</span><br/>
+				<span className={"whitespace-nowrap"}>{t("Unsaved changes will be lost.")}</span><br/>
+				<span className={"font-bold text-green-600"}>{t("Download current backup first.")}</span><br/>
+				<br/>
+			</>),
+			footer: (<>
+				<Button variant="default" onClick={DownloadBackup}>
+					{t("Download Backup")}
+				</Button>
+				<DialogClose asChild>
+					<Button variant="destructive" onClick={ImportBackup}>
+						{t("Restore Backup")}
+					</Button>
+				</DialogClose>
+			</>),
+		},
+		"bookmarkFile": {
+			title: (<span>{t("Detected Bookmark File:")}</span>),
+			description: (<>
+				<span className={"font-bold text-foreground"}>{file?.name}</span><br/>
+				<span className={"whitespace-nowrap"}>{t("Continue?")}</span><br/>
+				<br/>
+				<span className={"whitespace-nowrap"}>{t("This will automatically parse bookmarks: generate tiles and tags.")}</span><br/>
+				<span className={"whitespace-nowrap"}>{t("The parsed data will be appended to your tiles wall.")}</span><br/>
+				<span className={"font-bold text-green-600"}>{t("This process will not damage existing data.")}</span><br/>
 				<br/>
 			</>),
 			footer: (<>
 				<DialogClose asChild>
-					<Button variant="default" onClick={DownloadBackup}>
-						{t("下载存档")}
+					<Button variant="secondary" onClick={HandleCancel}>
+						{t("Cancel")}
 					</Button>
 				</DialogClose>
-				<Button variant="destructive" onClick={ImportBackup}>
-					{t("继续")}
-				</Button>
+				<DialogClose asChild>
+					<Button variant="default" onClick={HandleContinue}>
+						{t("Continue")}
+					</Button>
+				</DialogClose>
 			</>),
 		},
 		"": {}

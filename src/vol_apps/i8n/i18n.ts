@@ -109,19 +109,35 @@ const resources = {
 			"No Wrap": "不换行",
 		},
 		dndFile: {
-			"Drop a file here": "等待释放文件到窗口内...",
+			"Waiting for file release": "等待释放文件...",
 			"Not a file": "未知内容",
+			"Unable to read file": "不支持查看此文件",
 
 			"Detected File:": "检测到文件：",
-
 			"Open in editor?": "打开到编辑器？",
 			"Editor content will be replaced.": "编辑器内容会被替换。",
 			"Unsaved changes will be lost.": "未保存的内容将丢失。",
 			"Export first to avoid loss.": "建议先导出以备份",
 
-			"Unable to read file": "不支持查看此文件",
+			"Detected Backup File:": "检测到存档文件：",
+			"Restore this backup?": "恢复此存档？",
+			"All data and settings will be overwritten.": "所有数据和设置会被覆盖。",
+			"Unsaved data will be lost.": "未保存的数据将丢失。",
+			"Download current backup first.": "建议先下载当前备份",
+
+			"Detected Bookmark File:": "检测到书签文件：",
+			"Continue?": "是否继续？",
+			"This will automatically parse bookmarks: generate tiles and tags.": "将自动解析书签：生成瓷砖和标签。",
+			"The parsed data will be appended to your tiles wall.": "解析的数据会追加显示到磁砖墙。",
+			"This process will not damage existing data.": "此过程不会损坏已有数据。",
+
+			"Download Backup": "下载存档",
+			"Restore Backup": "恢复存档",
 
 			"Export Editor content": "导出编辑器内容",
+			"Replace & Open": "替换并打开",
+
+			"Cancel": "取消",
 			"Continue": "继续",
 		}
 	}

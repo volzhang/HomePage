@@ -18,7 +18,7 @@ export const DndFileUiModal = (props: {
 	const {open, onOpenChange, title, description, footer} = props;
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="min-w-96 w-fit">
+			<DialogContent className="min-w-lg w-fit">
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
 					<DialogDescription>{description}</DialogDescription>

@@ -1,3 +1,24 @@
+import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile";
+
+export const isLikelyBookmarkFile = async (file: File): Promise<boolean> => {
+	if (!(await isLikelyTextFile(file))) return false;
+
+	let text: string;
+	try {
+		text = await file.text();
+	} catch {
+		return false;
+	}
+
+	const head = text.slice(0, 512);
+
+	return (
+		head.startsWith('<!DOCTYPE NETSCAPE-Bookmark-file-1>') &&
+		head.includes('<H1>Bookmarks</H1>') &&
+		head.includes('<DL>')
+	);
+};
+
 /**
  * Netscape 书签解析器（单文件版）
  *
@@ -19,7 +40,7 @@
  * 4. 子文件夹结构：
  *    👉 <DT><H3>xxx</H3><DL>...</DL>
  *    👉 注意：DL 是 DT 的子元素，不是兄弟
- */
+ */ import {defaultIconBase64, type Tile} from "@/vol_apps/tile/tile_store";
 
 // -------------------- 类型 --------------------
 
@@ -138,4 +159,53 @@ const normalizeToString = async (input: BookmarkInput): Promise<string> => {
 	}
 
 	throw new Error("Unsupported input type");
+};
+
+
+export const bookmarksToTiles = (
+	input: BookmarkItem[],
+): Tile[] => {
+
+	const result: Tile[] = [];
+
+	const walk = (list: BookmarkItem[], path: string[]) => {
+		for (const item of list) {
+
+			// ---------- link ----------
+			if (item.type === "link") {
+				result.push({
+					id: result.length,
+					url: item.url,
+					meta: {
+						name: item.title,
+						alt: item.title,
+						icon: item.icon || defaultIconBase64,
+						tags: [...path],
+					},
+				});
+			}
+
+			// ---------- folder ----------
+			if (item.type === "folder") {
+				walk(item.children, [...path, item.title]);
+			}
+		}
+	};
+
+	walk(input, ["Bookmarks"]);
+
+	return result;
+};
+
+export const buildBackupFileFromBookmarks = (tiles: Tile[], filename = "bookmark-import.json"): File => {
+	const backupLike = {
+		tile: {
+			state: {
+				tiles,
+			},
+			version: 0,
+		},
+	};
+
+	return new File([JSON.stringify(backupLike)], filename, { type: "application/json" });
 };

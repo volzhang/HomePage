@@ -12,7 +12,7 @@ export const useToast = () => {
 	};
 
 	const waitingToast = {
-		message: t("Drop a file here"),
+		message: t("Waiting for file release"),
 		data: { duration: Infinity }
 	};
 

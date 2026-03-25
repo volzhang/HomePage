@@ -1,34 +1,27 @@
-import {VERSION} from "@/vol_apps/tool/action/fetch";
-import {persistedStores, persistedStoresRehydrate} from "@/vol_apps/tool/createPersistedStore";
-import {downloadAsJsonFile, timeStamp} from "@/vol_apps/tool/action/download";
-import {isPlainObject} from "@/vol_apps/tool/isType/isPlainObject";
-import {isValidType} from "@/vol_apps/tool/isType/isValidType";
-import {type Tile, useTileStore} from "@/vol_apps/tile/tile_store";
-import localforage from "localforage";
+// export const clearRegisteredKV = async (): Promise<void> => {
+// 	const registered = new Map(persistedStores);
+// 	await Promise.all(
+// 		Array.from(registered.keys()).map(async (key) => {
+// 			const {storageType} = registered.get(key)!;
+// 			if (storageType === "localforage") {
+// 				await localforage.removeItem(key);
+// 			} else if (storageType === "localStorage") {
+// 				localStorage.removeItem(key);
+// 			}
+// 		})
+// 	);
+// };
+//
+// export const clearAllDBKV = async (): Promise<void> => {
+// 	await localforage.clear();
+// 	localStorage.clear();
+// };
 
-export const clearRegisteredKV = async (): Promise<void> => {
-	const registered = new Map(persistedStores);
-	await Promise.all(
-		Array.from(registered.keys()).map(async (key) => {
-			const {storageType} = registered.get(key)!;
-			if (storageType === "localforage") {
-				await localforage.removeItem(key);
-			} else if (storageType === "localStorage") {
-				localStorage.removeItem(key);
-			}
-		})
-	);
-};
-
-export const clearAllDBKV = async (): Promise<void> => {
-	await localforage.clear();
-	localStorage.clear();
-};
-
-type StorageType = "localforage" | "localStorage";
+// type StorageType = "localforage" | "localStorage";
 
 /**
  * 兼容两种备份格式：
+ *
  *
  * 新备份：
  * search: { state: {...}, version: 0 }
@@ -40,15 +33,15 @@ type StorageType = "localforage" | "localStorage";
  * 不管传进来是哪种格式，尽量转成正常对象，
  * 方便后面的业务逻辑统一处理。
  */
-const parseBackupSnapshot = (value: any) => {
-	if (typeof value !== "string") return value;
-
-	try {
-		return JSON.parse(value);
-	} catch {
-		return value;
-	}
-};
+// const parseBackupValue  = (value: any) => {
+// 	if (typeof value !== "string") return value;
+//
+// 	try {
+// 		return JSON.parse(value);
+// 	} catch {
+// 		return value;
+// 	}
+// };
 
 /**
  * 把备份里的值，转成“真正要写回存储”的格式。
@@ -64,27 +57,27 @@ const parseBackupSnapshot = (value: any) => {
  * 所以恢复时，要写回和它们原本一致的格式，
  * 这样 rehydrate 才会稳定。
  */
-const toPersistedStorageValue = (
-	backupValue: any,
-	storageType: StorageType,
-) => {
-	const snapshot = parseBackupSnapshot(backupValue);
-
-	if (storageType === "localStorage") {
-		return JSON.stringify(snapshot);
-	}
-
-	if (storageType === "localforage") {
-		// 兼容旧备份：
-		// 如果备份里本来就是旧的 string，就直接复用；
-		// 如果是新的干净对象，就转成 string 再写入。
-		return typeof backupValue === "string"
-			? backupValue
-			: JSON.stringify(snapshot);
-	}
-
-	return backupValue;
-};
+// const toPersistedStorageValue = (
+// 	backupValue: any,
+// 	storageType: StorageType,
+// ) => {
+// 	const snapshot = parseBackupSnapshot(backupValue);
+//
+// 	if (storageType === "localStorage") {
+// 		return JSON.stringify(snapshot);
+// 	}
+//
+// 	if (storageType === "localforage") {
+// 		// 兼容旧备份：
+// 		// 如果备份里本来就是旧的 string，就直接复用；
+// 		// 如果是新的干净对象，就转成 string 再写入。
+// 		return typeof backupValue === "string"
+// 			? backupValue
+// 			: JSON.stringify(snapshot);
+// 	}
+//
+// 	return backupValue;
+// };
 
 /**
  * 给业务逻辑使用的备份值。
@@ -93,127 +86,242 @@ const toPersistedStorageValue = (
  * 需要拿到对象后再去读 state.tiles，
  * 所以这里返回“可直接操作的对象格式”。
  */
-const toRuntimeSnapshot = (backupValue: any) => {
-	return parseBackupSnapshot(backupValue);
-};
+// const toRuntimeSnapshot = (backupValue: any) => {
+// 	return parseBackupSnapshot(backupValue);
+// };
 
 // ------------------ 恢复 ------------------
 /*
  * 只恢复备份文件中存在、且当前已注册到 persistedStores 的 key
  */
-export const localforageRestore = async (
-	file: File,
-	mergeTileTiles: boolean = false,
-): Promise<void> => {
+// export const localforageRestore = async (
+// 	file: File,
+// 	mergeTileTiles: boolean = false,
+// ): Promise<void> => {
+// 	const text = await file.text();
+// 	const backupData = JSON.parse(text);
+//
+// 	if (!isPlainObject(backupData)) {
+// 		console.error("invalid backupData");
+// 		return;
+// 	}
+//
+// 	const registered = new Map(persistedStores);
+//
+// 	// 这一份数据专门给“恢复后的业务逻辑”使用，比如 tile merge。
+// 	// 这里始终保存对象格式，不关心最终写入 storage 时是不是 string。
+// 	const runtimeSnapshots: Record<string, any> = {};
+//
+// 	const restorePromises = Object.entries(backupData)
+// 		.filter(([key]) => registered.has(key))
+// 		.map(async ([key, value]) => {
+// 			if (!isValidType(value)) return;
+//
+// 			const {storageType} = registered.get(key)!;
+//
+// 			// 一份给业务逻辑使用，一份给存储层写回使用。
+// 			// 两者职责不同，不要混用。
+// 			const runtimeSnapshot = toRuntimeSnapshot(value);
+// 			const persistedValue = toPersistedStorageValue(value, storageType);
+//
+// 			runtimeSnapshots[key] = runtimeSnapshot;
+//
+// 			if (storageType === "localforage") {
+// 				await localforage.setItem(key, persistedValue);
+// 			} else if (storageType === "localStorage") {
+// 				localStorage.setItem(key, persistedValue);
+// 			}
+// 		});
+//
+// 	// 先把所有持久化数据写回去，再统一触发 zustand rehydrate
+// 	await Promise.all(restorePromises);
+// 	await persistedStoresRehydrate();
+//
+// 	// tile merge 读的是“对象格式的备份数据”
+// 	// 不是 storage/localforage 里最终保存的字符串
+// 	if (mergeTileTiles && runtimeSnapshots["tile"]) {
+// 		try {
+// 			let raw: any = runtimeSnapshots["tile"];
+// 			if (!raw || typeof raw !== "object") return;
+//
+// 			let backupState = raw.state ?? raw;
+// 			if (typeof backupState === "string") backupState = JSON.parse(backupState);
+// 			if (!Array.isArray(backupState.tiles)) return;
+//
+// 			const store = useTileStore;
+// 			const currentTiles = store.getState().tiles;
+// 			const incomingTiles = backupState.tiles as Tile[];
+//
+// 			const stableStringify = (obj: any): string => {
+// 				if (obj && typeof obj === "object" && !Array.isArray(obj)) {
+// 					const sortedKeys = Object.keys(obj).sort();
+// 					const sortedObj: any = {};
+// 					sortedKeys.forEach((key) => {
+// 						sortedObj[key] = stableStringify(obj[key]);
+// 					});
+// 					return JSON.stringify(sortedObj);
+// 				}
+// 				return JSON.stringify(obj);
+// 			};
+//
+// 			const currentSet = new Set(
+// 				currentTiles.map((t: Tile) => {
+// 					const {id, ...rest} = t;
+// 					return stableStringify(rest);
+// 				})
+// 			);
+//
+// 			const appended = incomingTiles.filter((t: Tile) => {
+// 				const {id, ...rest} = t;
+// 				return !currentSet.has(stableStringify(rest));
+// 			});
+//
+// 			if (appended.length > 0) {
+// 				const merged = [...currentTiles, ...appended].map((t, i) => ({
+// 					...t,
+// 					id: i,
+// 				}));
+// 				store.getState().setTiles(merged);
+//
+// 				const newRaw = JSON.parse(JSON.stringify(raw));
+// 				if (newRaw.state) {
+// 					newRaw.state.tiles = merged;
+// 				} else {
+// 					newRaw.tiles = merged;
+// 				}
+//
+// 				// 合并完成后，按 localforage 当前兼容的落库格式写回去
+// 				await localforage.setItem("tile", JSON.stringify(newRaw));
+// 			}
+// 		} catch {
+// 			// 静默失败，避免 tile 补丁影响主恢复流程
+// 		}
+// 	}
+// };
+
+import {useTileStore} from "@/vol_apps/tile/tile_store";
+import { VERSION } from "@/vol_apps/tool/action/fetch";
+import { persistedStores } from "@/vol_apps/tool/createPersistedStore";
+import { downloadAsJsonFile, timeStamp } from "@/vol_apps/tool/action/download";
+import { isPlainObject } from "@/vol_apps/tool/isType/isPlainObject";
+
+// ==================== 注意 ====================
+// 以下代码实现了应用状态的备份与恢复功能。
+// 备份时直接从内存中的 zustand store 获取状态并导出 JSON 文件。
+// 恢复时直接调用 store.setState 覆盖内存状态，不再经过存储层读写。
+// 这样可以避免处理 localforage / localStorage 的格式兼容问题，
+// 同时保证恢复后的状态立即生效且 UI 自动刷新。
+// ==============================================
+
+// ----------------------------------------------------------------------
+// 工具函数：解析备份值，兼容旧备份中字符串化存储的情况
+// ----------------------------------------------------------------------
+/**
+ * 兼容两种备份格式：
+ *
+ * 新备份（直接保存对象）：
+ * search: { state: {...}, version: 0 }
+ *
+ * 旧备份（字符串化保存）：
+ * search: "{\"state\":{...},\"version\":0}"
+ *
+ * 该函数的作用：
+ * 将任何可能的字符串形式还原为对象，方便后续统一处理。
+ */
+const parseBackupValue = (value: any) => {
+	if (typeof value !== "string") return value;
+
+	try {
+		return JSON.parse(value);
+	} catch {
+		return value;
+	}
+};
+
+// ------------------ 恢复 ------------------
+/**
+ * 从 JSON 备份文件恢复应用状态。
+ *
+ * 工作流程：
+ * 1. 读取并解析备份文件，确保根对象为普通对象。
+ * 2. 遍历当前已注册的持久化 store（通过 persistedStores 记录）。
+ * 3. 对于备份文件中存在的 key，获取对应的备份值。
+ * 4. 调用 parseBackupValue 将可能为字符串的旧备份值转为对象。
+ * 5. 从对象中取出 state 字段（标准备份格式为 { state: {...}, version: 0 }）。
+ * 6. 调用对应 store 的 setState 方法，将状态直接写入内存。
+ * 7. 恢复完成后不调用 rehydrate，因为内存状态已经是最终状态。
+ *
+ * 优点：
+ * - 无需处理存储层（localforage/localStorage）的格式差异。
+ * - 状态立即生效，UI 自动刷新。
+ * - 代码简洁，逻辑清晰。
+ *
+ * 注意：
+ * - 仅恢复备份文件中存在且当前已注册的 store。
+ * - 如果备份文件中某个 key 的 state 字段缺失，会给出警告并跳过。
+ * - 该函数不再支持“合并 tiles”等业务逻辑，如需合并，请单独实现。
+ *
+ * @param file - 用户选择的 JSON 备份文件
+ * @param mergeTileTiles - 恢复存档时，tiles使用追加模式，默认关
+ */
+export const localforageRestore = async (file: File, mergeTileTiles: boolean = false): Promise<void> => {
 	const text = await file.text();
-	const backupData = JSON.parse(text);
+	let backupData: any;
+
+	try {
+		backupData = JSON.parse(text);
+	} catch (e) {
+		console.error("Invalid JSON backup file", e);
+		return;
+	}
 
 	if (!isPlainObject(backupData)) {
-		console.error("invalid backupData");
+		console.error("Backup data is not an object");
 		return;
 	}
 
 	const registered = new Map(persistedStores);
 
-	// 这一份数据专门给“恢复后的业务逻辑”使用，比如 tile merge。
-	// 这里始终保存对象格式，不关心最终写入 storage 时是不是 string。
-	const runtimeSnapshots: Record<string, any> = {};
+	for (const [key, entry] of registered) {
+		if (!Object.prototype.hasOwnProperty.call(backupData, key)) continue;
 
-	const restorePromises = Object.entries(backupData)
-		.filter(([key]) => registered.has(key))
-		.map(async ([key, value]) => {
-			if (!isValidType(value)) return;
+		const value = backupData[key];
+		const runtimeSnapshot = parseBackupValue(value);
+		const stateToRestore = runtimeSnapshot.state;
 
-			const {storageType} = registered.get(key)!;
+		if (!stateToRestore) {
+			console.warn(`Missing "state" field in backup for key "${key}"`);
+			continue;
+		}
 
-			// 一份给业务逻辑使用，一份给存储层写回使用。
-			// 两者职责不同，不要混用。
-			const runtimeSnapshot = toRuntimeSnapshot(value);
-			const persistedValue = toPersistedStorageValue(value, storageType);
+		const store = entry.store as any;
 
-			runtimeSnapshots[key] = runtimeSnapshot;
-
-			if (storageType === "localforage") {
-				await localforage.setItem(key, persistedValue);
-			} else if (storageType === "localStorage") {
-				localStorage.setItem(key, persistedValue);
-			}
-		});
-
-	// 先把所有持久化数据写回去，再统一触发 zustand rehydrate
-	await Promise.all(restorePromises);
-	await persistedStoresRehydrate();
-
-	// tile merge 读的是“对象格式的备份数据”
-	// 不是 storage/localforage 里最终保存的字符串
-	if (mergeTileTiles && runtimeSnapshots["tile"]) {
-		try {
-			let raw: any = runtimeSnapshots["tile"];
-			if (!raw || typeof raw !== "object") return;
-
-			let backupState = raw.state ?? raw;
-			if (typeof backupState === "string") backupState = JSON.parse(backupState);
-			if (!Array.isArray(backupState.tiles)) return;
-
-			const store = useTileStore;
-			const currentTiles = store.getState().tiles;
-			const incomingTiles = backupState.tiles as Tile[];
-
-			const stableStringify = (obj: any): string => {
-				if (obj && typeof obj === "object" && !Array.isArray(obj)) {
-					const sortedKeys = Object.keys(obj).sort();
-					const sortedObj: any = {};
-					sortedKeys.forEach((key) => {
-						sortedObj[key] = stableStringify(obj[key]);
-					});
-					return JSON.stringify(sortedObj);
-				}
-				return JSON.stringify(obj);
-			};
-
-			const currentSet = new Set(
-				currentTiles.map((t: Tile) => {
-					const {id, ...rest} = t;
-					return stableStringify(rest);
-				})
-			);
-
-			const appended = incomingTiles.filter((t: Tile) => {
-				const {id, ...rest} = t;
-				return !currentSet.has(stableStringify(rest));
-			});
-
-			if (appended.length > 0) {
-				const merged = [...currentTiles, ...appended].map((t, i) => ({
-					...t,
-					id: i,
-				}));
-				store.getState().setTiles(merged);
-
-				const newRaw = JSON.parse(JSON.stringify(raw));
-				if (newRaw.state) {
-					newRaw.state.tiles = merged;
-				} else {
-					newRaw.tiles = merged;
-				}
-
-				// 合并完成后，按 localforage 当前兼容的落库格式写回去
-				await localforage.setItem("tile", JSON.stringify(newRaw));
-			}
-		} catch {
-			// 静默失败，避免 tile 补丁影响主恢复流程
+		// 特殊处理 tile 合并模式
+		if (key === "tile" && mergeTileTiles && Array.isArray(stateToRestore.tiles)) {
+			useTileStore.getState().appendTiles(stateToRestore.tiles);
+		} else {
+			store.setState(stateToRestore);
 		}
 	}
 };
 
 // ------------------ 备份 ------------------
-
-/*
- * 备份时不再读取 storage/localforage 里的旧值，
- * 而是直接从当前 store 的内存状态生成快照。
+/**
+ * 将当前所有持久化 store 的状态导出为 JSON 备份文件。
  *
- * 这样导出的数据一定是当前版本的 state，
- * 不会把历史遗留字段一起带出去。
+ * 工作流程：
+ * 1. 遍历 persistedStores 中记录的所有 store。
+ * 2. 对每个 store，调用 getCurrentPersistedSnapshot 获取当前内存中的状态快照。
+ * 3. 将快照组装成对象，key 为 store 名称，value 为 { state: ..., version: 0 }。
+ * 4. 生成带版本号和时间戳的文件名，并下载为 JSON 文件。
+ *
+ * 优点：
+ * - 直接从内存获取状态，不依赖存储层，保证导出的是当前最新数据。
+ * - 不会将历史遗留的存储字段带出，确保备份文件干净。
+ *
+ * 注意：
+ * - 导出的备份文件格式为标准格式 { state: {...}, version: 0 }，供恢复时使用。
+ * - 版本号目前固定为 0，后续如需升级可在此处调整。
  */
 export const localforageBackup = async (): Promise<void> => {
 	const registered = new Map(persistedStores);
@@ -230,10 +338,22 @@ export const localforageBackup = async (): Promise<void> => {
 	await downloadAsJsonFile(result, filename);
 };
 
-/*
- * 从当前 store 里拿到可持久化的 state，
- * 去掉函数后，组装成 zustand persist 的标准结构：
- * { state: ..., version: 0 }
+/**
+ * 从指定 store 获取当前内存状态，并过滤掉不可持久化的数据。
+ *
+ * 过滤规则：
+ * - 仅保留值类型为函数以外的字段（函数无法序列化）。
+ * - 如果 store 中混有其他不可序列化的数据（如 undefined、Symbol 等），
+ *   建议使用 isValidType 进行更严格的过滤，但当前版本未强制，仅排除函数。
+ *
+ * 返回格式：
+ * {
+ *   state: { ...过滤后的状态字段... },
+ *   version: 0
+ * }
+ *
+ * @param storeKey - store 在 persistedStores 中的注册名称
+ * @returns 标准化的备份快照对象，若 store 未注册则返回 null
  */
 const getCurrentPersistedSnapshot = (storeKey: string) => {
 	const entry = persistedStores.get(storeKey);
@@ -241,6 +361,7 @@ const getCurrentPersistedSnapshot = (storeKey: string) => {
 
 	const currentState = entry.store.getState();
 
+	// 过滤掉函数类型，因为函数无法被 JSON.stringify 正常序列化
 	const plainState = Object.fromEntries(
 		Object.entries(currentState).filter(([, value]) => typeof value !== "function")
 	);

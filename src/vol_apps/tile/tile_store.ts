@@ -91,6 +91,8 @@ type TileStoreActions = {
 	removeTile: (id: Tile["id"]) => void;
 	setTiles: (newTiles: TileStoreState["tiles"]) => void;
 
+	appendTiles: (newTiles: TileStoreState["tiles"]) => void;
+
 	updateTags: (newTiles:TileStoreState["tiles"]) => void;
 
 	//选择视图
@@ -115,8 +117,6 @@ type TileStoreActions = {
 	setTags: (tags: TileStoreState["tags"]) => void;
 	updateTag: (id: Tag["id"], updates: Partial<Tag>) => void;
 	toggleTag: (id: Tag["id"]) => void;
-
-	// changeTagName: (id: Tag["id"], newName:Tag["name"]) => void;
 
 	setIsBroadMatches: (isBroadMatches: boolean) => void;
 
@@ -184,6 +184,19 @@ export const useTileStore = createPersistedStore<TileStore>(
 						newTiles = newTiles.map((tile, index) => ({...tile, id: index}));
 					}
 			get().setTiles(newTiles);
+		},
+
+		appendTiles: (newTiles: Tile[]) => {
+			const store = get();
+			const currentTiles = store.tiles;
+
+			const appended = newTiles.filter(
+				t => !currentTiles.some(c => c.url === t.url && c.meta.name === t.meta.name)
+			);
+			if (appended.length === 0) return;
+
+			const merged = [...currentTiles, ...appended].map((t, i) => ({ ...t, id: i }));
+			store.setTiles(merged); // 自动更新 tags
 		},
 
 		// changeTagName: (id, newName) => {},
