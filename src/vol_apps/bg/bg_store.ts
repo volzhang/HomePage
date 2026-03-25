@@ -67,7 +67,6 @@ export const useBgStore = createPersistedStore<BgStore>(
 	}),
 	{
 		storageType: "localStorage",
-		// migrateFromLocalForage: true,
 	}
 )
 

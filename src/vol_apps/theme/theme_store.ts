@@ -26,6 +26,5 @@ export const useThemeStore = createPersistedStore<ThemeStore>(
 	},
 	{
 		storageType: "localStorage",
-		// migrateFromLocalForage: true,
 	}
 );
