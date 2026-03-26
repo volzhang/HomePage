@@ -12,7 +12,6 @@ import {Cm}                   from "./vol_apps/cm/cm";
 
 export const App = () => {
 
-
 	return (
 		<>
 			<ToasterUi/>
