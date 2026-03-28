@@ -1,10 +1,12 @@
-import {isLikelyBackUpFile} from "@/vol_apps/tool/isType/isLikelyBackUpFile";
-import {isLikelyBookmarkFile} from "@/vol_apps/tool/isType/isLikelyBookmarkFile";
 import {useEffect, useRef, useState} from "react";
 import {toast} from "sonner";
 import {useToast} from "./useToast";
-import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile";
 import {useTranslation} from "react-i18next";
+import {isLikelyBackUpFile} from "@/vol_apps/tool/isType/isLikelyBackUpFile.js";
+import {isLikelyBookmarkFile} from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
+import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile.js";
+
+export type FileType = "textFile" | "backupFile" | "bookmarkFile" | "unknown";
 
 export const useFileDnD = () => {
 	const {t} = useTranslation("dndFile");
@@ -13,9 +15,7 @@ export const useFileDnD = () => {
 
 	const [file, setFile] = useState<File | null>(null);
 	const [openModal, setOpenModal] = useState<boolean>(false);
-
-	type FileType = "textFile" | "backupFile" | "bookmarkFile" | "";
-	const [fileType, setFileType] = useState<FileType>("");
+	const [fileType, setFileType] = useState<FileType>("unknown");
 
 	const handleDragEnter = (e: DragEvent) => {
 		e.preventDefault();
@@ -51,23 +51,21 @@ export const useFileDnD = () => {
 			const _file = item.getAsFile?.();
 			if (_file) {
 				setFile(_file);
-				// 逻辑分支
 
 				// 优先级1，存档文件
 				if (await isLikelyBackUpFile(_file)) {
 					setFileType("backupFile");
 					setOpenModal(true);
-
 				//优先级2，chrome/edge书签文件
 				} else if (await isLikelyBookmarkFile(_file)) {
 					setFileType("bookmarkFile");
 					setOpenModal(true);
-
 				//优先级3，纯文本文件
 				} else if (await isLikelyTextFile(_file)) {
 					setFileType("textFile");
 					setOpenModal(true);
 				}
+
 
 				dismissToast();
 			} else {

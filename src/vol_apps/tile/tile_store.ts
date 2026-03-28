@@ -274,7 +274,3 @@ export const useTileStore = createPersistedStore<TileStore>(
 		}
 	}
 );
-
-//zustand的持久化有个特点，键保留了引号，值保留了引号甚至还有斜杠，内部数据合理trim压缩完全牺牲了可读性。
-//当然，最重要的是，值必须天然支持文本化，所以只能是基本类型。
-//除此之外，没有其他吐槽点。
