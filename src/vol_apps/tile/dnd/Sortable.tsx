@@ -26,8 +26,8 @@ const sensors = [
     PointerSensor.configure({
         activationConstraints: [
             new PointerActivationConstraints.Delay({
-                value: 80,
-                tolerance: 8
+                value: 100,
+                tolerance: 10
             }),
         ],
     }),
