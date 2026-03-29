@@ -14,6 +14,7 @@ type CmStoreState = {
 
 	fontPx: number,
 	fontWeight: number,
+	fontLineHeight: number,
 	fontMeta: { fullName: string, family: string },
 	fontBase64: string,
 }
@@ -30,6 +31,7 @@ type CmStoreActions = {
 
 	setFontPx: (fontPx: CmStoreState["fontPx"]) => void;
 	setFontWeight: (fontWeight: CmStoreState["fontWeight"]) => void;
+	setFontLineHeight: (fontLineHeight: CmStoreState["fontLineHeight"]) => void;
 	setFontMeta: (fontFamily: CmStoreState["fontMeta"]) => void;
 	setFontBase64: (fontBase64: CmStoreState["fontBase64"]) => void;
 }
@@ -49,6 +51,7 @@ export const useCmStore = createPersistedStore<CmStore>(
 
 		fontPx: 32,
 		fontWeight: 400,
+		fontLineHeight: 42,
 		fontMeta: {fullName: "monospace", family: "monospace"},
 		fontBase64: "",
 
@@ -63,6 +66,7 @@ export const useCmStore = createPersistedStore<CmStore>(
 
 		setFontPx: (fontPx) => set({fontPx}),
 		setFontWeight: (fontWeight) => set({fontWeight}),
+		setFontLineHeight: (fontLineHeight) => set({fontLineHeight}),
 		setFontMeta: (fontMeta) => set({fontMeta}),
 		setFontBase64: (fontBase64) => set({fontBase64}),
 	})

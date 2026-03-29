@@ -1,88 +1,112 @@
 import {
-	Menubar,
-	MenubarContent,
-	MenubarGroup,
-	MenubarItem,
-	MenubarMenu,
-	MenubarTrigger,
+    Menubar,
+    MenubarContent,
+    MenubarGroup,
+    MenubarItem,
+    MenubarMenu,
+    MenubarTrigger,
 
-	MenubarSub,
-	MenubarSubTrigger,
-	MenubarSubContent
+    MenubarSub,
+    MenubarSubTrigger,
+    MenubarSubContent
 } from "@/components/ui/menubar";
 import {cn} from "@/lib/utils";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
-import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
+import {bookmarkFilePickerAPI, jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 import {useTranslation} from "react-i18next";
+import {
+	bookmarksToTiles,
+	buildBackupFileFromBookmarks,
+	netscapeBookmarkFilePhaser
+} from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
 
 //这里手动复制了Button的secondary样式
 const cn_str = "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50";
 
 export function Menu() {
-	const {setBgUiVisible} = useBgStore();
-	const {tilesVisible, setTilesVisible} = useTileStore();
+    const {setBgUiVisible} = useBgStore();
+    const {tilesVisible, setTilesVisible} = useTileStore();
 
-	const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
-	const {t} = useTranslation("navigation");
+    const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
+    const {t} = useTranslation("navigation");
 
-	const OnAddTile = () => {
-		const newTileId = tiles.length;
-		addTile();
-		setTileInEditId(newTileId);
-		setTileUiVisible(true);
-	};
+    const OnAddTile = () => {
+        const newTileId = tiles.length;
+        addTile();
+        setTileInEditId(newTileId);
+        setTileUiVisible(true);
+    };
 
-	return (
-		<Menubar className={cn("w-24 flex justify-center", cn_str, "animate-fade-in-scale")}>
-			<MenubarMenu>
-				<MenubarTrigger className={cn(cn_str, "border-none! bg-transparent!")}>
-					{t("Menu")}
-				</MenubarTrigger>
-				<MenubarContent side={"bottom"} align={"center"} className={"ml-2"}>
-					<MenubarGroup>
+    const handleImportFromBookmarkFile = async () => {
+		const file = await bookmarkFilePickerAPI()
+		const data = await netscapeBookmarkFilePhaser(file);
+		const tiles = bookmarksToTiles(data);
+		const fakeBackupFile = buildBackupFileFromBookmarks(tiles);
+		await localforageRestore(fakeBackupFile, true);
+    }
 
-						<MenubarSub>
-							<MenubarSubTrigger>{t("Tiles")}</MenubarSubTrigger>
-							<MenubarSubContent>
-								<MenubarGroup>
-									<MenubarItem onClick={OnAddTile} disabled={!tilesVisible}>
-										{t("Add Tile")}
-									</MenubarItem>
-									<MenubarItem onClick={() => setTilesVisible(!tilesVisible)}>
-										{
-											tilesVisible
-												? t("Hide Tiles")
-												: t("Show Tiles")
-										}
-									</MenubarItem>
-								</MenubarGroup>
-							</MenubarSubContent>
-						</MenubarSub>
-						<MenubarSub>
-							<MenubarSubTrigger>{t("Backup")}</MenubarSubTrigger>
-							<MenubarSubContent>
-								<MenubarGroup>
-									<MenubarItem onClick={async () => await localforageBackup()}>
-										{t("Download Backup")}
-									</MenubarItem>
-									<MenubarItem onClick={async () => await localforageRestore(await jsonFilePickerAPI())}>
-										{t("Import Backup")}
-									</MenubarItem>
-								</MenubarGroup>
-							</MenubarSubContent>
-						</MenubarSub>
-						<MenubarItem onClick={() => setBgUiVisible(true)}>
-							{t("Set Background")}
-						</MenubarItem>
-						<MenubarItem onClick={() => openLinkInNewTab("privacy.html")}>
-							{t("Privacy Policy")}
-						</MenubarItem>
-					</MenubarGroup>
-				</MenubarContent>
-			</MenubarMenu>
-		</Menubar>
-	);
+    return (
+        <Menubar className={cn("w-24 flex justify-center", cn_str, "animate-fade-in-scale")}>
+            <MenubarMenu>
+                <MenubarTrigger className={cn(cn_str, "border-none! bg-transparent!")}>
+                    {t("Menu")}
+                </MenubarTrigger>
+                <MenubarContent side={"bottom"} align={"center"} className={"ml-2"}>
+                    <MenubarGroup>
+
+                        <MenubarSub>
+                            <MenubarSubTrigger>{t("Tiles")}</MenubarSubTrigger>
+                            <MenubarSubContent>
+                                <MenubarGroup>
+                                    <MenubarItem onClick={OnAddTile} disabled={!tilesVisible}>
+                                        {t("Add Tile")}
+                                    </MenubarItem>
+                                    <MenubarItem onClick={() => setTilesVisible(!tilesVisible)}>
+                                        {
+                                            tilesVisible
+                                                ? t("Hide Tiles")
+                                                : t("Show Tiles")
+                                        }
+                                    </MenubarItem>
+                                </MenubarGroup>
+                            </MenubarSubContent>
+                        </MenubarSub>
+                        <MenubarSub>
+                            <MenubarSubTrigger>{t("Backup")}</MenubarSubTrigger>
+                            <MenubarSubContent>
+                                <MenubarGroup>
+                                    <MenubarItem onClick={async () => await localforageBackup()}>
+                                        {t("Download Backup")}
+                                    </MenubarItem>
+                                    <MenubarItem
+                                        onClick={async () => await localforageRestore(await jsonFilePickerAPI())}>
+                                        {t("Import Backup")}
+                                    </MenubarItem>
+                                </MenubarGroup>
+                            </MenubarSubContent>
+                        </MenubarSub>
+                        <MenubarSub>
+                            <MenubarSubTrigger>{t("Chrome/Edge Bookmark")}</MenubarSubTrigger>
+                            <MenubarSubContent>
+                                <MenubarGroup>
+                                    <MenubarItem onClick={handleImportFromBookmarkFile}>
+                                        {t("Import links from bookmark file")}
+                                    </MenubarItem>
+                                </MenubarGroup>
+                            </MenubarSubContent>
+                        </MenubarSub>
+                        <MenubarItem onClick={() => setBgUiVisible(true)}>
+                            {t("Set Background")}
+                        </MenubarItem>
+                        <MenubarItem onClick={() => openLinkInNewTab("privacy.html")}>
+                            {t("Privacy Policy")}
+                        </MenubarItem>
+                    </MenubarGroup>
+                </MenubarContent>
+            </MenubarMenu>
+        </Menubar>
+    );
 }

@@ -21,12 +21,16 @@ export default defineConfig({
           // 根据模块 ID 返回 chunk 名称
           if (id.includes('node_modules')) {
             // 1. React 核心
-            if (id.includes('/react/') || id.includes('/react-dom/')) {
-              return 'react-vendor'
+            if (id.includes('react/') || id.includes('react-dom/')) {
+              return 'react'
             }
             // 2. Radix UI 组件库
-            if (id.includes('@radix-ui')) {
-              return 'ui-components'
+            if (id.includes('@radix') || id.includes('@shadcn')) {
+              return 'ui'
+            }
+            // 3. codemirror
+            if (id.includes('@codemirror')) {
+              return 'cm'
             }
             // 3. 其他库
             return 'vendor'

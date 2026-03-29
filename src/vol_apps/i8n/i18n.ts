@@ -62,6 +62,9 @@ const resources = {
 			"Download Backup": "下载存档",
 			"Import Backup": "恢复存档",
 
+			"Chrome/Edge Bookmark": "Chrome/Edge 书签",
+			"Import links from bookmark file":"从书签中导入链接",
+
 			"Privacy Policy": "隐私政策"
 		},
 		contextMenu: {
@@ -101,6 +104,7 @@ const resources = {
 			"Font": "字体",
 			"Size": "字号",
 			"Weight": "粗细",
+			"Line Height":"行高",
 
 			"Line Numbers": "显示行号",
 			"No Numbers": "无行号",

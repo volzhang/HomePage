@@ -15,21 +15,27 @@ const MAX_FONT_SIZE = 128;
 const MIN_FONT_WEIGHT = 100;
 const MAX_FONT_WEIGHT = 900;
 
+const MIN_LINE_HEIGHT = 8;
+const MAX_LINE_HEIGHT = 256;
+
 export const CmUiFont = () => {
 	const {t} = useTranslation("codemirror")
 
 	const {
 		fontPx, setFontPx,
 		fontWeight, setFontWeight,
+		fontLineHeight, setFontLineHeight,
 	} = useCmStore();
 
 	const [inputFontSize, setInputFontSize] = useState<string>(fontPx.toString());
-	const [inputFontWeight, setInputFontWeight] = useState<string>(fontPx.toString());
+	const [inputFontWeight, setInputFontWeight] = useState<string>(fontWeight.toString());
+	const [inputFontLineHeight, setInputFontLineHeight] = useState<string>(fontLineHeight.toString());
 
 	useEffect(() => {
 		setInputFontSize(fontPx.toString());
 		setInputFontWeight(fontWeight.toString());
-	}, [fontPx, fontWeight]);
+		setInputFontLineHeight(fontLineHeight.toString())
+	}, [fontPx, fontWeight, fontLineHeight]);
 
 	const handleBlurForFontSize = () => {
 		let newSize = parseFloat(inputFontSize);
@@ -51,6 +57,17 @@ export const CmUiFont = () => {
 		}
 		setFontWeight(newWeight);
 		setInputFontWeight(newWeight.toString());
+	};
+
+	const handleFocusForFontLineHeight = () => {
+		let newHeight = parseFloat(inputFontLineHeight);
+		if (isNaN(newHeight)) {
+			newHeight = fontLineHeight;
+		} else {
+			newHeight = Math.min(MAX_LINE_HEIGHT, Math.max(MIN_LINE_HEIGHT, newHeight));
+		}
+		setFontLineHeight(newHeight);
+		setInputFontLineHeight(newHeight.toString());
 	};
 
 	return (
@@ -112,6 +129,26 @@ export const CmUiFont = () => {
 									max={MAX_FONT_WEIGHT}
 									min={MIN_FONT_WEIGHT}
 									step={100}
+									className={"w-52"}
+								/>
+							</div>
+							{/* 行高 */}
+							<div className="flex flex-row items-center gap-[16px]">
+								<Label className={"w-10"}>{t("Line Height")}</Label>
+								<Input
+									className={cn("w-14 h-8 text-[16px]! border-none",
+									)}
+									value={inputFontLineHeight}
+									onChange={(e) => setInputFontLineHeight(e.target.value)}
+									onBlur={handleFocusForFontLineHeight}
+									onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
+								/>
+								<Slider
+									value={[fontLineHeight]}
+									onValueChange={(value) => setFontLineHeight(value[0])}
+									max={MAX_LINE_HEIGHT}
+									min={MIN_LINE_HEIGHT}
+									step={1}
 									className={"w-52"}
 								/>
 							</div>

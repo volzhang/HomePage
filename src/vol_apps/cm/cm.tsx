@@ -32,6 +32,7 @@ export const Cm = () => {
 
 		fontPx,
 		fontWeight,
+		fontLineHeight,
 		fontMeta, setFontMeta,
 
 		enableLineNumbers,
@@ -67,6 +68,7 @@ export const Cm = () => {
 	const fontSize = fontPx.toString() + "px";
 	const fontFallback = "monospace";
 	const fontFamily = `${fontMeta.fullName}, ${fontFallback}`;
+	const lineHeight = fontLineHeight.toString() + "px"
 
 	const fontStyles = EditorView.theme({
 		"&": {height: "100%"},
@@ -75,6 +77,7 @@ export const Cm = () => {
 			fontSize,
 			fontFamily,
 			fontWeight,
+			lineHeight,
 			background: "var(--background)",
 			color: "var(--foreground)",
 			caretColor: "var(--foreground)",
