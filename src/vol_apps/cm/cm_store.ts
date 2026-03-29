@@ -42,7 +42,11 @@ export const useCmStore = createPersistedStore<CmStore>(
 	"cm",
 	(set) => ({
 		isVisible: false,
-		doc: "落霞与孤鹜齐飞。\nSunset clouds fly side by side with a solitary duck.",
+		// doc: "落霞与孤鹜齐飞。\nSunset clouds fly side by side with a solitary duck.",
+		doc: "落霞与孤鹜齐飞，\n" +
+			"秋水共长天一色。\n" +
+			"Sunset clouds fly with lone mallards side by side,\n" +
+			"Autumn waters blend into the hues of the vast sky.",
 		name: "document.txt",
 		type: ".txt",
 

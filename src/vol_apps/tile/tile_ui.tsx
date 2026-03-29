@@ -30,20 +30,19 @@ export const TileUi = () => {
     } = useTileStore();
     // global var
     const currentTile = tiles.find(tile => tile.id === tileInEditId) || tiles[0];
-    const currentMeta = currentTile.meta;
 
     const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
         const url = e.target.value;
         if (URL.canParse(url)) {
-            updateTile(tileInEditId, {...currentTile, url});
+            updateTile(tileInEditId, {url});
         } else {
-            updateTile(tileInEditId, {...currentTile, url: enhanceUrl(url)});
+            updateTile(tileInEditId, {url: enhanceUrl(url)});
         }
     };
 
     // name
     const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-        updateTile(tileInEditId, {meta: {...currentMeta, name: e.currentTarget.value}});
+        updateTile(tileInEditId, {meta: {name: e.currentTarget.value}});
     };
     // tag
     const handleTagChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -53,18 +52,18 @@ export const TileUi = () => {
         let newTags = e.target.value.split(splitString);
         const inputIsEmpty = (newTags.length === 1 && newTags[0] === "")
         if (inputIsEmpty) newTags = []
-        updateTile(tileInEditId, {meta: {...currentMeta, tags: newTags}});
+        updateTile(tileInEditId, {meta: {tags: newTags}});
     };
 
     // icon
     const handleIconBase64Change = (e: ChangeEvent<HTMLInputElement>) => {
         const stringValue = e.currentTarget.value;
         if (isBlobString(stringValue)) updateTile(tileInEditId,
-            {meta: {...currentMeta, icon: stringValue}});
+            {meta: {icon: stringValue}});
     };
     const handleIconUpload = async (file: File) => {
         const blobString: string = await blobToString(file);
-        updateTile(tileInEditId, {meta: {...currentMeta, icon: blobString}});
+        updateTile(tileInEditId, {meta: {icon: blobString}});
     };
 
     // remove
@@ -74,16 +73,13 @@ export const TileUi = () => {
     };
 
     // close
-    const handleSubmit = () => {
-        setTileUiVisible(false);
-    };
+    const handleSubmit = () => setTileUiVisible(false);
 
     // get_icon
     const try_handle_name = (url: string) => {
         if (URL.canParse(url)) {
             const name = extractMainDomain(url);
-            const latestTile = useTileStore.getState().tiles.find(t => t.id === tileInEditId);
-            updateTile(tileInEditId, {meta: {...latestTile!.meta, name}});
+            updateTile(tileInEditId, {meta: {name}});
         }
     };
 
@@ -94,10 +90,7 @@ export const TileUi = () => {
             setIsFetchingIcon(true);
             try {
                 const icon = await apiFaviconVemetric(url, 96);
-                if (icon) {
-                    const latestTile = useTileStore.getState().tiles.find(t => t.id === tileInEditId);
-                    updateTile(tileInEditId, {meta: {...latestTile!.meta, icon}});
-                }
+                if (icon) updateTile(tileInEditId, {meta: {icon}});
             } finally {
                 setUrlChanged(false);
                 setIsFetchingIcon(false);
