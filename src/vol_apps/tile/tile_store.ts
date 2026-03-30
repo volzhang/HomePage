@@ -122,6 +122,9 @@ type TileStoreActions = {
 
     setIsBroadMatches: (isBroadMatches: boolean) => void;
 
+    //新增
+    deleteTag:(id: Tag["id"]) => void
+
 }
 
 export type TileStore = TileStoreState & TileStoreActions;
@@ -263,6 +266,23 @@ export const useTileStore = createPersistedStore<TileStore>(
         },
 
         setIsBroadMatches: (isChecked) => set({isBroadMatches: isChecked}),
+
+
+        // 2026.3.31 新增
+        deleteTag: (id:number) => {
+            const tagName = get().tags.find(t => t.id === id);
+            if (!tagName) return;
+
+            const newTiles = get().tiles.map(tile => ({
+                ...tile,
+                meta: {
+                    ...tile.meta,
+                    tags: tile.meta.tags.filter(t => t !== tagName.name)
+                }
+            }));
+            get().setTiles(newTiles); // 会自动刷新 tags
+        }
+
 
     }),
     {

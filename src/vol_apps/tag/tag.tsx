@@ -3,11 +3,17 @@ import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hov
 import {Spinner} from "@/components/ui/spinner";
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {BookmarkIcon, LoaderCircle,
-    // Settings
-} from "lucide-react";
+import {BookmarkIcon, LoaderCircle,} from "lucide-react";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
+
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+
 
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
     isBroadMatches: boolean,
@@ -70,58 +76,61 @@ export const TagUpdate = () => {
     );
 };
 
-// export const TagSetting = () => {
-//     const {t} = useTranslation("tag");
-//     const [open, setOpen] = useState(false);
-//     const handleClick = () => {
-//
-//     }
-//
-//     return (
-//         <>
-//             <HoverCard openDelay={0} closeDelay={0}>
-//                 <HoverCardTrigger asChild>
-//                     <Settings className={"size-5 text-ring hover:text-[#0078d7]"} onClick={handleClick}/>
-//                 </HoverCardTrigger>
-//                 <HoverCardContent className="w-auto" side="top" sideOffset={16}>
-//                     <div className="text-[13px]">
-//                         {t("Click to manage tags")}
-//                     </div>
-//                 </HoverCardContent>
-//             </HoverCard>
-//             {open?<></>:<></>}
-//         </>
-//     )
-// }
-
 export const TagComponent = () => {
     const {t} = useTranslation("tag");
+
     const {
-        tags, updateTag, toggleTag, isBroadMatches, setIsBroadMatches,
+        tags, updateTag, toggleTag, isBroadMatches, setIsBroadMatches, deleteTag,
         untaggedChecked, setUntaggedChecked, hasUntaggedTiles
     } = useTileStore();
 
-    const Tags = tags.map((tag) => (
-        <Button
-            key={tag.id} variant={tag.checked ? "default" : "outline"}
-            onClick={() => {
-                tags.map(items => {
-                    updateTag(items.id, {checked: items.id === tag.id})
-                });
-            }
-            }
-            onContextMenu={(e) => {
-                e.preventDefault();
-                toggleTag(tag.id);
-            }
-            }
-            className={cn(tag.checked
-                ? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none"
-                : "border-none"
-            )}>
-            {tag.name}
-        </Button>
-    ));
+    const Tags = tags.map((tag) => {
+
+            const btn = <Button
+                key={tag.id} variant={tag.checked ? "default" : "outline"}
+                onClick={() => {
+                    tags.map(items => {
+                        updateTag(items.id, {checked: items.id === tag.id})
+                    });
+                    if (untaggedChecked) setUntaggedChecked(false)
+                }}
+                onContextMenu={(_e) => {
+                    // const size = {
+                    //     width: e.currentTarget.getBoundingClientRect().width,
+                    //     height: e.currentTarget.getBoundingClientRect().height
+                    // };
+                    // console.log(size);
+                }
+                }
+                className={cn(tag.checked
+                    ? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none"
+                    : "border-none"
+                )}>
+                {tag.name}
+            </Button>
+
+            return (
+                <ContextMenu key={tag.id}>
+                    <ContextMenuTrigger>
+                        {btn}
+                    </ContextMenuTrigger>
+                    <ContextMenuContent
+                        avoidCollisions={false}
+                        alignOffset={18}>
+                        <ContextMenuItem onClick={
+                            () => toggleTag(tag.id) //切换标签
+                        }>
+                            {t("Toggle this tag")}
+                        </ContextMenuItem>
+                        <ContextMenuItem onClick={
+                            () => deleteTag(tag.id)
+                        }>
+                            {t("Delete this tag")}
+                        </ContextMenuItem>
+                    </ContextMenuContent>
+                </ContextMenu>)
+        }
+    );
 
     return (
         <>
@@ -130,16 +139,23 @@ export const TagComponent = () => {
                 "flex flex-wrap items-center px-8 py-4 gap-4 mx-auto",
                 "w-[85%] min-h-18!",
                 "select-none",
-                // "border"
-                // "border border-border",
             )}>
                 {Tags}
                 {
                     hasUntaggedTiles() || untaggedChecked ?
                         <Button variant={untaggedChecked ? "default" : "outline"}
-                                onClick={() => (setUntaggedChecked(!untaggedChecked))}
+                                onClick={() => {
+                                    setUntaggedChecked(true)
+                                    tags.map(items => {
+                                        updateTag(items.id, {checked: false})
+                                    });
+                                }}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    setUntaggedChecked(!untaggedChecked)
+                                }}
                                 className={cn(untaggedChecked
-                                    ? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none"
+                                    ? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none select-none"
                                     : "border-none"
                                 )
                                 }>
@@ -151,7 +167,7 @@ export const TagComponent = () => {
                     () => setIsBroadMatches(!isBroadMatches)
                 }/>
                 <TagUpdate/>
-                {/*<TagSetting/>*/}
+
             </div>
         </>
 

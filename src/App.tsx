@@ -8,7 +8,7 @@ import {Theme}                from "@/vol_apps/theme/theme";
 import {TileApp}              from "@/vol_apps/tile/tile_app";
 import {ToasterUi}            from "@/vol_apps/toaster/toaster_ui";
 import {Version}              from "@/vol_apps/version/version";
-import {Cm}                   from "./vol_apps/cm/cm";
+import {Cm}                   from "@/vol_apps/cm/cm";
 
 export const App = () => {
 
