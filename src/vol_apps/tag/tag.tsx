@@ -34,7 +34,7 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
             <HoverCardContent className="w-auto" side="top" sideOffset={16}>
                 <div className="text-[13px]">
                     {t(
-                        "Left-click a tag to select only this one.\nRight-click to toggle its selection.\nClick me to toggle mode.\nCurrently: tiles match {{mode}} selected tags",
+                        "Left-click a tag to select only this one.\nRight-click a tag to open menu for more operations.\nClick me to toggle mode.\nCurrently: tiles match {{mode}} selected tags",
                         {mode: isBroadMatches ? t("ANY") : t("ALL")}
                     )
                         .split("\n").map((line, i) => (
