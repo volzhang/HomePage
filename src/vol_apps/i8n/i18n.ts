@@ -49,9 +49,8 @@ const resources = {
             "Untagged": "未标签",
             "Click to sync tags": "同步标签",
 
-
             "Toggle selection": "切换状态",
-            "Rename": "重命",
+            "Rename": "重命名",
             "Delete": "删除",
 
         },
