@@ -50,8 +50,9 @@ const resources = {
             "Click to sync tags": "同步标签",
 
 
-            "Toggle this tag": "切换此标签状态",
-            "Delete this tag": "删除此标签",
+            "Toggle selection": "切换状态",
+            "Rename": "重命",
+            "Delete": "删除",
 
         },
         navigation: {

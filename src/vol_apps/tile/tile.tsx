@@ -1,6 +1,7 @@
-import {type Tile, useTileStore} from "@/vol_apps/tile/tile_store";
+import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {SortableTiles} from "./dnd/dndProvider";
 import {TileComponent} from "@/vol_apps/tile/tile_component.js";
+import type {Tile} from "@/vol_apps/tile/tile_store_types.js";
 
 export const SortableTilesWrapper = ({showTiles}: { showTiles?: Tile[] }) => {
     const {setTileInEditId, setTileUiVisible} = useTileStore();

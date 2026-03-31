@@ -1,19 +1,24 @@
 import {Button} from "@/components/ui/button";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
+import {Input} from "@/components/ui/input"
 import {Spinner} from "@/components/ui/spinner";
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {BookmarkIcon, LoaderCircle,} from "lucide-react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
+import {type Tag} from "@/vol_apps/tile/tile_store_types.js"
 
 import {
     ContextMenu,
     ContextMenuContent,
     ContextMenuItem,
     ContextMenuTrigger,
+    ContextMenuLabel,
+    ContextMenuGroup
 } from "@/components/ui/context-menu";
-
+import {useEditableInput} from "@/vol_apps/tool/component/input.js";
+import {t} from "i18next";
 
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
     isBroadMatches: boolean,
@@ -31,7 +36,7 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
                                       : "text-[#0078d7] fill-[#0078d7]",
                               )}/>
             </HoverCardTrigger>
-            <HoverCardContent className="w-auto" side="top" sideOffset={16}>
+            <HoverCardContent className="w-auto" side="bottom" sideOffset={18}>
                 <div className="text-[13px]">
                     {t(
                         "Left-click a tag to select only this one.\nRight-click a tag to open menu for more operations.\nClick me to toggle mode.\nCurrently: tiles match {{mode}} selected tags",
@@ -64,10 +69,10 @@ export const TagUpdate = () => {
         <HoverCard openDelay={0} closeDelay={0}>
             <HoverCardTrigger asChild>
                 {isUpdate
-                    ? <Spinner className={"size-5 text-[#0078d7]"}></Spinner>
-                    : <LoaderCircle className={"size-5 text-ring hover:text-[#0078d7]"} onClick={handleClick}/>}
+                    ? <Spinner className={"size-6 text-[#0078d7]"}></Spinner>
+                    : <LoaderCircle className={"size-6 text-ring hover:text-[#0078d7]"} onClick={handleClick}/>}
             </HoverCardTrigger>
-            <HoverCardContent className="w-auto" side="top" sideOffset={16}>
+            <HoverCardContent className="w-auto" side="bottom" sideOffset={18}>
                 <div className="text-[13px]">
                     {t("Click to sync tags")}
                 </div>
@@ -77,60 +82,120 @@ export const TagUpdate = () => {
 };
 
 export const TagComponent = () => {
-    const {t} = useTranslation("tag");
 
     const {
-        tags, updateTag, toggleTag, isBroadMatches, setIsBroadMatches, deleteTag,
-        untaggedChecked, setUntaggedChecked, hasUntaggedTiles
+        updateTag, toggleTag, deleteTag, hasUntaggedTiles, isBroadMatches,
+        untaggedChecked, setUntaggedChecked, renameTag, tags, setIsBroadMatches,
     } = useTileStore();
 
-    const Tags = tags.map((tag) => {
+    const TagItem = ({tag}: { tag: Tag }) => {
+        const {t} = useTranslation("tag");
 
-            const btn = <Button
-                key={tag.id} variant={tag.checked ? "default" : "outline"}
+        const [inEdit, setInEdit] = useState(false);
+
+        const {
+            inputProps,
+            inputString,
+            inputRef,
+            setInputSize,
+            setInputString
+        } = useEditableInput({
+            // initialValue: tag.name,
+            handleSubmit: () => {
+                renameTag(tag.id, inputString);
+                setInEdit(false);
+            },
+            handleEscape: () => {
+                setInputString(tag.name);
+                setInEdit(false);
+            },
+        });
+
+        useEffect(() => {
+            if (inEdit) {
+                const id = setTimeout(() => {
+                    inputRef.current?.focus();
+                    const len = inputString.length
+                    inputRef.current?.setSelectionRange(len, len);
+                }, 350); // 延迟 300以上
+                return () => clearTimeout(id);
+            }
+        }, [inEdit]);
+
+        const btn = (
+            <Button
+                hidden={inEdit}
+                className={cn(
+                    "border-0",
+                    {"text-white bg-[#0078d7] hover:bg-[#0078d7] ": tag.checked},
+                )}
+                variant={tag.checked ? "default" : "outline"}
                 onClick={() => {
                     tags.map(items => {
-                        updateTag(items.id, {checked: items.id === tag.id})
+                        updateTag(items.id, {checked: items.id === tag.id});
                     });
-                    if (untaggedChecked) setUntaggedChecked(false)
+                    if (untaggedChecked) setUntaggedChecked(false);
                 }}
-                onContextMenu={(_e) => {
-                    // const size = {
-                    //     width: e.currentTarget.getBoundingClientRect().width,
-                    //     height: e.currentTarget.getBoundingClientRect().height
-                    // };
-                    // console.log(size);
-                }
-                }
-                className={cn(tag.checked
-                    ? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none"
-                    : "border-none"
-                )}>
+                onContextMenu={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setInputSize({
+                        width: rect.width,
+                        height: rect.height,
+                    });
+                }}
+            >
                 {tag.name}
             </Button>
+        );
 
-            return (
-                <ContextMenu key={tag.id}>
+        return (
+            <>
+                <Button hidden={!inEdit} style={{display: inEdit ? 'inline-flex' : 'none'}}
+                        className={cn(
+                            "p-0 border-0",
+                            {"text-white bg-[#0078d7] hover:bg-[#0078d7]": tag.checked}
+                        )}
+                        variant={tag.checked ? "default" : "outline"}>
+                    <Input
+                        hidden={!inEdit}
+                        ref={inputRef}
+                        className={"bg-transparent w-full h-full ring-0!"}
+                        {...inputProps}
+                    />
+                </Button>
+                <ContextMenu>
                     <ContextMenuTrigger>
                         {btn}
                     </ContextMenuTrigger>
-                    <ContextMenuContent
-                        avoidCollisions={false}
-                        alignOffset={18}>
-                        <ContextMenuItem onClick={
-                            () => toggleTag(tag.id) //切换标签
-                        }>
-                            {t("Toggle this tag")}
-                        </ContextMenuItem>
-                        <ContextMenuItem onClick={
-                            () => deleteTag(tag.id)
-                        }>
-                            {t("Delete this tag")}
-                        </ContextMenuItem>
+                    <ContextMenuContent avoidCollisions={false} alignOffset={18}>
+                        <ContextMenuGroup>
+                            <ContextMenuLabel className="text-[#0078d7] font-bold">
+                                {tag.name}
+                            </ContextMenuLabel>
+                            <ContextMenuItem onClick={() => toggleTag(tag.id)}>
+                                {t("Toggle selection")}
+                            </ContextMenuItem>
+                            <ContextMenuItem onClick={() => {
+                                setInputString(tag.name)
+                                setInEdit(true)
+                            }}>
+                                {t("Rename")}
+                            </ContextMenuItem>
+                            <ContextMenuItem onClick={() => deleteTag(tag.id)}>
+                                {t("Delete")}
+                            </ContextMenuItem>
+                        </ContextMenuGroup>
                     </ContextMenuContent>
-                </ContextMenu>)
-        }
-    );
+                </ContextMenu>
+            </>
+
+        );
+    };
+
+
+    const Tags = tags.map(tag => (
+        <TagItem key={tag.id} tag={tag}/>
+    ));
 
     return (
         <>

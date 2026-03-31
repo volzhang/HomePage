@@ -1,7 +1,7 @@
-import {type Tile} from "@/vol_apps/tile/tile_store.js";
 import {type MouseEvent, type ReactNode} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink.js";
 import {cn} from "@/lib/utils.js";
+import type {Tile} from "@/vol_apps/tile/tile_store_types.js";
 
 export interface TileProps {
     tile: Tile;
@@ -17,7 +17,7 @@ export const TileComponent = ({
                                   tile,
                                   interactive = true,
 
-                                  onClick,
+                                  // onClick,
                                   onRightClick,
 
                                   iconSlot,
@@ -26,10 +26,10 @@ export const TileComponent = ({
     return (
         <div
             draggable={false}
-            onClick={(e) => {
+            onClick={(_e) => {
                 if (!interactive) return;
                 openLinkInNewTab(tile.url);
-                onClick?.(e);
+                // onClick?.(e);
             }}
             onContextMenu={(e) => {
                 if (!interactive) return;

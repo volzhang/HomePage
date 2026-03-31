@@ -1,4 +1,4 @@
-import {type Tile, useTileStore} from "@/vol_apps/tile/tile_store";
+import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {type ComponentType, useEffect, useMemo, useState} from "react";
 import {SortableProvider} from "@/vol_apps/tile/dnd/Sortable";
 import {isSortable} from "@dnd-kit/react/sortable";
@@ -6,6 +6,7 @@ import {cn} from "@/lib/utils.js";
 import {useTranslation} from "react-i18next";
 // import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated.js";
 import {type TileProps} from "@/vol_apps/tile/tile_component.js";
+import type {Tile} from "@/vol_apps/tile/tile_store_types.js";
 
 export interface SortableTilesProps {
     showTiles?: Tile[];

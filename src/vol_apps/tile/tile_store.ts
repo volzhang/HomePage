@@ -1,74 +1,8 @@
-import defaultIcon from "@/assets/icon-100.png";
-import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
-
-const response = await fetch(defaultIcon);
-const blob = await response.blob();
-export const defaultIconBase64 = await blobToString(blob);
-
-const defaultTile = {
-    id: 0, url: "", meta: {name: "", alt: "", icon: defaultIconBase64, tags: [],}
-};
-
-const TutorialsTiles: Tile[] = [
-    {
-        id: 0, url: "",
-        meta: {
-            name: "Long Press to Drag",
-            alt: "Tutorial: Long press and drag to rearrange tiles",
-            icon: defaultIconBase64,
-            tags: ["tutorial", "step1"],
-        },
-    },
-    {
-        id: 1, url: "",
-        meta: {
-            name: "Right-Click Me",
-            alt: "Tutorial: Right-click (desktop) to edit tile",
-            icon: defaultIconBase64,
-            tags: ["tutorial", "step2"],
-        },
-    },
-    {
-        id: 2, url: "",
-        meta: {
-            name: "Right-Click Nearby",
-            alt: "Tutorial: Right-click beside the tile to open the context menu",
-            icon: defaultIconBase64,
-            tags: ["tutorial", "step3"],
-        },
-    },
-    {
-        id: 3, url: "https://github.com/volzhang/HomePage",
-        meta: {
-            name: "Click Me to Link",
-            alt: "Tutorial: Click the tile to open link in a new tab",
-            icon: defaultIconBase64,
-            tags: ["tutorial", "step4"],
-        },
-    },
-];
-
-export type Meta = {
-    name: string;
-    alt: string;
-    icon: string;
-    tags: string[];
-}
-
-export type Tile = {
-    id: number; //必须唯一，且尽量等于index
-    url: string;
-    meta: Meta;
-}
-
-export type Tag = {
-    id: number; //唯一
-    name: string;
-    checked: boolean;
-}
-
-type TileUpdate = Partial<Omit<Tile, "meta">> & { meta?: Partial<Meta> };
+import {
+    defaultTile, TutorialsTiles,
+    type Tag, type Tile, type TileUpdate,
+} from "@/vol_apps/tile/tile_store_types.js";
 
 type TileStoreState = {
     //基本
@@ -123,7 +57,8 @@ type TileStoreActions = {
     setIsBroadMatches: (isBroadMatches: boolean) => void;
 
     //新增
-    deleteTag:(id: Tag["id"]) => void
+    deleteTag: (id: Tag["id"]) => void
+    renameTag: (id: Tag["id"], name: Tag["name"]) => void
 
 }
 
@@ -267,23 +202,39 @@ export const useTileStore = createPersistedStore<TileStore>(
 
         setIsBroadMatches: (isChecked) => set({isBroadMatches: isChecked}),
 
-
         // 2026.3.31 新增
-        deleteTag: (id:number) => {
-            const tagName = get().tags.find(t => t.id === id);
+        deleteTag: (id) => {
+            const store = get();
+            const tagName = store.tags.find(t => t.id === id);
             if (!tagName) return;
 
-            const newTiles = get().tiles.map(tile => ({
+            const newTiles = store.tiles.map(tile => ({
                 ...tile,
                 meta: {
                     ...tile.meta,
                     tags: tile.meta.tags.filter(t => t !== tagName.name)
                 }
             }));
-            get().setTiles(newTiles); // 会自动刷新 tags
+            store.setTiles(newTiles); // 会自动刷新 tags
+        },
+
+        renameTag: (id, name) => {
+            const store = get();
+            const tag = store.tags.find(t => t.id === id);
+            if (!tag) return;
+
+            const oldName = tag.name;
+            if (oldName === name) return;
+
+            const newTiles = store.tiles.map(tile => ({
+                ...tile,
+                meta: {
+                    ...tile.meta,
+                    tags: tile.meta.tags.map(t => t === oldName ? name : t)
+                }
+            }));
+            store.setTiles(newTiles);
         }
-
-
     }),
     {
         // 水和后立即更新tags，不要用useEffect了

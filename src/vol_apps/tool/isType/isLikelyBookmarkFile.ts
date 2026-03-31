@@ -1,4 +1,5 @@
 import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile";
+import {defaultIconBase64, type Tile} from "@/vol_apps/tile/tile_store_types.js";
 
 export const isLikelyBookmarkFile = async (file: File): Promise<boolean> => {
 	if (!(await isLikelyTextFile(file))) return false;
@@ -40,7 +41,7 @@ export const isLikelyBookmarkFile = async (file: File): Promise<boolean> => {
  * 4. 子文件夹结构：
  *    👉 <DT><H3>xxx</H3><DL>...</DL>
  *    👉 注意：DL 是 DT 的子元素，不是兄弟
- */ import {defaultIconBase64, type Tile} from "@/vol_apps/tile/tile_store";
+ */
 
 // -------------------- 类型 --------------------
 
