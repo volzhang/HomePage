@@ -13,7 +13,7 @@ export const BgUiCopyright = (
 	return (
 		<>
 			{bgType === "bing" ? (
-				<div className="absolute bottom-2 right-2">
+				<div className="fixed bottom-2 right-2 z-0">
 					<div className="flex flex-row justify-center items-center w-fit gap-0 select-none">
 						<p className="text-foreground text-sm">{bgBingCopyright}</p>
 						<Button

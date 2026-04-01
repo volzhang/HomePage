@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import {initReactI18next} from "react-i18next";
+import {addBootstrapTask} from "@/vol_apps/bootstrap/bootstrap";
 
 const resources = {
     en: {
@@ -73,12 +74,19 @@ const resources = {
             "Privacy Policy": "隐私政策"
         },
         contextMenu: {
+
+
+            "Tiles": "瓷砖",
             "Add Tile": "添加瓷砖",
+            "Show Tiles": "显示瓷砖",
+            "Hide Tiles": "隐藏瓷砖",
+
             "Backup": "存档",
             "Download Backup": "下载存档",
             "Import Backup": "恢复存档",
             "Set Background": "设置背景",
-            "Hide Tiles": "隐藏瓷砖",
+
+
         },
         bg: {
             "Upload Image": "上传图片",
@@ -165,15 +173,17 @@ function getInitialLanguage() {
 
 export const initialLng = getInitialLanguage();
 
-await i18n
-    .use(initReactI18next)
-    .init({
-        resources,
-        lng: initialLng,
-        fallbackLng: "en",
-        interpolation: {escapeValue: false},
-    });
+addBootstrapTask(async () => {
+    await i18n
+        .use(initReactI18next)
+        .init({
+            resources,
+            lng: initialLng,
+            fallbackLng: "en",
+            interpolation: { escapeValue: false },
+        });
+});
 
-export default i18n;
+// export default i18n;  //已经注册BootstrapTask
 
 

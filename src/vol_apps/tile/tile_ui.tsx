@@ -46,7 +46,7 @@ export const TileUi = () => {
     };
     // tag
     const handleTagChange = (e: ChangeEvent<HTMLInputElement>) => {
-        //这里其实很有意思，就是input组件输入一个string值时，至少输入的是""，
+        //input组件输入一个string值时，至少输入的是""，
         //不会输入完全的空值
         const splitString = " ";
         let newTags = e.target.value.split(splitString);

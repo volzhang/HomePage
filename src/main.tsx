@@ -1,11 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import {StrictMode} from 'react'
+import {createRoot} from 'react-dom/client'
 import './index.css'
-import '@/vol_apps/i8n/i18n'
 import {App} from "./App";
+import {runBootstrap} from "@/vol_apps/bootstrap/bootstrap";
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+import "@/vol_apps/i8n/i18n";
+import "@/vol_apps/tool/action/fetch";
+
+const main = async () => {
+    await runBootstrap();
+    createRoot(document.getElementById("root")!).render(
+        <StrictMode>
+            <App />
+        </StrictMode>,
+    );
+};
+
+void main();

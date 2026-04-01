@@ -167,7 +167,7 @@ export const Cm = () => {
 		<div className={cn({"hidden": !isVisible},
 				 "fixed top-0 bottom-0 right-0 left-0 m-1 rounded-md",
 				 "bg-background",
-				 "z-2",
+				 "z-20",
 				 "animate-fade-in-scale"
 			 )}>
 			{hydrated

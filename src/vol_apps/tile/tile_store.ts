@@ -39,7 +39,6 @@ type TileStoreActions = {
 
     //查看无标签tile
     setUntaggedChecked: (isChecked: boolean) => void;
-    // tilesNoTag: () => TileStoreState["tiles"];
 
     //Ui相关
     setTileUiVisible: (value: TileStoreState["tileUiVisible"]) => void;

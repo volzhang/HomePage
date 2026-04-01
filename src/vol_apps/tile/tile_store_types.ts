@@ -1,9 +1,5 @@
-import defaultIcon from "@/assets/icon-100.png";
-import {blobToString} from "@/vol_apps/tool/a2b/blobToString.js";
-const response = await fetch(defaultIcon);
-const blob = await response.blob();
-
-export const defaultIconBase64 = await blobToString(blob);
+import defaultIconBase64 from "@/assets/icon-100.png?inline";
+export { defaultIconBase64 };
 
 export const defaultTile = {
     id: 0, url: "", meta: {name: "", alt: "", icon: defaultIconBase64, tags: [],}

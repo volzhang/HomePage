@@ -3,7 +3,6 @@
 <head>
 	<script>
 		(function () {
-			// 主题初始化
 			try {
 				const rawTheme = localStorage.getItem("theme");
 				const isDark = rawTheme
@@ -13,8 +12,6 @@
 			} catch (err) {
 				console.warn("Failed to read theme", err);
 			}
-
-			// 语言初始化
 			try {
 				const rawLang = localStorage.getItem("i18n");
 				const lang = rawLang
@@ -28,20 +25,19 @@
 				document.documentElement.lang = "en";
 			}
 		})();
-
 	</script>
 	<meta charset="UTF-8"/>
 	<link rel="icon" type="image/*" href="./website-icon.png"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<title>Home Page</title>
-  <script type="module" crossorigin src="./assets/main-CExA6LMi.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/src-CoWMjhT9.js">
+  <script type="module" crossorigin src="./assets/main-BxoaS6wH.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/src-Cd9SHoxS.js">
   <link rel="modulepreload" crossorigin href="./assets/cm-DBXIuNmh.js">
   <link rel="modulepreload" crossorigin href="./assets/rolldown-runtime-EsD179PH.js">
   <link rel="modulepreload" crossorigin href="./assets/react-BG_NLhxX.js">
   <link rel="modulepreload" crossorigin href="./assets/ui-BWdiA6gr.js">
-  <link rel="modulepreload" crossorigin href="./assets/vendor-CmTyHqch.js">
-  <link rel="stylesheet" crossorigin href="./assets/src-C0VI13cN.css">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-CC6rWd1q.js">
+  <link rel="stylesheet" crossorigin href="./assets/src-DVg5K-UG.css">
 </head>
 <body>
 <script>
@@ -50,7 +46,6 @@
       const rawBg = localStorage.getItem("bg");
       const html = document.documentElement;
       const body = document.body;
-      // 先重置内联样式
       html.style.minHeight = "";
       body.style.minHeight = "";
       body.style.margin = "";

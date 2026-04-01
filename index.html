@@ -3,7 +3,6 @@
 <head>
 	<script>
 		(function () {
-			// 主题初始化
 			try {
 				const rawTheme = localStorage.getItem("theme");
 				const isDark = rawTheme
@@ -13,8 +12,6 @@
 			} catch (err) {
 				console.warn("Failed to read theme", err);
 			}
-
-			// 语言初始化
 			try {
 				const rawLang = localStorage.getItem("i18n");
 				const lang = rawLang
@@ -28,7 +25,6 @@
 				document.documentElement.lang = "en";
 			}
 		})();
-
 	</script>
 	<meta charset="UTF-8"/>
 	<link rel="icon" type="image/*" href="/website-icon.png"/>
@@ -43,7 +39,6 @@
       const rawBg = localStorage.getItem("bg");
       const html = document.documentElement;
       const body = document.body;
-      // 先重置内联样式
       html.style.minHeight = "";
       body.style.minHeight = "";
       body.style.margin = "";
