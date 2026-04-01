@@ -27,6 +27,7 @@ export const App = () => {
 					<Version/>
 				</div>
 			</div>
+
 			<SearchComponent/>
 			<TileApp/>
 			<DndFile/>

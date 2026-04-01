@@ -1,79 +1,139 @@
-import {useState, type InputHTMLAttributes, useEffect, useRef} from "react";
+import {Button} from "@/components/ui/button.js"
+import {cn} from "@/lib/utils.js"
+import {useEffect, useRef, useState} from "react"
 
-interface UseEditableInputProps
-    extends InputHTMLAttributes<HTMLInputElement> {
-    initialValue?: string;
-    handleSubmit?: () => void;
-    handleEscape?: () => void;
+const str = randomString()
+
+function randomString(minLen = 1, maxLen = 30) {
+    const chars = [
+        // 窄字符（小写字母、数字、常见符号）
+        ...'abcdefghijklmnopqrstuvwxyz0123456789',
+        // 中等宽度（大写字母）
+        ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        // 宽字符（中文、日文等）
+        ...'的一是不了在人有中测试文字',
+        // 超宽字符（Emoji 占2个字符宽度，但实际渲染会占用更多空间）
+        '🔥', '💧', '🚀', '❤️', '🎉', '😊'
+    ];
+
+    const length = Math.floor(Math.random() * (maxLen - minLen + 1)) + minLen;
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        result += chars[randomIndex];
+    }
+    return result;
 }
 
-export function useEditableInput({
-                                     initialValue = "",
-                                     handleSubmit,
-                                     handleEscape,
-                                     style,
-                                     onChange,
-                                     onBlur,
-                                     onKeyDown,
-                                     ...inputProps
-                                 }: UseEditableInputProps) {
+export const Btn_outline = () => {
+    return (
+        <Button variant={"outline"}>
+            {str}
+        </Button>
+    )
+}
 
-    const [inputString, setInputString] = useState(initialValue);
-    const [inputSize, setInputSize] = useState<{ width: number; height: number } | null>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
+const input_css_for_btn_outline = cn(
+    "text-center",
+    "h-9 px-4 py-2",
+    "border bg-background rounded-md ",
 
-    const handleOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        handleSubmit?.();
-        onBlur?.(e);
-    };
+    "border-0! ring-0! focus:outline-none",
 
-    const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") e.currentTarget.blur();
-        if (e.key === "Escape") handleEscape?.();
-        onKeyDown?.(e);
-    };
+    "items-center justify-center gap-2",
+    "text-sm font-medium ",
+    "inline-flex",
+    "whitespace-nowrap",
 
-    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputString(e.currentTarget.value);
-        onChange?.(e);
-    };
+    // "transition-all",
 
-    const [inputWidth, setInputWidth] = useState(0);
+    "hover:bg-accent",
+    "hover:text-accent-foreground",
+
+    "dark:bg-input/30",
+    "dark:border-input",
+    "dark:hover:bg-input/50",
+
+    "shadow-xs",
+    "text-foreground",
+)
+
+type AutoWidthInputProps = {
+    ref?: React.Ref<HTMLInputElement>
+
+    inputValue?: string
+
+    onValueChange?: (v: string) => void
+    handleOnClick?: () => void
+
+    inEdit?: boolean
+
+    // isDisabled?:boolean
+    // isReadOnly?:boolean
+
+    className?: string
+    style?: React.CSSProperties
+
+    inputProps?: React.InputHTMLAttributes<HTMLInputElement>
+}
+
+export const AutoWidthInput = ({
+                                   ref,
+
+                                   inputValue = "",
+                                   onValueChange,
+                                   inEdit = false,
+
+                                   handleOnClick,
+                                   className,
+                                   style,
+                                   inputProps,
+                               }: AutoWidthInputProps) => {
+
+    const measureRef = useRef<HTMLSpanElement>(null)
+    const [width, setWidth] = useState(0)
 
     useEffect(() => {
-        if (!inputRef.current) return;
-        const span = document.createElement("span");
-        span.style.visibility = "hidden";
-        span.style.position = "absolute";
-        span.style.font = getComputedStyle(inputRef.current).font;
-        span.innerText = inputString || " ";
-        document.body.appendChild(span);
-        setInputWidth(span.offsetWidth + 32); // 16 = padding buffer
-        document.body.removeChild(span);
-    }, [inputString]);
+        if (measureRef.current) {
+            setWidth(measureRef.current.offsetWidth)
+        }
+    }, [inputValue])
 
-    const inputPropsResult: InputHTMLAttributes<HTMLInputElement> = {
-        value: inputString,
-        onChange: handleOnChange,
-        onBlur: handleOnBlur,
-        onKeyDown: handleOnKeyDown,
-        style: {
-            // width: inputString.length * 8 + 36,
-            width: inputWidth,
-            height: inputSize?.height ?? undefined,
-            ...style,
-        },
-        ...inputProps
-    };
+    return (
+        <div className={"relative"}>
+            <span
+                ref={measureRef}
+                className={cn(
+                    input_css_for_btn_outline,
+                    "invisible absolute",
+                    className
+                )}
+            >
+                {inputValue}
+            </span>
 
-    return {
-        inputProps: inputPropsResult,
-        inputString,
-        inputSize,
-        inputRef,
-        inputWidth,
+            <input
+                {...inputProps}
+                ref={ref}
+                disabled={!inEdit}
+                readOnly={!inEdit}
+                value={inputValue}
+                onChange={(e) => {
+                    onValueChange?.(e.target.value)
+                }}
+                className={cn(input_css_for_btn_outline, className,)}
+                style={{width: `${width}px`, ...style}}
+            />
+            {/* 透明覆盖层，只接受点击 */}
+            {!inEdit && (
+                <div
+                    onClick={handleOnClick}
+                    className={"absolute w-full h-full top-0 left-0 select-none"}
+                />
+            )}
+        </div>
 
-        setInputString,
-        setInputSize
-    };
+    )
 }
+
+

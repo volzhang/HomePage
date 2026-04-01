@@ -1,11 +1,10 @@
 import {Button} from "@/components/ui/button";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
-import {Input} from "@/components/ui/input"
 import {Spinner} from "@/components/ui/spinner";
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {BookmarkIcon, LoaderCircle,} from "lucide-react";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {type Tag} from "@/vol_apps/tile/tile_store_types.js"
 
@@ -17,8 +16,9 @@ import {
     ContextMenuLabel,
     ContextMenuGroup
 } from "@/components/ui/context-menu";
-import {useEditableInput} from "@/vol_apps/tool/component/input.js";
+
 import {t} from "i18next";
+import {AutoWidthInput} from "@/vol_apps/tool/component/input.js";
 
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
     isBroadMatches: boolean,
@@ -91,99 +91,71 @@ export const TagComponent = () => {
     const TagItem = ({tag}: { tag: Tag }) => {
         const {t} = useTranslation("tag");
 
-        const [inEdit, setInEdit] = useState(false);
-
-        const {
-            inputProps,
-            inputString,
-            inputRef,
-            setInputSize,
-            setInputString
-        } = useEditableInput({
-            // initialValue: tag.name,
-            handleSubmit: () => {
-                renameTag(tag.id, inputString);
-                setInEdit(false);
-            },
-            handleEscape: () => {
-                setInputString(tag.name);
-                setInEdit(false);
-            },
-        });
+        const [inputString, setInputString] = useState<string>(tag.name)
+        const [inEdit, setInEdit] = useState<boolean>(false);
+        const inputRef = useRef<HTMLInputElement>(null);
 
         useEffect(() => {
             if (inEdit) {
+                // 延迟一点，确保 AutoWidthInput 已经渲染
                 const id = setTimeout(() => {
                     inputRef.current?.focus();
-                    const len = inputString.length
+                    const len = inputString.length;
                     inputRef.current?.setSelectionRange(len, len);
-                }, 350); // 延迟 300以上
+                }, 300);
                 return () => clearTimeout(id);
             }
-        }, [inEdit]);
-
-        const btn = (
-            <Button
-                hidden={inEdit}
-                className={cn(
-                    "border-0",
-                    {"text-white bg-[#0078d7] hover:bg-[#0078d7] ": tag.checked},
-                )}
-                variant={tag.checked ? "default" : "outline"}
-                onClick={() => {
-                    tags.map(items => {
-                        updateTag(items.id, {checked: items.id === tag.id});
-                    });
-                    if (untaggedChecked) setUntaggedChecked(false);
-                }}
-                onContextMenu={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    setInputSize({
-                        width: rect.width,
-                        height: rect.height,
-                    });
-                }}
-            >
-                {tag.name}
-            </Button>
-        );
+        }, [inEdit, inputString]);
 
         return (
             <>
-                <Button hidden={!inEdit} style={{display: inEdit ? 'inline-flex' : 'none'}}
-                        className={cn(
-                            "p-0 border-0",
-                            {"text-white bg-[#0078d7] hover:bg-[#0078d7]": tag.checked}
-                        )}
-                        variant={tag.checked ? "default" : "outline"}>
-                    <Input
-                        hidden={!inEdit}
-                        ref={inputRef}
-                        className={"bg-transparent w-full h-full ring-0!"}
-                        {...inputProps}
-                    />
-                </Button>
                 <ContextMenu>
                     <ContextMenuTrigger>
-                        {btn}
+                        <AutoWidthInput
+                            ref={inputRef}
+                            inputValue={inputString}
+                            onValueChange={setInputString}
+                            handleOnClick={() => {
+                                if (!inEdit) {
+                                    tags.forEach(item => updateTag(item.id, {checked: item.id === tag.id}));
+                                    if (untaggedChecked) setUntaggedChecked(false);
+                                }
+                            }}
+                            inEdit={inEdit}
+                            className={cn({"text-white! bg-[#0078d7]!": tag.checked},)}
+                            inputProps={
+                                {
+
+                                    onBlur: () => {
+                                        renameTag(tag.id, inputString)
+                                        setInEdit(false)
+                                    },
+                                    onKeyDown: (e) => {
+                                        if (e.key === "Enter") {
+                                            e.currentTarget.blur();
+                                        }
+                                        if (e.key === "Escape") {
+                                            setInputString(tag.name);
+                                            setInEdit(false);
+                                        }
+                                    },
+                                }
+                            }
+                        />
                     </ContextMenuTrigger>
                     <ContextMenuContent avoidCollisions={false} alignOffset={18}>
                         <ContextMenuGroup>
                             <ContextMenuLabel className="text-[#0078d7] font-bold">
                                 {tag.name}
                             </ContextMenuLabel>
-                            <ContextMenuItem onClick={() => toggleTag(tag.id)}>
-                                {t("Toggle selection")}
-                            </ContextMenuItem>
+                            <ContextMenuItem onClick={() => toggleTag(tag.id)}>{t("Toggle selection")}</ContextMenuItem>
                             <ContextMenuItem onClick={() => {
                                 setInputString(tag.name)
                                 setInEdit(true)
                             }}>
                                 {t("Rename")}
                             </ContextMenuItem>
-                            <ContextMenuItem onClick={() => deleteTag(tag.id)}>
-                                {t("Delete")}
-                            </ContextMenuItem>
+                            <ContextMenuItem onClick={() => deleteTag(tag.id)}>{t("Delete")}</ContextMenuItem>
                         </ContextMenuGroup>
                     </ContextMenuContent>
                 </ContextMenu>
@@ -192,10 +164,46 @@ export const TagComponent = () => {
         );
     };
 
-
     const Tags = tags.map(tag => (
         <TagItem key={tag.id} tag={tag}/>
     ));
+
+    const Untagged = hasUntaggedTiles() || untaggedChecked ?
+        <Button variant={untaggedChecked ? "default" : "outline"}
+                onClick={() => {
+                    setUntaggedChecked(true)
+                    tags.map(items => {
+                        updateTag(items.id, {checked: false})
+                    });
+                }}
+                className={cn(untaggedChecked
+                    ? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none select-none"
+                    : "border-none"
+                )
+                }>
+            {t("Untagged")}
+        </Button>
+        : null
+
+    const UntaggedWithMenu = (<>
+        <ContextMenu>
+            <ContextMenuTrigger>
+                {Untagged}
+            </ContextMenuTrigger>
+            <ContextMenuContent avoidCollisions={false} alignOffset={18}>
+                <ContextMenuGroup>
+                    <ContextMenuLabel className="text-[#0078d7] font-bold">
+                        {t("Untagged")}
+                    </ContextMenuLabel>
+                    <ContextMenuItem onClick={() => setUntaggedChecked(!untaggedChecked)}>
+                        {t("Toggle selection")}
+                    </ContextMenuItem>
+                    <ContextMenuItem disabled={true}>{t("Rename")}</ContextMenuItem>
+                    <ContextMenuItem disabled={true}>{t("Delete")}</ContextMenuItem>
+                </ContextMenuGroup>
+            </ContextMenuContent>
+        </ContextMenu>
+    </>)
 
     return (
         <>
@@ -206,28 +214,7 @@ export const TagComponent = () => {
                 "select-none",
             )}>
                 {Tags}
-                {
-                    hasUntaggedTiles() || untaggedChecked ?
-                        <Button variant={untaggedChecked ? "default" : "outline"}
-                                onClick={() => {
-                                    setUntaggedChecked(true)
-                                    tags.map(items => {
-                                        updateTag(items.id, {checked: false})
-                                    });
-                                }}
-                                onContextMenu={(e) => {
-                                    e.preventDefault();
-                                    setUntaggedChecked(!untaggedChecked)
-                                }}
-                                className={cn(untaggedChecked
-                                    ? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none select-none"
-                                    : "border-none"
-                                )
-                                }>
-                            {t("Untagged")}
-                        </Button>
-                        : null
-                }
+                {UntaggedWithMenu}
                 <BroadMatches isBroadMatches={isBroadMatches} handleOnClick={
                     () => setIsBroadMatches(!isBroadMatches)
                 }/>
