@@ -17,7 +17,6 @@ import {
     ContextMenuGroup
 } from "@/components/ui/context-menu";
 
-import {t} from "i18next";
 import {AutoWidthInput} from "@/vol_apps/tool/component/input.js";
 
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
@@ -82,6 +81,7 @@ export const TagUpdate = () => {
 };
 
 export const TagComponent = () => {
+    const {t} = useTranslation("tag");
 
     const {
         updateTag, toggleTag, deleteTag, hasUntaggedTiles, isBroadMatches,
@@ -89,7 +89,7 @@ export const TagComponent = () => {
     } = useTileStore();
 
     const TagItem = ({tag}: { tag: Tag }) => {
-        const {t} = useTranslation("tag");
+        // const {t} = useTranslation("tag");
 
         const [inputString, setInputString] = useState<string>(tag.name)
         const [inEdit, setInEdit] = useState<boolean>(false);
