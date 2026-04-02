@@ -1,4 +1,4 @@
-import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
+import {createPersistedStore, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 import {
     defaultTile, TutorialsTiles,
     type Tag, type Tile, type TileUpdate,
@@ -65,18 +65,23 @@ type TileStoreActions = {
 
 export type TileStore = TileStoreState & TileStoreActions;
 
+const INITIAL_STATE = {
+    tiles: TutorialsTiles,
+    tilesVisible: true,
+    tileInEditId: 0,
+
+    tags: [],
+    untaggedChecked: false,
+    isBroadMatches: true,
+
+    tileUiVisible: false,
+}
+
 export const useTileStore = createPersistedStore<TileStore>(
     "tile",
     (set, get) => ({
-        tiles: TutorialsTiles,
-        tilesVisible: true,
-        tileInEditId: 0,
+        ...INITIAL_STATE,
 
-        tags: [],
-        untaggedChecked: false,
-        isBroadMatches: true,
-
-        tileUiVisible: false,
         setTilesVisible: (tilesVisible) => set({tilesVisible}),
 
         // 所有修改tiles的函数，都植入updateTags
@@ -276,6 +281,16 @@ export const useTileStore = createPersistedStore<TileStore>(
             if (hydratedState) {
                 hydratedState.updateTags(hydratedState.tiles);
             }
-        }
+        },
+
+        version: LatestStoreVersion,  //清除垃圾KV
+        migrate: (persistedState) => {
+            if (!persistedState || typeof persistedState !== "object") return {};
+            const allowed = new Set(Object.keys(INITIAL_STATE));
+            return Object.fromEntries(
+                Object.entries(persistedState).filter(([key]) => allowed.has(key))
+            );
+        },
+
     }
 );

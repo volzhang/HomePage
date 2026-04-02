@@ -1,5 +1,5 @@
-import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
-import img from "@/assets/bg-dark.png?inline";  //得到同步字符串（data URL)
+import {createPersistedStore, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
+import img from "@/assets/bg-dark.png?inline"; //得到同步字符串（data URL)
 export {img}
 
 // "auto", "cover", "contain"
@@ -33,20 +33,23 @@ type BgStoreActions = {
 
 type BgStore = BgStoreState & BgStoreActions;
 
+const INITIAL_STATE = {
+    bgType: "default" as const,
+    bgImg: img,
+    bgBingIndex: 0,
+    bgBingCopyright: "",
+    bgSize: "auto",
+    bgRepeat: true,
+    bgCenter: false,
+    otherVisible: true,
+    bgUiVisible: false,
+};
+
 export const useBgStore = createPersistedStore<BgStore>(
     "bg",
     (set) => ({
-        bgType: "default",
-        bgImg: img,
-        bgBingIndex: 0,
-        bgBingCopyright: "",
-        bgSize: "auto",
-        bgRepeat: true,
-        bgCenter: false,
 
-        otherVisible: true,
-        bgUiVisible: false,
-
+        ...INITIAL_STATE,
         setBgImg: (bgImg) => set({bgImg}),
         setBgType: (bgType) => set({bgType}),
         setBgBingIndex: (bgBingIndex) => set({bgBingIndex}),
@@ -62,6 +65,25 @@ export const useBgStore = createPersistedStore<BgStore>(
     }),
     {
         storageType: "localStorage",
+        version: LatestStoreVersion,  //放弃otherVisible持久化，清除垃圾KV
+        migrate: (persistedState) => {
+            if (!persistedState || typeof persistedState !== "object") return {};
+            // 排除 otherVisible，其他垃圾KV
+            const {
+                otherVisible,
+                ...rest
+            } = INITIAL_STATE
+
+            const allowed = new Set(Object.keys(rest));
+            return Object.fromEntries(
+                Object.entries(persistedState).filter(([key]) => allowed.has(key))
+            );
+        },
+        partialize: (state) => {
+            // 排除 otherVisible，其余字段全部持久化
+            const {otherVisible, ...rest} = state;
+            return rest;
+        }
     }
 )
 

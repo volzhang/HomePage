@@ -1,4 +1,4 @@
-import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
+import {createPersistedStore, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 
 type Engine = {
 	id: number;
@@ -28,11 +28,15 @@ const SEARCH_ENGINES: Engine[] = [
 	{id: 4, name: "Baidu", url: "https://www.baidu.com/s", param: "wd"},
 ] as const;
 
+const INITIAL_STATE = {
+	engines: SEARCH_ENGINES,  //方便用户后续
+	engineInUseId: 0,
+}
+
 export const useSearchStore = createPersistedStore<SearchStore>(
 	"search",
 	(set, get) => ({
-		engines: SEARCH_ENGINES,
-		engineInUseId: 0,
+		...INITIAL_STATE,
 
 		setEngineInUseByID: (engineInUseId: Engine["id"]) =>
 			set({ engineInUseId }),
@@ -48,5 +52,16 @@ export const useSearchStore = createPersistedStore<SearchStore>(
 			const inUseId = get().engineInUseId;
 			return get().engines.find((e) => e.id === inUseId) || SEARCH_ENGINES[0];
 		},
-	})
+	}),
+
+	{
+		version: LatestStoreVersion,  //清除垃圾KV
+		migrate: (persistedState) => {
+			if (!persistedState || typeof persistedState !== "object") return {};
+			const allowed = new Set(Object.keys(INITIAL_STATE));
+			return Object.fromEntries(
+				Object.entries(persistedState).filter(([key]) => allowed.has(key))
+			);
+		},
+	}
 );
