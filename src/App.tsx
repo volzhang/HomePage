@@ -14,15 +14,16 @@ import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu.js";
 export const App = () => {
     return (
         <>
+
+            <ToasterUi/>
+            <Cm/>
             <GlobalContextMenu>
-                <ToasterUi/>
                 <div className={"flex gap-2 p-2"}>
                     <Menu/>
                     <I18nUi/>
                     <Theme/>
                     <CmOpen/>
                 </div>
-                <Cm/>
                 <div className={"absolute top-2 right-2"}>
                     <div className={"flex gap-2"}>
                         <Version/>
@@ -31,8 +32,8 @@ export const App = () => {
                 <SearchComponent/>
                 <TileApp/>
                 <DndFile/>
-                <BgApp/>
             </GlobalContextMenu>
+            <BgApp/>
             {/*	推荐BG放到最下面（这样不用设置z-index）*/}
         </>);
 };

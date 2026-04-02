@@ -3,7 +3,7 @@ import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hov
 import {Spinner} from "@/components/ui/spinner";
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {BookmarkIcon, LoaderCircle,} from "lucide-react";
+import {BookmarkIcon, LoaderCircle, TriangleAlert } from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {type Tag} from "@/vol_apps/tile/tile_store_types.js"
@@ -14,10 +14,11 @@ import {
     ContextMenuItem,
     ContextMenuTrigger,
     ContextMenuLabel,
-    ContextMenuGroup
+    ContextMenuGroup, ContextMenuSubTrigger, ContextMenuSubContent, ContextMenuSub
 } from "@/components/ui/context-menu";
 
 import {AutoWidthInput} from "@/vol_apps/tool/component/input.js";
+
 
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
     isBroadMatches: boolean,
@@ -85,11 +86,11 @@ export const TagComponent = () => {
 
     const {
         updateTag, toggleTag, deleteTag, hasUntaggedTiles, isBroadMatches,
-        untaggedChecked, setUntaggedChecked, renameTag, tags, setIsBroadMatches,
+        untaggedChecked,  tags,
+        setIsBroadMatches, deleteTilesWithOnlyThisTag,deleteUntaggedTiles,setUntaggedChecked,renameTag
     } = useTileStore();
 
     const TagItem = ({tag}: { tag: Tag }) => {
-        // const {t} = useTranslation("tag");
 
         const [inputString, setInputString] = useState<string>(tag.name)
         const [inEdit, setInEdit] = useState<boolean>(false);
@@ -148,14 +149,29 @@ export const TagComponent = () => {
                             <ContextMenuLabel className="text-[#0078d7] font-bold">
                                 {tag.name}
                             </ContextMenuLabel>
-                            <ContextMenuItem onClick={() => toggleTag(tag.id)}>{t("Toggle selection")}</ContextMenuItem>
-                            <ContextMenuItem onClick={() => {
+                            <ContextMenuItem inset onClick={() => toggleTag(tag.id)}>{t("Toggle selection")}</ContextMenuItem>
+                            <ContextMenuItem inset onClick={() => {
                                 setInputString(tag.name)
                                 setInEdit(true)
                             }}>
                                 {t("Rename")}
                             </ContextMenuItem>
-                            <ContextMenuItem onClick={() => deleteTag(tag.id)}>{t("Delete")}</ContextMenuItem>
+                            <ContextMenuSub>
+                                <ContextMenuSubTrigger className={""}>
+                                    <TriangleAlert className={"mr-2 text-red-500"}/>
+                                    {t("Delete")}
+                                </ContextMenuSubTrigger>
+                                <ContextMenuSubContent className="">
+                                    <ContextMenuItem onClick={() => deleteTag(tag.id)}>
+                                        <TriangleAlert className={"mr-2 text-red-500"}/>
+                                        {t("Delete this tag from tiles")}
+                                    </ContextMenuItem>
+                                    <ContextMenuItem onClick={() => deleteTilesWithOnlyThisTag(tag.id)} className={""}>
+                                        <TriangleAlert className={"mr-2 text-red-500"}/>
+                                        {t("Delete Tiles with only this tag")}
+                                    </ContextMenuItem>
+                                </ContextMenuSubContent>
+                            </ContextMenuSub>
                         </ContextMenuGroup>
                     </ContextMenuContent>
                 </ContextMenu>
@@ -181,7 +197,7 @@ export const TagComponent = () => {
                     : "border-none"
                 )
                 }>
-            {t("Untagged")}
+            {t("UntaggedTiles")}
         </Button>
         : null
 
@@ -193,13 +209,23 @@ export const TagComponent = () => {
             <ContextMenuContent avoidCollisions={false} alignOffset={18}>
                 <ContextMenuGroup>
                     <ContextMenuLabel className="text-[#0078d7] font-bold">
-                        {t("Untagged")}
+                        {t("UntaggedTiles")}
                     </ContextMenuLabel>
                     <ContextMenuItem onClick={() => setUntaggedChecked(!untaggedChecked)}>
                         {t("Toggle selection")}
                     </ContextMenuItem>
-                    <ContextMenuItem disabled={true}>{t("Rename")}</ContextMenuItem>
-                    <ContextMenuItem disabled={true}>{t("Delete")}</ContextMenuItem>
+                    <ContextMenuSub>
+                        <ContextMenuSubTrigger className={""}>
+                            <TriangleAlert className={"mr-2 text-red-500"}/>
+                            {t("Delete")}
+                        </ContextMenuSubTrigger>
+                        <ContextMenuSubContent className="">
+                            <ContextMenuItem onClick={() => deleteUntaggedTiles()}>
+                                <TriangleAlert className={"mr-2 text-red-500"}/>
+                                {t("Delete Untagged Tiles")}
+                            </ContextMenuItem>
+                        </ContextMenuSubContent>
+                    </ContextMenuSub>
                 </ContextMenuGroup>
             </ContextMenuContent>
         </ContextMenu>

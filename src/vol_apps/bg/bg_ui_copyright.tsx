@@ -11,9 +11,9 @@ export const BgUiCopyright = (
 	}
 ) => {
 	return (
-		<>
+		<div className={"z-0"}>
 			{bgType === "bing" ? (
-				<div className="fixed bottom-2 right-2 z-0">
+				<div className="fixed bottom-2 right-2">
 					<div className="flex flex-row justify-center items-center w-fit gap-0 select-none">
 						<p className="text-foreground text-sm">{bgBingCopyright}</p>
 						<Button
@@ -33,6 +33,6 @@ export const BgUiCopyright = (
 				</div>
 			) : null
 			}
-		</>
+		</div>
 	);
 };

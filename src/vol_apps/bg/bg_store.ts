@@ -2,11 +2,6 @@ import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
 import img from "@/assets/bg-dark.png?inline";  //得到同步字符串（data URL)
 export {img}
 
-// 用的vite，支持顶层await，已测试过，没问题。
-// const response = await fetch(defaultImg);
-// const blob = await response.blob();
-// export const img = await blobToString(blob);
-
 // "auto", "cover", "contain"
 type SizeType = string
 // "default", "custom", "bing"

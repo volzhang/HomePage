@@ -58,7 +58,9 @@ type TileStoreActions = {
     //新增
     deleteTag: (id: Tag["id"]) => void
     renameTag: (id: Tag["id"], name: Tag["name"]) => void
-
+    deleteTilesWithTag: (id: Tag["id"]) => void
+    deleteTilesWithOnlyThisTag: (id: Tag["id"]) => void
+    deleteUntaggedTiles: () => void
 }
 
 export type TileStore = TileStoreState & TileStoreActions;
@@ -232,6 +234,37 @@ export const useTileStore = createPersistedStore<TileStore>(
                     tags: tile.meta.tags.map(t => t === oldName ? name : t)
                 }
             }));
+            store.setTiles(newTiles);
+        },
+
+        deleteTilesWithTag: (id) => {
+            const store = get();
+            const tag = store.tags.find(t => t.id === id);
+            if (!tag) return;
+
+            const name = tag.name;
+            const newTiles = store.tiles.filter(tile => (
+                !tile.meta.tags.includes(name)
+            ));
+            store.setTiles(newTiles);
+        },
+
+        deleteTilesWithOnlyThisTag: (id) => {
+            const store = get();
+            const tag = store.tags.find(t => t.id === id);
+            if (!tag) return;
+
+            const name = tag.name;
+            const newTiles = store.tiles.filter(tile => {
+                const tags = tile.meta.tags;
+                return !(tags.length === 1 && tags[0] === name);
+            });
+            store.setTiles(newTiles);
+        },
+
+        deleteUntaggedTiles: () => {
+            const store = get();
+            const newTiles = store.tiles.filter(tile => tile.meta.tags.length > 0);
             store.setTiles(newTiles);
         }
     }),

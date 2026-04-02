@@ -30,7 +30,7 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
     return (
         <>
             <ContextMenu>
-                <ContextMenuTrigger className= {"fixed inset-0"}>
+                <ContextMenuTrigger className= {"fixed inset-0 z-0"}>
                     {children}
                 </ContextMenuTrigger>
                 <ContextMenuContent className="w-48">
@@ -49,9 +49,6 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
                                 </ContextMenuItem>
                             </ContextMenuSubContent>
                         </ContextMenuSub>
-
-
-
                     <ContextMenuSub>
                         <ContextMenuSubTrigger inset className={"h-10"}>
                             {t("Backup")}

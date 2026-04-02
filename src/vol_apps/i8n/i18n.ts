@@ -47,13 +47,17 @@ const resources = {
             "ANY": "任一",
             "ALL": "全部",
 
-            "Untagged": "未标签",
+            "UntaggedTiles": "无标签瓷砖",
             "Click to sync tags": "同步标签",
 
             "Toggle selection": "切换状态",
             "Rename": "重命名",
-            "Delete": "删除",
 
+            "Delete": "删除",
+            "Delete this tag from tiles":"删除此标签：从所有瓷砖中",
+            "Delete Tiles with only this tag":"删除所有瓷砖：若仅包含此标签",
+
+            "Delete Untagged Tiles":"删除无标签瓷砖",
         },
         navigation: {
             "Menu": "菜单",

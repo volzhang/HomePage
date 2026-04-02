@@ -53,7 +53,7 @@ export function BgUiSetting(
 
 	return (
 
-		<div className={cn("fixed right-1 top-1 w-64 p-5 gap-5 flex flex-col z-1",
+		<div className={cn("fixed right-1 top-1 w-64 p-5 gap-5 flex flex-col z-10",
 			{"hidden": !bgUiVisible},
 			"bg-ui-panel",  //添加类 bg-ui-panel，供全局 CSS 识别。
 		)}>
