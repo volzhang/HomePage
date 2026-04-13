@@ -84,23 +84,27 @@ export const useTileStore = createPersistedStore<TileStore>(
 
         setTilesVisible: (tilesVisible) => set({tilesVisible}),
 
-        // 所有修改tiles的函数，都植入updateTags
+        // 所有tiles的函数，都植入updateTags
         updateTags: (newTiles) => set((state) => {
-            const allUniqueTags = [
+            const names = [
                 ...new Set(
-                    newTiles.flatMap((tile: Tile) => tile.meta.tags || [])
+                    newTiles.flatMap(tile => tile.meta.tags || [])
                 )
-            ].filter((name) => name !== "");
-            //上面之所有删除了""，就是因为两种情况，
-            //1，不做处理时，input输入string，至少输入一个""
-            //2，“tag1 tag2 ”会生成3个元素的数组["tag1","tag2",""], 其中包含一个""
-            const newTags = allUniqueTags.map((name, id) => {
-                const checked = state.selectedTags().includes(name);
-                return {id, name, checked};
-            });
+            ].filter(Boolean);
 
-            return {tags: newTags};
+            const oldMap = new Map(
+                state.tags.map(tag => [tag.name, tag.checked])
+            );
+
+            const newTags = names.map((name, index) => ({
+                id: index,
+                name,
+                checked: oldMap.get(name) ?? false
+            }));
+
+            return { tags: newTags };
         }),
+
 
         //Tiles的修改函数，都依赖setTiles
         setTiles: (newTiles) => set((state) => {
@@ -221,7 +225,7 @@ export const useTileStore = createPersistedStore<TileStore>(
                     tags: tile.meta.tags.filter(t => t !== tagName.name)
                 }
             }));
-            store.setTiles(newTiles); // 会自动刷新 tags
+            store.setTiles(newTiles);
         },
 
         renameTag: (id, name) => {
@@ -232,6 +236,9 @@ export const useTileStore = createPersistedStore<TileStore>(
             const oldName = tag.name;
             if (oldName === name) return;
 
+            // 👇 先记录 checked
+            const wasChecked = tag.checked;
+
             const newTiles = store.tiles.map(tile => ({
                 ...tile,
                 meta: {
@@ -239,7 +246,15 @@ export const useTileStore = createPersistedStore<TileStore>(
                     tags: tile.meta.tags.map(t => t === oldName ? name : t)
                 }
             }));
+
+            // 👇 先更新 tiles（会触发 updateTags）
             store.setTiles(newTiles);
+
+            // 👇 再把新 tag 设回 checked
+            const newTag = get().tags.find(t => t.name === name);
+            if (newTag && wasChecked) {
+                get().updateTag(newTag.id, { checked: true });
+            }
         },
 
         deleteTilesWithTag: (id) => {

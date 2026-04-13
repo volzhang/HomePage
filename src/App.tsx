@@ -14,7 +14,6 @@ import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu.js";
 export const App = () => {
     return (
         <>
-
             <ToasterUi/>
             <Cm/>
             <GlobalContextMenu>
@@ -34,6 +33,5 @@ export const App = () => {
                 <DndFile/>
             </GlobalContextMenu>
             <BgApp/>
-            {/*	推荐BG放到最下面（这样不用设置z-index）*/}
         </>);
 };

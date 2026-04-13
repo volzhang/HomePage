@@ -87,5 +87,11 @@ export const useCmStore = createPersistedStore<CmStore>(
                 Object.entries(persistedState).filter(([key]) => allowed.has(key))
             );
         },
+        partialize: (state) => {
+            const {
+                // isVisible,
+                ...rest} = state;
+            return rest;
+        }
     }
 );

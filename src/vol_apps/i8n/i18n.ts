@@ -54,8 +54,8 @@ const resources = {
             "Rename": "重命名",
 
             "Delete": "删除",
-            "Delete this tag from tiles":"删除此标签：从所有瓷砖中",
-            "Delete Tiles with only this tag":"删除所有瓷砖：若仅包含此标签",
+            "Delete this tag from tiles":"从所有瓷砖中删除此标签",
+            "Delete Tiles with only this tag":"删除所有只有此标签的瓷砖",
 
             "Delete Untagged Tiles":"删除无标签瓷砖",
         },
@@ -72,14 +72,12 @@ const resources = {
             "Download Backup": "下载存档",
             "Import Backup": "恢复存档",
 
-            "Chrome/Edge Bookmark": "Chrome/Edge 书签",
-            "Import links from bookmark file": "从书签中导入链接",
+            "Chrome/Edge Bookmarks": "Chrome/Edge 书签",
+            "Import links from an HTML bookmarks file": "从HTML书签文件中导入",
 
             "Privacy Policy": "隐私政策"
         },
         contextMenu: {
-
-
             "Tiles": "瓷砖",
             "Add Tile": "添加瓷砖",
             "Show Tiles": "显示瓷砖",

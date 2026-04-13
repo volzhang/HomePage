@@ -149,8 +149,8 @@ export const TagComponent = () => {
                             <ContextMenuLabel className="text-[#0078d7] font-bold">
                                 {tag.name}
                             </ContextMenuLabel>
-                            <ContextMenuItem inset onClick={() => toggleTag(tag.id)}>{t("Toggle selection")}</ContextMenuItem>
-                            <ContextMenuItem inset onClick={() => {
+                            <ContextMenuItem onClick={() => toggleTag(tag.id)}>{t("Toggle selection")}</ContextMenuItem>
+                            <ContextMenuItem onClick={() => {
                                 setInputString(tag.name)
                                 setInEdit(true)
                             }}>
@@ -158,7 +158,7 @@ export const TagComponent = () => {
                             </ContextMenuItem>
                             <ContextMenuSub>
                                 <ContextMenuSubTrigger className={""}>
-                                    <TriangleAlert className={"mr-2 text-red-500"}/>
+                                    {/*<TriangleAlert className={"mr-2 text-red-500"}/>*/}
                                     {t("Delete")}
                                 </ContextMenuSubTrigger>
                                 <ContextMenuSubContent className="">
@@ -216,7 +216,7 @@ export const TagComponent = () => {
                     </ContextMenuItem>
                     <ContextMenuSub>
                         <ContextMenuSubTrigger className={""}>
-                            <TriangleAlert className={"mr-2 text-red-500"}/>
+                            {/*<TriangleAlert className={"mr-2 text-red-500"}/>*/}
                             {t("Delete")}
                         </ContextMenuSubTrigger>
                         <ContextMenuSubContent className="">

@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* ==================== 自定义颜色 ==================== */
+@theme {
+    --color-sBlue: #0078d7;
+}
+/* ==================================================== */
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

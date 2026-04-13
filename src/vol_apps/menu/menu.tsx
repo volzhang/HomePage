@@ -89,11 +89,11 @@ export function Menu() {
                             </MenubarSubContent>
                         </MenubarSub>
                         <MenubarSub>
-                            <MenubarSubTrigger>{t("Chrome/Edge Bookmark")}</MenubarSubTrigger>
+                            <MenubarSubTrigger>{t("Chrome/Edge Bookmarks")}</MenubarSubTrigger>
                             <MenubarSubContent>
                                 <MenubarGroup>
                                     <MenubarItem onClick={handleImportFromBookmarkFile}>
-                                        {t("Import links from bookmark file")}
+                                        {t("Import links from an HTML bookmarks file")}
                                     </MenubarItem>
                                 </MenubarGroup>
                             </MenubarSubContent>
