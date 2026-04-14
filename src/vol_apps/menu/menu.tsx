@@ -56,24 +56,31 @@ export function Menu() {
                 </MenubarTrigger>
                 <MenubarContent side={"bottom"} align={"center"} className={"ml-2"}>
                     <MenubarGroup>
-
-                        <MenubarSub>
-                            <MenubarSubTrigger>{t("Tiles")}</MenubarSubTrigger>
-                            <MenubarSubContent>
-                                <MenubarGroup>
-                                    <MenubarItem onClick={OnAddTile} disabled={!tilesVisible}>
-                                        {t("Add Tile")}
-                                    </MenubarItem>
-                                    <MenubarItem onClick={() => setTilesVisible(!tilesVisible)}>
-                                        {
-                                            tilesVisible
-                                                ? t("Hide Tiles")
-                                                : t("Show Tiles")
-                                        }
-                                    </MenubarItem>
-                                </MenubarGroup>
-                            </MenubarSubContent>
-                        </MenubarSub>
+                        {
+                            tilesVisible
+                                ?
+                                <MenubarSub>
+                                    <MenubarSubTrigger>{t("Tiles")}</MenubarSubTrigger>
+                                    <MenubarSubContent>
+                                        <MenubarGroup>
+                                            <MenubarItem onClick={OnAddTile} disabled={!tilesVisible}>
+                                                {t("Add Tile")}
+                                            </MenubarItem>
+                                            <MenubarItem onClick={() => setTilesVisible(!tilesVisible)}>
+                                                {
+                                                    tilesVisible
+                                                        ? t("Hide Tiles")
+                                                        : t("Show Tiles")
+                                                }
+                                            </MenubarItem>
+                                        </MenubarGroup>
+                                    </MenubarSubContent>
+                                </MenubarSub>
+                                :
+                                <MenubarItem onClick={() => setTilesVisible(!tilesVisible)}>
+                                    {t("Show Tiles")}
+                                </MenubarItem>
+                        }
                         <MenubarSub>
                             <MenubarSubTrigger>{t("Backup")}</MenubarSubTrigger>
                             <MenubarSubContent>

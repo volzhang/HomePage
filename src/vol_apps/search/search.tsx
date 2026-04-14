@@ -26,13 +26,13 @@ export const SearchComponent = () => {
 				action={currentEngine.url} method="GET" target="_blank"
 				className={cn(
 					"animate-fade-in-scale",
-					"flex mt-16 mb-16 w-fit h-fit mx-auto rounded-xl",
+					"flex mt-30 mb-10 w-fit h-fit mx-auto rounded-xl",
 					"transition-all duration-200 delay-0 ease-linear",
 					"hover:shadow-sBlue/30",
 					"hover:shadow-[0_10px_30px_rgba(0,0,0,0.2)]"
 				)}
 			>
-				<ButtonGroup className="min-w-[800px] h-14">
+				<ButtonGroup className="min-w-[720px] max-w-[1080px] w-[48vw] h-14">
 					<Button
 						type="submit" variant="outline" aria-label="Search"
 						className={cn("h-full! w-16 flex-col items-center",

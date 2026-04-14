@@ -97,9 +97,8 @@ export const SortableTiles = ({
 
 
     return (
-        <div className="flex flex-wrap px-6 py-6 gap-7">
+        <div className="flex flex-wrap pl-6 pr-1 py-6 gap-7">
             {
-
                 items.length === 0
                     ? (<div className={cn(
                         "flex mx-auto items-center justify-center text-3xl text-muted-foreground h-36",

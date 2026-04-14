@@ -16,10 +16,7 @@ export interface TileProps {
 export const TileComponent = ({
                                   tile,
                                   interactive = true,
-
-                                  // onClick,
                                   onRightClick,
-
                                   iconSlot,
                                   nameSlot,
                               }: TileProps) => {
