@@ -12,7 +12,7 @@ import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRe
 import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 
 import {Plus, Download, Upload, Image} from "lucide-react";
-import type {PropsWithChildren} from "react";
+import {useState, type PropsWithChildren} from "react";
 import {useTranslation} from "react-i18next";
 
 export function GlobalContextMenu({children}: PropsWithChildren) {
@@ -27,28 +27,42 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
         setTileUiVisible(true);
     };
 
+
+    const [contentKey, setContentKey] = useState(0);
+
+    const handleOpenChange = (open: boolean) => {
+        if (!open) setContentKey(prev => prev + 1);
+    };
+
     return (
         <>
-            <ContextMenu>
+            <ContextMenu onOpenChange={handleOpenChange}>
                 <ContextMenuTrigger className= {"fixed inset-0 z-0"}>
                     {children}
                 </ContextMenuTrigger>
-                <ContextMenuContent className="w-48">
-                        <ContextMenuSub>
-                            <ContextMenuSubTrigger inset className={"h-10"}>
-                                {t("Tiles")}
-                            </ContextMenuSubTrigger>
-                            <ContextMenuSubContent className="w-44">
-                                <ContextMenuItem inset onClick={OnAddTile} className={"h-10"} disabled={!tilesVisible}>
-                                    {t("Add Tile")}
-                                    <Plus className="ml-auto"/>
-                                </ContextMenuItem>
-                                <ContextMenuItem inset className={"h-10"}
-                                                 onClick={()=> setTilesVisible(!tilesVisible)} >
-                                    {tilesVisible ? t("Hide Tiles") : t("Show Tiles")}
-                                </ContextMenuItem>
-                            </ContextMenuSubContent>
-                        </ContextMenuSub>
+                <ContextMenuContent key={contentKey} className="w-48">
+                        {tilesVisible
+                            ?
+                            <ContextMenuSub>
+                                <ContextMenuSubTrigger inset className={"h-10"}>
+                                    {t("Tiles")}
+                                </ContextMenuSubTrigger>
+                                <ContextMenuSubContent className="w-44">
+                                    <ContextMenuItem inset onClick={OnAddTile} className={"h-10"} disabled={!tilesVisible}>
+                                        {t("Add Tile")}
+                                        <Plus className="ml-auto"/>
+                                    </ContextMenuItem>
+                                    <ContextMenuItem inset className={"h-10"}
+                                                     onClick={()=> setTilesVisible(!tilesVisible)} >
+                                        {tilesVisible ? t("Hide Tiles") : t("Show Tiles")}
+                                    </ContextMenuItem>
+                                </ContextMenuSubContent>
+                            </ContextMenuSub>
+                            :
+                            <ContextMenuItem inset className={"h-10"} onClick={()=> setTilesVisible(!tilesVisible)} >
+                                {t("Show Tiles")}
+                            </ContextMenuItem>
+                        }
                     <ContextMenuSub>
                         <ContextMenuSubTrigger inset className={"h-10"}>
                             {t("Backup")}

@@ -256,7 +256,7 @@ export const TileUi = () => {
                         <TileComponent
                             tile={currentTile}
                             interactive={false}
-                            iconSlot={isFetchingIcon ? <Spinner className="size-24 text-[#0078d7]"/> : undefined}
+                            iconSlot={isFetchingIcon ? <Spinner className="size-24 text-sBlue"/> : undefined}
                             nameSlot={isFetchingIcon ? <div>{t("Fetching Icon")}</div> : undefined}
                         />
                         {/*这里是删除按钮*/}
@@ -289,7 +289,7 @@ export const TileUi = () => {
                                                   className={cn("absolute right-12 bottom-44 opacity-10",
                                                       "transition-all duration-200",
                                                       "hover:opacity-100",
-                                                      "hover:text-[#0078d7]",
+                                                      "hover:text-sBlue",
                                                       "hover:scale-120"
                                                   )}/>
                             </HoverCardTrigger>
@@ -305,7 +305,7 @@ export const TileUi = () => {
                                 autoFocus={true}
                                 ref={ref_ok}
                                 className={cn("text-[17px]! h-[46px]! w-full!",
-                                    "hover:bg-[#0078d7]",
+                                    "hover:bg-sBlue",
                                     "hover:text-white",)}>
                             {t("OK")}
                         </Button>

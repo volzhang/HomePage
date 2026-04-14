@@ -42,7 +42,7 @@ export const TileComponent = ({
                 "select-none w-36 h-36 mx-auto",
                 "rounded-[10%] flex flex-col items-center justify-between pt-2 pb-px",
                 "transition-[shadow, transform] duration-250 delay-0 ease-linear",
-                "hover:shadow-[#0078d7]/50 hover:shadow-xl",
+                "hover:shadow-sBlue/50 hover:shadow-xl",
             )}
         >
             {iconSlot ?? (

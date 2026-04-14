@@ -27,19 +27,18 @@ export const SearchComponent = () => {
 				className={cn(
 					"animate-fade-in-scale",
 					"flex mt-16 mb-16 w-fit h-fit mx-auto rounded-xl",
-
 					"transition-all duration-200 delay-0 ease-linear",
-					"hover:shadow-[#0078d7]/30",
+					"hover:shadow-sBlue/30",
 					"hover:shadow-[0_10px_30px_rgba(0,0,0,0.2)]"
 				)}
 			>
-				<ButtonGroup className="w-[680px] h-14">
+				<ButtonGroup className="min-w-[800px] h-14">
 					<Button
 						type="submit" variant="outline" aria-label="Search"
 						className={cn("h-full! w-16 flex-col items-center",
-							" border border-r-0 border-[#0078d7]! text-[#0078d7]! ",
+							" border border-r-0 border-sBlue! text-sBlue! ",
 							"bg-white!",
-							"hover:bg-[#0078d7]!",
+							"hover:bg-sBlue!",
 							"hover:text-white!"
 						)}>
 						<SearchIcon className={"scale-160"} strokeWidth={3}/>
@@ -47,12 +46,12 @@ export const SearchComponent = () => {
 
 					<Input
 						name={currentEngine.param}
-						className={cn("h-full! border border-r-0 border-[#0078d7]!",
+						className={cn("h-full! border border-r-0 border-sBlue!",
 							"transition-all duration-200 delay-0 ease-linear",
 							"text-[17px]! font-normal pl-2",
 							"text-black!",
 							"bg-white!",
-							"focus-visible:border-[#0078d7]",
+							"focus-visible:border-sBlue",
 							"focus:text-[600]",
 							"focus-visible:ring-transparent",
 						)}
@@ -64,12 +63,11 @@ export const SearchComponent = () => {
 					>
 						<SelectTrigger className={cn(
 							"h-full! w-[fit] border border-l-0",
-							"border-[#0078d7] bg-white!",
-							"text-[18px] text-[#0078d7] font-semibold",
-							"hover:bg-[#0078d7]!",
+							"border-sBlue bg-white!",
+							"text-[18px] text-sBlue font-semibold",
+							"hover:bg-sBlue!",
 							"hover:text-white!",
-							// "focus:text-[#0078d7]",
-							"focus-visible:border-[#0078d7]",
+							"focus-visible:border-sBlue",
 							"focus-visible:ring-transparent",
 						)}
 						>

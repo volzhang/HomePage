@@ -52,7 +52,7 @@ export type Meta = {
 }
 
 export type Tile = {
-    id: number; //必须唯一，且尽量等于index
+    id: number;
     url: string;
     meta: Meta;
 }

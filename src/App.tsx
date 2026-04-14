@@ -30,8 +30,8 @@ export const App = () => {
                 </div>
                 <SearchComponent/>
                 <TileApp/>
-                <DndFile/>
             </GlobalContextMenu>
+            <DndFile/>
             <BgApp/>
         </>);
 };
