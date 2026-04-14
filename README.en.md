@@ -13,8 +13,6 @@ No data collection, privacy-first, no ads.
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/volzhang/HomePage/blob/main/LICENSE)
 [![Vite](https://img.shields.io/badge/built%20with-Vite-%23646CFF.svg)](https://vitejs.dev/)
 [![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Stars](https://img.shields.io/github/stars/volzhang/HomePage?style=social)](https://github.com/volzhang/HomePage)
-[![GitHub issues](https://img.shields.io/github/issues/volzhang/HomePage)](https://github.com/volzhang/HomePage/issues)
 
 ![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
 
@@ -23,7 +21,7 @@ No data collection, privacy-first, no ads.
 - 🚀 **Ultra Clean** — No ads, no tracking, 100% frontend  
 - 🎨 **Highly Customizable** — Custom wallpapers, tiles, search engines  
 - 💾 **Seamless Cross-Device** — One-click export/import JSON backup  
-- 🌍 **Bilingual Support** — Auto-detect or manually switch between Chinese & English  
+- 🌍 **Bilingual Support** — Manually switch between Chinese & English
 
 ## Tech Stack
 

@@ -7,10 +7,6 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/volzhang/HomePage/blob/main/LICENSE)
 [![Vite](https://img.shields.io/badge/built%20with-Vite-%23646CFF.svg)](https://vitejs.dev/)
 [![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Stars](https://img.shields.io/github/stars/volzhang/HomePage?style=social)](https://github.com/volzhang/HomePage)
-[![GitHub issues](https://img.shields.io/github/issues/volzhang/HomePage)](https://github.com/volzhang/HomePage/issues)
-
-![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
 
 简洁 · 美观 · 完全本地 · 现代浏览器起始页
 
@@ -18,7 +14,7 @@
 - 🚀 **干净简洁**：无后台请求、无数据上传，保护你的隐私。
 - 🎨 **高度自定义**：自由设置背景壁纸、磁贴布局（快捷方式）、默认搜索引擎。
 - 💾 **跨设备无缝**：一键导出/导入 JSON 文件，轻松实现多设备间无缝迁移和备份。
-- 🌍 **中英双语** 自动根据浏览器语言切换，或手动选择，界面简洁友好。
+- 🌍 **中英双语** 支持英语/简体中文，界面简洁友好。
 
 ## 技术栈
 - Vite + TypeScript
