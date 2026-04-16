@@ -1,7 +1,6 @@
 import {BgApp} from "@/vol_apps/bg/bg";
 import {CmOpen} from "@/vol_apps/cm/cm_open";
 import {DndFile} from "@/vol_apps/dndFile/dndFile";
-import {I18nUi} from "@/vol_apps/i8n/i18n_ui";
 import {Menu} from "@/vol_apps/menu/menu";
 import {Theme} from "@/vol_apps/theme/theme";
 import {TileApp} from "@/vol_apps/tile/tile_app";
@@ -9,7 +8,8 @@ import {ToasterUi} from "@/vol_apps/toaster/toaster_ui";
 import {Version} from "@/vol_apps/version/version";
 import {Cm} from "@/vol_apps/cm/cm";
 import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu.js";
-import {SearchUi} from "./vol_apps/search/search_v4";
+import {SearchBar} from "./vol_apps/search/search";
+import {I18nUi} from "@/vol_apps/i8n/i18n_ui";
 
 export const App = () => {
     return (
@@ -29,7 +29,7 @@ export const App = () => {
                     </div>
                 </div>
                 <div className={"flex mt-25 mb-15"}>
-                    <SearchUi/>
+                    <SearchBar/>
                 </div>
                 <TileApp/>
             </GlobalContextMenu>

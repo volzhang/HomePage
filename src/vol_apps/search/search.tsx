@@ -1,10 +1,10 @@
 import {SEARCH_ENGINES, useSearchStore} from "@/vol_apps/search/search_store";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
 
-export const SearchUi = () => {
+export const SearchBar = () => {
 
     const {getEngineInUse, setEngineInUseByName} = useSearchStore()
 
@@ -17,6 +17,31 @@ export const SearchUi = () => {
 
     const close = () => setIsOpen(false)
     const toggle = () => setIsOpen(!isOpen)
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handler = (e: MouseEvent) => {
+            const target = e.target as Node;
+            if (rootRef.current?.contains(target)) return;
+            close();
+        };
+
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") close();
+        };
+
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [isOpen]);
+
 
     const handleSelect = (v: string) => {
         setEngineInUseByName(v)
@@ -149,27 +174,26 @@ export const SearchUi = () => {
             <div className={cn(
                 "animate-pop",
                 isOpen ? "animate-pop-open" : "animate-pop-close",
-                "absolute right-0 top-full mt-1.5 w-fit min-w-34",
+                "absolute right-0 top-full mt-2 w-fit min-w-34",
                 "border-4 border-background rounded-md shadow-xl",
-                "bg-background text-foreground select-none overflow-hidden z-10"
+                "bg-background text-foreground select-none overflow-hidden z-10",
             )}>
                 {[...SEARCH_ENGINES]
-                    .sort((a, b) => a.pos - b.pos)
+                    .sort((a, b) => b.pos - a.pos)
                     .map(engine => (
-                        <div
-                            key={engine.id}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                handleSelect(engine.name)
-                            }}
-                            className={cn(
-                                "px-3 py-2 font-medium text-md",
-                                "hover:bg-foreground/15 border-none rounded-sm",
-                                currentEngine.name === engine.name && "text-sBlue font-bold"
-                            )}
+                        <button type="button" key={engine.id} onClick={(e) => {
+                            e.stopPropagation()
+                            handleSelect(engine.name)
+                        }}
+                                className={cn(
+                                    "px-4 py-3 font-medium text-xl",
+                                    "hover:bg-foreground/15 border-none rounded-sm",
+                                    currentEngine.name === engine.name && "text-sBlue font-bold"
+                                )}
                         >
                             {engine.name}
-                        </div>
+                        </button>
+
                     ))
                 }
             </div>
