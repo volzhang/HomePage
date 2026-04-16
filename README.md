@@ -8,6 +8,8 @@
 [![Vite](https://img.shields.io/badge/built%20with-Vite-%23646CFF.svg)](https://vitejs.dev/)
 [![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
+![Screenshot-Desktop.png](screenshots/Screenshot-Desktop.png)
+
 简洁 · 美观 · 完全本地 · 现代浏览器起始页
 
 ## 功能

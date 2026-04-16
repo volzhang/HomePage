@@ -25,7 +25,7 @@ export const useI18nStore = createPersistedStore<I18nStore>(
 	{
 		storageType: "localStorage",
 		skipHydration: true,
-		//i18n初始化很早，我们手动处理，不依赖加载时的Hydration了。
+		//i18n初始化很早，我们手动处理，不依赖加载时的Hydration。
 	}
 );
 
