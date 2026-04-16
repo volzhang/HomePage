@@ -4,7 +4,9 @@ import {createStore, del, get, set } from "idb-keyval";
 
 type StorageType = "idb" | "localStorage";
 
-//idb使用过去的 localforage 遗留库。保持兼容，为了简单，后续不做迁移了。
+/**
+ * idb使用过去的 localforage 遗留库。为了简单，后续不做迁移了。
+ */
 const idbStore = createStore("localforage", "keyvaluepairs")
 
 const idbKeyValStorage: StateStorage = {

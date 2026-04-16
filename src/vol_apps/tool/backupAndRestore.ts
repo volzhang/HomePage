@@ -45,7 +45,6 @@ const parseBackupValue = (value: any) => {
  * 注意：
  * - 仅恢复备份文件中存在且当前已注册的 store。
  * - 如果备份文件中某个 key 的 state 字段缺失，会给出警告并跳过。
- * - 该函数不再支持“合并 tiles”等业务逻辑，如需合并，请单独实现。
  *
  * @param file - 用户选择的 JSON 备份文件
  * @param mergeTileTiles - 恢复存档时，tiles使用追加模式，默认关
@@ -122,11 +121,6 @@ export const persistedStoresBackup = async (): Promise<void> => {
 
 /**
  * 从指定 store 获取当前内存状态，并过滤掉不可持久化的数据。
- *
- * 过滤规则：
- * - 仅保留值类型为函数以外的字段（函数无法序列化）。
- * - 如果 store 中混有其他不可序列化的数据（如 undefined、Symbol 等），
- *   建议使用 isValidType 进行更严格的过滤，但当前版本未强制，仅排除函数。
  *
  * 返回格式：
  * {
