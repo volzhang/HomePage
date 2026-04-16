@@ -4,14 +4,6 @@ import {persistedStores, LatestStoreVersion} from "@/vol_apps/tool/createPersist
 import { downloadAsJsonFile, timeStamp } from "@/vol_apps/tool/action/download";
 import { isPlainObject } from "@/vol_apps/tool/isType/isPlainObject";
 
-// ==================== 注意 ====================
-// 以下代码实现了应用状态的备份与恢复功能。
-// 备份时直接从内存中的 zustand store 获取状态并导出 JSON 文件。
-// 恢复时直接调用 store.setState 覆盖内存状态，不再经过存储层读写。
-// 这样可以避免处理 localforage / localStorage 的格式兼容问题，
-// 同时保证恢复后的状态立即生效且 UI 自动刷新。
-// ==============================================
-
 // ----------------------------------------------------------------------
 // 工具函数：解析备份值，兼容旧备份中字符串化存储的情况
 // ----------------------------------------------------------------------
@@ -49,11 +41,6 @@ const parseBackupValue = (value: any) => {
  * 5. 从对象中取出 state 字段（标准备份格式为 { state: {...}, version: 0 }）。
  * 6. 调用对应 store 的 setState 方法，将状态直接写入内存。
  * 7. 恢复完成后不调用 rehydrate，因为内存状态已经是最终状态。
- *
- * 优点：
- * - 无需处理存储层（localforage/localStorage）的格式差异。
- * - 状态立即生效，UI 自动刷新。
- * - 代码简洁，逻辑清晰。
  *
  * 注意：
  * - 仅恢复备份文件中存在且当前已注册的 store。
@@ -113,10 +100,6 @@ export const localforageRestore = async (file: File, mergeTileTiles: boolean = f
  * 2. 对每个 store，调用 getCurrentPersistedSnapshot 获取当前内存中的状态快照。
  * 3. 将快照组装成对象，key 为 store 名称，value 为 { state: ..., version: 0 }。
  * 4. 生成带版本号和时间戳的文件名，并下载为 JSON 文件。
- *
- * 优点：
- * - 直接从内存获取状态，不依赖存储层，保证导出的是当前最新数据。
- * - 不会将历史遗留的存储字段带出，确保备份文件干净。
  *
  * 注意：
  * - 导出的备份文件格式为标准格式 { state: {...}, version: 0 }，供恢复时使用。

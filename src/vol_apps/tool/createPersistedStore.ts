@@ -13,7 +13,6 @@ type StorageType = "localforage" | "localStorage";
  * 只需要在这里补充最小接口，不必把外部实现细节传染到全局。
  */
 
-
 // version 1.1, //清除垃圾KV
 export const LatestStoreVersion = 1.1
 
