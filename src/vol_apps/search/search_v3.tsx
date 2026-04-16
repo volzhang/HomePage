@@ -4,13 +4,13 @@ import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectGroup, SelectItem,
 	SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {cn} from "@/lib/utils";
-import {useSearchStore} from "@/vol_apps/search/search_store";
+import {SEARCH_ENGINES, useSearchStore} from "@/vol_apps/search/search_store";
 import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated";
 import {SearchIcon} from "lucide-react";
 import {useTranslation} from "react-i18next";
 
 export const SearchComponent = () => {
-	const {engines, getEngineInUse, setEngineInUseByName} = useSearchStore();
+	const {getEngineInUse, setEngineInUseByName} = useSearchStore();
 	const hydrated = useStoreHydrated(useSearchStore)
 
 	const currentEngine = getEngineInUse();
@@ -79,7 +79,7 @@ export const SearchComponent = () => {
 								<SelectLabel>
 									{t("Select Search Engine")}
 								</SelectLabel>
-								{engines.map(({id, name}) => (
+								{SEARCH_ENGINES.map(({id, name}) => (
 									<SelectItem key={id} value={name}>{name}</SelectItem>
 								))}
 							</SelectGroup>
