@@ -1,16 +1,18 @@
-import {useSearchStore} from "@/vol_apps/search/search_store";
+import {SEARCH_ENGINES, useSearchStore} from "@/vol_apps/search/search_store";
 import {useEffect, useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
-import {Search } from "lucide-react";
+import {Search} from "lucide-react";
 
 export const SearchUi = () => {
 
-    const {engines, getEngineInUse, setEngineInUseByName} = useSearchStore()
+    const {getEngineInUse, setEngineInUseByName} = useSearchStore()
 
     const currentEngine = getEngineInUse();
 
     const rootRef = useRef<HTMLDivElement>(null)
+    const inputBoxRef = useRef<HTMLTextAreaElement>(null)
+
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const close = () => setIsOpen(false)
     const toggle = () => setIsOpen(!isOpen)
@@ -21,6 +23,13 @@ export const SearchUi = () => {
     }
 
     const handleSubmit = (keyword: string) => {
+        const trimmed = keyword?.trim();
+
+        if (!trimmed) {
+            openLinkInNewTab(currentEngine.homeUrl);
+            return;
+        }
+
         const urlObj = new URL(currentEngine.url)
         urlObj.searchParams.set(currentEngine.param, keyword)
         openLinkInNewTab(urlObj.toString())
@@ -65,7 +74,7 @@ export const SearchUi = () => {
                 MIN_WIDTH
             )}>
                 <button
-                    onClick={() => handleSubmit("")}
+                    onClick={() => handleSubmit(inputBoxRef.current?.value ?? "")}
                     className={cn(
                         "group",
                         // "hover:text-base-100 hover:bg-primary",
@@ -85,7 +94,7 @@ export const SearchUi = () => {
                     </div>
                 </button>
                 <div className={cn("flex w-full items-start", PADDING_MID)}>
-                    <textarea rows={1}
+                    <textarea ref={inputBoxRef} rows={1}
                               className={cn(
                                   "resize-none outline-none",
                                   "w-full h-7 leading-7 p-0 border-0",
@@ -128,7 +137,8 @@ export const SearchUi = () => {
                         // "group-focus:text-white",
                     )}>
                         {currentEngine.name}
-                        <span className={cn("text-[12px] transition-transform duration-200 opacity-50", isOpen && "rotate-180")}>▼</span>
+                        <span
+                            className={cn("text-[12px] transition-transform duration-200 opacity-50", isOpen && "rotate-180")}>▼</span>
                     </div>
                 </button>
             </div>
@@ -145,24 +155,25 @@ export const SearchUi = () => {
                 "z-10",
             )}
             >
-                {engines.map(
-                    engine => (
-                        <div key={engine.id} onClick={(e) => {
-                            e.stopPropagation() // consume click event
-                            handleSelect(engine.name)
-                        }}
-                             className={cn(
-                                 // "flex flex-row ",
-                                 "px-3 py-2 font-medium text-md",
-                                 "hover:bg-foreground/15",
-                                 "border-none rounded-sm",
-                                 currentEngine.name === engine.name && "text-sBlue font-bold",
-                             )}
-                        >
-                            {engine.name}
-                        </div>
-                    )
-                )}
+                {SEARCH_ENGINES
+                    .sort((a, b) => a.pos - b.pos)
+                    .map(engine => (
+                            <div key={engine.id} onClick={(e) => {
+                                e.stopPropagation() // consume click event
+                                handleSelect(engine.name)
+                            }}
+                                 className={cn(
+                                     // "flex flex-row ",
+                                     "px-3 py-2 font-medium text-md",
+                                     "hover:bg-foreground/15",
+                                     "border-none rounded-sm",
+                                     currentEngine.name === engine.name && "text-sBlue font-bold",
+                                 )}
+                            >
+                                {engine.name}
+                            </div>
+                        )
+                    )}
             </div>
         </div>
     )
