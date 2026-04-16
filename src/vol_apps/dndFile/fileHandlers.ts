@@ -1,6 +1,6 @@
 import {handleCmSaveAs} from "@/vol_apps/cm/cm_ui_save_as.js";
 import {getFileExt} from "@/vol_apps/tool/action/getFileExt.js";
-import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore.js";
+import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore.js";
 import {
     bookmarksToTiles,
     buildBackupFileFromBookmarks,
@@ -32,9 +32,9 @@ export const createFileHandlers = (file: File, cmStore: any): FileHandlers => {
     };
 
     //存档文件
-    const DownloadBackup = async () => await localforageBackup();
+    const DownloadBackup = async () => await persistedStoresBackup();
     const ImportBackup = async () => {
-        await localforageRestore(file);
+        await persistedStoresRestore(file);
     };
 
     //书签文件
@@ -45,7 +45,7 @@ export const createFileHandlers = (file: File, cmStore: any): FileHandlers => {
         const data = await netscapeBookmarkFilePhaser(file);
         const tiles = bookmarksToTiles(data);
         const fakeBackupFile = buildBackupFileFromBookmarks(tiles);
-        await localforageRestore(fakeBackupFile, true);
+        await persistedStoresRestore(fakeBackupFile, true);
     };
 
     return {

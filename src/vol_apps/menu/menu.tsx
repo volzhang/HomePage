@@ -14,7 +14,7 @@ import {cn} from "@/lib/utils";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
-import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
+import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore";
 import {bookmarkFilePickerAPI, jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 import {useTranslation} from "react-i18next";
 import {
@@ -45,7 +45,7 @@ export function Menu() {
 		const data = await netscapeBookmarkFilePhaser(file);
 		const tiles = bookmarksToTiles(data);
 		const fakeBackupFile = buildBackupFileFromBookmarks(tiles);
-		await localforageRestore(fakeBackupFile, true);
+		await persistedStoresRestore(fakeBackupFile, true);
     }
 
     return (
@@ -85,11 +85,11 @@ export function Menu() {
                             <MenubarSubTrigger>{t("Backup")}</MenubarSubTrigger>
                             <MenubarSubContent>
                                 <MenubarGroup>
-                                    <MenubarItem onClick={async () => await localforageBackup()}>
+                                    <MenubarItem onClick={async () => await persistedStoresBackup()}>
                                         {t("Download Backup")}
                                     </MenubarItem>
                                     <MenubarItem
-                                        onClick={async () => await localforageRestore(await jsonFilePickerAPI())}>
+                                        onClick={async () => await persistedStoresRestore(await jsonFilePickerAPI())}>
                                         {t("Import Backup")}
                                     </MenubarItem>
                                 </MenubarGroup>

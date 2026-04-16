@@ -28,7 +28,7 @@ No data collection, privacy-first, no ads.
 - Vite + TypeScript  
 - React  
 - TailwindCSS + Shadcn  
-- Zustand + localForage  
+- Zustand + idb-keyval (compatible with legacy localforage IndexedDB data)  
 - i18n  
 
 ## Try It Now

@@ -22,7 +22,7 @@
 - Vite + TypeScript
 - React
 - TailwindCSS + Shadcn
-- Zustand + Localforage
+- Zustand + idb-keyval (compatible with legacy localforage IndexedDB data)
 - i18n
 - MirrorCode6
 

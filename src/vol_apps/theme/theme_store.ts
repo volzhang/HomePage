@@ -16,10 +16,6 @@ const INITIAL_STATE = {
     theme: default_theme,
 }
 
-//测试用//
-// await localforage.setItem("theme", "{\"state\":{\"theme\":\"light\"},\"version\":0}")
-//-----//
-
 export const useThemeStore = createPersistedStore<ThemeStore>(
     "theme",
     (set) => {

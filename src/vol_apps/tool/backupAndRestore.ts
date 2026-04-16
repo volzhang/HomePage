@@ -50,7 +50,7 @@ const parseBackupValue = (value: any) => {
  * @param file - 用户选择的 JSON 备份文件
  * @param mergeTileTiles - 恢复存档时，tiles使用追加模式，默认关
  */
-export const localforageRestore = async (file: File, mergeTileTiles: boolean = false): Promise<void> => {
+export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean = false): Promise<void> => {
 	const text = await file.text();
 	let backupData: any;
 
@@ -105,7 +105,7 @@ export const localforageRestore = async (file: File, mergeTileTiles: boolean = f
  * - 导出的备份文件格式为标准格式 { state: {...}, version: 0 }，供恢复时使用。
  * - 版本号目前固定为 0，后续如需升级可在此处调整。
  */
-export const localforageBackup = async (): Promise<void> => {
+export const persistedStoresBackup = async (): Promise<void> => {
 	const registered = new Map(persistedStores);
 	const result: Record<string, any> = {};
 

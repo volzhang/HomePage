@@ -1,8 +1,24 @@
 import { create, type StateCreator } from "zustand";
-import { createJSONStorage, persist, type PersistOptions } from "zustand/middleware";
-import localforage from "localforage";
+import { createJSONStorage, persist, type PersistOptions, type StateStorage} from "zustand/middleware";
+import {createStore, del, get, set } from "idb-keyval";
 
-type StorageType = "localforage" | "localStorage";
+type StorageType = "idb" | "localStorage";
+
+//idb使用过去的 localforage 遗留库。保持兼容，为了简单，后续不做迁移了。
+const idbStore = createStore("localforage", "keyvaluepairs")
+
+const idbKeyValStorage: StateStorage = {
+	getItem: async (key) => {
+		const value = await get<string>(key, idbStore);
+		return value ?? null;
+	},
+	setItem: async (key, value) => {
+		await set(key, value, idbStore);
+	},
+	removeItem: async (key) => {
+		await del(key, idbStore);
+	},
+};
 
 /**
  * 这里故意只抽象出当前项目真正依赖的 persist 能力：
@@ -57,11 +73,11 @@ export function createPersistedStore<S>(
 	initializer: StateCreator<S, [], [], S>,
 	options: CreatePersistedStoreOptions<S> = {},
 ) {
-	const { storageType = "localforage", ...restPersistOptions } = options;
+	const { storageType = "idb", ...restPersistOptions } = options;
 
 	const storage =
-		storageType === "localforage"
-			? createJSONStorage<Partial<S>>(() => localforage)
+		storageType === "idb"
+			? createJSONStorage<Partial<S>>(() => idbKeyValStorage)
 			: createJSONStorage<Partial<S>>(() => localStorage);
 
 	const persistConfig = {

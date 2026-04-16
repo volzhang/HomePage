@@ -8,7 +8,7 @@ import {
     ContextMenuTrigger,} from "@/components/ui/context-menu";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {localforageBackup, localforageRestore} from "@/vol_apps/tool/backupAndRestore";
+import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 
 import {Plus, Download, Upload, Image} from "lucide-react";
@@ -68,11 +68,11 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
                             {t("Backup")}
                         </ContextMenuSubTrigger>
                         <ContextMenuSubContent className="w-44">
-                            <ContextMenuItem onClick={localforageBackup} className={"h-10"}>
+                            <ContextMenuItem onClick={persistedStoresBackup} className={"h-10"}>
                                 {t("Download Backup")}
                                 <Download className={"ml-auto"}/>
                             </ContextMenuItem>
-                            <ContextMenuItem onClick={() => jsonFilePickerAPI().then(file => localforageRestore(file))} className={`h-10`}>
+                            <ContextMenuItem onClick={() => jsonFilePickerAPI().then(file => persistedStoresRestore(file))} className={`h-10`}>
                                 {t("Import Backup")}
                                 <Upload className={"ml-auto"}/>
                             </ContextMenuItem>
