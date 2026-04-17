@@ -46,7 +46,7 @@ type TileStoreActions = {
 
     //进阶API
     // 自动填充 tags，后续根据剪切板文本，如果是合法的url自动补全URL和name
-    addTile: () => void;
+    addTile: () => Tile["id"];
 
     //tag系统
     setTags: (tags: TileStoreState["tags"]) => void;
@@ -61,9 +61,15 @@ type TileStoreActions = {
     deleteTilesWithTag: (id: Tag["id"]) => void
     deleteTilesWithOnlyThisTag: (id: Tag["id"]) => void
     deleteUntaggedTiles: () => void
+
 }
 
 export type TileStore = TileStoreState & TileStoreActions;
+
+//辅助函数 为了安全和稳定
+const ensureAtLeastOneTile = (tiles: Tile[]): Tile[] => {
+    return tiles.length > 0 ? tiles : [{...defaultTile, id: 0}];
+};
 
 const INITIAL_STATE = {
     tiles: TutorialsTiles,
@@ -108,9 +114,18 @@ export const useTileStore = createPersistedStore<TileStore>(
 
         //Tiles的修改函数，都依赖setTiles
         setTiles: (newTiles) => set((state) => {
-            //处理tags依赖！
-            state.updateTags(newTiles);
-            return {tiles: newTiles};
+            const safeTiles = ensureAtLeastOneTile(newTiles);
+
+            const nextTileInEditId = safeTiles.some(tile => tile.id === state.tileInEditId)
+                ? state.tileInEditId
+                : safeTiles[0].id;
+
+            state.updateTags(safeTiles);
+
+            return {
+                tiles: safeTiles,
+                tileInEditId: nextTileInEditId,
+            };
         }),
 
         // 衍生入口
@@ -128,19 +143,28 @@ export const useTileStore = createPersistedStore<TileStore>(
         },
 
         addTile: () => {
-            const id = get().tiles.length;
+            const tiles = get().tiles;
+            const nextId =
+                tiles.length === 0
+                    ? 0
+                    : Math.max(...tiles.map(tile => tile.id)) + 1;
+
             const tags = get().selectedTags();
-            const newTiles = [...get().tiles, {...defaultTile, id, meta: {...defaultTile.meta, tags: tags}}];
+            const newTiles = [
+                ...tiles,
+                {
+                    ...defaultTile,
+                    id: nextId,
+                    meta: {...defaultTile.meta, tags},
+                }
+            ];
+
             get().setTiles(newTiles);
+            return nextId;
         },
 
         removeTile: (id) => {
-            let newTiles = get().tiles.filter((tile) => tile.id !== id);
-            if (newTiles.length === 0) {
-                newTiles = [defaultTile];
-            } else {
-                newTiles = newTiles.map((tile, index) => ({...tile, id: index}));
-            }
+            const newTiles = get().tiles.filter(tile => tile.id !== id);
             get().setTiles(newTiles);
         },
 
@@ -153,8 +177,18 @@ export const useTileStore = createPersistedStore<TileStore>(
             );
             if (appended.length === 0) return;
 
-            const merged = [...currentTiles, ...appended].map((t, i) => ({...t, id: i}));
-            store.setTiles(merged); // 自动更新 tags
+            const startId =
+                currentTiles.length === 0
+                    ? 0
+                    : Math.max(...currentTiles.map(tile => tile.id)) + 1;
+
+            const appendedWithIds = appended.map((tile, index) => ({
+                ...tile,
+                id: startId + index,
+            }));
+
+            const merged = [...currentTiles, ...appendedWithIds];
+            store.setTiles(merged);
         },
 
         setTileUiVisible: (tileUiVisible) => set({tileUiVisible}),
@@ -262,10 +296,7 @@ export const useTileStore = createPersistedStore<TileStore>(
             const tag = store.tags.find(t => t.id === id);
             if (!tag) return;
 
-            const name = tag.name;
-            const newTiles = store.tiles.filter(tile => (
-                !tile.meta.tags.includes(name)
-            ));
+            const newTiles = store.tiles.filter(tile => !tile.meta.tags.includes(tag.name));
             store.setTiles(newTiles);
         },
 
@@ -274,11 +305,11 @@ export const useTileStore = createPersistedStore<TileStore>(
             const tag = store.tags.find(t => t.id === id);
             if (!tag) return;
 
-            const name = tag.name;
             const newTiles = store.tiles.filter(tile => {
                 const tags = tile.meta.tags;
-                return !(tags.length === 1 && tags[0] === name);
+                return !(tags.length === 1 && tags[0] === tag.name);
             });
+
             store.setTiles(newTiles);
         },
 
@@ -286,7 +317,7 @@ export const useTileStore = createPersistedStore<TileStore>(
             const store = get();
             const newTiles = store.tiles.filter(tile => tile.meta.tags.length > 0);
             store.setTiles(newTiles);
-        }
+        },
     }),
     {
         // 水和后立即更新tags，不要用useEffect了

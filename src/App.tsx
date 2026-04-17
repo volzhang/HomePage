@@ -17,18 +17,16 @@ export const App = () => {
             <ToasterUi/>
             <Cm/>
             <GlobalContextMenu>
-                <div className={"flex gap-2 p-2"}>
+                <div className={"flex gap-2 px-2 pt-2"}>
                     <Menu/>
                     <I18nUi/>
                     <Theme/>
                     <CmOpen/>
                 </div>
                 <div className={"absolute top-2 right-2"}>
-                    <div className={"flex gap-2"}>
-                        <Version/>
-                    </div>
+                    <Version/>
                 </div>
-                <div className={"flex mt-25 mb-15"}>
+                <div className={"flex mt-16 mb-16"}>
                     <SearchBar/>
                 </div>
                 <TileApp/>

@@ -16,17 +16,15 @@ import {useState, type PropsWithChildren} from "react";
 import {useTranslation} from "react-i18next";
 
 export function GlobalContextMenu({children}: PropsWithChildren) {
-    const {tiles, tilesVisible, addTile, setTileInEditId, setTileUiVisible, setTilesVisible} = useTileStore();
+    const {tilesVisible, addTile, setTileInEditId, setTileUiVisible, setTilesVisible} = useTileStore();
     const {setBgUiVisible} = useBgStore();
     const {t} = useTranslation("contextMenu");
 
-    const OnAddTile = () => {
-        const newTileId = tiles.length;
-        addTile();
+    const onAddTile = () => {
+        const newTileId = addTile();
         setTileInEditId(newTileId);
         setTileUiVisible(true);
     };
-
 
     const [contentKey, setContentKey] = useState(0);
 
@@ -48,7 +46,7 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
                                     {t("Tiles")}
                                 </ContextMenuSubTrigger>
                                 <ContextMenuSubContent className="w-44">
-                                    <ContextMenuItem inset onClick={OnAddTile} className={"h-10"} disabled={!tilesVisible}>
+                                    <ContextMenuItem inset onClick={onAddTile} className={"h-10"} disabled={!tilesVisible}>
                                         {t("Add Tile")}
                                         <Plus className="ml-auto"/>
                                     </ContextMenuItem>

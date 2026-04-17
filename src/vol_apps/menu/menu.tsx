@@ -48,7 +48,6 @@ type MenuTree = {
 
 //  MENU 必定有 children
 
-
 interface renderSubMenuProps {
     node: MenuTree,
     path: string[],
@@ -128,15 +127,15 @@ export const Menu = () => {
 
     const {setBgUiVisible} = useBgStore();
     const {tilesVisible, setTilesVisible} = useTileStore();
-    const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
+    const {addTile, setTileInEditId, setTileUiVisible} = useTileStore();
     const {t} = useTranslation("navigation");
 
     const onAddTile = () => {
-        const newTileId = tiles.length;
-        addTile();
+        const newTileId = addTile();
         setTileInEditId(newTileId);
         setTileUiVisible(true);
     };
+
     const onHideTiles = () => setTilesVisible(false);
     const onShowTiles = () => setTilesVisible(true);
 
