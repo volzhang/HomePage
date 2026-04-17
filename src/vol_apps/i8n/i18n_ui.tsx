@@ -2,6 +2,7 @@ import {cn} from "@/lib/utils";
 import {useI18nStore} from "@/vol_apps/i8n/i18n_store";
 import {Check, Languages} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
+import {FloatingPanel} from "@/vol_apps/menu/FloatingPanel";
 
 const items = [
     {label: "English", value: "en"},
@@ -21,13 +22,13 @@ const TRIGGER_CLASS = cn(
 
 const MENU_CLASS = cn(
     "animate-pop",
-    "absolute right-0 top-full z-20 mt-1 min-w-full overflow-hidden rounded-md",
+    "flex flex-col z-10 mt-1 rounded-md",
     "border bg-popover text-popover-foreground shadow-md",
     "select-none"
 );
 
 const ITEM_CLASS = cn(
-    "relative block w-full px-3 py-2 pr-8 text-left text-sm",
+    "relative m-1 px-2 py-1.5 pr-8 text-left text-sm rounded-sm",
     "hover:bg-foreground/10"
 );
 
@@ -67,27 +68,25 @@ export const I18nUi = () => {
 
     return (
         <div ref={rootRef} className="relative w-fit animate-fade-in-scale">
-            <button onClick={()=>setIsOpen(!isOpen)} className={TRIGGER_CLASS}>
+            <button onClick={() => setIsOpen(!isOpen)} className={TRIGGER_CLASS}>
                 <Languages className="size-4 text-foreground"/>
                 <span className="flex-1 text-center">{currentItem.label}</span>
-                <span className={cn(isOpen && "rotate-180", "text-xs opacity-30 transition-transform duration-200")}>▼</span>
+                <span
+                    className={cn(isOpen && "rotate-180", "text-xs opacity-30 transition-transform duration-200")}>▼</span>
             </button>
-            <div className={cn(MENU_CLASS, isOpen ? "animate-pop-open" : "animate-pop-close")}>
-                {items.map((item) => {
-                    const selected = item.value === language;
-
-                    return (
-                        <button
-                            key={item.value}
-                            onClick={() => handleSelect(item.value)}
-                            className={ITEM_CLASS}
-                        >
-                            {item.label}
-                            {selected && <Check className={CHECK_CLASS}/>}
-                        </button>
-                    );
-                })}
-            </div>
+            <FloatingPanel show={isOpen}>
+                <div className={cn(MENU_CLASS)}>
+                    {items.map((item) => {
+                        const selected = item.value === language;
+                        return (
+                            <button key={item.value} onClick={() => handleSelect(item.value)} className={ITEM_CLASS}>
+                                {item.label}
+                                {selected && <Check className={CHECK_CLASS}/>}
+                            </button>
+                        );
+                    })}
+                </div>
+            </FloatingPanel>
         </div>
     );
 };

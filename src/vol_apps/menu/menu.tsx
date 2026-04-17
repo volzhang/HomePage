@@ -1,119 +1,233 @@
-import {
-    Menubar,
-    MenubarContent,
-    MenubarGroup,
-    MenubarItem,
-    MenubarMenu,
-    MenubarTrigger,
-
-    MenubarSub,
-    MenubarSubTrigger,
-    MenubarSubContent
-} from "@/components/ui/menubar";
 import {cn} from "@/lib/utils";
+import React, {useEffect, useRef, useState} from "react";
+import {FloatingPanel} from "@/vol_apps/menu/FloatingPanel";
+import {useTranslation} from "react-i18next";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore";
 import {bookmarkFilePickerAPI, jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
-import {useTranslation} from "react-i18next";
 import {
-	bookmarksToTiles,
-	buildBackupFileFromBookmarks,
-	netscapeBookmarkFilePhaser
-} from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
+    bookmarksToTiles,
+    buildBackupFileFromBookmarks,
+    netscapeBookmarkFilePhaser
+} from "@/vol_apps/tool/isType/isLikelyBookmarkFile";
+import { ChevronRightIcon } from "lucide-react";
 
-//这里手动复制了Button的secondary样式
-const cn_str = "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50";
+const TRIGGER_CLASS = cn(
+    "relative w-24 h-9",
+    "rounded-md border bg-background shadow-xs text-sm",
+    "outline-none select-none",
+    "hover:bg-accent hover:text-accent-foreground",
+    "dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
+)
 
-export function Menu() {
+const MENU_CLASS = cn(
+    "absolute px-1 py-1 w-max min-w-max",
+    "border bg-popover text-popover-foreground rounded-md shadow-md",
+    "z-1",
+)
+
+const ITEM_CLASS = cn(
+    "px-2 h-8 w-full min-w-32",
+    "text-sm rounded-sm",
+    "hover:bg-foreground/5",
+    "whitespace-nowrap",
+)
+
+const DEFAULT_SUBMENU_CLASS =
+    "absolute left-full top-0 -translate-y-1";
+
+type MenuTree = {
+    key: string;
+    label: string;
+    children?: MenuTree[];
+    submenuClassName?: string;
+    onClick?: () => void;
+}
+
+//  MENU 必定有 children
+
+
+interface renderSubMenuProps {
+    node: MenuTree,
+    path: string[],
+    setPath: React.Dispatch<React.SetStateAction<string[]>>,
+    parentPath: string[]
+}
+
+const RenderSubMenu = React.memo(
+    ({node, path, setPath, parentPath}: renderSubMenuProps) => {
+        const hasChildren = !!node.children?.length;
+        const currentPath = [...parentPath, node.key];
+        const isOpen = currentPath.every((seg, i) => path[i] === seg);
+        const panelClass = node.submenuClassName;
+
+        const hoverTimer = useRef<number | null>(null);
+        const updatePath = () => {
+            if (hoverTimer.current) clearTimeout(hoverTimer.current);
+            hoverTimer.current = window.setTimeout(() => {
+                if (path.join(",") !== currentPath.join(",")) {
+                    setPath(currentPath);
+                }
+            }, 100); // 延迟时间
+        };
+        const clearHover = () => {
+            if (hoverTimer.current) {
+                clearTimeout(hoverTimer.current);
+                hoverTimer.current = null;
+            }
+        };
+
+        return (
+            <li key={node.key} className={"relative"}>
+                <button type="button"
+                        className={cn(
+                            ITEM_CLASS,
+                            "text-start",
+                            hasChildren && "flex items-center gap-4",
+                            "text-start"
+                            )}
+                        onMouseEnter={updatePath}   //包含了onClick的效果
+                        onMouseLeave={clearHover}
+                        onClick={
+                            hasChildren ? undefined : () => {
+                                node.onClick?.();
+                                setPath([]);
+                            }
+                        }
+                >
+                    {node.label}
+                    {hasChildren && <ChevronRightIcon className="ml-auto h-4 w-4" />}
+                </button>
+
+                {hasChildren && (
+                    <div className={cn(DEFAULT_SUBMENU_CLASS, panelClass)}>
+                        <FloatingPanel show={isOpen}>
+                            <ul className={MENU_CLASS}>
+                                {node.children!.map(childNode =>
+                                    <RenderSubMenu
+                                        key={childNode.key}
+                                        node={childNode}
+                                        path={path}
+                                        setPath={setPath}
+                                        parentPath={currentPath}
+                                    />
+                                )}
+                            </ul>
+                        </FloatingPanel>
+                    </div>
+                )}
+            </li>
+        );
+    }
+)
+
+export const Menu = () => {
+    const rootRef = useRef<HTMLDivElement>(null);
+
     const {setBgUiVisible} = useBgStore();
     const {tilesVisible, setTilesVisible} = useTileStore();
-
     const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
     const {t} = useTranslation("navigation");
 
-    const OnAddTile = () => {
+    const onAddTile = () => {
         const newTileId = tiles.length;
         addTile();
         setTileInEditId(newTileId);
         setTileUiVisible(true);
     };
+    const onHideTiles = () => setTilesVisible(false);
+    const onShowTiles = () => setTilesVisible(true);
 
-    const handleImportFromBookmarkFile = async () => {
-		const file = await bookmarkFilePickerAPI()
-		const data = await netscapeBookmarkFilePhaser(file);
-		const tiles = bookmarksToTiles(data);
-		const fakeBackupFile = buildBackupFileFromBookmarks(tiles);
-		await persistedStoresRestore(fakeBackupFile, true);
+    const onDownloadBackup = async () => await persistedStoresBackup()
+    const onImportBackup = async () => await persistedStoresRestore(await jsonFilePickerAPI())
+
+    const onImportBookmarks = async () => {
+        const file = await bookmarkFilePickerAPI()
+        const data = await netscapeBookmarkFilePhaser(file);
+        const tiles = bookmarksToTiles(data);
+        const fakeBackupFile = buildBackupFileFromBookmarks(tiles);
+        await persistedStoresRestore(fakeBackupFile, true);
     }
 
+    const onSetBackground = () => setBgUiVisible(true);
+    const onPrivacyPolicy = () => openLinkInNewTab("privacy.html")
+
+    //不用缓存了，避免复杂的依赖管理
+    const MENU =
+        {
+            key: "0", label: t("Menu"),
+            children: [
+                tilesVisible
+                    ? {
+                        key: "1", label: t("Tiles"), children: [
+                            {key: "1.1", label: t("Add Tile"), onClick: onAddTile},
+                            {key: "1.2", label: t("Hide Tiles"), onClick: onHideTiles},
+                        ]
+                    }
+                    : {key: "1", label: t("Show Tiles"), onClick: onShowTiles},
+                {
+                    key: "2", label: t("Backup"), children: [
+                        {key: "2.1", label: t("Download Backup"), onClick: onDownloadBackup},
+                        {key: "2.2", label: t("Import Backup"), onClick: onImportBackup},
+                    ]
+                },
+                {
+                    key: "3", label: t("Chrome/Edge Bookmarks"), children: [
+                        {key: "3.1", label: t("Import links from an HTML bookmarks file"), onClick: onImportBookmarks}
+                    ]
+                },
+                {key: "4", label: t("Set Background"), onClick: onSetBackground},
+                {key: "5", label: t("Privacy Policy"), onClick: onPrivacyPolicy}
+            ]
+        }
+
+    const [path, setPath] = useState<string[]>([]);
+    const isOpen = path.includes(MENU.key);
+    const toggle = () => setPath(isOpen ? [] : [MENU.key])
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as Node;
+            if (rootRef.current && !rootRef.current.contains(target)) setPath([]);
+        };
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setPath([]);
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [isOpen]);
+
     return (
-        <Menubar className={cn("w-24 flex justify-center", cn_str, "animate-fade-in-scale")}>
-            <MenubarMenu>
-                <MenubarTrigger className={cn(cn_str, "border-none! bg-transparent!")}>
-                    {t("Menu")}
-                </MenubarTrigger>
-                <MenubarContent side={"bottom"} align={"center"} className={"ml-2"}>
-                    <MenubarGroup>
-                        {
-                            tilesVisible
-                                ?
-                                <MenubarSub>
-                                    <MenubarSubTrigger>{t("Tiles")}</MenubarSubTrigger>
-                                    <MenubarSubContent>
-                                        <MenubarGroup>
-                                            <MenubarItem onClick={OnAddTile} disabled={!tilesVisible}>
-                                                {t("Add Tile")}
-                                            </MenubarItem>
-                                            <MenubarItem onClick={() => setTilesVisible(!tilesVisible)}>
-                                                {
-                                                    tilesVisible
-                                                        ? t("Hide Tiles")
-                                                        : t("Show Tiles")
-                                                }
-                                            </MenubarItem>
-                                        </MenubarGroup>
-                                    </MenubarSubContent>
-                                </MenubarSub>
-                                :
-                                <MenubarItem onClick={() => setTilesVisible(!tilesVisible)}>
-                                    {t("Show Tiles")}
-                                </MenubarItem>
-                        }
-                        <MenubarSub>
-                            <MenubarSubTrigger>{t("Backup")}</MenubarSubTrigger>
-                            <MenubarSubContent>
-                                <MenubarGroup>
-                                    <MenubarItem onClick={async () => await persistedStoresBackup()}>
-                                        {t("Download Backup")}
-                                    </MenubarItem>
-                                    <MenubarItem
-                                        onClick={async () => await persistedStoresRestore(await jsonFilePickerAPI())}>
-                                        {t("Import Backup")}
-                                    </MenubarItem>
-                                </MenubarGroup>
-                            </MenubarSubContent>
-                        </MenubarSub>
-                        <MenubarSub>
-                            <MenubarSubTrigger>{t("Chrome/Edge Bookmarks")}</MenubarSubTrigger>
-                            <MenubarSubContent>
-                                <MenubarGroup>
-                                    <MenubarItem onClick={handleImportFromBookmarkFile}>
-                                        {t("Import links from an HTML bookmarks file")}
-                                    </MenubarItem>
-                                </MenubarGroup>
-                            </MenubarSubContent>
-                        </MenubarSub>
-                        <MenubarItem onClick={() => setBgUiVisible(true)}>
-                            {t("Set Background")}
-                        </MenubarItem>
-                        <MenubarItem onClick={() => openLinkInNewTab("privacy.html")}>
-                            {t("Privacy Policy")}
-                        </MenubarItem>
-                    </MenubarGroup>
-                </MenubarContent>
-            </MenubarMenu>
-        </Menubar>
+        <div ref={rootRef} className={"flex flex-col w-fit h-fit"}>
+            {/* ① Trigger */}
+            <button type="button"
+                    className={TRIGGER_CLASS}
+                    onClick={toggle}
+            >
+                {MENU.label}
+            </button>
+            {/* ② Panel */}
+            {<FloatingPanel show={isOpen}>
+                <ul className={cn(MENU_CLASS, "mt-1")}>
+                    {MENU.children!.map(node =>
+                        <RenderSubMenu
+                            key={node.key}
+                            node={node}
+                            path={path}
+                            setPath={setPath}
+                            parentPath={[MENU.key]}/>
+                    )}
+                </ul>
+            </FloatingPanel>}
+        </div>
     );
-}
+};

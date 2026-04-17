@@ -3,6 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
+import {FloatingPanel} from "@/vol_apps/menu/FloatingPanel";
 
 export const SearchBar = () => {
 
@@ -75,7 +76,7 @@ export const SearchBar = () => {
     const SEARCH_BOX_BASE = cn(
         MIN_WIDTH,
         TRANSITION_ALL,
-        "join",
+        "flex", //这里原来是"join"
         "border",
         "bg-white/1 border-sBlue/80",
         "hover:bg-white/99 hover:border-sBlue",
@@ -171,32 +172,35 @@ export const SearchBar = () => {
             </div>
 
             {/* dropdown */}
-            <div className={cn(
-                "animate-pop",
-                isOpen ? "animate-pop-open" : "animate-pop-close",
-                "absolute right-0 top-full mt-2 w-fit min-w-34",
-                "border-4 border-background rounded-md shadow-xl",
-                "bg-background text-foreground select-none overflow-hidden z-10",
-            )}>
-                {[...SEARCH_ENGINES]
-                    .sort((a, b) => b.pos - a.pos)
-                    .map(engine => (
-                        <button type="button" key={engine.id} onClick={(e) => {
-                            e.stopPropagation()
-                            handleSelect(engine.name)
-                        }}
-                                className={cn(
-                                    "px-4 py-3 font-medium text-xl",
-                                    "hover:bg-foreground/15 border-none rounded-sm",
-                                    currentEngine.name === engine.name && "text-sBlue font-bold"
-                                )}
-                        >
-                            {engine.name}
-                        </button>
+            {<FloatingPanel show={isOpen}>
+                <div className={cn(
+                    "absolute right-0 top-full mt-2 w-fit min-w-34",
+                    "border-4 border-background rounded-md shadow-xl",
+                    "bg-background text-foreground select-none overflow-hidden z-10",
+                    "flex flex-row-reverse"
+                )}>
+                    {[...SEARCH_ENGINES]
+                        .sort((a, b) => a.pos - b.pos)
+                        .map(engine => (
+                            <button type="button" key={engine.id} onClick={(e) => {
+                                e.stopPropagation()
+                                handleSelect(engine.name)
+                            }}
+                                    className={cn(
+                                        "px-4 py-3 font-medium text-xl",
+                                        "hover:bg-foreground/15 border-none rounded-sm",
+                                        currentEngine.name === engine.name && "text-sBlue font-bold"
+                                    )}
+                            >
+                                {engine.name}
+                            </button>
 
-                    ))
-                }
-            </div>
+                        ))
+                    }
+                </div>
+            </FloatingPanel>}
+
+
         </div>
     )
 }

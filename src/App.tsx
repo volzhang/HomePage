@@ -1,7 +1,6 @@
 import {BgApp} from "@/vol_apps/bg/bg";
 import {CmOpen} from "@/vol_apps/cm/cm_open";
 import {DndFile} from "@/vol_apps/dndFile/dndFile";
-import {Menu} from "@/vol_apps/menu/menu";
 import {Theme} from "@/vol_apps/theme/theme";
 import {TileApp} from "@/vol_apps/tile/tile_app";
 import {ToasterUi} from "@/vol_apps/toaster/toaster_ui";
@@ -10,6 +9,7 @@ import {Cm} from "@/vol_apps/cm/cm";
 import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu.js";
 import {SearchBar} from "./vol_apps/search/search";
 import {I18nUi} from "@/vol_apps/i8n/i18n_ui";
+import {Menu} from "@/vol_apps/menu/menu";
 
 export const App = () => {
     return (
