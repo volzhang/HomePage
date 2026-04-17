@@ -139,7 +139,7 @@ export const SearchBar = () => {
                         rows={1}
                         className={cn(
                             "resize-none outline-none w-full h-7 leading-7 p-0 border-0",
-                            "text-[18px] text-black"
+                            "text-[18px] text-sBlue focus:text-black hover:text-black transition-colors duration-350",
                         )}
                         onInput={(e) => {
                             const el = e.currentTarget
