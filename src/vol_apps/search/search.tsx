@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
-import {FloatingPanel} from "@/vol_apps/menu/FloatingPanel";
+import {FloatingPanel} from "@/vol_apps/tool/animation/FloatingPanel";
 
 export const SearchBar = () => {
 
@@ -64,7 +64,7 @@ export const SearchBar = () => {
     }
 
     // ==================== 样式常量 ====================
-    const MIN_WIDTH = "min-w-[720px] max-w-[1080px] w-[48vw]"
+    const MIN_WIDTH = "min-w-[720px] max-w-[1080px] max-w-[48vw] w-[48vw]"
 
     const PADDING_LEFT = "py-4 pl-5 pr-5"
     const PADDING_MID = "py-4 pl-2 pr-2"
@@ -199,8 +199,6 @@ export const SearchBar = () => {
                     }
                 </div>
             </FloatingPanel>}
-
-
         </div>
     )
 }

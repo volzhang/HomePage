@@ -1,27 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
 @plugin "daisyui" {
-    exclude: rootscrollgutter, scrollbar, properties;
+    exclude: properties;
 }
-
-/* ==================== daisyui ======================= */
-
-/*@layer components {*/
-/*    .animate-pop {*/
-/*        @apply transition-all duration-200 ease-in-out origin-top;*/
-/*    }*/
-
-/*    .animate-pop-open {*/
-/*        @apply opacity-100 scale-100 translate-y-0 pointer-events-auto;*/
-/*    }*/
-
-/*    .animate-pop-close {*/
-/*        @apply opacity-0 scale-95 -translate-y-1 pointer-events-none;*/
-/*    }*/
-/*}*/
-
-/* ==================================================== */
-
 
 /* ==================== 自定义颜色 ==================== */
 @theme {

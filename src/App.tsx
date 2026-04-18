@@ -8,8 +8,8 @@ import {Version} from "@/vol_apps/version/version";
 import {Cm} from "@/vol_apps/cm/cm";
 import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu.js";
 import {SearchBar} from "./vol_apps/search/search";
-import {I18nUi} from "@/vol_apps/i8n/i18n_ui";
-import {Menu} from "@/vol_apps/menu/menu";
+import {I18nUi} from "@/vol_apps/i8n/i18n_ui_legacy";
+import {Menu} from "@/vol_apps/menu/menu_legacy";
 
 export const App = () => {
     return (
@@ -17,7 +17,7 @@ export const App = () => {
             <ToasterUi/>
             <Cm/>
             <GlobalContextMenu>
-                <div className={"flex gap-2 px-2 pt-2"}>
+                <div className={"flex flex-row gap-2 px-2 pt-2"}>
                     <Menu/>
                     <I18nUi/>
                     <Theme/>
@@ -26,7 +26,7 @@ export const App = () => {
                 <div className={"absolute top-2 right-2"}>
                     <Version/>
                 </div>
-                <div className={"flex mt-16 mb-16"}>
+                <div className={"flex mt-30 mb-15"}>
                     <SearchBar/>
                 </div>
                 <TileApp/>

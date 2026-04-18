@@ -1,6 +1,6 @@
 import {cn} from "@/lib/utils";
 import React, {useEffect, useRef, useState} from "react";
-import {FloatingPanel} from "@/vol_apps/menu/FloatingPanel";
+import {FloatingPanel} from "@/vol_apps/tool/animation/FloatingPanel";
 import {useTranslation} from "react-i18next";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
