@@ -122,7 +122,7 @@ const RenderSubMenu = React.memo(
     }
 )
 
-export const Menu = () => {
+const Menu = () => {
     const rootRef = useRef<HTMLDivElement>(null);
 
     const {setBgUiVisible} = useBgStore();
