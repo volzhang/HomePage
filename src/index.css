@@ -1,10 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@plugin "daisyui" {
-    exclude: properties;
-}
-
 /* ==================== 自定义颜色 ==================== */
 @theme {
     --color-sBlue: #0078d7;

@@ -1,76 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<script>
-		(function () {
-			try {
-				const rawTheme = localStorage.getItem("theme");
-				const isDark = rawTheme
-					? JSON.parse(rawTheme)?.state?.theme === "dark"
-					: window.matchMedia("(prefers-color-scheme: dark)").matches;
-				document.documentElement.classList.toggle("dark", isDark);
-			} catch (err) {
-				console.warn("Failed to read theme", err);
-			}
-			try {
-				const rawLang = localStorage.getItem("i18n");
-				const lang = rawLang
-					? JSON.parse(rawLang)?.state?.language || "en"
-					: "en";
-				document.documentElement.lang = lang === "cn" ? "zh-CN" : "en";
-				document.title = lang === "cn" ? "主页" : "Home Page";
-			} catch (err) {
-				console.warn("Failed to read language", err);
-				document.title = "Home Page";
-				document.documentElement.lang = "en";
-			}
-		})();
-	</script>
-	<meta charset="UTF-8"/>
-	<link rel="icon" type="image/*" href="/website-icon.png"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>Home Page</title>
-	<link href="/src/index.css" rel="stylesheet">
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/*" href="/website-icon.png"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Home Page</title>
+    <link href="/src/index.css" rel="stylesheet">
 </head>
 <body>
-<script>
-  (function () {
-    try {
-      const rawBg = localStorage.getItem("bg");
-      const html = document.documentElement;
-      const body = document.body;
-      html.style.minHeight = "";
-      body.style.minHeight = "";
-      body.style.margin = "";
-      body.style.padding = "";
-      body.style.background = "";
-      html.style.backgroundImage = "none";
-      html.style.backgroundSize = "";
-      html.style.backgroundRepeat = "";
-      html.style.backgroundPosition = "";
-      html.style.backgroundAttachment = "";
-		if (rawBg) {
-			const bgData = JSON.parse(rawBg);
-			const state = bgData?.state || {};
-			const bgImg = state.bgImg;
-			if (bgImg) {
-				html.style.backgroundImage = `url("${bgImg}")`;
-				html.style.backgroundSize = state.bgSize || "auto";
-				html.style.backgroundPosition = state.bgCenter ? "center" : "top left";
-				html.style.backgroundRepeat = state.bgRepeat ? "repeat" : "no-repeat";
-				html.style.minHeight = "100vh";
-				body.style.minHeight = "100vh";
-				body.style.margin = "0";
-				body.style.padding = "0";
-				body.style.background = "transparent";
-			}
-		}
-    } catch (err) {
-      console.warn("Failed to read bg", err);
-    }
-  })();
-</script>
-
 <div id="root"></div>
 <script type="module" src="/src/main.tsx"></script>
 </body>
