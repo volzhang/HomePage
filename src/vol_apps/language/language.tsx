@@ -1,9 +1,9 @@
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {useI18nStore} from "@/vol_apps/i8n/i18n_store";
 import {Languages} from "lucide-react";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
-export const I18nUi = () => {
-    const {language, setLanguage} = useI18nStore();
+export const Language = () => {
+    const {language, setLanguage} = useLanguageStore();
     return (
         <Select value={language} onValueChange={setLanguage}>
             <SelectTrigger className={"w-34 bg-background select-none"}>

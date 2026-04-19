@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export const useToast = () => {
-	const { t } = useTranslation("dndFile");
+	const { t } = useLanguageStore()
 	const toastId = useRef<string | number | null>(null);
 
 	const dismissToast = () => {

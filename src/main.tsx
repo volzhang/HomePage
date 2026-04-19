@@ -4,7 +4,6 @@ import './index.css'
 import {App} from "./App";
 import {runBootstrap} from "@/vol_apps/bootstrap/bootstrap";
 
-import "@/vol_apps/i8n/i18n";
 import "@/vol_apps/tool/action/fetch";
 
 const main = async () => {

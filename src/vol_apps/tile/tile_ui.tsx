@@ -15,11 +15,11 @@ import {HoverCard, HoverCardContent, HoverCardTrigger,} from "@/components/ui/ho
 import {ImageUp, Info, Trash2, FileSearchCorner} from "lucide-react";
 import {TileComponent} from "@/vol_apps/tile/tile_component.js"
 import {type ChangeEvent, type KeyboardEvent, useRef, useState} from "react";
-import {useTranslation} from "react-i18next";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export const TileUi = () => {
     // i18n
-    const {t} = useTranslation("tile");
+    const {t} = useLanguageStore()
 
     const {
         tiles,

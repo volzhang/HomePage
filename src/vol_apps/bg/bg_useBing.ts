@@ -1,11 +1,11 @@
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {setBackground} from "@/vol_apps/bg/bg_util";
-import {useI18nStore} from "@/vol_apps/i8n/i18n_store";
 import {apiBingWallpaper} from "@/vol_apps/tool/api/apiBingWallpaper";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export const useBing = () => {
-	const {language} = useI18nStore();
+	const {language} = useLanguageStore();
 	const {bgBingIndex, bgType, bgSize, bgRepeat, bgCenter,
 		setBgImg, setBgBingIndex, setBgBingCopyright, setBgType,
 	} = useBgStore();

@@ -8,7 +8,7 @@ import {Version} from "@/vol_apps/version/version";
 import {Cm} from "@/vol_apps/cm/cm";
 import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu.js";
 import {SearchBar} from "./vol_apps/search/search";
-import {I18nUi} from "@/vol_apps/i8n/i18n_ui_legacy";
+import {Language} from "@/vol_apps/language/language";
 import {Menu} from "@/vol_apps/menu/menu_legacy";
 
 export const App = () => {
@@ -19,7 +19,7 @@ export const App = () => {
             <GlobalContextMenu>
                 <div className={"flex flex-row gap-2 px-2 pt-2"}>
                     <Menu/>
-                    <I18nUi/>
+                    <Language/>
                     <Theme/>
                     <CmOpen/>
                 </div>

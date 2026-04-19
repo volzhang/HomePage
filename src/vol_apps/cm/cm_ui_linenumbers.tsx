@@ -1,9 +1,9 @@
 import {Button} from "@/components/ui/button";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
-import {useTranslation} from "react-i18next";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export const CmUiLineNumbers = () => {
-	const {t} = useTranslation("codemirror")
+	const {t} = useLanguageStore()
 
 	const {enableLineNumbers, setEnableLineNumbers} = useCmStore();
 

@@ -1,15 +1,15 @@
 import {useEffect, useRef, useState} from "react";
 import {toast} from "sonner";
 import {useToast} from "./useToast";
-import {useTranslation} from "react-i18next";
 import {isLikelyBackUpFile} from "@/vol_apps/tool/isType/isLikelyBackUpFile.js";
 import {isLikelyBookmarkFile} from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
 import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile.js";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export type FileType = "textFile" | "backupFile" | "bookmarkFile" | "unknown";
 
 export const useFileDnD = () => {
-	const {t} = useTranslation("dndFile");
+	const {t} = useLanguageStore()
 	const dragCounter = useRef(0);
 	const {toastId, dismissToast, waitingToast, updateOrCreateToast} = useToast();
 

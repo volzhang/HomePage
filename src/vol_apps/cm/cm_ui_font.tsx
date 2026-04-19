@@ -6,8 +6,8 @@ import {Slider} from "@/components/ui/slider";
 import {cn} from "@/lib/utils";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
 import {CmUiFontFamily} from "@/vol_apps/cm/cm_ui_font_family";
-import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 const MIN_FONT_SIZE = 8;
 const MAX_FONT_SIZE = 128;
@@ -19,7 +19,7 @@ const MIN_LINE_HEIGHT = 8;
 const MAX_LINE_HEIGHT = 256;
 
 export const CmUiFont = () => {
-	const {t} = useTranslation("codemirror")
+	const {t} = useLanguageStore()
 
 	const {
 		fontPx, setFontPx,

@@ -8,7 +8,7 @@ import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/action/filePicker";
 import {Folder} from "lucide-react";
 import {useId} from "react";
-import {useTranslation} from "react-i18next";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export function BgUiSetting(
 	{consumeCacheAndReloadBing, reLoadImgToCache}:
@@ -18,7 +18,7 @@ export function BgUiSetting(
 	}
 ) {
 
-	const {t} = useTranslation("bg");
+	const {t} = useLanguageStore();
 	const id = useId();
 
 	const bgTypeOptions = [

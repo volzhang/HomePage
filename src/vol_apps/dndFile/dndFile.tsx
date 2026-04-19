@@ -4,10 +4,10 @@ import {DndFileUiModal} from "@/vol_apps/dndFile/dndFile_ui_modal";
 import {useFileDnD} from "@/vol_apps/dndFile/useFileDnD";
 import {createFileHandlers} from "@/vol_apps/dndFile/fileHandlers";
 import {getDialogConfig} from "@/vol_apps/dndFile/dialogConfig";
-import {useTranslation} from "react-i18next";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export const DndFile = () => {
-	const {t} = useTranslation("dndFile");
+	const {t} = useLanguageStore()
 	const cmStore = useCmStore();
 	const {file, openModal, setOpenModal, fileType} = useFileDnD();
 

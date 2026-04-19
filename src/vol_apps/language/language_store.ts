@@ -1,27 +1,16 @@
-import i18n from "i18next";
-import {initReactI18next} from "react-i18next";
-import {addBootstrapTask} from "@/vol_apps/bootstrap/bootstrap";
+import {createPersistedStore} from "@/vol_apps/tool/createPersistedStore";
 
-const resources = {
-    en: {
-        common: {},
-        search: {},
-        tile: {},
-        navigation: {},
-        contextMenu: {},
-        bg: {},
-        version: {}
-    },
+type RESOURCES = {
+    en: Record<string, string>;
+    cn: Record<string, string>;
+}
+
+const resources:RESOURCES = {
+    en: {},
     cn: {
         // 直接在这里维护双语显示：k,en_US;v,cn。
-        common: {
-            "Language": "语言",
-            "Select Language": "选择语言"
-        },
-        search: {
-            "Select Search Engine": "选择搜索引擎",
-        },
-        tile: {
+
+        // tile: {
             "Upload Icon": "自定义图标",
             "OK": "确定",
 
@@ -35,15 +24,21 @@ const resources = {
             "Fetching Icon": "正在获取图标",
 
             "No matched tile": "没有匹配的瓷砖",
-            "Loading...": "正在加载..."
+            "Loading...": "正在加载...",
 
-        },
-        tag: {
-            "Click to toggle mode \nCurrently: tiles match {{mode}} selected tags":
-                "点击切换模式\n当前：瓷砖匹配{{mode}}选中标签",
+        // tag: {
+            "Click to toggle mode \nCurrently: tiles match ANY selected tags":
+                "点击切换模式\n当前：瓷砖匹配 任一 选中标签",
 
-            "Left-click a tag to select only this one.\nRight-click a tag to open menu for more operations.\nClick me to toggle mode.\nCurrently: tiles match {{mode}} selected tags":
-                "左键点击标签，则唯一选中此标签。\n右键点击标签，可打开菜单，支持更多操作。\n点击我切换模式。\n当前：瓷砖匹配{{mode}}选中标签。",
+            "Click to toggle mode \nCurrently: tiles match ALL selected tags":
+                "点击切换模式\n当前：瓷砖匹配 全部 选中标签",
+
+            "Left-click a tag to select only this one.\nRight-click a tag to open menu for more operations.\nClick me to toggle mode.\nCurrently: tiles match ANY selected tags":
+                "左键点击标签，则唯一选中此标签。\n右键点击标签，可打开菜单，支持更多操作。\n点击我切换模式。\n当前：瓷砖匹配 任一 选中标签。",
+
+            "Left-click a tag to select only this one.\nRight-click a tag to open menu for more operations.\nClick me to toggle mode.\nCurrently: tiles match ALL selected tags":
+                "左键点击标签，则唯一选中此标签。\n右键点击标签，可打开菜单，支持更多操作。\n点击我切换模式。\n当前：瓷砖匹配 全部 选中标签。",
+
             "ANY": "任一",
             "ALL": "全部",
 
@@ -58,8 +53,8 @@ const resources = {
             "Delete Tiles with only this tag":"删除所有只有此标签的瓷砖",
 
             "Delete Untagged Tiles":"删除无标签瓷砖",
-        },
-        navigation: {
+
+        // navigation: {
             "Menu": "菜单",
             "Set Background": "设置背景",
 
@@ -75,22 +70,20 @@ const resources = {
             "Chrome/Edge Bookmarks": "Chrome/Edge 书签",
             "Import links from an HTML bookmarks file": "从HTML书签文件中导入",
 
-            "Privacy Policy": "隐私政策"
-        },
-        contextMenu: {
-            "Tiles": "瓷砖",
-            "Add Tile": "添加瓷砖",
-            "Show Tiles": "显示瓷砖",
-            "Hide Tiles": "隐藏瓷砖",
+            "Privacy Policy": "隐私政策",
 
-            "Backup": "存档",
-            "Download Backup": "下载存档",
-            "Import Backup": "恢复存档",
-            "Set Background": "设置背景",
+        // contextMenu: {
+        //     "Tiles": "瓷砖",
+        //     "Add Tile": "添加瓷砖",
+        //     "Show Tiles": "显示瓷砖",
+        //     "Hide Tiles": "隐藏瓷砖",
+        //
+        //     "Backup": "存档",
+        //     "Download Backup": "下载存档",
+        //     "Import Backup": "恢复存档",
+        //     "Set Background": "设置背景",
 
-
-        },
-        bg: {
+        // bg: {
             "Upload Image": "上传图片",
 
             "Reset Defaults": "默认设置",
@@ -107,15 +100,15 @@ const resources = {
             "Original Size": "原始尺寸",
             "Contain": "扩展至边缘",
             "Cover": "扩展至覆盖",
-            "OK": "确定"
-        },
-        version: {
-            "Version": "版本"
-        },
-        privacy: {
-            "Privacy Policy": "隐私政策"
-        },
-        codemirror: {
+            // "OK": "确定",
+
+        // version: {
+            "Version": "版本",
+
+        // privacy: {
+        //     "Privacy Policy": "隐私政策",
+
+        // codemirror: {
             "Font": "字体",
             "Size": "字号",
             "Weight": "粗细",
@@ -126,8 +119,8 @@ const resources = {
 
             "Word Wrap": "换行显示",
             "No Wrap": "不换行",
-        },
-        dndFile: {
+
+        // dndFile: {
             "Waiting for file release": "等待释放文件...",
             "Not a file": "未知内容",
             "Unable to read file": "不支持查看此文件",
@@ -150,7 +143,7 @@ const resources = {
             "The parsed data will be appended to your tiles wall.": "解析的数据会追加显示到磁砖墙。",
             "This process will not damage existing data.": "此过程不会损坏已有数据。",
 
-            "Download Backup": "下载存档",
+            // "Download Backup": "下载存档",
             "Restore Backup": "恢复存档",
 
             "Export Editor content": "导出编辑器内容",
@@ -158,34 +151,38 @@ const resources = {
 
             "Cancel": "取消",
             "Continue": "继续",
-        }
     }
-};
+} as const;
 
-function getInitialLanguage() {
-    try {
-        const raw = localStorage.getItem("i18n");
-        if (!raw) return "en";
-        const data = JSON.parse(raw);
-        return data?.state?.language || "en";
-    } catch {
-        return "en";
-    }
+type LANGUAGE = "en" | "cn"
+
+type LanguageStoreState = {
+    language: LANGUAGE;
 }
 
-export const initialLng = getInitialLanguage();
+type LanguageStoreActions = {
+    setLanguage: (language: LANGUAGE) => void;
+    t:(key:string) => string;
+}
 
-addBootstrapTask(async () => {
-    await i18n
-        .use(initReactI18next)
-        .init({
-            resources,
-            lng: initialLng,
-            fallbackLng: "en",
-            interpolation: { escapeValue: false },
-        });
-});
+type LanguageStore = LanguageStoreState & LanguageStoreActions;
 
-// export default i18n;  //已经注册BootstrapTask
-
-
+export const useLanguageStore = createPersistedStore<LanguageStore>(
+    "language",
+    (set,get) => ({
+        language: "en",
+        setLanguage: (language) => {
+            set({language});
+            document.documentElement.lang = language === 'cn' ? 'zh-CN' : 'en';
+            document.title = language === 'cn' ? '主页' : 'Home Page';
+        },
+       t:(key)=>{
+            return get().language === "en"
+               ? resources.en[key] ?? key
+               : resources.cn[key] ?? resources.en[key] ?? key
+       }
+    }),
+    {
+        storageType: "localStorage",
+    }
+);

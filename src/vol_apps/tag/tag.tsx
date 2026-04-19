@@ -5,7 +5,6 @@ import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {BookmarkIcon, LoaderCircle, TriangleAlert } from "lucide-react";
 import {useEffect, useRef, useState} from "react";
-import {useTranslation} from "react-i18next";
 import {type Tag} from "@/vol_apps/tile/tile_store_types.js"
 
 import {
@@ -18,13 +17,14 @@ import {
 } from "@/components/ui/context-menu";
 
 import {AutoWidthInput} from "@/vol_apps/tool/component/input.js";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
     isBroadMatches: boolean,
     handleOnClick?: () => void,
 }) => {
-    const {t} = useTranslation("tag");
+    const {t} = useLanguageStore();
     return (
         <HoverCard openDelay={0} closeDelay={0}>
             <HoverCardTrigger asChild>
@@ -32,16 +32,21 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
                               className={cn(
                                   "size-6",
                                   isBroadMatches
-                                      ? "text-ring hover:text-[#0078d7]"
-                                      : "text-[#0078d7] fill-[#0078d7]",
+                                      ? "text-ring hover:text-sBlue"
+                                      : "text-sBlue fill-sBlue",
                               )}/>
             </HoverCardTrigger>
             <HoverCardContent className="w-auto" side="bottom" sideOffset={18}>
                 <div className="text-[13px]">
-                    {t(
-                        "Left-click a tag to select only this one.\nRight-click a tag to open menu for more operations.\nClick me to toggle mode.\nCurrently: tiles match {{mode}} selected tags",
-                        {mode: isBroadMatches ? t("ANY") : t("ALL")}
-                    )
+                    {(isBroadMatches
+                        ? t("Left-click a tag to select only this one." +
+                            "\nRight-click a tag to open menu for more operations." +
+                            "\nClick me to toggle mode." +
+                            "\nCurrently: tiles match ANY selected tags")
+                        : t("Left-click a tag to select only this one." +
+                            "\nRight-click a tag to open menu for more operations." +
+                            "\nClick me to toggle mode." +
+                            "\nCurrently: tiles match ALL selected tags"))
                         .split("\n").map((line, i) => (
                             <div key={i}>{line.trim()}</div>
                         ))}
@@ -52,7 +57,7 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
 };
 
 export const TagUpdate = () => {
-    const {t} = useTranslation("tag");
+    const {t} = useLanguageStore()
     const {tiles, updateTags} = useTileStore();
     const [isUpdate, setIsUpdate] = useState<boolean>(false);
 
@@ -69,8 +74,8 @@ export const TagUpdate = () => {
         <HoverCard openDelay={0} closeDelay={0}>
             <HoverCardTrigger asChild>
                 {isUpdate
-                    ? <Spinner className={"size-6 text-[#0078d7]"}></Spinner>
-                    : <LoaderCircle className={"size-6 text-ring hover:text-[#0078d7]"} onClick={handleClick}/>}
+                    ? <Spinner className={"size-6 text-sBlue"}></Spinner>
+                    : <LoaderCircle className={"size-6 text-ring hover:text-sBlue"} onClick={handleClick}/>}
             </HoverCardTrigger>
             <HoverCardContent className="w-auto" side="bottom" sideOffset={18}>
                 <div className="text-[13px]">
@@ -82,7 +87,7 @@ export const TagUpdate = () => {
 };
 
 export const TagComponent = () => {
-    const {t} = useTranslation("tag");
+    const {t} = useLanguageStore();
 
     const {
         updateTag, toggleTag, deleteTag, hasUntaggedTiles, isBroadMatches,
@@ -123,7 +128,7 @@ export const TagComponent = () => {
                                 }
                             }}
                             inEdit={inEdit}
-                            className={cn({"text-white! bg-[#0078d7]!": tag.checked},)}
+                            className={cn({"text-white! bg-sBlue!": tag.checked},)}
                             inputProps={
                                 {
 
@@ -146,7 +151,7 @@ export const TagComponent = () => {
                     </ContextMenuTrigger>
                     <ContextMenuContent avoidCollisions={false} alignOffset={18}>
                         <ContextMenuGroup>
-                            <ContextMenuLabel className="text-[#0078d7] font-bold">
+                            <ContextMenuLabel className="text-sBlue font-bold">
                                 {tag.name}
                             </ContextMenuLabel>
                             <ContextMenuItem onClick={() => toggleTag(tag.id)}>{t("Toggle selection")}</ContextMenuItem>
@@ -193,7 +198,7 @@ export const TagComponent = () => {
                     });
                 }}
                 className={cn(untaggedChecked
-                    ? "text-white bg-[#0078d7] hover:bg-[#0078d7] border-none select-none"
+                    ? "text-white bg-sBlue hover:bg-sBlue border-none select-none"
                     : "border-none"
                 )
                 }>
@@ -208,7 +213,7 @@ export const TagComponent = () => {
             </ContextMenuTrigger>
             <ContextMenuContent avoidCollisions={false} alignOffset={18}>
                 <ContextMenuGroup>
-                    <ContextMenuLabel className="text-[#0078d7] font-bold">
+                    <ContextMenuLabel className="text-sBlue font-bold">
                         {t("UntaggedTiles")}
                     </ContextMenuLabel>
                     <ContextMenuItem onClick={() => setUntaggedChecked(!untaggedChecked)}>

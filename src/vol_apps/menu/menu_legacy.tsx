@@ -15,12 +15,12 @@ import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore";
 import {bookmarkFilePickerAPI, jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
-import {useTranslation} from "react-i18next";
 import {
 	bookmarksToTiles,
 	buildBackupFileFromBookmarks,
 	netscapeBookmarkFilePhaser
 } from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 //这里手动复制了Button的secondary样式
 const cn_str = "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50";
@@ -30,7 +30,7 @@ export function Menu() {
     const {tilesVisible, setTilesVisible} = useTileStore();
 
     const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
-    const {t} = useTranslation("navigation");
+    const {t} = useLanguageStore()
 
     const OnAddTile = () => {
         const newTileId = tiles.length;

@@ -13,12 +13,12 @@ import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 
 import {Plus, Download, Upload, Image} from "lucide-react";
 import {useState, type PropsWithChildren} from "react";
-import {useTranslation} from "react-i18next";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export function GlobalContextMenu({children}: PropsWithChildren) {
     const {tilesVisible, addTile, setTileInEditId, setTileUiVisible, setTilesVisible} = useTileStore();
     const {setBgUiVisible} = useBgStore();
-    const {t} = useTranslation("contextMenu");
+    const {t} = useLanguageStore()
 
     const onAddTile = () => {
         const newTileId = addTile();
