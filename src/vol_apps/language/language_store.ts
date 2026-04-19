@@ -184,5 +184,10 @@ export const useLanguageStore = createPersistedStore<LanguageStore>(
     }),
     {
         storageType: "localStorage",
+        onRehydrateStorage: (_state) => (hydratedState) => {
+            const language = hydratedState?.language
+            document.documentElement.lang = language === 'cn' ? 'zh-CN' : 'en';
+            document.title = language === 'cn' ? '主页' : 'Home Page';
+            },
     }
 );
