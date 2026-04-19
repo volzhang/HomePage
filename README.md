@@ -23,7 +23,6 @@
 - React
 - TailwindCSS + Shadcn
 - Zustand + idb-keyval (compatible with legacy localforage IndexedDB data)
-- i18n
 - MirrorCode6
 
 ## 立即体验

@@ -90,7 +90,6 @@ const resources:RESOURCES = {
             "Custom": "自定义",
             "DailyBing": "Bing每日壁纸",
 
-            // "Reset Defaults": "恢复默认设置",
             "Default View": "正常",
             "Hide Others": "只看背景",
             "Repeat": "重复平铺",
@@ -104,9 +103,6 @@ const resources:RESOURCES = {
 
         // version: {
             "Version": "版本",
-
-        // privacy: {
-        //     "Privacy Policy": "隐私政策",
 
         // codemirror: {
             "Font": "字体",

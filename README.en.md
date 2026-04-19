@@ -18,9 +18,9 @@ No data collection, privacy-first, no ads.
 
 ## ✨ Features
 
-- 🚀 **Ultra Clean** — No ads, no tracking, 100% frontend  
+- 🚀 **Ultra Clean** — No ads, no tracking, 100% frontend
 - 🎨 **Highly Customizable** — Custom wallpapers, tiles, search engines  
-- 💾 **Seamless Cross-Device** — One-click export/import JSON backup  
+- 💾 **Seamless Cross-Device** — One-click export/import JSON backup
 - 🌍 **Bilingual Support** — Manually switch between Chinese & English
 
 ## Tech Stack
@@ -28,8 +28,8 @@ No data collection, privacy-first, no ads.
 - Vite + TypeScript  
 - React  
 - TailwindCSS + Shadcn  
-- Zustand + idb-keyval (compatible with legacy localforage IndexedDB data)  
-- i18n  
+- Zustand + idb-keyval (compatible with legacy localforage IndexedDB data)
+- MirrorCode6
 
 ## Try It Now
 
