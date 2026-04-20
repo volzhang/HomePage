@@ -74,7 +74,7 @@ export const useBgStore = createPersistedStore<BgStore>(
         setBgBingDate: (bgBingDate) => set({bgBingDate}),
     }),
     {
-        storageType: "localStorage",
+        storageType: "idb",
         version: LatestStoreVersion,  //放弃otherVisible持久化，清除垃圾KV
         migrate: (persistedState) => {
             if (!persistedState || typeof persistedState !== "object") return {};
@@ -93,7 +93,7 @@ export const useBgStore = createPersistedStore<BgStore>(
             // 排除 otherVisible，其余字段全部持久化
             const {otherVisible, ...rest} = state;
             return rest;
-        }
+        },
     }
 )
 

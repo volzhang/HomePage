@@ -74,7 +74,7 @@ export function BgUiSetting(
 						setBgSize("auto");
 						setBgCenter(false);
 					} else if (value === "bing") {
-						setBgImg(await blobToString(wallpaperJpgBlob))
+						blobToString(wallpaperJpgBlob).then(setBgImg)
 						setBgRepeat(false);
 						setBgSize("cover");
 						setBgCenter(true);
