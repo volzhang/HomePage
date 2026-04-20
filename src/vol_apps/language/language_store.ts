@@ -9,7 +9,6 @@ const resources:RESOURCES = {
     en: {},
     cn: {
         // 直接在这里维护双语显示：k,en_US;v,cn。
-
         // tile: {
             "Upload Icon": "自定义图标",
             "OK": "确定",

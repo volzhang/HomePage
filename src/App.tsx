@@ -10,6 +10,7 @@ import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu.js";
 import {SearchBar} from "./vol_apps/search/search";
 import {Language} from "@/vol_apps/language/language";
 import {Menu} from "@/vol_apps/menu/menu_legacy";
+import { BingWallpaperArchiveProvider } from "./vol_apps/tanStackQuery/Api_BingWallpaper";
 
 export const App = () => {
     return (
@@ -30,8 +31,11 @@ export const App = () => {
                     <SearchBar/>
                 </div>
                 <TileApp/>
+                {/*<Example/>*/}
             </GlobalContextMenu>
             <DndFile/>
-            <BgApp/>
+            <BingWallpaperArchiveProvider>
+                <BgApp/>
+            </BingWallpaperArchiveProvider>
         </>);
 };

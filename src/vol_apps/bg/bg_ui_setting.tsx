@@ -3,22 +3,19 @@ import {Label} from "@/components/ui/label";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 import {cn} from "@/lib/utils";
-import {img, useBgStore} from "@/vol_apps/bg/bg_store";
+import {type BgType, type SizeType, img} from "@/vol_apps/bg/bg_store";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/action/filePicker";
 import {Folder} from "lucide-react";
 import {useId} from "react";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export function BgUiSetting(
-	{consumeCacheAndReloadBing, reLoadImgToCache}:
 	{
-		consumeCacheAndReloadBing: () => void,
-		reLoadImgToCache: () => void,
-	}
+		bgRepeat, bgCenter, otherVisible, bgUiVisible, bgSize, bgType,
+		setBgType, setBgRepeat, setOtherVisible, setBgCenter, setBgImg, setBgSize, setBgUiVisible,
+		wallpaperJpgBlob, t,
+	}: any
 ) {
-
-	const {t} = useLanguageStore();
 	const id = useId();
 
 	const bgTypeOptions = [
@@ -44,15 +41,7 @@ export function BgUiSetting(
 		{value: "cover", label: t("Cover")},
 	];
 
-	const {
-		bgRepeat, bgCenter, otherVisible, bgUiVisible, bgSize, bgType,
-		setBgType, setBgRepeat, setOtherVisible, setBgCenter, setBgImg, setBgSize, setBgUiVisible
-	} = useBgStore();
-
-	// const { consumeCacheAndReloadBing, reLoadImgToCache} = useBing()
-
 	return (
-
 		<div className={cn("fixed right-1 top-1 w-64 p-5 gap-5 flex flex-col z-10",
 			{"hidden": !bgUiVisible},
 			"bg-ui-panel",  //添加类 bg-ui-panel，供全局 CSS 识别。
@@ -60,7 +49,6 @@ export function BgUiSetting(
 			{/* 上传背景图 */}
 			<ImgFilePickerBtn
 				onPick={async (file) => {
-					void reLoadImgToCache();
 					setBgImg(await blobToString(file));
 					setBgType("custom");
 				}}
@@ -79,22 +67,21 @@ export function BgUiSetting(
 			{/* 背景类型 */}
 			<RadioGroup
 				value={bgType}
-				onValueChange={(value) => {
+				onValueChange={async (value) => {
 					if (value === "default") {
-						void reLoadImgToCache();
 						setBgImg(img);
 						setBgRepeat(true);
 						setBgSize("auto");
 						setBgCenter(false);
 					} else if (value === "bing") {
-						void consumeCacheAndReloadBing();
+						setBgImg(await blobToString(wallpaperJpgBlob))
 						setBgRepeat(false);
 						setBgSize("cover");
 						setBgCenter(true);
 					} else {
-						void reLoadImgToCache();
+
 					}
-					setBgType(value);
+					setBgType(value as BgType);
 				}}
 				className={cn(
 					"w-full p-6 gap-4 rounded-md",
@@ -186,7 +173,7 @@ export function BgUiSetting(
 			{/* 自定义大小 */}
 			<RadioGroup
 				value={bgSize}
-				onValueChange={(value) => setBgSize(value)}
+				onValueChange={(value) => setBgSize(value as SizeType)}
 				className={cn(
 					"w-full p-6 gap-4 rounded-md",
 					"border border-secondary bg-secondary hover:bg-background",

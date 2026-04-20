@@ -1,11 +1,11 @@
 import {createPersistedStore, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
-import img from "@/assets/bg-dark.png?inline"; //得到同步字符串（data URL)
+import img from "@/assets/bg-dark.png?inline";
+import type {YYYY_MM_DD} from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
 export {img}
 
-// "auto", "cover", "contain"
-type SizeType = string
-// "default", "custom", "bing"
-type BgType = string
+
+export type SizeType = "auto" | "cover" | "contain"
+export type BgType = "default" | "custom" | "bing"
 
 type BgStoreState = {
     bgImg: string;
@@ -17,6 +17,9 @@ type BgStoreState = {
     bgCenter: boolean;
     otherVisible: boolean;
     bgUiVisible: boolean;
+
+    //新增，用来记录用户选择
+    bgBingDate: YYYY_MM_DD | null;
 }
 
 type BgStoreActions = {
@@ -29,27 +32,32 @@ type BgStoreActions = {
     setBgSize: (value: BgStoreState["bgSize"]) => void;
     setOtherVisible: (value: BgStoreState["otherVisible"]) => void;
     setBgUiVisible: (value: BgStoreState["bgUiVisible"]) => void;
+
+    //新增
+    setBgBingDate: (value: BgStoreState["bgBingDate"]) => void;
 }
 
 type BgStore = BgStoreState & BgStoreActions;
 
 const INITIAL_STATE = {
-    bgType: "default" as const,
-    bgImg: img,
-    bgBingIndex: 0,
-    bgBingCopyright: "",
+    bgType: "default",          //可以保留
+    bgImg: img,                 //核心
+    bgBingIndex: 0,             //-------------废弃
+    bgBingCopyright: "",        //可以保留
     bgSize: "auto",
     bgRepeat: true,
     bgCenter: false,
     otherVisible: true,
-    bgUiVisible: false,
+    bgUiVisible: false,         //新增，用来记录用户选择
+
+    //新增
+    bgBingDate: null,
 };
 
 export const useBgStore = createPersistedStore<BgStore>(
     "bg",
     (set) => ({
-
-        ...INITIAL_STATE,
+        ...INITIAL_STATE as BgStoreState,
         setBgImg: (bgImg) => set({bgImg}),
         setBgType: (bgType) => set({bgType}),
         setBgBingIndex: (bgBingIndex) => set({bgBingIndex}),
@@ -62,6 +70,8 @@ export const useBgStore = createPersistedStore<BgStore>(
 
         setOtherVisible: (otherVisible) => set({otherVisible}),
         setBgUiVisible: (bgUiVisible) => set({bgUiVisible}),
+
+        setBgBingDate: (bgBingDate) => set({bgBingDate}),
     }),
     {
         storageType: "localStorage",

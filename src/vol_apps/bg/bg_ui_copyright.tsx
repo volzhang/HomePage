@@ -24,7 +24,7 @@ export const BgUiCopyright = (
 							disabled={isLoading}
 						>
 							{isLoading ? (
-								<Spinner className="text-[#0078d7]"/>
+								<Spinner className="text-sBlue"/>
 							) : (
 								<ChevronRight className="text-foreground"/>
 							)}
