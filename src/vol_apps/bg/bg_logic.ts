@@ -1,36 +1,122 @@
-import {useMemo, useEffect, useState} from "react";
+import {useMemo, useEffect, useState, useRef} from "react";
 import {useBgStore, img} from "./bg_store";
-import {useBingWallpaperArchive, getDateWithOffset} from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
+import {
+    useBingWallpaperArchive,
+    getDateWithOffset,
+    type BingWallpaperArchiveJson
+} from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {setBackground} from "./bg_util";
 
+/**
+ * UI pending 控制（带超时）
+ */
+function usePendingWithTimeout(timeout = 3000) {
+    const [pending, setPending] = useState(false);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const start = () => {
+        if (timerRef.current) clearTimeout(timerRef.current);
+
+        setPending(true);
+
+        timerRef.current = setTimeout(() => {
+            setPending(false);
+            timerRef.current = null;
+        }, timeout);
+    };
+
+    const stop = () => {
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+        setPending(false);
+    };
+
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, []);
+
+    return {pending, start, stop};
+}
+
 export function useBgLogic() {
     const {
-        bgImg, bgType, bgSize, bgRepeat, bgCenter, otherVisible, bgUiVisible, bgBingDate,
-        setBgImg, setBgType, setBgRepeat, setBgCenter, setBgSize, setBgUiVisible, setOtherVisible, setBgBingDate,
+        bgImg,
+        bgType,
+        bgSize,
+        bgRepeat,
+        bgCenter,
+        otherVisible,
+        bgUiVisible,
+        bgBingDate,
+        bgBingCopyright,
+        setBgImg,
+        setBgType,
+        setBgRepeat,
+        setBgCenter,
+        setBgSize,
+        setBgUiVisible,
+        setOtherVisible,
+        setBgBingDate,
+        setBgBingCopyright,
     } = useBgStore();
+
     const {t, language} = useLanguageStore();
 
-    // 日期：当前Bing壁纸的驱动是 bgBingDate, 缓存一张 prevDate 壁纸
-    const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate, setBgBingDate]);
+    // 日期
+    const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate]);
     const preDate = useMemo(() => getDateWithOffset(date, -1), [date]);
+    const nextDate = useMemo(() => getDateWithOffset(date, +1), [date]);
 
-    // 壁纸数据
-    const {wallpaperJson: currentJson, wallpaperJpgBase64: currentJpg, isPending: currentPending} =
-        useBingWallpaperArchive(language, date);
-    const {wallpaperJpgBase64: nextJpg, isPending: nextPending} = useBingWallpaperArchive(language, preDate);
+    // 查询
+    const {
+        wallpaperJson: currentJson,
+        wallpaperJpgBase64: currentJpg,
+        isPending: currentPending
+    } = useBingWallpaperArchive(language, date);
 
-    // 补丁，自动替补，防止第一天的图片没有更新
+    const {
+        wallpaperJson: prevJson,
+        wallpaperJpgBase64: prevJpg,
+        isPending: prevPending
+    } = useBingWallpaperArchive(language, preDate);
+
+    const {
+        wallpaperJson: nextJson,
+        wallpaperJpgBase64: nextJpg,
+        isPending: nextPending
+    } = useBingWallpaperArchive(language, nextDate);
+
+    const copyright = (json: BingWallpaperArchiveJson | null) => {
+        return json
+            ? `${json.title ?? ""} ${json.copyright ?? ""} | ${json.date ?? ""}`
+            : ""
+    }
+
+    const currentCopyright = useMemo(() => copyright(currentJson), [currentJson]);
+    const prevCopyright = useMemo(() => copyright(prevJson), [prevJson]);
+    const nextCopyright = useMemo(() => copyright(nextJson), [nextJson]);
+
+
     useEffect(() => {
-        if (currentPending) return
-        if (!currentPending && !currentJpg)
-            setBgBingDate(preDate)
-    }, [currentPending, currentJpg]);
+        // fallback：当天没有图 → 自动用前一天
+        if (!currentPending && !currentJpg) setBgBingDate(preDate)
+        // 新用户的初始值
+        if (bgType === "bing" && bgImg === null && currentJpg ) setBgImg(currentJpg)
+    }, [currentPending, currentJpg, date]);
 
-    // 自动切换背景类型对应的样式
+    /**
+     * bgType 切换
+     */
+
     useEffect(() => {
         if (bgType === "bing" && currentJpg) {
-            setBgImg(currentJpg);
+            if (currentJpg !== bgImg) setBgImg(currentJpg);
+            if (currentCopyright != bgBingCopyright) setBgBingCopyright(currentCopyright)
             setBgCenter(true);
             setBgSize("cover");
             setBgRepeat(false);
@@ -40,51 +126,79 @@ export function useBgLogic() {
             setBgSize("auto");
             setBgRepeat(true);
         }
-    }, [bgType, currentJpg]);
+    }, [bgType, currentJpg, currentCopyright]);
 
-    // 更新 DOM 背景样式
+    /**
+     * 应用背景
+     */
     useEffect(() => {
-        setBackground(bgImg, bgSize, bgRepeat, bgCenter)
+        setBackground(bgImg, bgSize, bgRepeat, bgCenter);
     }, [bgImg, bgSize, bgRepeat, bgCenter]);
 
-    // 控制 hide-others 类
+    /**
+     * hide-others
+     */
     useEffect(() => {
         document.body.classList.toggle("hide-others", !otherVisible);
         return () => document.body.classList.remove("hide-others");
     }, [otherVisible]);
 
-    // 下一张 Bing 壁纸
-    const [copyrightIsLoading, setCopyrightIsLoading] = useState<boolean>(true);
+    /**
+     * UI pending（独立于 query）
+     */
+    const nextCtrl = usePendingWithTimeout(3000);
+    const prevCtrl = usePendingWithTimeout(3000);
 
-    const handleNextBing = () => {
+    /**
+     * 用户操作
+     */
+    const handlePrev = () => {
         if (bgType !== "bing") return;
-        setCopyrightIsLoading(true);
-        // 让浏览器先绘制
-        setTimeout(() => setBgBingDate(preDate));
+
+        prevCtrl.start();
+        if (prevJpg) setBgImg(prevJpg);
+        setBgBingCopyright(prevCopyright)
+
+        // 让 UI 先响应（关键点）
+        setTimeout(() => {
+            setBgBingDate(preDate);
+        });
     };
 
+    const handleNext = () => {
+        if (bgType !== "bing") return;
+
+        nextCtrl.start();
+        if (nextJpg) setBgImg(nextJpg);
+        setBgBingCopyright(nextCopyright)
+
+        setTimeout(() => {
+            setBgBingDate(nextDate);
+        });
+    };
+
+    /**
+     * query 结束 → 终止 UI pending
+     */
     useEffect(() => {
-        // 这里有一个小问题，如果只用nextPending判断，
-        // 自动替补补丁生效时，会无法正确触发setCopyrightIsLoading(false),
-        // 使用双重判断后，可以正确拦截了。
-        if (!nextPending || nextJpg) setCopyrightIsLoading(false);
+        if (!prevPending || prevJpg) prevCtrl.stop();
+    }, [prevPending, prevJpg]);
+
+    useEffect(() => {
+        if (!nextPending || nextJpg) nextCtrl.stop();
     }, [nextPending, nextJpg]);
 
-    // 对外暴露的接口（唯一入口）
+    /**
+     * 输出
+     */
     return {
-        // 状态
         bgType,
         bgRepeat,
         bgCenter,
         bgSize,
         otherVisible,
         bgUiVisible,
-        // 版权信息
-        copyright: copyrightIsLoading ? "" :
-            `${currentJson?.title ?? ""} ${currentJson?.copyright ?? ""} | ${currentJson?.date ?? ""}`,
-        // 版权信息 加载状态
-        copyrightIsLoading: copyrightIsLoading,
-        // 动作
+
         setBgType,
         setBgRepeat,
         setBgCenter,
@@ -92,8 +206,14 @@ export function useBgLogic() {
         setOtherVisible,
         setBgUiVisible,
         setBgImg,
-        handleNextBing,
-        // 国际化
+
+        bgBingCopyright,
+
+        handleNext,
+        handlePrev,
+
+        nextIsPending: nextCtrl.pending,
+        prevIsPending: prevCtrl.pending,
         t,
     };
 }

@@ -100,6 +100,8 @@ const resources:RESOURCES = {
             "Cover": "扩展至覆盖",
             // "OK": "确定",
 
+            "Fetching Bing wallpaper": "正在获取Bing壁纸",
+
         // version: {
             "Version": "版本",
 
@@ -149,7 +151,7 @@ const resources:RESOURCES = {
     }
 } as const;
 
-type LANGUAGE = "en" | "cn"
+export type LANGUAGE = "en" | "cn"
 
 type LanguageStoreState = {
     language: LANGUAGE;

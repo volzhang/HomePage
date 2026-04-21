@@ -9,7 +9,7 @@ import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu.js";
 import {SearchBar} from "./vol_apps/search/search";
 import {Menu} from "@/vol_apps/menu/menu_legacy";
 import { BingWallpaperArchiveProvider } from "./vol_apps/tanStackQuery/Api_BingWallpaper";
-import { MySelectLanguage } from "./vol_apps/language/MySelectLanguage";
+import { LanguageUi } from "./vol_apps/language/language_ui";
 import { TileApp } from "./vol_apps/tile/tile_app";
 
 export const App = () => {
@@ -20,7 +20,7 @@ export const App = () => {
             <GlobalContextMenu>
                 <div className={"flex flex-row gap-2 px-2 pt-2"}>
                     <Menu/>
-                    <MySelectLanguage />
+                    <LanguageUi/>
                     <Theme/>
                     <CmOpen/>
                 </div>
@@ -31,7 +31,6 @@ export const App = () => {
                     <SearchBar/>
                 </div>
                 <TileApp/>
-                {/*<Example/>*/}
 
             </GlobalContextMenu>
             <DndFile/>

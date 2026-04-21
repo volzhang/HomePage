@@ -10,7 +10,7 @@ export type BgType = "default" | "custom" | "bing"
 type BgStoreState = {
     bgImg: string;
     bgType: BgType
-    bgBingIndex: number;
+    // bgBingIndex: number;
     bgBingCopyright: string;
     bgSize: SizeType;
     bgRepeat: boolean;
@@ -25,7 +25,7 @@ type BgStoreState = {
 type BgStoreActions = {
     setBgImg: (value: BgStoreState["bgImg"]) => void;
     setBgType: (value: BgStoreState["bgType"]) => void;
-    setBgBingIndex: (value: BgStoreState["bgBingIndex"]) => void;
+    // setBgBingIndex: (value: BgStoreState["bgBingIndex"]) => void;
     setBgBingCopyright: (value: BgStoreState["bgBingCopyright"]) => void;
     setBgRepeat: (value: BgStoreState["bgRepeat"]) => void;
     setBgCenter: (value: BgStoreState["bgCenter"]) => void;
@@ -42,7 +42,7 @@ type BgStore = BgStoreState & BgStoreActions;
 const INITIAL_STATE = {
     bgType: "bing",          //可以保留
     bgImg: "",                 //核心
-    bgBingIndex: 0,             //-------------废弃
+    // bgBingIndex: 0,
     bgBingCopyright: "",        //可以保留
     bgSize: "auto",
     bgRepeat: false,
@@ -60,7 +60,7 @@ export const useBgStore = createPersistedStore<BgStore>(
         ...INITIAL_STATE as BgStoreState,
         setBgImg: (bgImg) => set({bgImg}),
         setBgType: (bgType) => set({bgType}),
-        setBgBingIndex: (bgBingIndex) => set({bgBingIndex}),
+        // setBgBingIndex: (bgBingIndex) => set({bgBingIndex}),
         setBgBingCopyright: (bgBingCopyright) => set({bgBingCopyright}),
         setBgSize: (bgSize) => {
             set({bgSize})

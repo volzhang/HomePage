@@ -1,8 +1,7 @@
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FloatingPanel } from "@/vol_apps/tool/animation/FloatingPanel";
 import { CheckIcon, Languages } from "lucide-react";
-import { useLanguageStore } from "@/vol_apps/language/language_store";
 
 const TRIGGER_CLASS = cn(
     "flex items-center",
@@ -28,27 +27,79 @@ const ITEM_CLASS = cn(
     "whitespace-nowrap"
 );
 
-const options = [
-    { label: "English", value: "en" },
-    { label: "简体中文", value: "cn" },
-] as const;
+export interface Option {
+    label: string;
+    value: string;
+}
 
-type LANGUAGE = "en" | "cn"
+export interface LanguageUiProps {
+    /** 可选项列表（必须由外部传入） */
+    options: Option[];
+    /** 默认选中的值（不传则默认选中第一项） */
+    defaultValue?: string;
+    /** 选中值变化时的回调 */
+    onChange?: (value: string) => void;
+}
 
-export const MySelectLanguage = () => {
-    const { language, setLanguage } = useLanguageStore();
+export const MySelect = ({
+                               options,
+                               defaultValue,
+                               onChange,
+                           }: LanguageUiProps) => {
+    // 内部自行管理当前选中的值
+    const [selectedValue, setSelectedValue] = useState<string>(
+        defaultValue ?? options[0]?.value ?? ""
+    );
     const [isOpen, setIsOpen] = useState(false);
+    const rootRef = useRef<HTMLDivElement>(null);
 
-    const currentLabel = options.find(opt => opt.value === language)?.label ?? "English";
+    // 当外部 defaultValue 变化时同步内部状态（可选）
+    useEffect(() => {
+        if (defaultValue !== undefined) {
+            setSelectedValue(defaultValue);
+        }
+    }, [defaultValue]);
 
-    const handleSelect = (value: LANGUAGE) => {
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handler = (e: MouseEvent) => {
+            const target = e.target as Node;
+            if (rootRef.current?.contains(target)) return;
+            setIsOpen(false);
+        };
+
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setIsOpen(false);
+        };
+
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [isOpen]);
+
+    const currentLabel =
+        options.find((opt) => opt.value === selectedValue)?.label ?? options[0]?.label ?? "";
+
+    const handleSelect = (value: string) => {
         setIsOpen(false);
-        setTimeout(()=>setLanguage(value));
+        setSelectedValue(value);
+        // 保留原 setTimeout 行为（如无必要可移除）
+        setTimeout(() => onChange?.(value));
     };
 
     return (
-        <div className="w-fit animate-fade-in-scale">
-            <button onClick={() => setIsOpen(!isOpen)} className={cn(TRIGGER_CLASS)}>
+        <div className="w-fit animate-fade-in-scale" ref={rootRef}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={cn(TRIGGER_CLASS)}
+            >
                 <div className="flex items-center justify-start pl-3">
                     <Languages className="size-4 text-foreground" />
                 </div>
@@ -78,7 +129,7 @@ export const MySelectLanguage = () => {
                                     onClick={() => handleSelect(value)}
                                 >
                                     {label}
-                                    {language === value ? (
+                                    {selectedValue === value ? (
                                         <CheckIcon className="size-4" />
                                     ) : (
                                         <span className="size-4" />
