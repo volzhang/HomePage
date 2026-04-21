@@ -3,7 +3,6 @@ import {useBgStore, img} from "./bg_store";
 import {useBingWallpaperArchive, getDateWithOffset} from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {setBackground} from "./bg_util";
-import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated";
 
 export function useBgLogic() {
     const {
@@ -13,13 +12,20 @@ export function useBgLogic() {
     const {t, language} = useLanguageStore();
 
     // 日期：当前Bing壁纸的驱动是 bgBingDate, 缓存一张 prevDate 壁纸
-    const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate]);
+    const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate, setBgBingDate]);
     const preDate = useMemo(() => getDateWithOffset(date, -1), [date]);
 
     // 壁纸数据
     const {wallpaperJson: currentJson, wallpaperJpgBase64: currentJpg, isPending: currentPending} =
         useBingWallpaperArchive(language, date);
-    const {isPending: nextPending} = useBingWallpaperArchive(language, preDate);
+    const {wallpaperJpgBase64: nextJpg, isPending: nextPending} = useBingWallpaperArchive(language, preDate);
+
+    // 补丁，自动替补，防止第一天的图片没有更新
+    useEffect(() => {
+        if (currentPending) return
+        if (!currentPending && !currentJpg)
+            setBgBingDate(preDate)
+    }, [currentPending, currentJpg]);
 
     // 自动切换背景类型对应的样式
     useEffect(() => {
@@ -37,16 +43,9 @@ export function useBgLogic() {
     }, [bgType, currentJpg]);
 
     // 更新 DOM 背景样式
-    const hydrated = useStoreHydrated(useBgStore);
     useEffect(() => {
-        if (hydrated) {
-            if (bgType === "bing" && !currentPending) {
-                setBackground(bgImg, bgSize, bgRepeat, bgCenter)
-            } else if (bgType !== "bing") {
-                setBackground(bgImg, bgSize, bgRepeat, bgCenter)
-            }
-        }
-    }, [hydrated, currentPending, bgImg, bgSize, bgRepeat, bgCenter]);
+        setBackground(bgImg, bgSize, bgRepeat, bgCenter)
+    }, [bgImg, bgSize, bgRepeat, bgCenter]);
 
     // 控制 hide-others 类
     useEffect(() => {
@@ -55,7 +54,7 @@ export function useBgLogic() {
     }, [otherVisible]);
 
     // 下一张 Bing 壁纸
-    const [copyrightIsLoading, setCopyrightIsLoading] = useState(false);
+    const [copyrightIsLoading, setCopyrightIsLoading] = useState<boolean>(true);
 
     const handleNextBing = () => {
         if (bgType !== "bing") return;
@@ -65,8 +64,11 @@ export function useBgLogic() {
     };
 
     useEffect(() => {
-        if (!nextPending) setCopyrightIsLoading(false);
-    }, [nextPending]);
+        // 这里有一个小问题，如果只用nextPending判断，
+        // 自动替补补丁生效时，会无法正确触发setCopyrightIsLoading(false),
+        // 使用双重判断后，可以正确拦截了。
+        if (!nextPending || nextJpg) setCopyrightIsLoading(false);
+    }, [nextPending, nextJpg]);
 
     // 对外暴露的接口（唯一入口）
     return {
@@ -78,7 +80,8 @@ export function useBgLogic() {
         otherVisible,
         bgUiVisible,
         // 版权信息
-        copyright: `${currentJson?.title ?? ""} ${currentJson?.copyright ?? ""} `,
+        copyright: copyrightIsLoading ? "" :
+            `${currentJson?.title ?? ""} ${currentJson?.copyright ?? ""} | ${currentJson?.date ?? ""}`,
         // 版权信息 加载状态
         copyrightIsLoading: copyrightIsLoading,
         // 动作

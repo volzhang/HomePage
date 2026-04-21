@@ -212,7 +212,6 @@ export const useBingWallpaperArchive = (
     };
 };
 
-
 /**
  * 获取指定日期偏移后的日期，默认返回当前本地日期
  * @param date - 基准日期 (YYYY-MM-DD)，默认为当前本地日期

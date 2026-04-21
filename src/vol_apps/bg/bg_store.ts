@@ -40,13 +40,13 @@ type BgStoreActions = {
 type BgStore = BgStoreState & BgStoreActions;
 
 const INITIAL_STATE = {
-    bgType: "default",          //可以保留
-    bgImg: img,                 //核心
+    bgType: "bing",          //可以保留
+    bgImg: "",                 //核心
     bgBingIndex: 0,             //-------------废弃
     bgBingCopyright: "",        //可以保留
     bgSize: "auto",
-    bgRepeat: true,
-    bgCenter: false,
+    bgRepeat: false,
+    bgCenter: true,
     otherVisible: true,
     bgUiVisible: false,         //新增，用来记录用户选择
 
