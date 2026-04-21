@@ -1,3 +1,4 @@
+// src/vol_apps/tool/a2b/blobToString.ts
 export type BlobString = `data:${string}`;
 
 export const isBlobString = (value: unknown): value is BlobString =>

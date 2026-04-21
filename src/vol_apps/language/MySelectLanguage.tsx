@@ -42,8 +42,8 @@ export const MySelectLanguage = () => {
     const currentLabel = options.find(opt => opt.value === language)?.label ?? "English";
 
     const handleSelect = (value: LANGUAGE) => {
-        setLanguage(value);
         setIsOpen(false);
+        setTimeout(()=>setLanguage(value));
     };
 
     return (
