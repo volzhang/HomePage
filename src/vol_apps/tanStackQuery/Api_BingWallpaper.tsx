@@ -7,8 +7,8 @@ import {type BlobString, blobToString} from "@/vol_apps/tool/a2b/blobToString";
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 1000 * 60 * 60 * 24 * 2,
-            gcTime: 1000 * 60 * 60 * 24 * 2,
+            staleTime: 1000 * 60 * 60 * 6,          //保鲜周期 6h
+            gcTime: 1000 * 60 * 60 * 24 * 2,        //清除垃圾周期 2d
         },
     },
 });

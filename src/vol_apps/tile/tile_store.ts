@@ -44,7 +44,7 @@ type TileStoreActions = {
     setTileUiVisible: (value: TileStoreState["tileUiVisible"]) => void;
     setTileInEditId: (value: TileStoreState["tileInEditId"]) => void;
 
-    //进阶API
+    //进阶
     // 自动填充 tags，后续根据剪切板文本，如果是合法的url自动补全URL和name
     addTile: () => Tile["id"];
 
@@ -196,6 +196,7 @@ export const useTileStore = createPersistedStore<TileStore>(
 
         //真实标签
         selectedTags: () => get().tags.filter(tag => tag.checked).map(tag => tag.name),
+
         //考虑虚拟标签
         effectiveTags: () => {
             const selectedRealTags = get().selectedTags()
@@ -207,7 +208,6 @@ export const useTileStore = createPersistedStore<TileStore>(
 
         hasUntaggedTiles: () => get().tiles.some(tile => tile.meta.tags.length === 0),
 
-        // 重写这个视图，加入tilesNoTagChecked
         tilesByTag: (mode: "ALL" | "ANY") => {
             const tiles = get().tiles;
             const effectiveTags = get().effectiveTags();
@@ -270,7 +270,7 @@ export const useTileStore = createPersistedStore<TileStore>(
             const oldName = tag.name;
             if (oldName === name) return;
 
-            // 👇 先记录 checked
+            // 先记录 checked
             const wasChecked = tag.checked;
 
             const newTiles = store.tiles.map(tile => ({
@@ -281,10 +281,10 @@ export const useTileStore = createPersistedStore<TileStore>(
                 }
             }));
 
-            // 👇 先更新 tiles（会触发 updateTags）
+            // 先更新 tiles（会触发 updateTags）
             store.setTiles(newTiles);
 
-            // 👇 再把新 tag 设回 checked
+            // 再把新 tag 设回 checked
             const newTag = get().tags.find(t => t.name === name);
             if (newTag && wasChecked) {
                 get().updateTag(newTag.id, { checked: true });

@@ -71,6 +71,7 @@ export function useBgLogic() {
     const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate]);
     const preDate = useMemo(() => getDateWithOffset(date, -1), [date]);
     const nextDate = useMemo(() => getDateWithOffset(date, +1), [date]);
+    console.log(date)
 
     // 查询
     const {
