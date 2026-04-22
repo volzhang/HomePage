@@ -5,7 +5,6 @@ import {Theme} from "@/vol_apps/theme/theme";
 import {ToasterUi} from "@/vol_apps/toaster/toaster_ui";
 import {Version} from "@/vol_apps/version/version";
 import {Cm} from "@/vol_apps/cm/cm";
-import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu.js";
 import {SearchBar} from "./vol_apps/search/search";
 import {Menu} from "@/vol_apps/menu/menu_legacy";
 import { BingWallpaperArchiveProvider } from "./vol_apps/tanStackQuery/Api_BingWallpaper";
@@ -17,22 +16,19 @@ export const App = () => {
         <>
             <ToasterUi/>
             <Cm/>
-            <GlobalContextMenu>
-                <div className={"flex flex-row gap-2 px-2 pt-2"}>
-                    <Menu/>
-                    <LanguageUi/>
-                    <Theme/>
-                    <CmOpen/>
-                </div>
-                <div className={"absolute top-2 right-2"}>
-                    <Version/>
-                </div>
-                <div className={"flex mt-30 mb-15"}>
-                    <SearchBar/>
-                </div>
-                <TileApp/>
-
-            </GlobalContextMenu>
+            <div className={"flex flex-row gap-2 px-2 pt-2"}>
+                <Menu/>
+                <LanguageUi/>
+                <Theme/>
+                <CmOpen/>
+            </div>
+            <div className={"absolute top-2 right-2"}>
+                <Version/>
+            </div>
+            <div className={"flex mt-30 mb-15"}>
+                <SearchBar/>
+            </div>
+            <TileApp/>
             <DndFile/>
             <BingWallpaperArchiveProvider>
                 <BgApp/>

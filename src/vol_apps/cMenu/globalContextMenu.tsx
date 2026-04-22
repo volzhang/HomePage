@@ -35,7 +35,8 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
     return (
         <>
             <ContextMenu onOpenChange={handleOpenChange}>
-                <ContextMenuTrigger className= {"fixed inset-0 z-0"}>
+                {/*<ContextMenuTrigger className= {"fixed inset-0 z-0 border-5 border-red-900"}>*/}
+                <ContextMenuTrigger className= {"w-fit h-fit z-0"}>
                     {children}
                 </ContextMenuTrigger>
                 <ContextMenuContent key={contentKey} className="w-48">

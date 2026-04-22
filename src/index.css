@@ -131,9 +131,14 @@
         height: 100%;
     }
 
+    /*body {*/
+    /*    @apply bg-background text-foreground;*/
+    /*}*/
+    /* 主题背景靠html，body用bg-transparent，bg靠双层fixed div layer */
     body {
-        @apply bg-background text-foreground;
+        @apply bg-transparent text-foreground;
     }
+
 }
 
 @layer utilities {

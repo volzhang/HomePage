@@ -30,8 +30,8 @@ export function ScrollAreaForTiles({children}: PropsWithChildren) {
             <div className={cn(
                 "flex flex-col mx-auto",
                 "border border-border rounded-xl",
-                "max-h-[64vh]",
-                "w-[85%]",
+                "max-h-[66vh]",
+                "w-[88%]",
                 "overflow: visible"
             )}>
                 <ScrollArea

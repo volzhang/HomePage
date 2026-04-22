@@ -43,7 +43,6 @@ export const SearchBar = () => {
         return () => window.removeEventListener("keydown", handler);
     }, [isOpen]);
 
-
     const handleSelect = (v: string) => {
         setEngineInUseByName(v)
         inputBoxRef.current?.focus()

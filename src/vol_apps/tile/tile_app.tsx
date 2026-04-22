@@ -5,6 +5,7 @@ import {SortableTiles} from "@/vol_apps/tile/tile";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {TileUi} from "@/vol_apps/tile/tile_ui";
 import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated";
+import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu";
 
 export const TileApp = () => {
     const {tilesVisible} = useTileStore();
@@ -15,9 +16,11 @@ export const TileApp = () => {
             {hydrated && tilesVisible
                 ? <>
                     <TagComponent/>
-                    <ScrollAreaForTiles>
-                        <SortableTiles/>
-                    </ScrollAreaForTiles>
+                        <ScrollAreaForTiles>
+                            <GlobalContextMenu>
+                                <SortableTiles/>
+                            </GlobalContextMenu>
+                        </ScrollAreaForTiles>
                     <TileUi/>
                 </>
                 : null
