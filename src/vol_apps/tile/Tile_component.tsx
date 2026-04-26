@@ -2,6 +2,7 @@ import type {TileLogic} from "@/vol_apps/tile/useTileLogic";
 import {cn} from "@/lib/utils";
 import {Spinner} from "@/components/ui/spinner";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
+import {Tilt_3D} from "./Tile_3D";
 
 
 export type TileComponentProps = TileLogic & {
@@ -52,7 +53,7 @@ export const Tile_component = (
     const handleClick = () => openLinkInNewTab(link)
 
     return (
-        <>
+        <Tilt_3D radius={tileRadius}>
             {/* tile */}
             <a
                 {...anchorProps}
@@ -141,5 +142,5 @@ export const Tile_component = (
                     {name}
                 </p>
             </a>
-        </>)
+        </Tilt_3D>)
 }

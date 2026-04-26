@@ -108,12 +108,11 @@ export const useTileLogic = () => {
             ? input
             : enhanceUrl(input);
         updateTile(tileInEditId, {url: finalUrl});
-        try_handle_name(finalUrl);
     };
 
     const try_handle_name = (url: string) => {
-        if (!URL.canParse(url)) return;
         if (name) return;
+        if (!URL.canParse(url)) return;
 
         const autoName = extractMainDomain(url);
         updateTile(tileInEditId, {
@@ -215,6 +214,9 @@ export const useTileLogic = () => {
         // HEAD
         // 这里可能有歧义，实际上，是currentLink currentName currentTag
         link, setLink,
+
+        try_handle_name,
+
         name, setName,
         tag, handleTagChange,
 

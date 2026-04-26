@@ -26,7 +26,7 @@ export const Tile_ui_inEdit_head = (
         handleAutoFetchIcon,
         handleSearchIcon,
 
-        link, setLink,
+        link, setLink, try_handle_name,
         name, setName,
 
         iconFileName, handleIconFilePick,
@@ -47,7 +47,10 @@ export const Tile_ui_inEdit_head = (
                                    placeholder="https://"
                                    transform={enhanceUrl}
                                    onLiveChange={setLink}
-                                   onCommit={setLink}
+                                   onCommit={(v)=>{
+                                       setLink(v)
+                                       try_handle_name(v)
+                                   }}
                                    enterFocusRef={ok_ref}
                                    value={link}
                     />

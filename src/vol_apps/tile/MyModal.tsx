@@ -33,6 +33,21 @@ export const MyModal = ({
         return () => cancelAnimationFrame(id);
     }, [open, initialFocusRef]);
 
+    useEffect(() => {
+        if (!open) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Enter') {
+                const target = initialFocusRef?.current ?? modalContentRef.current;
+                target?.focus();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [open, initialFocusRef]);
+
+
     return (
         <>
             {/* 遮罩层 z-10 */}
