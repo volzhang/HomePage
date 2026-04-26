@@ -3,7 +3,6 @@ import img from "@/assets/bg-dark.png?inline";
 import type {YYYY_MM_DD} from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
 export {img}
 
-
 export type SizeType = "auto" | "cover" | "contain"
 export type BgType = "default" | "custom" | "bing"
 

@@ -1,4 +1,4 @@
-import {useTileStore} from "@/vol_apps/tile/tile_store";
+import {useTileStoreBase} from "@/vol_apps/tile/tile_store";
 import { VERSION } from "@/vol_apps/tool/action/fetch";
 import {persistedStores, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 import { downloadAsJsonFile, timeStamp } from "@/vol_apps/tool/action/download";
@@ -83,7 +83,7 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
 
 		// 特殊处理 tile 合并模式
 		if (key === "tile" && mergeTileTiles && Array.isArray(stateToRestore.tiles)) {
-			useTileStore.getState().appendTiles(stateToRestore.tiles);
+			useTileStoreBase.getState().appendTiles(stateToRestore.tiles);
 		} else {
 			store.setState(stateToRestore);
 		}

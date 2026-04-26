@@ -2,12 +2,12 @@ import {Button} from "@/components/ui/button";
 import {Spinner} from "@/components/ui/spinner";
 import {ChevronLeft, ChevronRight} from "lucide-react";
 import {cn} from "@/lib/utils";
+import type {BgLogic} from "@/vol_apps/bg/bg_logic";
 
 const TransitionColors = "transition-colors duration-300 ease-in-out"
 
 export const BgUiCopyright = (
-    {bgType, bgBingCopyright, handleNext, handlePrev, nextIsPending, prevIsPending, t}: any
-) => {
+    {bgType, bgBingCopyright, handleNext, handlePrev, nextIsPending, prevIsPending, t}: BgLogic) => {
     return (
         <div className={"z-0"}>
             {bgType === "bing" ? (

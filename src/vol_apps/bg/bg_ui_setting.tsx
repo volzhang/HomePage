@@ -8,14 +8,14 @@ import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/action/filePicker";
 import {Folder} from "lucide-react";
 import {useId} from "react";
+import type {BgLogic} from "@/vol_apps/bg/bg_logic";
 
 export function BgUiSetting(
     {
         bgRepeat, bgCenter, otherVisible, bgUiVisible, bgSize, bgType,
         setBgType, setBgRepeat, setOtherVisible, setBgCenter, setBgImg, setBgSize, setBgUiVisible,
-		t,
-    }: any
-) {
+        t,
+    } :BgLogic) {
     const id = useId();
 
     const bgTypeOptions = [

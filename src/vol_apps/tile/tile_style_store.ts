@@ -1,0 +1,138 @@
+import {createPersistedStoreWithEqualityFn} from "@/vol_apps/tool/createPersistedStore";
+import { type FontItem } from "@/vol_apps/cm/cm_store";
+import {shallow} from "zustand/vanilla/shallow";
+
+// ---------- 类型 ----------
+type TileStyleState = {
+    backgroundColor: string;
+    backgroundOpacity: number;
+
+    tileSize: number;
+    tileRadius: number;
+    tileOutlineThickness: number;
+    tileOutlineColor: string;
+    tileOutlineOpacity: number;
+
+    iconBorderSize: number;
+    iconBorderOffset: { x: number; y: number };
+    iconSize: number;
+    iconOffset: { x: number; y: number };
+
+    fontSize: number;
+    fontWeight: number;
+    font: FontItem;
+
+    textOffset: { x: number; y: number };
+    textOpacity: number;
+    textColor: string;
+};
+
+type TileStyleAction = {
+    setBackgroundColor: (color: string) => void;
+    setBackgroundOpacity: (opacity: number) => void;
+
+    setTileSize: (size: number) => void;
+    setTileRadius: (radius: number) => void;
+    setTileOutlineThickness: (thickness: number) => void;
+    setTileOutlineColor: (color: string) => void;
+    setTileOutlineOpacity: (opacity: number) => void;
+
+    setIconBorderSize: (size: number) => void;
+    setIconBorderOffset: (offset: { x: number; y: number }) => void;
+    setIconSize: (size: number) => void;
+    setIconOffset: (offset: { x: number; y: number }) => void;
+
+    setFontSize: (size: number) => void;
+    setFontWeight: (weight: number) => void;
+    setFont: (font: FontItem) => void;
+
+    setTextOffset: (offset: { x: number; y: number }) => void;
+    setTextOpacity: (opacity: number) => void;
+    setTextColor: (color: string) => void;
+};
+
+type TileStyleStore = TileStyleState & TileStyleAction;
+
+// ---------- 默认字体 ----------
+export const FONT_DEFAULT: FontItem = {
+    fullName: "System Default",
+    family: `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif`,
+};
+
+// ---------- 初始样式 ----------
+export const INITIAL_STYLE: TileStyleState = {
+    backgroundColor: "#ffffff",
+    backgroundOpacity: 1,
+
+    tileSize: 144,
+    tileRadius: 14,
+    tileOutlineThickness: 0,
+    tileOutlineColor: "#000000",
+    tileOutlineOpacity: 1,
+
+    iconBorderSize: 96,
+    iconBorderOffset: { x: 0, y: 10 },
+    iconSize: 96,
+    iconOffset: { x: 0, y: 0 },
+
+    fontSize: 14,
+    fontWeight: 550,
+    font: FONT_DEFAULT,
+
+    textOffset: { x: 0, y: 14 },
+    textColor: "#000000",
+    textOpacity: 1,
+};
+
+// ---------- Store ----------
+const useTileStyleStoreBase  = createPersistedStoreWithEqualityFn<TileStyleStore>(
+    "ts",
+    (set,) => ({
+        ...INITIAL_STYLE,
+
+        // 背景
+        setBackgroundColor: (backgroundColor) => set({ backgroundColor }),
+        setBackgroundOpacity: (backgroundOpacity) => set({ backgroundOpacity }),
+
+        // 磁贴尺寸与圆角
+        setTileSize: (tileSize) => set({ tileSize }),
+        setTileRadius: (tileRadius) => set({ tileRadius }),
+
+        // 磁贴轮廓
+        setTileOutlineThickness: (tileOutlineThickness) => set({ tileOutlineThickness }),
+        setTileOutlineColor: (tileOutlineColor) => set({ tileOutlineColor }),
+        setTileOutlineOpacity: (tileOutlineOpacity) => set({ tileOutlineOpacity }),
+
+        // 图标
+        setIconBorderSize: (iconBorderSize) => set({ iconBorderSize }),
+        setIconBorderOffset: (iconBorderOffset) => set({ iconBorderOffset }),
+        setIconSize: (iconSize) => set({ iconSize }),
+        setIconOffset: (iconOffset) => set({ iconOffset }),
+
+        // 文字样式
+        setFontSize: (fontSize) => set({ fontSize }),
+        setFontWeight: (fontWeight) => set({ fontWeight }),
+        setFont: (font) => set({ font }),
+
+        // 文字偏移与颜色
+        setTextOffset: (textOffset) => set({ textOffset }),
+        setTextOpacity: (textOpacity) => set({ textOpacity }),
+        setTextColor: (textColor) => set({ textColor }),
+    }),
+);
+
+export function useTileStyleStore(): TileStyleStore;
+export function useTileStyleStore<T>(
+    selector: (state: TileStyleStore) => T,
+): T;
+export function useTileStyleStore(selector?: (state: TileStyleStore) => unknown) {
+    if (selector) {
+        return useTileStyleStoreBase(selector, shallow);
+    }
+    // 无 selector 时，返回整个 state（同样应用 shallow）
+    return useTileStyleStoreBase((s) => s, shallow);
+}
+
+// ✅ 同时导出基础 store，方便外部使用 setState / getState / subscribe 等原生 API
+export { useTileStyleStoreBase };
+

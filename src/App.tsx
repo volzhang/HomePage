@@ -5,11 +5,11 @@ import {Theme} from "@/vol_apps/theme/theme";
 import {ToasterUi} from "@/vol_apps/toaster/toaster_ui";
 import {Version} from "@/vol_apps/version/version";
 import {Cm} from "@/vol_apps/cm/cm";
-import {SearchBar} from "./vol_apps/search/search";
+import {SearchBar} from "@/vol_apps/search/search";
 import {Menu} from "@/vol_apps/menu/menu_legacy";
-import { BingWallpaperArchiveProvider } from "./vol_apps/tanStackQuery/Api_BingWallpaper";
-import { LanguageUi } from "./vol_apps/language/language_ui";
-import { TileApp } from "./vol_apps/tile/tile_app";
+import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWallpaper";
+import {LanguageUi} from "@/vol_apps/language/language_ui";
+import {Tile_app} from "./vol_apps/tile/Tile_app";
 
 export const App = () => {
     return (
@@ -28,7 +28,7 @@ export const App = () => {
             <div className={"flex mt-30 mb-15"}>
                 <SearchBar/>
             </div>
-            <TileApp/>
+            <Tile_app/>
             <DndFile/>
             <BingWallpaperArchiveProvider>
                 <BgApp/>

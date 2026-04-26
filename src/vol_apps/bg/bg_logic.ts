@@ -43,7 +43,8 @@ function usePendingWithTimeout(timeout = 3000) {
     return {pending, start, stop};
 }
 
-export function useBgLogic() {
+export type BgLogic = ReturnType<typeof useBgLogic>;
+export const useBgLogic = () => {
     const {
         bgImg,
         bgType,
@@ -71,7 +72,7 @@ export function useBgLogic() {
     const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate]);
     const preDate = useMemo(() => getDateWithOffset(date, -1), [date]);
     const nextDate = useMemo(() => getDateWithOffset(date, +1), [date]);
-    console.log(date)
+    // console.log(date)
 
     // 查询
     const {
@@ -218,3 +219,4 @@ export function useBgLogic() {
         t,
     };
 }
+

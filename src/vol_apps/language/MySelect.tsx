@@ -90,7 +90,7 @@ export const MySelect = ({
     const handleSelect = (value: string) => {
         setIsOpen(false);
         setSelectedValue(value);
-        // 保留原 setTimeout 行为（如无必要可移除）
+        // 保持流畅
         setTimeout(() => onChange?.(value));
     };
 

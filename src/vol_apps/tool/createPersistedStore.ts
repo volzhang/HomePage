@@ -1,6 +1,7 @@
 import { create, type StateCreator } from "zustand";
 import { createJSONStorage, persist, type PersistOptions, type StateStorage} from "zustand/middleware";
 import {createStore, del, get, set } from "idb-keyval";
+import {createWithEqualityFn} from "zustand/traditional";
 
 type StorageType = "idb" | "localStorage";
 
@@ -89,6 +90,37 @@ export function createPersistedStore<S>(
 	} as PersistOptions<S, Partial<S>>;
 
 	const store = create<S>()(
+		persist(initializer, persistConfig),
+	);
+
+	persistedStores.set(name, {
+		store: store as PersistStoreLike,
+		storageType,
+	});
+
+	return store;
+}
+
+// ---------- 支持 equalityFn（如 shallow）的版本 ----------
+export function createPersistedStoreWithEqualityFn<S>(
+	name: string,
+	initializer: StateCreator<S, [], [], S>,
+	options: CreatePersistedStoreOptions<S> = {},
+) {
+	const { storageType = "idb", ...restPersistOptions } = options;
+
+	const storage =
+		storageType === "idb"
+			? createJSONStorage<Partial<S>>(() => idbKeyValStorage)
+			: createJSONStorage<Partial<S>>(() => localStorage);
+
+	const persistConfig = {
+		name,
+		storage,
+		...restPersistOptions,
+	} as PersistOptions<S, Partial<S>>;
+
+	const store = createWithEqualityFn<S>()(
 		persist(initializer, persistConfig),
 	);
 

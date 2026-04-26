@@ -1,8 +1,6 @@
-import {createPersistedStore, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
-import {
-    defaultTile, TutorialsTiles,
-    type Tag, type Tile, type TileUpdate,
-} from "@/vol_apps/tile/tile_store_types.js";
+import {createPersistedStoreWithEqualityFn, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
+import {defaultTile, TutorialsTiles, type Tag, type Tile, type TileUpdate,} from "@/vol_apps/tile/tile_store_types.js";
+import {shallow} from "zustand/vanilla/shallow";
 
 type TileStoreState = {
     //基本
@@ -83,7 +81,7 @@ const INITIAL_STATE = {
     tileUiVisible: false,
 }
 
-export const useTileStore = createPersistedStore<TileStore>(
+export const useTileStoreBase  = createPersistedStoreWithEqualityFn<TileStore>(
     "tile",
     (set, get) => ({
         ...INITIAL_STATE,
@@ -340,3 +338,13 @@ export const useTileStore = createPersistedStore<TileStore>(
 
     }
 );
+
+// 封装默认 shallow 的 hook（支持有/无 selector）
+export function useTileStore(): TileStore;
+export function useTileStore<T>(selector: (state: TileStore) => T): T;
+export function useTileStore(selector?: (state: TileStore) => unknown) {
+    if (selector) {
+        return useTileStoreBase(selector, shallow);
+    }
+    return useTileStoreBase((s) => s, shallow);
+}

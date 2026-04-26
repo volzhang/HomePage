@@ -1,0 +1,248 @@
+import {INITIAL_STYLE, useTileStyleStore, useTileStyleStoreBase} from "./tile_style_store";
+import {useCallback, useMemo, useRef, useState} from "react";
+import {useBgStore} from "@/vol_apps/bg/bg_store";
+import {useTileStore} from "@/vol_apps/tile/tile_store";
+import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
+import {enhanceUrl, extractMainDomain} from "@/vol_apps/tool/action/enhanceUrl";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
+import {useFaviconVemetricPng} from "@/vol_apps/tanStackQuery/Api_FaviconVemetric";
+import {isValidUrl} from "@/vol_apps/tool/isType/isValidUrl";
+import {isSortable} from "@dnd-kit/react/sortable";
+
+export type TileLogic = ReturnType<typeof useTileLogic>;
+export const useTileLogic = () => {
+
+    const {t} = useLanguageStore()
+
+    const {
+        tiles, tileInEditId, tileUiVisible,
+        setTiles, tilesByTag, isBroadMatches,
+        setTileUiVisible, setTileInEditId,
+        updateTile, removeTile
+
+    } = useTileStore()
+    const {bgImg} = useBgStore()
+
+    const displayTiles = tilesByTag(isBroadMatches ? "ANY" : "ALL")!
+    // 缓存当前视图 id 顺序，方便找到左邻居
+    const currentIdOrder = useMemo(() => displayTiles.map(t => t.id), [displayTiles]);
+    const handleDragEnd = (event: any) => {
+        const {operation, canceled} = event;
+        if (canceled || !operation?.source) return;
+
+        const {source} = operation;
+        if (!isSortable(source)) return;
+
+        const draggedId = source.id;               // 被拖拽 tile 的 id
+        const toIndex = source.sortable.index;    // 目标视图位置
+
+        // 左邻居 id：如果拖到最前面就是 null
+        const filteredMap = currentIdOrder.filter(id => id !== draggedId);
+        const neighborId = toIndex > 0 ? filteredMap[toIndex - 1] : null;
+
+        // 复制 tiles，保证新数组
+        const newTiles = [...tiles];
+
+        // 删除被拖拽 tile
+        const removeIndex = newTiles.findIndex(t => t.id === draggedId);
+        if (removeIndex === -1) return;
+        const [removed] = newTiles.splice(removeIndex, 1);
+
+        // 决定插入位置
+        let insertIndex = 0;
+        if (neighborId !== null) {
+            const idx = newTiles.findIndex(t => t.id === neighborId);
+            insertIndex = idx !== -1 ? idx + 1 : newTiles.length;
+        }
+
+        // 插入
+        newTiles.splice(insertIndex, 0, removed);
+
+        // 更新 store
+        setTiles(newTiles);
+    };
+
+    const handleRightClick = useCallback((tileId: number) => {
+        setTileInEditId(tileId);
+        setTileUiVisible(true);
+    }, []);
+
+
+    // const TileState = useTileStore();
+    const TileStyle = useTileStyleStore();
+
+    const backgroundRGBAColor = (() => {
+        const r = parseInt(TileStyle.backgroundColor.slice(1, 3), 16);
+        const g = parseInt(TileStyle.backgroundColor.slice(3, 5), 16);
+        const b = parseInt(TileStyle.backgroundColor.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${TileStyle.backgroundOpacity})`;
+    })();
+
+    const tileOutlineRGBAColor = (() => {
+        const r = parseInt(TileStyle.tileOutlineColor.slice(1, 3), 16);
+        const g = parseInt(TileStyle.tileOutlineColor.slice(3, 5), 16);
+        const b = parseInt(TileStyle.tileOutlineColor.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${TileStyle.tileOutlineOpacity})`;
+    })();
+
+    const textRGBAColor = (() => {
+        const r = parseInt(TileStyle.textColor.slice(1, 3), 16);
+        const g = parseInt(TileStyle.textColor.slice(3, 5), 16);
+        const b = parseInt(TileStyle.textColor.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${TileStyle.textOpacity})`;
+    })();
+
+    const [stylesIsOpen, setStylesIsOpen] = useState(false);
+    const currentTile = tiles.find(tile => tile.id === tileInEditId)
+
+    // LINK
+    const link = currentTile?.url || ""
+
+    // NAME
+    const name = currentTile?.meta.name || ""
+    const setName = (name: string) => updateTile(tileInEditId, {meta: {name}})
+
+    const setLink = (input: string) => {
+        const finalUrl = URL.canParse(input)
+            ? input
+            : enhanceUrl(input);
+        updateTile(tileInEditId, {url: finalUrl});
+        try_handle_name(finalUrl);
+    };
+
+    const try_handle_name = (url: string) => {
+        if (!URL.canParse(url)) return;
+        if (name) return;
+
+        const autoName = extractMainDomain(url);
+        updateTile(tileInEditId, {
+            meta: {name: autoName}
+        });
+    };
+
+    // Auto-Fetch Icon
+    const [isFetchingIcon, setIsFetchingIcon] = useState<boolean>(false)
+    const {refetch} = useFaviconVemetricPng(
+        link.replace(/\/$/, ""),                    //这里去掉末尾斜杠/，可以提高成功率
+        96, {enabled: false});
+
+    const handleAutoFetchIcon = async () => {
+        if (!isValidUrl(link)) return;
+        if (isFetchingIcon) return;
+        setIsFetchingIcon(true)
+
+        const timerPromise = new Promise(resolve => setTimeout(resolve, 1000));
+        const updatePromise = (async () => {
+            const res = await refetch();
+            if (res.data) {
+                updateTile(tileInEditId, {meta: {icon: res.data}});
+            }
+        })();
+
+        Promise.all([timerPromise, updatePromise]).finally(() => {
+            setIsFetchingIcon(false);
+        });
+    };
+
+    // TAG
+    const tag = currentTile?.meta.tags.join(" ") || ""
+    const handleTagChange = (s: string) => {
+        //input组件输入一个string值时，至少输入的是""，
+        //不会输入完全的空值
+        const splitString = " ";
+        let newTags = s.split(splitString);
+        const inputIsEmpty = (newTags.length === 1 && newTags[0] === "")
+        if (inputIsEmpty) newTags = []
+        updateTile(tileInEditId, {meta: {tags: newTags}});
+    };
+
+    // ICON
+    const icon = currentTile?.meta.icon || defaultIconBase64
+    const setIcon = (icon: string) => updateTile(tileInEditId, {meta: {icon}})
+
+    // 临时文件名（只用于显示，不保存）
+    const [iconFileName, setIconFileName] = useState<string>("");
+
+    const handleIconFilePick = async (file: File | undefined) => {
+        if (!file) return;
+        setIconFileName(file.name);  // 临时存文件名
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64 = reader.result as string;
+            setIcon(base64);
+        };
+        reader.readAsDataURL(file);
+    };
+
+
+    const handleSearchIcon = async () => {
+        const name = currentTile?.meta.name;
+        openLinkInNewTab(`https://www.bing.com/images/search?pq=icon+${name}&q=icon+${name}&qft=+filterui:imagesize-small&first=1`);
+    }
+
+    // BUTTONS
+    const hasStyleChanges = useTileStyleStore((state) =>
+        Object.entries(INITIAL_STYLE).some(([key, defaultValue]) =>
+            JSON.stringify(state[key as keyof typeof INITIAL_STYLE]) !== JSON.stringify(defaultValue)
+        )
+    );
+
+    const handleRemoveTile = () => removeTile(tileInEditId);
+    const handleResetStyles = () => useTileStyleStoreBase.setState({...INITIAL_STYLE});
+
+    // OK
+    const ok_ref = useRef<HTMLButtonElement>(null);
+    const handleOk = () => setTileUiVisible(false);
+
+    return {
+        t,
+
+        tileUiVisible,
+        setTileUiVisible,
+
+        // 磁砖墙
+        displayTiles,
+        handleRightClick,
+
+        // 拖拽
+        handleDragEnd,
+
+        // HEAD
+        // 这里可能有歧义，实际上，是currentLink currentName currentTag
+        link, setLink,
+        name, setName,
+        tag, handleTagChange,
+
+        icon, setIcon,
+        iconFileName, handleIconFilePick,
+
+        isFetchingIcon,
+        handleAutoFetchIcon,
+        handleSearchIcon,
+
+        //BODY
+        handleRemoveTile,
+        handleResetStyles,
+        hasStyleChanges,
+
+        //FOOT
+        handleOk,
+        ok_ref,
+
+        //STYLE
+        ...TileStyle,
+        iconBorderOutline: stylesIsOpen,
+        stylesIsOpen, setStylesIsOpen,
+        bgImg,
+
+        //背景色
+        backgroundRGBAColor,
+        tileOutlineRGBAColor,
+        textRGBAColor,
+
+        INITIAL_STYLE,
+    }
+
+}

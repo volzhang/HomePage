@@ -10,6 +10,7 @@
     background-color: var(--background);  /* 使用主题背景色 */
     /* 确保背景图在上层，背景色作为 fallback */
 }
+
 /* ==================================================== */
 
 @custom-variant dark (&:is(.dark *));
