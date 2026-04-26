@@ -189,7 +189,10 @@ export const useTileLogic = () => {
         )
     );
 
-    const handleRemoveTile = () => removeTile(tileInEditId);
+    const handleRemoveTile = () => {
+        setTileUiVisible(false)
+        setTimeout(() => removeTile(tileInEditId), 0)
+    };
     const handleResetStyles = () => useTileStyleStoreBase.setState({...INITIAL_STYLE});
 
     // OK
