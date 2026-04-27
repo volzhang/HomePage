@@ -94,9 +94,8 @@ export const MySelect = ({
                 <div className={cn(MENU_CLASS, "mt-1")}>
                     <ul className="flex flex-col">
                         {options.map(({label, value}) => (
-                            <li>
+                            <li key={value}>
                                 <button
-                                    key={value}
                                     className={cn(ITEM_CLASS)}
                                     onClick={() => handleSelect(value)}
                                 >
