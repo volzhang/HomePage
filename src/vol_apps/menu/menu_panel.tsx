@@ -1,7 +1,7 @@
 import {cn} from "@/lib/utils";
 import {ChevronRightIcon} from "lucide-react";
 import {createContext, useContext, useState} from "react";
-import {FloatingPanel} from "@/vol_apps/tool/animation/FloatingPanel";
+import {Floating} from "@/vol_apps/01_components/Floating";
 
 const TRIGGER_CLASS = cn(
     "relative w-24 h-9",
@@ -68,7 +68,7 @@ const RenderMenuTree = ({node, parentPath}: { node: MenuTree, parentPath: MenuTr
     const {path, setPath} = useMenuContext();
     const currentPath = [...parentPath, node.key];
 
-    const isOpen = currentPath.every((seg, i) => path[i] === seg);
+    const open = currentPath.every((seg, i) => path[i] === seg);
     const handleMouseEnter = () => {
         if (path.join(",") !== currentPath.join(",")) {
             setPath(currentPath)
@@ -88,7 +88,7 @@ const RenderMenuTree = ({node, parentPath}: { node: MenuTree, parentPath: MenuTr
                     {hasChildren && <ChevronRightIcon className={ICON_CLASS}/>}
                 </button>
                 {hasChildren && <div className={cn(DEFAULT_SUBMENU_CLASS)}>
-                    <FloatingPanel show={isOpen}>
+                    <Floating open={open}>
                         <ul className={MENU_CLASS}>
                             {node.children!.map(childNode =>
                                 <RenderMenuTree
@@ -98,7 +98,7 @@ const RenderMenuTree = ({node, parentPath}: { node: MenuTree, parentPath: MenuTr
                                 />
                             )}
                         </ul>
-                    </FloatingPanel>
+                    </Floating>
                 </div>}
             </li>
         </>
@@ -132,11 +132,11 @@ const MenuV2 = ({menu, MenuClassName}: {
                 菜单
             </button>
             <div className={cn("absolute left-full", MenuClassName)}>
-                <FloatingPanel show={isOpen}>
+                <Floating open={isOpen}>
                     <ul className={MENU_CLASS}>
                         {menu.map(nodeItem => <RenderMenuTree key={nodeItem.key} node={nodeItem} parentPath={currentPath}/>)}
                     </ul>
-                </FloatingPanel>
+                </Floating>
             </div>
         </div>
     )

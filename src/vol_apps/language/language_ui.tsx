@@ -1,5 +1,5 @@
 import {type LANGUAGE, useLanguageStore} from "@/vol_apps/language/language_store";
-import {MySelect} from "@/vol_apps/language/MySelect";
+import {MySelect} from "@/vol_apps/01_components/MySelect";
 
 const options = [
     { label: "English", value: "en" },

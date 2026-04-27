@@ -1,7 +1,7 @@
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {X} from "lucide-react";
-import {useEscapeClose} from "@/vol_apps/tool/useEscapeClose";
+import {useKeyEscapeToClose} from "../02_hooks/useKeyEscapeToClose";
 import {type ReactNode, type RefObject, useEffect, useRef} from "react";
 
 interface Props {
@@ -23,7 +23,8 @@ export const MyModal = ({
 
     const modalContentRef = useRef<HTMLDivElement>(null);
 
-    useEscapeClose(open, () => onOpenChange(false));
+    useKeyEscapeToClose(open, () => onOpenChange(false));
+
     useEffect(() => {
         if (!open) return;
         const id = requestAnimationFrame(() => {
@@ -46,7 +47,6 @@ export const MyModal = ({
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [open, initialFocusRef]);
-
 
     return (
         <>

@@ -1,47 +1,33 @@
 import {SEARCH_ENGINES, useSearchStore} from "@/vol_apps/search/search_store";
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
-import {FloatingPanel} from "@/vol_apps/tool/animation/FloatingPanel";
+import {Floating} from "@/vol_apps/01_components/Floating";
+import {useKeyEscapeToClose} from "../02_hooks/useKeyEscapeToClose";
+import {RotateOnOpen} from "@/vol_apps/01_components/RotateOnOpen";
+import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose";
+import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
+import {useMergeRefs} from "@/vol_apps/02_hooks/useMergeRefs";
+
 
 export const SearchBar = () => {
 
     const {getEngineInUse, setEngineInUseByName} = useSearchStore()
+    const [open, setOpen] = useState<boolean>(false)
 
     const currentEngine = getEngineInUse();
 
-    const rootRef = useRef<HTMLDivElement>(null)
+    const focusRef = useFocusOutsideToClose(open, () => setOpen(false));
+    const clickRef = useClickOutsideToClose(open, () => setOpen(false));
+    const rootRef = useMergeRefs(focusRef, clickRef);
+
     const inputBoxRef = useRef<HTMLTextAreaElement>(null)
 
-    const [isOpen, setIsOpen] = useState<boolean>(false)
+    const close = () => setOpen(false)
+    const toggle = () => setOpen(!open)
 
-    const close = () => setIsOpen(false)
-    const toggle = () => setIsOpen(!isOpen)
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const handler = (e: MouseEvent) => {
-            const target = e.target as Node;
-            if (rootRef.current?.contains(target)) return;
-            close();
-        };
-
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
-    }, [isOpen]);
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const handler = (e: KeyboardEvent) => {
-            if (e.key === "Escape") close();
-        };
-
-        window.addEventListener("keydown", handler);
-        return () => window.removeEventListener("keydown", handler);
-    }, [isOpen]);
+    useKeyEscapeToClose(open, () => close())
 
     const handleSelect = (v: string) => {
         setEngineInUseByName(v)
@@ -85,8 +71,8 @@ export const SearchBar = () => {
 
         "rounded-md overflow-hidden",
 
-        {"bg-white": isOpen},
-        {"shadow-sBlue/30 shadow-[0_10px_30px_rgba(0,0,0,0.2)]": isOpen},
+        {"bg-white": open},
+        {"shadow-sBlue/30 shadow-[0_10px_30px_rgba(0,0,0,0.2)]": open},
 
         "hover:shadow-sBlue/30",
         "hover:shadow-[0_10px_30px_rgba(0,0,0,0.2)]"
@@ -164,14 +150,13 @@ export const SearchBar = () => {
                 <button onClick={toggle} className={ENGINE_BUTTON}>
                     <div className={ENGINE_NAME}>
                         {currentEngine.name}
-                        <span
-                            className={cn("text-[12px] transition-transform duration-200 opacity-50", isOpen && "rotate-180")}>▼</span>
+                        <RotateOnOpen open={open} className={"text-sm"}>▼</RotateOnOpen>
                     </div>
                 </button>
             </div>
 
             {/* dropdown */}
-            {<FloatingPanel show={isOpen}>
+            {<Floating open={open}>
                 <div className={cn(
                     "absolute right-0 top-full mt-2 w-fit min-w-34",
                     "border-4 border-background rounded-md shadow-xl",
@@ -193,11 +178,10 @@ export const SearchBar = () => {
                             >
                                 {engine.name}
                             </button>
-
                         ))
                     }
                 </div>
-            </FloatingPanel>}
+            </Floating>}
         </div>
     )
 }
