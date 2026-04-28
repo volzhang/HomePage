@@ -29,3 +29,5 @@ export const opacityClasses = {
     80: "opacity-80",
     100: "opacity-100",
 } as const;
+
+export type AnchorDirection = "top" | "bottom" | "left" | "right";

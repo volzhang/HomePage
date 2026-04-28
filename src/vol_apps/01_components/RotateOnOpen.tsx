@@ -1,5 +1,5 @@
 import {cn} from "@/lib/utils";
-import {durationClasses, opacityClasses} from "@/vol_apps/01_components/Types";
+import {durationClasses, opacityClasses} from "@/vol_apps/00_types/Types";
 
 /**
  * @param open - Controls the rotated state

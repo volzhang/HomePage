@@ -3,12 +3,12 @@ import {useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
-import {Floating} from "@/vol_apps/01_components/Floating";
 import {useKeyEscapeToClose} from "../02_hooks/useKeyEscapeToClose";
 import {RotateOnOpen} from "@/vol_apps/01_components/RotateOnOpen";
 import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose";
 import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
 import {useMergeRefs} from "@/vol_apps/02_hooks/useMergeRefs";
+import {useFloating} from "../02_hooks/useFloating";
 
 
 export const SearchBar = () => {
@@ -18,9 +18,13 @@ export const SearchBar = () => {
 
     const currentEngine = getEngineInUse();
 
+
+    const {anchorRef, floatingStyle} = useFloating({open, direction: "bottom", align: "end"});
+
     const focusRef = useFocusOutsideToClose(open, () => setOpen(false));
     const clickRef = useClickOutsideToClose(open, () => setOpen(false));
-    const rootRef = useMergeRefs(focusRef, clickRef);
+
+    const rootRef = useMergeRefs(focusRef, clickRef, anchorRef);
 
     const inputBoxRef = useRef<HTMLTextAreaElement>(null)
 
@@ -156,12 +160,11 @@ export const SearchBar = () => {
             </div>
 
             {/* dropdown */}
-            {<Floating open={open}>
+            <div style={floatingStyle}>
                 <div className={cn(
-                    "absolute right-0 top-full mt-2 w-fit min-w-34",
+                    "flex flex-row-reverse mt-1 w-fit min-w-34",
                     "border-4 border-background rounded-md shadow-xl",
-                    "bg-background text-foreground select-none overflow-hidden z-10",
-                    "flex flex-row-reverse"
+                    "bg-background text-foreground select-none overflow-hidden",
                 )}>
                     {[...SEARCH_ENGINES]
                         .sort((a, b) => a.pos - b.pos)
@@ -181,7 +184,7 @@ export const SearchBar = () => {
                         ))
                     }
                 </div>
-            </Floating>}
+            </div>
         </div>
     )
 }

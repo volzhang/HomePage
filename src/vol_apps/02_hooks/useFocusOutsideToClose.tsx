@@ -8,7 +8,7 @@ import {useEffect, useRef} from "react";
  * @returns containerRef - A ref to attach to the container element.
  */
 export const useFocusOutsideToClose = (open: boolean, onClose: () => void) => {
-    const containerRef = useRef<HTMLElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const onCloseRef = useRef(onClose);
     onCloseRef.current = onClose;
 
