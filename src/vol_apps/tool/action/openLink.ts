@@ -11,3 +11,7 @@
 export const openLinkInNewTab = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
 };
+
+export const openLinkInCurrentTab = (url: string) => {
+    window.location.href = url;
+};

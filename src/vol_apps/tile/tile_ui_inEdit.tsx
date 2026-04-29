@@ -12,12 +12,10 @@ export const Ui_inEdit_menu = () => {
     const Logic = useTileLogic();
     return (
         <>
-            {/*<Button variant={"outline"}*/}
-            {/*        onClick={() => Logic.setOpen(true)}*/}
-            {/*>模态</Button>*/}
             <MyModal open={Logic.tileUiVisible}
                      onOpenChange={Logic.setTileUiVisible}
-                     initialFocusRef={Logic.ok_ref}
+                     initialFocusRef={Logic.link_ref}
+                     okRef={Logic.ok_ref}
             >
                 <div className="flex flex-col">
                     <Tile_ui_inEdit_head {...Logic}/>

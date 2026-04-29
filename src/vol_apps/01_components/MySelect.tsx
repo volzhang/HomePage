@@ -4,22 +4,24 @@ import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose
 import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
 import {useMergeRefs} from "@/vol_apps/02_hooks/useMergeRefs";
 import {useFloating} from "../02_hooks/useFloating";
-import {Ulist} from "@/vol_apps/01_components/Ulist";
+import {UnorderedList} from "./UnorderedList";
 
 const MENU_CLASS = cn(
-    "flex flex-col items-center border py-1 w-34",
-    "bg-popover text-popover-foreground",
+    "flex flex-col items-center border w-34",
+    "bg-background text-foreground",
     "rounded-md shadow-md",
     "select-none",
+    "p-1"
 );
 
 const ITEM_CLASS = cn(
-    "flex items-center justify-between",
-    "px-2 h-8 min-w-32 bg-background",
+    "flex items-center justify-between w-full",
+    "h-8 bg-background text-foreground",
     "text-sm rounded-sm",
-    "hover:bg-foreground/5",
+    "hover:bg-foreground/10",
     "whitespace-nowrap",
-    "select-none"
+    "select-none",
+    "p-2"
 );
 
 export interface Option {
@@ -69,10 +71,10 @@ export const MySelect = ({
                 {trigger}
             </div>
             <div style={floatingStyle}>
-                <Ulist value={value} options={options} handleSelect={handleSelect}
-                       menu_className={MENU_CLASS}
-                       item_className={ITEM_CLASS}
-                       checkIcon_className={"size-4"}
+                <UnorderedList value={value} options={options} handleSelect={handleSelect}
+                               menu_className={MENU_CLASS}
+                               item_className={ITEM_CLASS}
+                               checkIcon_className={"size-4"}
                 />
             </div>
         </div>

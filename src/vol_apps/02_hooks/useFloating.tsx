@@ -9,7 +9,7 @@ import type { AnchorDirection } from "@/vol_apps/00_types/Types";
  *
  * @param open - 控制浮层是否打开。打开时会计算并跟随锚点位置。
  * @param direction - 浮层相对锚点的弹出方向，默认 `"bottom"`
- * @param align - 浮层相对锚点元素的对其方式，默认 `"start"`
+ * @param align - 浮层相对锚点元素的对齐方式，默认 `"start"`
  * @param scale - 隐藏时的缩放百分比，例如 95 表示 scale(0.95)，默认 95
  * @param duration - 入场动画时长（毫秒），默认 200
  * @param exitDuration - 出场动画时长（毫秒），默认 150

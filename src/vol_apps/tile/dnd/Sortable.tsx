@@ -5,7 +5,6 @@ import {DragDropProvider} from "@dnd-kit/react";
 import {cn} from "@/lib/utils.js";
 import {PointerActivationConstraints, PointerSensor} from "@dnd-kit/dom";
 
-
 export type SortableItem = {
     id: number;
     index: number;
@@ -46,8 +45,7 @@ export const SortableProvider = ({items, onDragEnd}: SortableProviderProps) => {
                     key={item.id}
                     id={item.id}
                     index={item.index}
-                    content={item.content}
-                />
+                    content={item.content} />
             ))}
         </DragDropProvider>
     );

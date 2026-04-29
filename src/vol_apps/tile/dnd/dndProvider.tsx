@@ -4,6 +4,7 @@ import {cn} from "@/lib/utils.js";
 
 import {useTileLogic} from "../useTileLogic";
 import {Tile_component} from "../Tile_component";
+import {Tile_context_menu} from "@/vol_apps/tile/tile_context_menu";
 
 export const SortableTiles = () => {
     const Logic = useTileLogic();
@@ -29,13 +30,14 @@ export const SortableTiles = () => {
             index,
             content: (
                 <div className={cn({"animate-fade-in-scale": allowFadeIn})}>
-                    <Tile_component
+                    <Tile_context_menu {...Logic}>
+                        <Tile_component
                         {...Logic}
                         link={tile.url}
                         name={tile.meta.name}
                         icon={tile.meta.icon}
-                        onRightClick={() => Logic.handleRightClick(tile.id)}
-                    />
+                        />
+                    </Tile_context_menu>
                 </div>
             )
         }));

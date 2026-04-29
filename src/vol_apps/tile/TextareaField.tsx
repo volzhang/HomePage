@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
+import { useMergeRefs } from "@/vol_apps/02_hooks/useMergeRefs";
 
 interface TextareaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
     /** 失焦或 Enter 时提交 */
@@ -12,111 +13,118 @@ interface TextareaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaEl
     onLiveChange?: (value: string) => void;
 }
 
-export const TextareaField = ({
-                                  onCommit,
-                                  enterFocusRef,
-                                  transform,
-                                  onLiveChange,
-                                  value,
-                                  defaultValue,
-                                  onInput,
-                                  onKeyDown,
-                                  onBlur,
-                                  ...props
-                              }: TextareaFieldProps) => {
-    const ref = useRef<HTMLTextAreaElement>(null);
+export const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
+    (
+        {
+            onCommit,
+            enterFocusRef,
+            transform,
+            onLiveChange,
+            value,
+            defaultValue,
+            onInput,
+            onKeyDown,
+            onBlur,
+            ...props
+        },
+        forwardedRef
+    ) => {
+        const internalRef = useRef<HTMLTextAreaElement>(null);
 
-    const isControlled = value !== undefined;
-    const initial = (isControlled ? value : defaultValue) ?? "";
-    const [localValue, setLocalValue] = useState<string>(String(initial));
+        // 合并内部和外部 ref，内部 ref 用于防抖/高度自适应，外部 ref 用于聚焦等
+        const mergedRef = useMergeRefs(internalRef, forwardedRef);
 
-    const isInteracting = useRef(false);
+        const isControlled = value !== undefined;
+        const initial = (isControlled ? value : defaultValue) ?? "";
+        const [localValue, setLocalValue] = useState<string>(String(initial));
+        const isInteracting = useRef(false);
 
-    // 外部 value 同步（仅非交互期间）
-    useEffect(() => {
-        if (!isControlled) return;
-        if (!isInteracting.current && value !== localValue) {
-            setLocalValue((value as string) ?? "");
-        }
-    }, [value, isControlled]);
+        // 外部 value 同步（仅非交互期间）
+        useEffect(() => {
+            if (!isControlled) return;
+            if (!isInteracting.current && value !== localValue) {
+                setLocalValue((value as string) ?? "");
+            }
+        }, [value, isControlled]);
 
-    // 高度自适应
-    const adjustHeight = () => {
-        const el = ref.current;
-        if (!el) return;
-        el.style.height = "auto";
-        el.style.height = el.scrollHeight + "px";
-    };
+        // 高度自适应
+        const adjustHeight = () => {
+            const el = internalRef.current;
+            if (!el) return;
+            el.style.height = "auto";
+            el.style.height = el.scrollHeight + "px";
+        };
 
-    useEffect(() => {
-        adjustHeight();
-    }, [localValue]);
+        useEffect(() => {
+            adjustHeight();
+        }, [localValue]);
 
-    const commit = (val: string) => {
-        isInteracting.current = false;
-        onCommit?.(val);
-    };
+        const commit = (val: string) => {
+            isInteracting.current = false;
+            onCommit?.(val);
+        };
 
-    const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
-        const rawValue = e.currentTarget.value;
-        let nextValue: string;
-        if (transform) {
-            nextValue = transform(rawValue);
-        } else {
-            nextValue = rawValue;
-        }
-
-        isInteracting.current = true;
-        setLocalValue(nextValue);
-        adjustHeight();
-        onInput?.(e);
-
-        // 实时通知外部
-        onLiveChange?.(nextValue);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter") {
-            if (e.shiftKey) {
-                e.stopPropagation();
+        const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+            const rawValue = e.currentTarget.value;
+            let nextValue: string;
+            if (transform) {
+                nextValue = transform(rawValue);
             } else {
+                nextValue = rawValue;
+            }
+
+            isInteracting.current = true;
+            setLocalValue(nextValue);
+            adjustHeight();
+            onInput?.(e);
+
+            // 实时通知外部
+            onLiveChange?.(nextValue);
+        };
+
+        const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+            if (e.key === "Enter") {
+                if (e.shiftKey) {
+                    e.stopPropagation();
+                } else {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const val = e.currentTarget.value;
+                    isInteracting.current = false;
+                    commit(val);
+                    e.currentTarget.blur();
+                    // 聚焦到 OK 按钮
+                    if (enterFocusRef?.current) {
+                        setTimeout(() => {
+                            enterFocusRef.current?.focus();
+                        }, 0);
+                    }
+                }
+            } else if (e.key === "Escape") {
                 e.preventDefault();
                 e.stopPropagation();
-                const val = e.currentTarget.value;
-                isInteracting.current = false;
-                commit(val);
                 e.currentTarget.blur();
-                // 聚焦到 OK 按钮
-                if (enterFocusRef?.current) {
-                    setTimeout(() => {
-                        enterFocusRef.current?.focus();
-                    }, 0);
-                }
             }
-        } else if (e.key === "Escape") {
-            e.preventDefault();
-            e.stopPropagation();
-            e.currentTarget.blur();
-        }
-        onKeyDown?.(e);
-    };
+            onKeyDown?.(e);
+        };
 
-    const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-        commit(e.currentTarget.value);
-        onBlur?.(e);
-    };
+        const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+            commit(e.currentTarget.value);
+            onBlur?.(e);
+        };
 
-    return (
-        <textarea
-            {...props}
-            ref={ref}
-            rows={1}
-            wrap="soft"
-            value={localValue}
-            className={cn(props.className)}
-            onInput={handleInput}
-            onKeyDown={handleKeyDown}
-            onBlur={handleBlur}
-        />
-    );
-};
+        return (
+            <textarea
+                {...props}
+                ref={mergedRef}
+                rows={1}
+                wrap="soft"
+                value={localValue}
+                className={cn(props.className)}
+                onInput={handleInput}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
+            />
+        );
+    }
+);

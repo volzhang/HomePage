@@ -5,7 +5,7 @@ import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
 import {enhanceUrl, extractMainDomain} from "@/vol_apps/tool/action/enhanceUrl";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
-import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
+import {openLinkInCurrentTab, openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {useFaviconVemetricPng} from "@/vol_apps/tanStackQuery/Api_FaviconVemetric";
 import {isValidUrl} from "@/vol_apps/tool/isType/isValidUrl";
 import {isSortable} from "@dnd-kit/react/sortable";
@@ -23,8 +23,8 @@ export const useTileLogic = () => {
 
     } = useTileStore()
     const {bgImg} = useBgStore()
-
     const displayTiles = tilesByTag(isBroadMatches ? "ANY" : "ALL")!
+
     // 缓存当前视图 id 顺序，方便找到左邻居
     const currentIdOrder = useMemo(() => displayTiles.map(t => t.id), [displayTiles]);
     const handleDragEnd = (event: any) => {
@@ -98,6 +98,7 @@ export const useTileLogic = () => {
 
     // LINK
     const link = currentTile?.url || ""
+    const link_ref = useRef<HTMLTextAreaElement>(null);
 
     // NAME
     const name = currentTile?.meta.name || ""
@@ -107,7 +108,9 @@ export const useTileLogic = () => {
         const finalUrl = URL.canParse(input)
             ? input
             : enhanceUrl(input);
-        updateTile(tileInEditId, {url: finalUrl});
+        if (finalUrl !== link) {
+            updateTile(tileInEditId, {url: finalUrl});
+        }
     };
 
     const try_handle_name = (url: string) => {
@@ -120,8 +123,15 @@ export const useTileLogic = () => {
         });
     };
 
+    const try_handle_icon = async () => {
+        if (icon === defaultIconBase64) {
+            await handleAutoFetchIcon()
+        }
+    }
+
     // Auto-Fetch Icon
     const [isFetchingIcon, setIsFetchingIcon] = useState<boolean>(false)
+
     const {refetch} = useFaviconVemetricPng(
         link.replace(/\/$/, ""),                    //这里去掉末尾斜杠/，可以提高成功率
         96, {enabled: false});
@@ -158,7 +168,9 @@ export const useTileLogic = () => {
 
     // ICON
     const icon = currentTile?.meta.icon || defaultIconBase64
-    const setIcon = (icon: string) => updateTile(tileInEditId, {meta: {icon}})
+    const setIcon = (icon: string) => {
+        updateTile(tileInEditId, {meta: {icon}})
+    }
 
     // 临时文件名（只用于显示，不保存）
     const [iconFileName, setIconFileName] = useState<string>("");
@@ -198,8 +210,17 @@ export const useTileLogic = () => {
     const ok_ref = useRef<HTMLButtonElement>(null);
     const handleOk = () => setTileUiVisible(false);
 
+    // contextMenu
+    const handleOpenInNewTab = ()=>{openLinkInNewTab(link)}
+    const handleOpenInCurrentTab = ()=>{openLinkInCurrentTab(link)}
+    const handleEdit = ()=>{setTileUiVisible(true)}
+
     return {
         t,
+        // contextMenu
+        handleOpenInNewTab,
+        handleOpenInCurrentTab,
+        handleEdit,
 
         tileUiVisible,
         setTileUiVisible,
@@ -213,9 +234,7 @@ export const useTileLogic = () => {
 
         // HEAD
         // 这里可能有歧义，实际上，是currentLink currentName currentTag
-        link, setLink,
-
-        try_handle_name,
+        link, setLink, try_handle_name, try_handle_icon, link_ref,
 
         name, setName,
         tag, handleTagChange,

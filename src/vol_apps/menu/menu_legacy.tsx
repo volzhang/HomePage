@@ -50,7 +50,7 @@ export function Menu() {
     return (
         <Menubar className={cn("w-24 flex justify-center", cn_str, "animate-fade-in-scale")}>
             <MenubarMenu>
-                <MenubarTrigger className={cn(cn_str, "border-none! bg-transparent! w-24 h-9 px-6")}>
+                <MenubarTrigger className={cn(cn_str, "border-none! bg-transparent! w-24 h-9 px-7")}>
                     {t("Menu")}
                 </MenubarTrigger>
                 <MenubarContent side={"bottom"} align={"center"} sideOffset={3.5} className={"ml-2"}>

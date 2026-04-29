@@ -26,7 +26,7 @@ export const Tile_ui_inEdit_head = (
         handleAutoFetchIcon,
         handleSearchIcon,
 
-        link, setLink, try_handle_name,
+        link, setLink, try_handle_name, try_handle_icon, link_ref,
         name, setName,
 
         iconFileName, handleIconFilePick,
@@ -43,13 +43,15 @@ export const Tile_ui_inEdit_head = (
             <div className={CLASS_BASE}>
                 <p className={CLASS_P}>{t("Link")}</p>
                 <div className={CLASS_OUTLINE}>
-                    <TextareaField className={cn(CLASS_TEXTAREA, "break-all")}
+                    <TextareaField ref={link_ref}
+                                   className={cn(CLASS_TEXTAREA, "break-all")}
                                    placeholder="https://"
                                    transform={enhanceUrl}
                                    onLiveChange={setLink}
-                                   onCommit={(v)=>{
+                                   onCommit={async (v) => {
                                        setLink(v)
                                        try_handle_name(v)
+                                       await try_handle_icon()
                                    }}
                                    enterFocusRef={ok_ref}
                                    value={link}

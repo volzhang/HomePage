@@ -11,6 +11,7 @@ interface Props {
 
     closeOnOverlayClick?: boolean
     initialFocusRef?: RefObject<HTMLElement | null>
+    okRef?: RefObject<HTMLElement | null>
 }
 
 export const MyModal = ({
@@ -18,11 +19,11 @@ export const MyModal = ({
                             onOpenChange,
                             children,
                             closeOnOverlayClick = true,
-                            initialFocusRef
+                            initialFocusRef,
+                            okRef,
                         }: Props) => {
 
     const modalContentRef = useRef<HTMLDivElement>(null);
-
     useKeyEscapeToClose(open, () => onOpenChange(false));
 
     useEffect(() => {
@@ -36,17 +37,16 @@ export const MyModal = ({
 
     useEffect(() => {
         if (!open) return;
-
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
-                const target = initialFocusRef?.current ?? modalContentRef.current;
+                const target = okRef?.current ?? modalContentRef.current;
                 target?.focus();
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [open, initialFocusRef]);
+    }, [open, okRef]);
 
     return (
         <>

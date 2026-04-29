@@ -10,7 +10,8 @@ import {Menu} from "@/vol_apps/menu/menu_legacy";
 import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWallpaper";
 import {LanguageUi} from "@/vol_apps/language/language_ui";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
-import RadioDemo from "@/vol_apps/radio/radio";
+// import {Demo} from "@/vol_apps/01_components/demo.";
+import {RadioDemo} from "@/vol_apps/radio/radio";
 import {RadioBrowserProvider} from "@/vol_apps/tanStackQuery/Api_RadioBrowser";
 
 
@@ -24,18 +25,17 @@ export const App = () => {
                 <LanguageUi/>
                 <Theme/>
                 <CmOpen/>
-
-                {/*<Language/>*/}
-            </div>
-            <div className={"absolute flex flex-row top-2 right-2"}>
                 <RadioBrowserProvider>
                     <RadioDemo/>
                 </RadioBrowserProvider>
+            </div>
+            <div className={"absolute flex flex-row top-2 right-2"}>
                 <Version/>
             </div>
             <div className={"flex mt-30 mb-15"}>
                 <SearchBar/>
             </div>
+            {/*<Demo/>*/}
             <Tile_app/>
             <DndFile/>
             <BingWallpaperArchiveProvider>
