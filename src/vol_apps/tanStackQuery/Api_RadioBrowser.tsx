@@ -9,8 +9,10 @@ import {QueryClient, useQuery} from "@tanstack/react-query";
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 1000 * 60 * 60 * 24,          //保鲜周期 1d
-            gcTime: 1000 * 60 * 60 * 24,        //清除垃圾周期 1d
+            // staleTime: 1000 * 60 * 60 * 24,          //保鲜周期 1d
+            // gcTime: 1000 * 60 * 60 * 24,        //清除垃圾周期 1d
+            staleTime: 1000,          //保鲜周期 1d
+            gcTime: 1000,        //清除垃圾周期 1d
         },
     },
 });
@@ -127,17 +129,21 @@ const useRadioBrowserStationTopClick = (
     //
     //     const raw = await res.json() as RadioBrowserStationJson[];
     //
-    //     const toHttps = (v?: string) => {
-    //         if (!v) return v;
-    //         return v.replace(/^http:/, "https:");
-    //     };
+    //     return raw
+    //         .filter(item => {
+    //             const stream = item.url_resolved || item.url;
     //
-    //     return raw.map(item => ({
-    //         ...item,
-    //         url: toHttps(item.url),
-    //         url_resolved: toHttps(item.url_resolved),
-    //         favicon: toHttps(item.favicon),
-    //     })) as RadioBrowserStationJson[];
+    //             return (
+    //                 item.ssl_error === 0 &&                 // 没有 SSL 错误
+    //                 typeof stream === "string" &&
+    //                 stream.startsWith("https://")          // 本身就是 HTTPS
+    //             );
+    //         })
+    //         .map(item => ({
+    //             ...item,
+    //             url: item.url_resolved || item.url,       // 不再强行替换
+    //             favicon: (item.favicon || "").replace(/^http:/, "https:"), // 图标
+    //         })) as RadioBrowserStationJson[];
     // };
 
     const queryFn = async () => {
@@ -146,21 +152,33 @@ const useRadioBrowserStationTopClick = (
 
         const raw = await res.json() as RadioBrowserStationJson[];
 
+        const isValidStream = (item: RadioBrowserStationJson) => {
+            const stream = item.url_resolved || item.url;
+
+            if (!stream) return false;
+
+            if (!stream.startsWith("https://")) return false;
+
+            if (item.lastcheckok !== 1) return false;
+
+            if (!item.codec) return false;
+
+            if (typeof item.bitrate === "number" && item.bitrate <= 0) return false;
+
+            return true;
+        };
+
         return raw
-            .filter(item => {
+            .filter(isValidStream)
+            .map(item => {
                 const stream = item.url_resolved || item.url;
 
-                return (
-                    item.ssl_error === 0 &&                 // 没有 SSL 错误
-                    typeof stream === "string" &&
-                    stream.startsWith("https://")          // 本身就是 HTTPS
-                );
-            })
-            .map(item => ({
-                ...item,
-                url: item.url_resolved || item.url,       // 不再强行替换
-                favicon: (item.favicon || "").replace(/^http:/, "https:"), // 图标
-            })) as RadioBrowserStationJson[];
+                return {
+                    ...item,
+                    url: stream,
+                    favicon: (item.favicon || "").replace(/^http:/, "https:"),
+                };
+            });
     };
 
     const {data, isPending, error, refetch} = useQuery<RadioBrowserStationJson[]>({
@@ -193,6 +211,6 @@ export const useTopClick = (
         : null;
 
     return {
-        TopClickJson: data, isPending, error
+        TopClickJson: data, isPending, error, JsonListLenth:TopClickJsonList?.length
     }
 }

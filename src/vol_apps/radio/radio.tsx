@@ -23,7 +23,9 @@ export const RadioDemo = () => {
         setRadioFavicon
     } = useRadioStore();
 
-    const {TopClickJson, isPending} = useTopClick(index, 0, limit);
+    const {TopClickJson, isPending, JsonListLenth} = useTopClick(index, 0, limit);
+
+    const lenth = JsonListLenth || 1
 
     const play = useCallback(async () => {
         try {
@@ -93,7 +95,7 @@ export const RadioDemo = () => {
                 <Button
                     variant="outline"
                     className="w-18"
-                    onClick={() => switchStation((index - 1 + limit) % limit)}
+                    onClick={() => switchStation((index - 1 + lenth) % lenth)}
                 >
                     <SkipBack/>
                 </Button>
@@ -108,7 +110,7 @@ export const RadioDemo = () => {
                 <Button
                     variant="outline"
                     className="w-18"
-                    onClick={() => switchStation((index + 1) % limit)}
+                    onClick={() => switchStation((index + 1) % lenth)}
                 >
                     <SkipForward/>
                 </Button>
