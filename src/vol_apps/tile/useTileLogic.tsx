@@ -27,6 +27,7 @@ export const useTileLogic = () => {
 
     // 缓存当前视图 id 顺序，方便找到左邻居
     const currentIdOrder = useMemo(() => displayTiles.map(t => t.id), [displayTiles]);
+
     const handleDragEnd = (event: any) => {
         const {operation, canceled} = event;
         if (canceled || !operation?.source) return;
@@ -68,7 +69,6 @@ export const useTileLogic = () => {
         // setTileUiVisible(true);
     }, []);
 
-
     // const TileState = useTileStore();
     const TileStyle = useTileStyleStore();
 
@@ -94,7 +94,7 @@ export const useTileLogic = () => {
     })();
 
     const [stylesIsOpen, setStylesIsOpen] = useState(false);
-    const currentTile = tiles.find(tile => tile.id === tileInEditId)
+    const currentTile = tiles.find(tile => tile.id === tileInEditId);
 
     // LINK
     const link = currentTile?.url || ""
@@ -212,9 +212,18 @@ export const useTileLogic = () => {
 
     // contextMenu
 
-    const handleOpenInNewTab = ()=>{openLinkInNewTab(link)}
-    const handleOpenInCurrentTab = ()=>{openLinkInCurrentTab(link)}
-    const handleEdit = (id:number)=>{
+    const handleOpenInNewTab = (id: number) => {
+        setTileInEditId(id)
+        const tile = tiles.find(t => t.id === id)
+        if (tile?.url) openLinkInNewTab(tile.url)
+    }
+    const handleOpenInCurrentTab = (id: number) => {
+        setTileInEditId(id)
+        const tile = tiles.find(t => t.id === id)
+        if (tile?.url) openLinkInCurrentTab(tile.url)
+    }
+
+    const handleEdit = (id: number) => {
         setTileInEditId(id)
         setTileUiVisible(true)
     }
