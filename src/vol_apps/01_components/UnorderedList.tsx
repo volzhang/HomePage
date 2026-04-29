@@ -1,4 +1,24 @@
 import {CheckIcon} from "lucide-react";
+import {cn} from "@/lib/utils";
+import type {ReactNode} from "react";
+
+const MENU_CLASS = cn(
+    "flex flex-col items-center border w-34",
+    "bg-background text-foreground",
+    "rounded-md shadow-md",
+    "select-none",
+    "p-1"
+);
+
+const ITEM_CLASS = cn(
+    "flex items-center justify-between w-full",
+    "h-8 bg-background text-foreground",
+    "text-sm rounded-sm",
+    "hover:bg-foreground/10",
+    "whitespace-nowrap",
+    "select-none",
+    "p-2"
+);
 
 export const UnorderedList = (
     {
@@ -13,15 +33,20 @@ export const UnorderedList = (
         value: string,
         options: {
             value: string;
-            label: string;
+            label: ReactNode;
         } [],
         handleSelect: (value: string) => void,
 
-        menu_className: string,
-        item_className: string,
-        checkIcon_className: string,
+        menu_className?: string,
+        item_className?: string,
+        checkIcon_className?: string,
     }) => {
     const selectedValue = value;
+
+    menu_className = cn(MENU_CLASS, menu_className);
+    item_className = cn(ITEM_CLASS, item_className);
+    checkIcon_className = cn("size-4", checkIcon_className);
+
     return (
         <ul className={menu_className}>
             {options.map(({label, value}) => (

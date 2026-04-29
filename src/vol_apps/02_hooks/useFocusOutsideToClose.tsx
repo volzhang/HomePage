@@ -5,10 +5,17 @@ import {useEffect, useRef} from "react";
  * Triggers close when focus moves outside the container.
  * @param open - Listening enabled only when true.
  * @param onClose - Callback to close.
- * @returns containerRef - A ref to attach to the container element.
+ * @returns focusRef - A ref to attach to the container element.
  */
-export const useFocusOutsideToClose = (open: boolean, onClose: () => void) => {
-    const containerRef = useRef<HTMLDivElement>(null);
+export const useFocusOutsideToClose = (
+    {
+        open,
+        onClose
+    }: {
+        open: boolean,
+        onClose: () => void
+    }) => {
+    const focusRef = useRef<HTMLDivElement>(null);
     const onCloseRef = useRef(onClose);
     onCloseRef.current = onClose;
 
@@ -16,13 +23,13 @@ export const useFocusOutsideToClose = (open: boolean, onClose: () => void) => {
         if (!open) return;
 
         const handleFocusOut = (e: FocusEvent) => {
-            const container = containerRef.current;
+            const container = focusRef.current;
             if (container && !container.contains(e.relatedTarget as Node)) {
                 onCloseRef.current();
             }
         };
 
-        const el = containerRef.current;
+        const el = focusRef.current;
         el?.addEventListener("focusout", handleFocusOut);
 
         if (el) {
@@ -35,5 +42,5 @@ export const useFocusOutsideToClose = (open: boolean, onClose: () => void) => {
         };
     }, [open]);
 
-    return containerRef;
+    return {focusRef};
 };

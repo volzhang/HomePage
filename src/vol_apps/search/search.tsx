@@ -21,10 +21,11 @@ export const SearchBar = () => {
 
     const {anchorRef, floatingStyle} = useFloating({open, direction: "bottom", align: "end"});
 
-    const focusRef = useFocusOutsideToClose(open, () => setOpen(false));
-    const clickRef = useClickOutsideToClose(open, () => setOpen(false));
+    const {focusRef} = useFocusOutsideToClose({open, onClose:() => setOpen(false)});
+    const {insideRef} = useClickOutsideToClose({open, onClose:() => setOpen(false)});
+    const rootRef = useMergeRefs(focusRef, insideRef, anchorRef)
 
-    const rootRef = useMergeRefs(focusRef, clickRef, anchorRef);
+
 
     const inputBoxRef = useRef<HTMLTextAreaElement>(null)
 

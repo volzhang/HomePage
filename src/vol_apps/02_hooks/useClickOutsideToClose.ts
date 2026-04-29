@@ -5,10 +5,10 @@ import { useEffect, useRef } from "react";
  * Triggers close when a click occurs outside the container.
  * @param open - Listening enabled only when true.
  * @param onClose - Callback to close.
- * @returns containerRef - Attach this ref to the container element.
+ * @returns insideRef - Attach this ref to the container element.
  */
-export const useClickOutsideToClose = (open: boolean, onClose: () => void) => {
-    const containerRef = useRef<HTMLDivElement>(null);
+export const useClickOutsideToClose = ({open, onClose}:{open: boolean, onClose: () => void}) => {
+    const insideRef = useRef<HTMLDivElement>(null);
     const onCloseRef = useRef(onClose);
     onCloseRef.current = onClose;
 
@@ -17,7 +17,7 @@ export const useClickOutsideToClose = (open: boolean, onClose: () => void) => {
 
         const handler = (e: MouseEvent) => {
             const target = e.target as Node;
-            if (containerRef.current?.contains(target)) return;
+            if (insideRef.current?.contains(target)) return;
             onCloseRef.current();
         };
 
@@ -25,5 +25,5 @@ export const useClickOutsideToClose = (open: boolean, onClose: () => void) => {
         return () => document.removeEventListener("mousedown", handler);
     }, [open]);
 
-    return containerRef;
+    return {insideRef};
 };

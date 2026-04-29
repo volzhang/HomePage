@@ -207,6 +207,11 @@ const resources: RESOURCES = {
         "Outline Color": "描边 颜色",
         "Outline Opacity": "描边 透明度",
 
+        //TILE 上下文惨淡
+        "Open in new tab":"新选项卡打开",
+        "Open":"打开",
+        "Edit":"编辑",
+
         //语言
         "Language":"语言",
         "Select Language":"选择语言",

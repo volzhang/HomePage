@@ -30,7 +30,12 @@ export const SortableTiles = () => {
             index,
             content: (
                 <div className={cn({"animate-fade-in-scale": allowFadeIn})}>
-                    <Tile_context_menu {...Logic}>
+                    <Tile_context_menu
+                        // name={tile.meta.name}
+                        handleOpenInNewTab={Logic.handleOpenInNewTab}
+                        handleEdit={()=>Logic.handleEdit(tile.id)}
+                        handleOpenInCurrentTab={Logic.handleOpenInCurrentTab}
+                    >
                         <Tile_component
                         {...Logic}
                         link={tile.url}
@@ -38,6 +43,7 @@ export const SortableTiles = () => {
                         icon={tile.meta.icon}
                         />
                     </Tile_context_menu>
+
                 </div>
             )
         }));

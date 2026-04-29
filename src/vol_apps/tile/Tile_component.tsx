@@ -10,14 +10,11 @@ export type TileComponentProps = TileLogic & {
     disableClick?: boolean;
     isFetchingIcon?: boolean;
     iconBorderOutline?: boolean;
-    onRightClick?: (e: React.MouseEvent) => void;
 };
 
 export const Tile_component = (
     {
         t,
-
-        onRightClick,
 
         anchorProps,
         disableClick = false,
@@ -68,13 +65,6 @@ export const Tile_component = (
                     e.preventDefault()
                     if (!disableClick) handleClick?.()
                     anchorProps?.onClick?.(e)
-                }}
-                onContextMenu={(e) => {
-                    if (onRightClick) {
-                        e.preventDefault();
-                        onRightClick(e);
-                    }
-                    anchorProps?.onContextMenu?.(e);
                 }}
                 style={{
                     backgroundColor: backgroundRGBAColor,

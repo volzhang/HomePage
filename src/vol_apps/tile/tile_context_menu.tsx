@@ -2,38 +2,46 @@ import {
     ContextMenu,
     ContextMenuContent,
     ContextMenuItem,
+    // ContextMenuLabel,
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export const Tile_context_menu =
     ({
-
          handleOpenInNewTab,
          handleOpenInCurrentTab,
          handleEdit,
-         children
+         children,
+        // name,
      }: {
 
         handleOpenInNewTab: () => void
         handleOpenInCurrentTab: () => void
         handleEdit: () => void
-        children: React.ReactNode
+        children: React.ReactNode,
+        // name:string
     }) => {
+        const {t} = useLanguageStore()
+
         return (
             <>
                 <ContextMenu>
                     <ContextMenuTrigger>
                         {children}
                     </ContextMenuTrigger>
-                    <ContextMenuContent>
+                    <ContextMenuContent className={"overflow-hidden w-56 my-3"}>
+                        {/*<ContextMenuLabel className={"text-sBlue text-lg font-bold truncate"}>*/}
+                        {/*    {name}*/}
+                        {/*</ContextMenuLabel>*/}
                         <ContextMenuItem onClick={handleOpenInNewTab}>
-                            新标签打开
+                            {t("Open in new tab")}
                         </ContextMenuItem>
                         <ContextMenuItem onClick={handleOpenInCurrentTab}>
-                            此页打开
+                            {t("Open")}
                         </ContextMenuItem>
                         <ContextMenuItem onClick={handleEdit}>
-                            编辑
+                            {t("Edit")}
                         </ContextMenuItem>
                     </ContextMenuContent>
                 </ContextMenu>

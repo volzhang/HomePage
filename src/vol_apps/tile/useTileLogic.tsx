@@ -65,7 +65,7 @@ export const useTileLogic = () => {
 
     const handleRightClick = useCallback((tileId: number) => {
         setTileInEditId(tileId);
-        setTileUiVisible(true);
+        // setTileUiVisible(true);
     }, []);
 
 
@@ -211,13 +211,24 @@ export const useTileLogic = () => {
     const handleOk = () => setTileUiVisible(false);
 
     // contextMenu
+
     const handleOpenInNewTab = ()=>{openLinkInNewTab(link)}
     const handleOpenInCurrentTab = ()=>{openLinkInCurrentTab(link)}
-    const handleEdit = ()=>{setTileUiVisible(true)}
+    const handleEdit = (id:number)=>{
+        setTileInEditId(id)
+        setTileUiVisible(true)
+    }
+
+    // const tileContextMenuOptions = [
+    //     {label:t("Open in new tab"), handler:handleOpenInNewTab},
+    //     {label:t("Open in current tab"), handler:handleOpenInCurrentTab},
+    //     {label:t("Edit this tile"), handler:handleEdit},
+    // ]
 
     return {
         t,
         // contextMenu
+        // tileContextMenuOptions,
         handleOpenInNewTab,
         handleOpenInCurrentTab,
         handleEdit,

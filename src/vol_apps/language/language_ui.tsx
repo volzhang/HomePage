@@ -1,5 +1,5 @@
 import {type LANGUAGE, useLanguageStore} from "@/vol_apps/language/language_store";
-import {MySelect} from "@/vol_apps/01_components/MySelect";
+import {Select} from "../01_components/Select";
 import {useMemo, useState} from "react";
 import {cn} from "@/lib/utils";
 import {Languages} from "lucide-react";
@@ -38,7 +38,7 @@ export const LanguageUi = () => {
         </button>
 
     return (
-        <MySelect
+        <Select
             open={open}
             onOpenChange={setOpen}
             options={options}
@@ -46,6 +46,6 @@ export const LanguageUi = () => {
             onValueChange={(v) => setLanguage(v as LANGUAGE)}
             trigger={Tigger}
         >
-        </MySelect>
+        </Select>
     );
 };
