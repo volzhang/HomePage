@@ -11,8 +11,8 @@ const queryClient = new QueryClient({
         queries: {
             // staleTime: 1000 * 60 * 60 * 24,          //保鲜周期 1d
             // gcTime: 1000 * 60 * 60 * 24,        //清除垃圾周期 1d
-            staleTime: 1000,          //保鲜周期 1d
-            gcTime: 1000,        //清除垃圾周期 1d
+            staleTime: 1000 * 30,          //保鲜周期 30 s
+            gcTime: 1000 * 30,        //清除垃圾周期 30 s
         },
     },
 });

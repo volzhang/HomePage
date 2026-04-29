@@ -25,7 +25,7 @@ export const RadioDemo = () => {
 
     const {TopClickJson, isPending, JsonListLenth} = useTopClick(index, 0, limit);
 
-    const lenth = JsonListLenth || 1
+    const length = JsonListLenth ?? 0;
 
     const play = useCallback(async () => {
         try {
@@ -95,7 +95,10 @@ export const RadioDemo = () => {
                 <Button
                     variant="outline"
                     className="w-18"
-                    onClick={() => switchStation((index - 1 + lenth) % lenth)}
+                    onClick={() => {
+                        if (length === 0) return;
+                        switchStation((index - 1 + length) % length)
+                    }}
                 >
                     <SkipBack/>
                 </Button>
@@ -110,11 +113,14 @@ export const RadioDemo = () => {
                 <Button
                     variant="outline"
                     className="w-18"
-                    onClick={() => switchStation((index + 1) % lenth)}
+                    onClick={() => {
+                        if (length === 0) return;
+                        switchStation((index + 1) % length);
+                    }}
                 >
                     <SkipForward/>
                 </Button>
-            </div>
+        </div>
         </div>
     );
 }

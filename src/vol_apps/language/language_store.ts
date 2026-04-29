@@ -159,7 +159,7 @@ const resources: RESOURCES = {
         "Click to upload a icon": "点击上传自定义图标",
         "file:": "文件名：",
 
-        "Fetching":"加载...",
+        "Fetching": "加载...",
 
         "Auto-fetch icon": "自动获取图标",
         "Search Bing for icon": "Bing 搜索图标",
@@ -208,14 +208,18 @@ const resources: RESOURCES = {
         "Outline Opacity": "描边 透明度",
 
         //TILE 上下文惨淡
-        "Open in new tab":"新选项卡打开",
-        "Open":"打开",
-        "Edit":"编辑",
+        "Open in new tab": "新选项卡打开",
+        "Open": "打开",
+        "Edit": "编辑",
 
         //语言
-        "Language":"语言",
-        "Select Language":"选择语言",
+        "Language": "语言",
+        "Select Language": "选择语言",
 
+        //
+        "Using radio streaming may cause the browser to incorrectly mark this page as 'Not fully secure'. This is a browser behavior and does not indicate any real security risk."
+            :
+            "使用电台播放功能可能会导致浏览器误判本页面为“未完全安全”。这是浏览器的行为提示，并不代表实际存在安全风险。",
     }
 } as const;
 
