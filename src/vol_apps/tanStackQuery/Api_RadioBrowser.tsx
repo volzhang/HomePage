@@ -115,10 +115,29 @@ const useRadioBrowserStationTopClick = (
         `&limit=${_limit}` +
         `&hidebroken=${_hidebroken}`;
 
+    // const queryFn = async () => {
+    //     const res = await fetch(url);
+    //     if (!res.ok) throw new Error(`json fetch failed: ${res.status}`);
+    //     return (await res.json() as RadioBrowserStationJson[]);
+    // };
+
     const queryFn = async () => {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`json fetch failed: ${res.status}`);
-        return (await res.json() as RadioBrowserStationJson[]);
+
+        const raw = await res.json() as RadioBrowserStationJson[];
+
+        const toHttps = (v?: string) => {
+            if (!v) return v;
+            return v.replace(/^http:/, "https:");
+        };
+
+        return raw.map(item => ({
+            ...item,
+            url: toHttps(item.url),
+            url_resolved: toHttps(item.url_resolved),
+            favicon: toHttps(item.favicon),
+        })) as RadioBrowserStationJson[];
     };
 
     const {data, isPending, error, refetch} = useQuery<RadioBrowserStationJson[]>({
