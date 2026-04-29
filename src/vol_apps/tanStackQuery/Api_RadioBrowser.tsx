@@ -121,23 +121,46 @@ const useRadioBrowserStationTopClick = (
     //     return (await res.json() as RadioBrowserStationJson[]);
     // };
 
+    // const queryFn = async () => {
+    //     const res = await fetch(url);
+    //     if (!res.ok) throw new Error(`json fetch failed: ${res.status}`);
+    //
+    //     const raw = await res.json() as RadioBrowserStationJson[];
+    //
+    //     const toHttps = (v?: string) => {
+    //         if (!v) return v;
+    //         return v.replace(/^http:/, "https:");
+    //     };
+    //
+    //     return raw.map(item => ({
+    //         ...item,
+    //         url: toHttps(item.url),
+    //         url_resolved: toHttps(item.url_resolved),
+    //         favicon: toHttps(item.favicon),
+    //     })) as RadioBrowserStationJson[];
+    // };
+
     const queryFn = async () => {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`json fetch failed: ${res.status}`);
 
         const raw = await res.json() as RadioBrowserStationJson[];
 
-        const toHttps = (v?: string) => {
-            if (!v) return v;
-            return v.replace(/^http:/, "https:");
-        };
+        return raw
+            .filter(item => {
+                const stream = item.url_resolved || item.url;
 
-        return raw.map(item => ({
-            ...item,
-            url: toHttps(item.url),
-            url_resolved: toHttps(item.url_resolved),
-            favicon: toHttps(item.favicon),
-        })) as RadioBrowserStationJson[];
+                return (
+                    item.ssl_error === 0 &&                 // 没有 SSL 错误
+                    typeof stream === "string" &&
+                    stream.startsWith("https://")          // 本身就是 HTTPS
+                );
+            })
+            .map(item => ({
+                ...item,
+                url: item.url_resolved || item.url,       // 不再强行替换
+                favicon: (item.favicon || "").replace(/^http:/, "https:"), // 图标
+            })) as RadioBrowserStationJson[];
     };
 
     const {data, isPending, error, refetch} = useQuery<RadioBrowserStationJson[]>({
