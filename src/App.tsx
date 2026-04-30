@@ -12,13 +12,9 @@ import {LanguageUi} from "@/vol_apps/language/language_ui";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {RadioDemo} from "@/vol_apps/radio/radio";
 import {RadioBrowserProvider} from "@/vol_apps/tanStackQuery/Api_RadioBrowser";
-import {cn} from "@/lib/utils";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
 // import {Demo} from "./vol_apps/01_components/SimpleContextMenu";
 
-
 export const App = () => {
-    const {t} = useLanguageStore();
     return (
         <>
             <ToasterUi/>
@@ -31,13 +27,7 @@ export const App = () => {
                 <RadioBrowserProvider>
                     <RadioDemo/>
                 </RadioBrowserProvider>
-
             </div>
-            <p className={cn(
-                "text-foreground/20 bg-background/10 m-2 px-3 py-1 text-sm rounded-md",
-                "hover:text-foreground hover:bg-background w-fit"
-            )}>{t("Using radio streaming may cause the browser to incorrectly mark this page as 'Not fully secure'. This is a browser behavior and does not indicate any real security risk.")}</p>
-
             <div className={"absolute flex flex-row top-2 right-2"}>
                 <Version/>
             </div>

@@ -2,10 +2,13 @@ import {useRef, useState, useCallback, useEffect} from "react";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {toast} from "sonner";
-import {Pause, Play, SkipBack, SkipForward} from "lucide-react";
+import {CircleAlert, Pause, Play, SkipBack, SkipForward} from "lucide-react";
 import {useTopClick} from "@/vol_apps/tanStackQuery/Api_RadioBrowser";
 import {useRadioStore} from "@/vol_apps/radio/radio_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
+import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
+
 
 export const RadioDemo = () => {
 
@@ -69,6 +72,8 @@ export const RadioDemo = () => {
 
     const [imgError, setImgError] = useState(false);
 
+    const {t} = useLanguageStore();
+
     return (
         <div className="flex flex-col p-0 gap-0 w-fit items-center">
             <audio
@@ -120,6 +125,19 @@ export const RadioDemo = () => {
                 >
                     <SkipForward/>
                 </Button>
+
+                <HoverCard>
+                    <HoverCardTrigger>
+                        <Button variant={"link"} disabled={true} size={"icon"}>
+                            <CircleAlert />
+                        </Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent>
+                        <p className={cn("text-foreground bg-background text-sm rounded-md",)}>
+                            {t("Using radio streaming may cause the browser to incorrectly mark this page as 'Not fully secure'. " +
+                                "This is a browser behavior and does not indicate any real security risk.")}</p>
+                    </HoverCardContent>
+                </HoverCard>
         </div>
         </div>
     );
