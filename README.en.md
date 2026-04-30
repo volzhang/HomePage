@@ -18,10 +18,10 @@ No data collection, privacy-first, no ads.
 
 ## ✨ Features
 
-- 🚀 **Ultra Clean** — No ads, no tracking, 100% frontend
-- 🎨 **Highly Customizable** — Custom wallpapers, tiles, search engines  
-- 💾 **Seamless Cross-Device** — One-click export/import JSON backup
-- 🌍 **Bilingual Support** — Manually switch between Chinese & English
+- 🚀 **Clean & Minimal** — No data uploads, no ads, only essential requests (e.g. wallpapers/icons)
+- 🎨 **Highly Customizable** — Customize wallpapers, tile layout (shortcuts), and default search engine
+- 💾 **Seamless Cross-Device** — One-click JSON export/import for easy backup and migration
+- 🌍 **Bilingual Support** — Supports English and Simplified Chinese
 
 ## Tech Stack
 
