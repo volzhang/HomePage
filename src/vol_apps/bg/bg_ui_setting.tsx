@@ -1,5 +1,4 @@
 import {Button} from "@/components/ui/button";
-import {Label} from "@/components/ui/label";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 import {cn} from "@/lib/utils";
@@ -81,9 +80,9 @@ export function BgUiSetting(
                     return (
                         <div key={opt.value} className="flex h-8 items-center gap-2">
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <Label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className="text-xl">
                                 {opt.label}
-                            </Label>
+                            </label>
                         </div>
                     );
                 })}
@@ -106,9 +105,9 @@ export function BgUiSetting(
                     return (
                         <div key={opt.value} className="flex h-8 items-center gap-2">
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <Label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className="text-xl">
                                 {opt.label}
-                            </Label>
+                            </label>
                         </div>
                     );
                 })}
@@ -128,9 +127,9 @@ export function BgUiSetting(
                     return (
                         <div key={opt.value} className="flex h-8 items-center gap-2">
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <Label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className="text-xl">
                                 {opt.label}
-                            </Label>
+                            </label>
                         </div>
                     );
                 })}
@@ -150,9 +149,9 @@ export function BgUiSetting(
                     return (
                         <div key={opt.value} className="flex h-8 items-center gap-2">
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <Label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className="text-xl">
                                 {opt.label}
-                            </Label>
+                            </label>
                         </div>
                     );
                 })}
@@ -172,9 +171,9 @@ export function BgUiSetting(
                     return (
                         <div key={opt.value} className="flex h-8 items-center gap-2">
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <Label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className="text-xl">
                                 {opt.label}
-                            </Label>
+                            </label>
                         </div>
                     );
                 })}

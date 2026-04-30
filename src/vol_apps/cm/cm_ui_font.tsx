@@ -1,6 +1,5 @@
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Slider} from "@/components/ui/slider";
 import {cn} from "@/lib/utils";
@@ -81,14 +80,14 @@ export const CmUiFont = () => {
 						<div className="grid gap-3">
 							{/* 字体 */}
 							<div className="flex flex-row items-center gap-[12px]">
-								<Label className={"w-10"}>{t("Font")}</Label>
+								<label className={"w-10 text-sm"}>{t("Font")}</label>
 								<CmUiFontFamily className={cn("w-fit text-sm border-none",
 									// "text-[#0078d7]"
 								)}/>
 							</div>
 							{/* 字号 */}
 							<div className="flex flex-row items-center gap-[16px] ">
-								<Label className={"w-10"} autoFocus={true}>{t("Size")}</Label>
+								<label className={"w-10 text-sm"} autoFocus={true}>{t("Size")}</label>
 								<Input
 									// defaultValue="32"
 									className={cn("w-14 h-8  text-[16px]! border-none",
@@ -111,7 +110,7 @@ export const CmUiFont = () => {
 							</div>
 							{/* 粗细 */}
 							<div className="flex flex-row items-center gap-[16px]">
-								<Label className={"w-10"}>{t("Weight")}</Label>
+								<label className={"w-10 text-sm"}>{t("Weight")}</label>
 								<Input
 									// defaultValue="400"
 									className={cn("w-14 h-8 text-[16px]! border-none",
@@ -134,7 +133,7 @@ export const CmUiFont = () => {
 							</div>
 							{/* 行高 */}
 							<div className="flex flex-row items-center gap-[16px]">
-								<Label className={"w-10"}>{t("Line Height")}</Label>
+								<label className={"w-10 text-sm"}>{t("Line Height")}</label>
 								<Input
 									className={cn("w-14 h-8 text-[16px]! border-none",
 									)}
