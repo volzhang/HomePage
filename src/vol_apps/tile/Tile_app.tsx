@@ -6,6 +6,7 @@ import {ScrollAreaForTiles} from "./ScrollAreaForTiles";
 import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu";
 import {SortableTiles} from "@/vol_apps/tile/dnd/dndProvider";
 import {Ui_inEdit_menu} from "@/vol_apps/tile/tile_ui_inEdit";
+import {UiContextMenu} from "@/vol_apps/tile/tile_ui_contexmenu";
 export const Tile_app = () => {
 
     const {tilesVisible} = useTileStore();
@@ -24,6 +25,7 @@ export const Tile_app = () => {
                             </GlobalContextMenu>
                         </ScrollAreaForTiles>
                         {/* 编辑模态 */}
+                        <UiContextMenu />
                         <Ui_inEdit_menu />
                     </FaviconVemetricProvider>
                     : null

@@ -4,11 +4,13 @@ import {cn} from "@/lib/utils.js";
 
 import {useTileLogic} from "../useTileLogic";
 import {Tile_component} from "../Tile_component";
-import {Tile_context_menu} from "@/vol_apps/tile/tile_context_menu";
+import {useTileContextMenuStore} from "@/vol_apps/tile/tile_ui_contexmenu";
 
 export const SortableTiles = () => {
     const Logic = useTileLogic();
     const {displayTiles, handleDragEnd} = Logic;
+
+    const {setContextMenuPosition, setContextMenuOpen} = useTileContextMenuStore()
 
     // 动画相关
     const currentDisplayIds = useMemo(
@@ -30,20 +32,20 @@ export const SortableTiles = () => {
             index,
             content: (
                 <div className={cn({"animate-fade-in-scale": allowFadeIn})}>
-                    <Tile_context_menu
-                        // name={tile.meta.name}
-                        handleOpenInNewTab={() => Logic.handleOpenInNewTab(tile.id)}
-                        handleEdit={() => Logic.handleEdit(tile.id)}
-                        handleOpenInCurrentTab={() => Logic.handleOpenInCurrentTab(tile.id)}
-                    >
-                        <Tile_component
-                            {...Logic}
-                            link={tile.url}
-                            name={tile.meta.name}
-                            icon={tile.meta.icon}
-                        />
-                    </Tile_context_menu>
-
+                    <Tile_component
+                        {...Logic}
+                        onTileRightClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                            Logic.setTileInEditId(tile.id)
+                            setContextMenuPosition({
+                                x: e.clientX,
+                                y: e.clientY
+                            })
+                            setContextMenuOpen(true);
+                        }}
+                        link={tile.url}
+                        name={tile.meta.name}
+                        icon={tile.meta.icon}
+                    />
                 </div>
             )
         }));

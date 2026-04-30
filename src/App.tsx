@@ -12,7 +12,6 @@ import {LanguageUi} from "@/vol_apps/language/language_ui";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {RadioDemo} from "@/vol_apps/radio/radio";
 import {RadioBrowserProvider} from "@/vol_apps/tanStackQuery/Api_RadioBrowser";
-// import {Demo} from "./vol_apps/01_components/SimpleContextMenu";
 
 export const App = () => {
     return (
@@ -34,7 +33,6 @@ export const App = () => {
             <div className={"flex mt-30 mb-15"}>
                 <SearchBar/>
             </div>
-            {/*<Demo/>*/}
             <Tile_app/>
             <DndFile/>
             <BingWallpaperArchiveProvider>

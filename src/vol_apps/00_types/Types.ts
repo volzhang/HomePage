@@ -30,4 +30,5 @@ export const opacityClasses = {
     100: "opacity-100",
 } as const;
 
-export type AnchorDirection = "top" | "bottom" | "left" | "right";
+export type FloatingDirection = "top" | "bottom" | "left" | "right";
+export type FloatingAlign = "start" | "center" | "end";

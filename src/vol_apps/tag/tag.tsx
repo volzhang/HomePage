@@ -19,7 +19,6 @@ import {
 import {AutoWidthInput} from "@/vol_apps/tool/component/input.js";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 
-
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
     isBroadMatches: boolean,
     handleOnClick?: () => void,
@@ -113,6 +112,7 @@ export const TagComponent = () => {
             }
         }, [inEdit, inputString]);
 
+
         return (
             <>
                 <ContextMenu>
@@ -180,6 +180,9 @@ export const TagComponent = () => {
                         </ContextMenuGroup>
                     </ContextMenuContent>
                 </ContextMenu>
+
+
+
             </>
 
         );

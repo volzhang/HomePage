@@ -1,7 +1,7 @@
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {X} from "lucide-react";
-import {useKeyEscapeToClose} from "../02_hooks/useKeyEscapeToClose";
+import {useKeyEscapeToClose} from "../02_hooks/useKeys";
 import {type ReactNode, type RefObject, useEffect, useRef} from "react";
 
 interface Props {

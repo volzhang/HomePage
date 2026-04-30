@@ -3,11 +3,11 @@ import {useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
-import {useKeyEscapeToClose} from "../02_hooks/useKeyEscapeToClose";
+import {useKeyEscapeToClose} from "../02_hooks/useKeys";
 import {RotateOnOpen} from "@/vol_apps/01_components/RotateOnOpen";
 import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose";
 import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
-import {useMergeRefs} from "@/vol_apps/02_hooks/useMergeRefs";
+import {useMergeRefs} from "../02_hooks/01_useMergeRefs";
 import {useFloating} from "../02_hooks/useFloating";
 
 
@@ -19,11 +19,12 @@ export const SearchBar = () => {
     const currentEngine = getEngineInUse();
 
 
-    const {anchorRef, floatingStyle} = useFloating({open, direction: "bottom", align: "end"});
+    const {anchorRef, floatingStyle} = useFloating({open, direction: "bottom", align: "end"
+    });
 
-    const {focusRef} = useFocusOutsideToClose({open, onClose:() => setOpen(false)});
-    const {insideRef} = useClickOutsideToClose({open, onClose:() => setOpen(false)});
-    const rootRef = useMergeRefs(focusRef, insideRef, anchorRef)
+    const {focusOutsideRef} = useFocusOutsideToClose({open, onClose:() => setOpen(false)});
+    const {clickOutsideRef} = useClickOutsideToClose({open, onClose:() => setOpen(false)});
+    const rootRef = useMergeRefs(focusOutsideRef, clickOutsideRef, anchorRef)
 
 
 
@@ -66,7 +67,7 @@ export const SearchBar = () => {
     const SEARCH_BOX_BASE = cn(
         MIN_WIDTH,
         TRANSITION_ALL,
-        "flex", //这里原来是"join"
+        "flex",
         "border",
         "bg-white/1 border-sBlue/80",
         "hover:bg-white/99 hover:border-sBlue",

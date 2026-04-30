@@ -1,9 +1,10 @@
-import {useKeyEscapeToClose} from "../02_hooks/useKeyEscapeToClose";
+import {useKeyEscapeToClose} from "../02_hooks/useKeys";
 import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose";
 import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
-import {useMergeRefs} from "@/vol_apps/02_hooks/useMergeRefs";
-import {useFloating} from "../02_hooks/useFloating";
+import {useMergeRefs} from "../02_hooks/01_useMergeRefs";
 import {UnorderedList} from "./UnorderedList";
+import { cloneElement } from "react";
+import {useFloating} from "@/vol_apps/02_hooks/useFloating";
 
 /**
  * Select 受控下拉选择器
@@ -35,16 +36,22 @@ export const Select =
         value: string;
         onValueChange: (value: string) => void;
         options: { label: string; value: string; }[];
-        trigger: React.ReactNode;
+        trigger: React.ReactElement;
     }) => {
 
-        const {focusRef} = useFocusOutsideToClose({open, onClose:() => onOpenChange(false)});
-        const {insideRef} = useClickOutsideToClose({open, onClose:() => onOpenChange(false)});
-        const rootRef = useMergeRefs(focusRef, insideRef,)
+
+        const {focusOutsideRef} = useFocusOutsideToClose({open, onClose:() => onOpenChange(false)});
+        const {clickOutsideRef} = useClickOutsideToClose({open, onClose:() => onOpenChange(false)});
 
         const {anchorRef, floatingStyle} = useFloating({open, direction: "bottom"});
 
+
         useKeyEscapeToClose(open, () => onOpenChange(false));
+        // const spaceRef = useKeySpaceToToggle(open, ()=>{onOpenChange(true)});
+        // const enterRef = useKeyEnterToToggle(open, ()=>{onOpenChange(true)})
+
+        const rootRef = useMergeRefs(focusOutsideRef, clickOutsideRef,)
+        const triggerRef = anchorRef
 
         const handleSelect = (value: string) => {
             onOpenChange(false)
@@ -52,15 +59,17 @@ export const Select =
             setTimeout(() => onValueChange(value));
         };
 
+        const anchoredTrigger = cloneElement(trigger, { ref: triggerRef } as any);
+
         return (
             <div className={"w-fit h-fit"} ref={rootRef}>
-                <div className={"w-fit h-fit animate-fade-in-scale"} ref={anchorRef}>
-                    {trigger}
-                </div>
-                <div style={floatingStyle}>
-                    <UnorderedList value={value} options={options} handleSelect={handleSelect}/>
-                </div>
+                {anchoredTrigger}
+                    <UnorderedList
+                        style={floatingStyle}
+                        value={value}
+                        options={options}
+                        handleSelect={handleSelect}
+                    />
             </div>
-
         );
     };

@@ -2,10 +2,8 @@ import {type ReactNode, useState} from "react";
 import {usePositionFloating} from "../02_hooks/usePositionFloating";
 import {UnorderedList} from "@/vol_apps/01_components/UnorderedList";
 import {useContext} from "@/vol_apps/02_hooks/useContext";
-import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeyEscapeToClose";
-import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose";
+import {useKeyEscapeToClose} from "../02_hooks/useKeys";
 import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
-import {useMergeRefs} from "@/vol_apps/02_hooks/useMergeRefs";
 
 export const SimpleContextMenu = (
     {
@@ -25,12 +23,13 @@ export const SimpleContextMenu = (
     }
 ) => {
     const {anchorRef, position} = useContext({onOpenChange})
-    const {floatingStyle} = usePositionFloating({open, position})
+    const {floatingStyle} = usePositionFloating({open, position, zIndex: 50})
 
     useKeyEscapeToClose(open, () => onOpenChange(false))
-    const {insideRef} = useClickOutsideToClose({open, onClose: () => onOpenChange(false)})
-    const {focusRef} = useFocusOutsideToClose({open, onClose: () => onOpenChange(false)})
-    const mergeRef = useMergeRefs(insideRef, focusRef)
+    const {clickOutsideRef} = useClickOutsideToClose({open, onClose: () => onOpenChange(false)})
+    // const {focusOutsideRef} = useFocusOutsideToClose({open, onClose: () => onOpenChange(false)})
+    const mergeRef = clickOutsideRef
+        // useMergeRefs(clickOutsideRef, focusOutsideRef)
 
     const menuValue = "0";
     const menuOptions = options.map((option, index) => ({
@@ -43,8 +42,8 @@ export const SimpleContextMenu = (
             <div className={"w-fit h-fit"} ref={anchorRef}>
                 {trigger}
             </div>
-            <div style={floatingStyle} ref={mergeRef}>
-                <UnorderedList value={menuValue} options={menuOptions}
+            <div ref={mergeRef}>
+                <UnorderedList value={menuValue} options={menuOptions} style={floatingStyle}
                                handleSelect={(value) => {
                                    onOpenChange(false)
                                    options[Number(value)].handler()

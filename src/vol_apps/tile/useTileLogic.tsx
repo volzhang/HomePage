@@ -1,5 +1,5 @@
 import {INITIAL_STYLE, useTileStyleStore, useTileStyleStoreBase} from "./tile_style_store";
-import {useCallback, useMemo, useRef, useState} from "react";
+import {useMemo, useRef, useState} from "react";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
@@ -64,10 +64,10 @@ export const useTileLogic = () => {
         setTiles(newTiles);
     };
 
-    const handleRightClick = useCallback((tileId: number) => {
-        setTileInEditId(tileId);
-        // setTileUiVisible(true);
-    }, []);
+    // const handleRightClick = useCallback((tileId: number) => {
+    // setTileInEditId(tileId);
+    // setTileUiVisible(true);
+    // }, []);
 
     // const TileState = useTileStore();
     const TileStyle = useTileStyleStore();
@@ -228,16 +228,19 @@ export const useTileLogic = () => {
         setTileUiVisible(true)
     }
 
-    // const tileContextMenuOptions = [
-    //     {label:t("Open in new tab"), handler:handleOpenInNewTab},
-    //     {label:t("Open in current tab"), handler:handleOpenInCurrentTab},
-    //     {label:t("Edit this tile"), handler:handleEdit},
-    // ]
+    const contextMenuOptions: { label: string, handler: () => void }[] = [
+        {label: ("Open in new tab"), handler: () => handleOpenInNewTab(tileInEditId)},
+        {label: ("Open"), handler: () => handleOpenInCurrentTab(tileInEditId)},
+        {label: ("Edit"), handler: () => handleEdit(tileInEditId)},
+    ]
 
     return {
         t,
         // contextMenu
-        // tileContextMenuOptions,
+        contextMenuOptions,
+        tileInEditId,
+        setTileInEditId,
+
         handleOpenInNewTab,
         handleOpenInCurrentTab,
         handleEdit,
@@ -247,7 +250,7 @@ export const useTileLogic = () => {
 
         // 磁砖墙
         displayTiles,
-        handleRightClick,
+        // handleRightClick,
 
         // 拖拽
         handleDragEnd,
