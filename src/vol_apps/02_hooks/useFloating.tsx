@@ -1,5 +1,5 @@
 // hooks/useFloating.ts
-import { useLayoutEffect, useState, useCallback } from "react";
+import {useLayoutEffect, useState, useCallback, useRef, useEffect} from "react";
 import {useCallbackRef} from "@/vol_apps/02_hooks/00_useCallbackRef";
 
 export type FloatingDirection = "top" | "bottom" | "left" | "right";
@@ -143,16 +143,38 @@ export function useFloating({
         return [scalePart, animPart, alignmentPart].filter(Boolean).join(" ");
     };
 
+
+    // ---------- 可见性状态：打开时立刻可见，关闭时延迟隐藏 ----------
+    const [isVisible, setIsVisible] = useState(open);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+    useEffect(() => {
+        if (open) {
+            // 打开：立刻变为可见，同时清除可能还在跑的关闭计时器
+            clearTimeout(timerRef.current);
+            setIsVisible(true);
+        } else {
+            // 关闭：等退出动画播完再隐藏
+            timerRef.current = setTimeout(() => {
+                setIsVisible(false);
+            }, exitDuration);
+        }
+        return () => clearTimeout(timerRef.current);
+    }, [open, exitDuration]);
+
     const floatingStyle: React.CSSProperties = {
         position: "fixed",
         top: position.top,
         left: position.left,
         zIndex,
-        transition: `opacity ${open ? duration : exitDuration}ms ease-in-out, transform ${open ? duration : exitDuration}ms ease-in-out`,
-        opacity: open ? 1 : 0,
         transform: getTransform(),
         pointerEvents: open ? "auto" : "none",
-        visibility: open ? "visible" : "hidden",
+        // animation: open
+        //     ? `floatingIn ${duration}ms ease-in-out forwards`
+        //     : `floatingOut ${exitDuration}ms ease-in-out forwards`,
+        opacity: open ? 1 : 0,
+        visibility: isVisible ? "visible" : "hidden",
+        transition: `opacity ${open ? duration : exitDuration}ms ease-in-out, transform ${open ? duration : exitDuration}ms ease-in-out`,
     };
 
     return { anchorRef, floatingStyle, position };

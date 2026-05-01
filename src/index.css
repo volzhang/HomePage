@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* ==================== 自定义颜色 ==================== */
+/* ==================== 自定义颜色 动画 ==================== */
 @theme {
     --color-sBlue: #0078d7;
 }
@@ -10,6 +10,29 @@
     background-color: var(--background);  /* 使用主题背景色 */
     /* 确保背景图在上层，背景色作为 fallback */
 }
+
+@keyframes floatingIn {
+    from {
+        opacity: 0;
+        visibility: hidden; /* 起始隐藏，防止首帧可见但未渲染完成 */
+    }
+    to {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+@keyframes floatingOut {
+    from {
+        opacity: 1;
+        visibility: visible;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
 
 /* ==================================================== */
 
