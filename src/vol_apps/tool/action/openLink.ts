@@ -8,10 +8,28 @@
 // 	document.body.removeChild(link);
 // }
 
+import {toast} from "sonner";
+
 export const openLinkInNewTab = (url: string) => {
-    window.open(url, "_blank", "noopener,noreferrer");
+    console.log(url)
+    try {
+        window.open(url, "_blank", "noopener,noreferrer");
+    } catch (e) {
+        toast.error(`unknown Url: ${url}`)
+        //     toast.error(
+        //         language === "en"
+        //             ? `unknown Url: ${url}`
+        //             : `未知 Url: ${url}`
+        //     );
+        // }
+    }
 };
 
 export const openLinkInCurrentTab = (url: string) => {
-    window.location.href = url;
+    console.log(url)
+    try {
+        window.location.href = url;
+    } catch (e) {
+        toast.error(`unknown Url: ${url}`)
+    }
 };

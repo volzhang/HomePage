@@ -25,6 +25,7 @@ type TileStyleState = {
     textOffset: { x: number; y: number };
     textOpacity: number;
     textColor: string;
+
 };
 
 type TileStyleAction = {
@@ -49,6 +50,7 @@ type TileStyleAction = {
     setTextOffset: (offset: { x: number; y: number }) => void;
     setTextOpacity: (opacity: number) => void;
     setTextColor: (color: string) => void;
+
 };
 
 type TileStyleStore = TileStyleState & TileStyleAction;
@@ -133,6 +135,5 @@ export function useTileStyleStore(selector?: (state: TileStyleStore) => unknown)
     return useTileStyleStoreBase((s) => s, shallow);
 }
 
-// ✅ 同时导出基础 store，方便外部使用 setState / getState / subscribe 等原生 API
 export { useTileStyleStoreBase };
 
