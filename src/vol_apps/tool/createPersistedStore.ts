@@ -33,7 +33,7 @@ const idbKeyValStorage: StateStorage = {
  */
 
 // version 1.1, //清除垃圾KV
-export const LatestStoreVersion = 1.1
+export const LatestStoreVersion = 1.2
 
 type PersistController = {
 	rehydrate: () => void | Promise<void>;

@@ -94,6 +94,7 @@ const resources: RESOURCES = {
         "Contain": "扩展至边缘",
         "Cover": "扩展至覆盖",
         // "OK": "确定",
+        "Close":"关闭",
 
         "Fetching Bing wallpaper": "正在获取Bing壁纸",
 

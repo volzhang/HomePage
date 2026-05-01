@@ -4,6 +4,7 @@ import type {TileLogic} from "@/vol_apps/tile/useTileLogic";
 
 export const Tile_ui_inEdit_foot = (
     {
+        t,
         ok_ref,
         handleOk,
     }: TileLogic) => {
@@ -15,7 +16,7 @@ export const Tile_ui_inEdit_foot = (
                         "hover:bg-sBlue hover:text-white",
                     )}
                     onClick={handleOk}>
-                OK
+                {t("OK")}
             </Button>
         </div>
     )

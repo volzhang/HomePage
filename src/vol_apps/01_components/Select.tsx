@@ -45,10 +45,7 @@ export const Select =
 
         const {anchorRef, floatingStyle} = useFloating({open, direction: "bottom"});
 
-
         useKeyEscapeToClose(open, () => onOpenChange(false));
-        // const spaceRef = useKeySpaceToToggle(open, ()=>{onOpenChange(true)});
-        // const enterRef = useKeyEnterToToggle(open, ()=>{onOpenChange(true)})
 
         const rootRef = useMergeRefs(focusOutsideRef, clickOutsideRef,)
         const triggerRef = anchorRef

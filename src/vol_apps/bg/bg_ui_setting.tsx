@@ -40,11 +40,26 @@ export function BgUiSetting(
         {value: "cover", label: t("Cover")},
     ];
 
+
+    const BUTTON_CLASS = cn(
+        "bg-secondary border-secondary text-secondary-foreground",
+        "hover:bg-background hover:text-secondary-foreground",
+        "w-full text-[16px]",
+    )
+    const BORDER_CLASS = cn(
+        "w-full pl-[10px] py-[10px] gap-[10px] rounded-md",
+        "border border-secondary bg-secondary hover:bg-background",
+        "flex flex-col items-start justify-center"
+    )
+    const LABEL_CLASS = "text-[16px] p-0 m-0"
+    const DIV_CLASS = "flex items-center gap-2 h-6 m-0 p-0"
+
     return (
-        <div className={cn("fixed right-1 top-1 w-64 p-5 gap-5 flex flex-col z-10",
+        <div className={cn("fixed right-2 top-2 w-[155px] gap-2 flex flex-col z-10",
             {"hidden": !bgUiVisible},
             "bg-ui-panel",  //添加类 bg-ui-panel，供全局 CSS 识别。
         )}>
+
             {/* 上传背景图 */}
             <ImgFilePickerBtn
                 onPick={async (file) => {
@@ -54,12 +69,8 @@ export function BgUiSetting(
                 children={
                     <Button
                         variant={"default"}
-                        className={cn("text-xl w-full h-16 gap-6 items-center",
-                            "bg-secondary border-secondary",
-                            "text-secondary-foreground",
-                            "hover:bg-background hover:text-secondary-foreground"
-                        )}>
-                        <Folder className={`scale-180`}/>
+                        className={cn(BUTTON_CLASS, "h-11")}>
+                        <Folder className={`scale-120`}/>
                         {t("Upload Image")}
                     </Button>
                 }/>
@@ -69,18 +80,14 @@ export function BgUiSetting(
                 onValueChange={async (value) => {
                     setBgType(value as BgType)
                 }}
-                className={cn(
-                    "w-full p-6 gap-4 rounded-md",
-                    "border border-secondary bg-secondary hover:bg-background",
-                    "flex flex-col items-start justify-center"
-                )}
+                className={BORDER_CLASS}
             >
                 {bgTypeOptions.map((opt) => {
                     const rid = `${id}-${opt.value}`;
                     return (
-                        <div key={opt.value} className="flex h-8 items-center gap-2">
+                        <div key={opt.value} className={cn(DIV_CLASS)}>
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className={cn(LABEL_CLASS)}>
                                 {opt.label}
                             </label>
                         </div>
@@ -90,22 +97,16 @@ export function BgUiSetting(
 
             {/* 只看背景 */}
             <RadioGroup
-                // 非受控设计： 防止 otherVisible=false 持久化导致 UI 被隐藏且无法恢复
-                // 刷新时默认回退到 true，确保始终可见（安全兜底）
                 defaultValue={otherVisible ? "true" : "false"}
                 onValueChange={(value) => setOtherVisible(value === "true")}
-                className={cn(
-                    "w-full p-6 gap-4 border rounded-md",
-                    "flex flex-col items-start justify-center",
-                    "bg-secondary border-secondary text-secondary-foreground hover:bg-background"
-                )}
+                className={BORDER_CLASS}
             >
                 {visibleOptions.map((opt) => {
                     const rid = `${id}-visible-${opt.value}`;
                     return (
-                        <div key={opt.value} className="flex h-8 items-center gap-2">
+                        <div key={opt.value} className={cn(DIV_CLASS)}>
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className={LABEL_CLASS}>
                                 {opt.label}
                             </label>
                         </div>
@@ -116,18 +117,14 @@ export function BgUiSetting(
             <RadioGroup
                 value={bgRepeat ? "repeat" : "no-repeat"}
                 onValueChange={(value) => setBgRepeat(value === "repeat")}
-                className={cn(
-                    "w-full p-6 gap-4 border rounded-md",
-                    "border-secondary bg-secondary hover:bg-background",
-                    "flex flex-col items-start justify-center"
-                )}
+                className={BORDER_CLASS}
             >
                 {repeatOptions.map((opt) => {
                     const rid = `${id}-repeat-${opt.value}`;
                     return (
-                        <div key={opt.value} className="flex h-8 items-center gap-2">
+                        <div key={opt.value} className={cn(DIV_CLASS)}>
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className={LABEL_CLASS}>
                                 {opt.label}
                             </label>
                         </div>
@@ -138,18 +135,14 @@ export function BgUiSetting(
             <RadioGroup
                 value={bgCenter ? "center" : "not-center"}
                 onValueChange={(value) => setBgCenter(value === "center")}
-                className={cn(
-                    "w-full p-6 gap-4 border rounded-md",
-                    "border-secondary bg-secondary hover:bg-background",
-                    "flex flex-col items-start justify-center"
-                )}
+                className={BORDER_CLASS}
             >
                 {centerOptions.map((opt) => {
                     const rid = `${id}-center-${opt.value}`;
                     return (
-                        <div key={opt.value} className="flex h-8 items-center gap-2">
+                        <div key={opt.value} className={cn(DIV_CLASS)}>
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className={LABEL_CLASS}>
                                 {opt.label}
                             </label>
                         </div>
@@ -160,18 +153,14 @@ export function BgUiSetting(
             <RadioGroup
                 value={bgSize}
                 onValueChange={(value) => setBgSize(value as SizeType)}
-                className={cn(
-                    "w-full p-6 gap-4 rounded-md",
-                    "border border-secondary bg-secondary hover:bg-background",
-                    "flex flex-col items-start justify-center"
-                )}
+                className={BORDER_CLASS}
             >
                 {sizeOptions.map((opt) => {
                     const rid = `${id}-size-${opt.value}`;
                     return (
-                        <div key={opt.value} className="flex h-8 items-center gap-2">
+                        <div key={opt.value} className={cn(DIV_CLASS)}>
                             <RadioGroupItem value={opt.value} id={rid}/>
-                            <label htmlFor={rid} className="text-xl">
+                            <label htmlFor={rid} className={LABEL_CLASS}>
                                 {opt.label}
                             </label>
                         </div>
@@ -183,16 +172,11 @@ export function BgUiSetting(
                     setBgUiVisible(false);
                     setOtherVisible(true);
                 }}
-                type="button"
                 variant={"default"}
-                className={cn(
-                    "h-16 text-xl",
-                    "bg-secondary border-secondary",
-                    "text-secondary-foreground",
-                    "hover:bg-background hover:text-secondary-foreground"
-                )}>
+                className={cn(BUTTON_CLASS, "h-[46px]")}>
                 {t("OK")}
             </Button>
+
         </div>
     );
 }

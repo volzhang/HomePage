@@ -73,9 +73,10 @@ export const useBgStore = createPersistedStore<BgStore>(
         version: LatestStoreVersion,  //放弃otherVisible持久化，清除垃圾KV
         migrate: (persistedState) => {
             if (!persistedState || typeof persistedState !== "object") return {};
-            // 排除 otherVisible，其他垃圾KV
+            // 排除 otherVisible, bgUiVisible, 其他垃圾KV
             const {
                 otherVisible,
+                bgUiVisible,
                 ...rest
             } = INITIAL_STATE
 
@@ -86,7 +87,7 @@ export const useBgStore = createPersistedStore<BgStore>(
         },
         partialize: (state) => {
             // 排除 otherVisible，其余字段全部持久化
-            const {otherVisible, ...rest} = state;
+            const {otherVisible, bgUiVisible, ...rest} = state;
             return rest;
         },
     }
