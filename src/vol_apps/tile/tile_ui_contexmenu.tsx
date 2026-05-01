@@ -31,7 +31,7 @@ const ContextMenu = (
 
     const {contextMenuOpen, contextMenuPosition, setContextMenuOpen} = useTileContextMenuStore()
 
-    const {floatingStyle} = usePositionFloating({open: contextMenuOpen, position: contextMenuPosition, zIndex: 10})
+    const {floatingStyle} = usePositionFloating({open: contextMenuOpen, position: contextMenuPosition, duration: 100})
     useKeyEscapeToClose(contextMenuOpen, ()=>setContextMenuOpen(false))
 
     const {clickOutsideRef} = useClickOutsideToClose({open:contextMenuOpen, onClose:()=>setContextMenuOpen(false)})

@@ -43,43 +43,43 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
                         {tilesVisible
                             ?
                             <ContextMenuSub>
-                                <ContextMenuSubTrigger inset className={"h-10"}>
+                                <ContextMenuSubTrigger>
                                     {t("Tiles")}
                                 </ContextMenuSubTrigger>
                                 <ContextMenuSubContent className="w-44">
-                                    <ContextMenuItem inset onClick={onAddTile} className={"h-10"} disabled={!tilesVisible}>
+                                    <ContextMenuItem inset onClick={onAddTile} disabled={!tilesVisible}>
                                         {t("Add Tile")}
                                         <Plus className="ml-auto"/>
                                     </ContextMenuItem>
-                                    <ContextMenuItem inset className={"h-10"}
+                                    <ContextMenuItem inset className={""}
                                                      onClick={()=> setTilesVisible(!tilesVisible)} >
                                         {tilesVisible ? t("Hide Tiles") : t("Show Tiles")}
                                     </ContextMenuItem>
                                 </ContextMenuSubContent>
                             </ContextMenuSub>
                             :
-                            <ContextMenuItem inset className={"h-10"} onClick={()=> setTilesVisible(!tilesVisible)} >
+                            <ContextMenuItem onClick={()=> setTilesVisible(!tilesVisible)} >
                                 {t("Show Tiles")}
                             </ContextMenuItem>
                         }
                     <ContextMenuSub>
-                        <ContextMenuSubTrigger inset className={"h-10"}>
+                        <ContextMenuSubTrigger>
                             {t("Backup")}
                         </ContextMenuSubTrigger>
                         <ContextMenuSubContent className="w-44">
-                            <ContextMenuItem onClick={persistedStoresBackup} className={"h-10"}>
+                            <ContextMenuItem onClick={persistedStoresBackup}>
                                 {t("Download Backup")}
                                 <Download className={"ml-auto"}/>
                             </ContextMenuItem>
-                            <ContextMenuItem onClick={() => jsonFilePickerAPI().then(file => persistedStoresRestore(file))} className={`h-10`}>
+                            <ContextMenuItem onClick={() => jsonFilePickerAPI().then(file => persistedStoresRestore(file))}>
                                 {t("Import Backup")}
                                 <Upload className={"ml-auto"}/>
                             </ContextMenuItem>
                         </ContextMenuSubContent>
                     </ContextMenuSub>
-                    <ContextMenuItem inset onClick={() => {
+                    <ContextMenuItem onClick={() => {
                         setBgUiVisible(true);
-                    }} className={"h-10"}>
+                    }} className={""}>
                         {t("Set Background")}
                         <Image className="ml-auto"/>
                     </ContextMenuItem>

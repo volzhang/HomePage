@@ -261,3 +261,5 @@ export const useLanguageStore = createPersistedStore<LanguageStore>(
         },
     }
 );
+
+export const LanguageIsDefault = document.documentElement.lang === "en"

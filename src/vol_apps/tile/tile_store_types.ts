@@ -7,7 +7,7 @@ export const defaultTile = {
 
 export const TutorialsTiles: Tile[] = [
     {
-        id: 0, url: "https://www.bing.com/",
+        id: 0, url: "",
         meta: {
             name: "Long Press to Drag",
             alt: "Tutorial: Long press and drag to rearrange tiles",
@@ -16,7 +16,7 @@ export const TutorialsTiles: Tile[] = [
         },
     },
     {
-        id: 1, url: "https://www.bing.com/",
+        id: 1, url: "",
         meta: {
             name: "Right-Click Me",
             alt: "Tutorial: Right-click (desktop) to edit tile",
@@ -25,7 +25,7 @@ export const TutorialsTiles: Tile[] = [
         },
     },
     {
-        id: 2, url: "https://www.bing.com/",
+        id: 2, url: "",
         meta: {
             name: "Right-Click Nearby",
             alt: "Tutorial: Right-click beside the tile to open the context menu",
@@ -43,7 +43,7 @@ export const TutorialsTiles: Tile[] = [
         },
     },
     {
-        id: 4, url: "https://www.bing.com/",
+        id: 4, url: "",
         meta: {
             name: "长按后可拖动",
             alt: "长按后可拖动",
@@ -52,7 +52,7 @@ export const TutorialsTiles: Tile[] = [
         },
     },
     {
-        id: 5, url: "https://www.bing.com/",
+        id: 5, url: "",
         meta: {
             name: "右键点击我",
             alt: "右键点击我",
@@ -61,7 +61,7 @@ export const TutorialsTiles: Tile[] = [
         },
     },
     {
-        id: 6, url: "https://www.bing.com/",
+        id: 6, url: "",
         meta: {
             name: "右键点旁边空白",
             alt: "右键点旁边空白",

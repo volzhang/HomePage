@@ -66,22 +66,22 @@ export const INITIAL_STYLE: TileStyleState = {
     backgroundColor: "#ffffff",
     backgroundOpacity: 1,
 
-    tileSize: 144,
+    tileSize: 140,
     tileRadius: 14,
     tileOutlineThickness: 0,
     tileOutlineColor: "#000000",
     tileOutlineOpacity: 1,
 
-    iconBorderSize: 96,
+    iconBorderSize: 100,
     iconBorderOffset: { x: 0, y: 10 },
-    iconSize: 96,
+    iconSize: 100,
     iconOffset: { x: 0, y: 0 },
 
     fontSize: 14,
     fontWeight: 550,
     font: FONT_DEFAULT,
 
-    textOffset: { x: 0, y: 14 },
+    textOffset: { x: 0, y: 10 },
     textColor: "#000000",
     textOpacity: 1,
 };

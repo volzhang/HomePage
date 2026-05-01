@@ -9,27 +9,28 @@
 // }
 
 import {toast} from "sonner";
+import {LanguageIsDefault} from "@/vol_apps/language/language_store";
+
+const ToastErr = (url:string)=>{
+    toast.error(
+        LanguageIsDefault
+            ? `can not open link 👉 ${url} 👈`
+            : `无法打开链接 👉 ${url} 👈`
+    );
+}
 
 export const openLinkInNewTab = (url: string) => {
-    console.log(url)
     try {
         window.open(url, "_blank", "noopener,noreferrer");
     } catch (e) {
-        toast.error(`unknown Url: ${url}`)
-        //     toast.error(
-        //         language === "en"
-        //             ? `unknown Url: ${url}`
-        //             : `未知 Url: ${url}`
-        //     );
-        // }
+        ToastErr(url)
     }
 };
 
 export const openLinkInCurrentTab = (url: string) => {
-    console.log(url)
     try {
         window.location.href = url;
     } catch (e) {
-        toast.error(`unknown Url: ${url}`)
+        ToastErr(url)
     }
 };

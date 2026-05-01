@@ -30,7 +30,7 @@ export function ScrollAreaForTiles({children}: PropsWithChildren) {
             <div className={cn(
                 "flex flex-col mx-auto",
                 "border border-border rounded-xl",
-                "max-h-[66vh]",
+                "max-h-[59vh]",
                 "w-[88%]",
                 "overflow: visible"
             )}>
@@ -39,7 +39,7 @@ export function ScrollAreaForTiles({children}: PropsWithChildren) {
                     scrollHideDelay={500}
                     viewportClassName={cn(
                         "mask-fade flex mx-auto",
-                        "max-h-[64vh] min-h-[192px]",
+                        "max-h-[59vh] min-h-[192px]",
                         "max-w-full",
                         "overflow: visible!",
                     )}

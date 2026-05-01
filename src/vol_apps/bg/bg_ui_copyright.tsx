@@ -22,15 +22,17 @@ export const BgUiCopyright = (
                         {bgBingCopyright
                             ? <p className={cn(
                             "px-3 py-2 rounded-l-sm",
-                            "bg-transparent text-foreground",
+                            "bg-transparent text-foreground/80",
                             "hover:bg-background",
+                            "hover:text-foreground",
                             "text-sm",
                             TransitionColors,
                         )}>{bgBingCopyright}</p>
                             : <p className={cn(
                                 "px-2 py-2 rounded-l-sm",
-                                "bg-transparent text-foreground",
+                                "bg-transparent text-foreground/80",
                                 "hover:bg-background",
+                                "hover:text-foreground",
                                 "text-sm",
                             )}>{t("Fetching Bing wallpaper")}</p>
                         }
