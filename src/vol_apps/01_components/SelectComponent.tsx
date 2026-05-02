@@ -10,7 +10,7 @@ import {useFloating} from "@/vol_apps/02_hooks/useFloating";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
 import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose";
-import {useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
+import {useMergeRefs, useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
 
 export const MENU_CLASS = cn(
     "flex flex-col items-center border w-[136px]",
@@ -73,7 +73,7 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
     const {clickOutsideRef} = useClickOutsideToClose({open, onClose});
     const {focusOutsideRef} = useFocusOutsideToClose({open, onClose});
 
-    const mergedRef = useMergeRefsLoose(ref, clickOutsideRef, focusOutsideRef);
+    const mergedRef = useMergeRefs(ref, clickOutsideRef, focusOutsideRef);
 
     return (
         <ul

@@ -58,7 +58,7 @@ export const SearchBar = () => {
     const MIN_WIDTH = "min-w-[720px] max-w-[1080px] max-w-[48vw] w-[48vw]"
 
     const PADDING_LEFT = "py-4 pl-5 pr-5"
-    const PADDING_MID = "py-4 pl-2 pr-2"
+    const PADDING_MID = "py-4 pl-1 pr-1"
     const PADDING_RIGHT = "py-4 pl-5 pr-5"
 
     const TRANSITION_ALL = "transition-all duration-350 ease-out"
@@ -118,8 +118,11 @@ export const SearchBar = () => {
                     onClick={() => handleSubmit(inputBoxRef.current?.value ?? "")}
                     className={SEARCH_ICON_BUTTON}>
                     <div
-                        className="text-[18px] leading-7 h-7 flex items-center justify-center text-sBlue group-hover:text-white">
-                        <Search strokeWidth={3} className="h-7"/>
+                        className={cn("text-[18px] leading-7 h-7 flex items-center justify-center",
+                            "text-sBlue group-hover:text-white")}>
+                        {currentEngine.icon
+                            ? <img src={currentEngine.icon} className="w-9 object-cover"/>
+                            : <Search strokeWidth={3} className="h-7"/>}
                     </div>
                 </button>
 
