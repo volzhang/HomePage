@@ -19,6 +19,7 @@ export const Language = () => {
                 duration={200}
             >
                 <Trigger>
+                    {/* Trigger 能自己搞定open状态 */}
                     <Button variant="outline" className={TRIGGER_CLASS}>
                         <Languages className="size-4 text-foreground"/>
                         {language === "en" ? "English" : "简体中文"}

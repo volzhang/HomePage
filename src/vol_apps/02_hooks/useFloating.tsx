@@ -1,9 +1,7 @@
 // hooks/useFloating.ts
-import {useLayoutEffect, useState, useCallback, useRef, useEffect} from "react";
-import {useCallbackRef} from "@/vol_apps/02_hooks/00_useCallbackRef";
-
-export type FloatingDirection = "top" | "bottom" | "left" | "right";
-export type FloatingAlign = "start" | "center" | "end";
+import {useAnchorPosition} from "@/vol_apps/02_hooks/02_useAnchorPosition";
+import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
+import type {FloatingAlign, FloatingDirection} from "@/vol_apps/00_types/Types";
 
 /**
  * 统一处理浮层定位与进出动画的 Hook。
@@ -20,8 +18,8 @@ export type FloatingAlign = "start" | "center" | "end";
  *
  * @returns `{ anchorRef, floatingStyle, position }`
  * - `anchorRef`：回调 ref，直接赋给任意元素的 `ref` 即可（不挑元素类型）
+ * - `floatingRef`: 回调 ref，直接赋给任意元素的 `ref` 即可（不挑元素类型）
  * - `floatingStyle`：包含定位、动画、层级等内联样式
- * - `position`：纯坐标 `{ top: number, left: number }`
  */
 export function useFloating({
                                 open,
@@ -43,139 +41,46 @@ export function useFloating({
     offset?: number;
 }) {
 
-    const [anchorRef, elementRef] = useCallbackRef();
-    const [position, setPosition] = useState({ top: 0, left: 0 });
-
-    // ---------- 位置计算 ----------
-    const calculatePosition = useCallback(() => {
-        const el = elementRef.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        let top = 0,
-            left = 0;
-
-        switch (direction) {
-            case "bottom":
-                top = rect.bottom + offset;
-                if (align === "center") left = rect.left + rect.width / 2;
-                else if (align === "end") left = rect.right;
-                else left = rect.left;
-                break;
-            case "top":
-                top = rect.top - offset;
-                if (align === "center") left = rect.left + rect.width / 2;
-                else if (align === "end") left = rect.right;
-                else left = rect.left;
-                break;
-            case "right":
-                left = rect.right + offset;
-                if (align === "center") top = rect.top + rect.height / 2;
-                else if (align === "end") top = rect.bottom;
-                else top = rect.top;
-                break;
-            case "left":
-                left = rect.left - offset;
-                if (align === "center") top = rect.top + rect.height / 2;
-                else if (align === "end") top = rect.bottom;
-                else top = rect.top;
-                break;
-        }
-        setPosition({ top, left });
-    }, [direction, align, offset]);
-
-    useLayoutEffect(() => {
-        if (!open) return;
-        calculatePosition();
-        window.addEventListener("resize", calculatePosition);
-        window.addEventListener("scroll", calculatePosition, true);
-        return () => {
-            window.removeEventListener("resize", calculatePosition);
-            window.removeEventListener("scroll", calculatePosition, true);
-        };
-    }, [open, calculatePosition]);
-
-    // ---------- 动画与对齐 transform ----------
-    const getTransform = (): string => {
-        const s = open ? 1 : scale / 100;
-        const scalePart = `scale(${s})`;
-
-        // 方向性微动
-        const getAnimOffset = (dir: FloatingDirection, isOpen: boolean): string => {
-            if (isOpen) return "";
-            switch (dir) {
-                case "top":    return "translate(0px, 4px)";
-                case "bottom": return "translate(0px, -4px)";
-                case "left":   return "translate(4px, 0px)";
-                case "right":  return "translate(-4px, 0px)";
-                default:       return "";
-            }
-        };
-        const animPart = getAnimOffset(direction, open);
-
-        // 对齐 + 方向定位偏移
-        const getAlignmentTransform = (
-            dir: FloatingDirection,
-            al: FloatingAlign
-        ): string => {
-            switch (dir) {
-                case "bottom":
-                    if (al === "center") return "translateX(-50%)";
-                    if (al === "end")    return "translateX(-100%)";
-                    return "";
-                case "top":
-                    if (al === "center") return "translateY(-100%) translateX(-50%)";
-                    if (al === "end")    return "translateY(-100%) translateX(-100%)";
-                    return "translateY(-100%)";
-                case "left":
-                    if (al === "center") return "translateX(-100%) translateY(-50%)";
-                    if (al === "end")    return "translateX(-100%) translateY(-100%)";
-                    return "translateX(-100%)";
-                case "right":
-                    if (al === "center") return "translateY(-50%)";
-                    if (al === "end")    return "translateY(-100%)";
-                    return "";
-                default:
-                    return "";
-            }
-        };
-        const alignmentPart = getAlignmentTransform(direction, align);
-
-        return [scalePart, animPart, alignmentPart].filter(Boolean).join(" ");
-    };
-
-
-    // ---------- 可见性状态：打开时立刻可见，关闭时延迟隐藏 ----------
-    const [isVisible, setIsVisible] = useState(open);
-    const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-    useEffect(() => {
-        if (open) {
-            // 打开：立刻变为可见，同时清除可能还在跑的关闭计时器
-            clearTimeout(timerRef.current);
-            setIsVisible(true);
-        } else {
-            // 关闭：等退出动画播完再隐藏
-            timerRef.current = setTimeout(() => {
-                setIsVisible(false);
-            }, exitDuration);
-        }
-        return () => clearTimeout(timerRef.current);
-    }, [open, exitDuration]);
+    const {anchorRef, floatingRef, fixedPosition} = useAnchorPosition({open, direction, align, offset});
+    const anim = useFloatAnimation({ open, direction, scale, duration, exitDuration });
 
     const floatingStyle: React.CSSProperties = {
-        position: "fixed",
-        top: position.top,
-        left: position.left,
         zIndex,
-        transform: getTransform(),
-        pointerEvents: open ? "auto" : "none",
-        // animation: open
-        //     ? `floatingIn ${duration}ms ease-in-out forwards`
-        //     : `floatingOut ${exitDuration}ms ease-in-out forwards`,
-        opacity: open ? 1 : 0,
-        visibility: isVisible ? "visible" : "hidden",
-        transition: `opacity ${open ? duration : exitDuration}ms ease-in-out, transform ${open ? duration : exitDuration}ms ease-in-out`,
+        position: "fixed",
+        top: fixedPosition.top,
+        left: fixedPosition.left,
+        transform: anim.transform,
+        opacity: anim.opacity,
+        visibility: anim.visibility,
+        pointerEvents: anim.pointerEvents,
+        transition: anim.transition,
     };
 
-    return { anchorRef, floatingStyle, position };
+    return { anchorRef, floatingRef, floatingStyle };
 }
+
+
+//后续的改进方向
+//1. 定位计算的时机问题
+// 当前在 open 变为 true 时立即 useLayoutEffect 执行 calculate，但此时浮层可能还没完成布局（尤其是含图片、异步内容、flex 等情况）。
+// tsxuseLayoutEffect(() => {
+//     if (!open) return;
+//     const raf = requestAnimationFrame(() => {
+//         calculate();
+//         // 再多测一次，兼容部分复杂布局
+//         requestAnimationFrame(calculate);
+//     });
+//     // ...
+// }, [open, calculate]);
+// 2. 浮层尺寸测量时机
+// 目前浮层在 open=false 时可能被 visibility: hidden 或 opacity:0，但 offsetWidth 仍然能读到，这算是运气好。但更健壮的做法是：
+// 浮层始终挂载（display: none 时不测量）
+// 或者在 open 后使用 useLayoutEffect + ResizeObserver 监听浮层自身尺寸变化
+// 3. 边界处理缺失（生产环境痛点）
+// 当前没有做 flip（方向翻转）和 shift（自动偏移避免超出视口）。这是这类 Hook 最容易被诟病的地方。
+// 建议至少加上一个简单的 fallback 策略，比如 bottom 放不下就尝试 top。
+// 4. 支持 Portal
+// 5. 性能
+// resize 和 scroll 建议加节流（requestAnimationFrame 或 lodash throttle）。
+
+

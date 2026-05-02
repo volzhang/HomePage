@@ -43,6 +43,7 @@ export const SelectContext = createContext<{
 
     // hook 传参
     anchorRef?: React.Ref<any>;
+    floatingRef?: React.Ref<any>;
     floatingStyle?: CSSProperties;
 
 }>({open: false});
@@ -65,15 +66,8 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
                                                                      itemClassName,
                                                                      checkIconClassName,
                                                                  }, ref) => {
-    const {open, onOpenChange, floatingStyle} = useSelectContext();
-
-    const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
-
-    useKeyEscapeToClose(open, onClose);
-    const {clickOutsideRef} = useClickOutsideToClose({open, onClose});
-    const {focusOutsideRef} = useFocusOutsideToClose({open, onClose});
-
-    const mergedRef = useMergeRefs(ref, clickOutsideRef, focusOutsideRef);
+    const {floatingStyle, floatingRef} = useSelectContext();
+    const mergedRef = useMergeRefsLoose(ref, floatingRef);
 
     return (
         <ul
@@ -118,8 +112,11 @@ export const Option = ({
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         onOpenChange?.(false);
-        onValueChange?.(value);
-        onClick?.(e)
+        //优先渲染动画，保持流畅
+        setTimeout(()=> {
+            onValueChange?.(value)
+            onClick?.(e)
+        })
     };
 
     return (
@@ -142,8 +139,9 @@ interface TriggerProps {
 export const Trigger = ({children, triggerClassName, ...rest}: TriggerProps) => {
     const child = children;
 
-    const { open, onOpenChange, anchorRef } = useSelectContext();
-    // const originalRef = (child as any).ref;
+    const { open,
+        onOpenChange,
+        anchorRef } = useSelectContext();
     const originalRef = getElementRef(child);
     const mergedRef = useMergeRefsLoose(anchorRef, originalRef);
 
@@ -177,6 +175,8 @@ interface SelectProps {
     offset?: number;
     duration?: number;
     exitDuration?: number;
+
+    className?: string;
 }
 
 export const SelectComponent = ({
@@ -190,10 +190,12 @@ export const SelectComponent = ({
                                     align = "start" ,
                                     offset = 4,
                                     duration = 200,
-                                    exitDuration = 0,
+                                    exitDuration = 50,
+
+                                    className,
                                 }: SelectProps) => {
     // 定位与动画
-    const {anchorRef, floatingStyle} = useFloating({
+    const {anchorRef, floatingRef, floatingStyle} = useFloating({
         open,
         direction,
         align,
@@ -209,14 +211,24 @@ export const SelectComponent = ({
         onOpenChange,
 
         anchorRef,
+        floatingRef,
         floatingStyle,
 
     }), [value, onValueChange, open, onOpenChange,
         anchorRef, floatingStyle]);
 
+    const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
+
+    useKeyEscapeToClose(open, onClose);
+    const {clickOutsideRef} = useClickOutsideToClose({open, onClose});
+    const {focusOutsideRef} = useFocusOutsideToClose({open, onClose});
+    const rootRef = useMergeRefs(clickOutsideRef, focusOutsideRef)
+
     return (
         <SelectContext.Provider value={contextValue}>
-            {children}
+            <div className={cn("w-fit h-fit", className)} ref = {rootRef}>
+                {children}
+            </div>
         </SelectContext.Provider>
     );
 };

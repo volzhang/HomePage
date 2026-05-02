@@ -19,14 +19,15 @@ export const SearchBar = () => {
     const currentEngine = getEngineInUse();
 
 
-    const {anchorRef, floatingStyle} = useFloating({open, direction: "bottom", align: "end"
+    const {anchorRef, floatingRef, floatingStyle} = useFloating({
+        open,
+        direction: "bottom",
+        align: "end"
     });
 
     const {focusOutsideRef} = useFocusOutsideToClose({open, onClose:() => setOpen(false)});
     const {clickOutsideRef} = useClickOutsideToClose({open, onClose:() => setOpen(false)});
     const rootRef = useMergeRefs(focusOutsideRef, clickOutsideRef, anchorRef)
-
-
 
     const inputBoxRef = useRef<HTMLTextAreaElement>(null)
 
@@ -165,7 +166,7 @@ export const SearchBar = () => {
             </div>
 
             {/* dropdown */}
-            <div style={floatingStyle}>
+            <div style={floatingStyle} ref={floatingRef}>
                 <div className={cn(
                     "flex flex-row-reverse mt-1 w-fit min-w-34",
                     "border-4 border-background rounded-md shadow-xl",

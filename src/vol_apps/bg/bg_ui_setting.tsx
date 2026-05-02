@@ -54,7 +54,12 @@ export function BgUiSetting(
     const LABEL_CLASS = "text-[16px] p-0 m-0"
     const DIV_CLASS = "flex items-center gap-2 h-6 m-0 p-0"
 
-    const {anchorRef, floatingStyle} = useFloating({open: bgUiVisible, direction: "bottom", align: "end", offset: 0,})
+    const {anchorRef, floatingRef, floatingStyle} = useFloating({
+        open: bgUiVisible,
+        direction: "bottom",
+        align: "end",
+        offset: 0,
+    })
 
     return (
         <>
@@ -63,6 +68,7 @@ export function BgUiSetting(
             <div className={cn("pt-2 pr-2 w-[160px] gap-3 flex flex-col",
                 //添加类 bg-ui-panel，供全局 CSS 识别。
                 "bg-ui-panel")}
+                 ref={floatingRef}
                  style={floatingStyle}
             >
 
