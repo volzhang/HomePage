@@ -3,52 +3,26 @@ import {useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
-import {useKeyEscapeToClose} from "../02_hooks/useKeys";
-import {RotateOnOpen} from "@/vol_apps/01_components/RotateOnOpen";
-import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose";
-import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
-import {useMergeRefs} from "../02_hooks/01_useMergeRefs";
-import {useFloating} from "../02_hooks/useFloating";
-
+import {Select} from "@/vol_apps/01_components/SelectComponent";
 
 export const SearchBar = () => {
-
     const {getEngineInUse, setEngineInUseByName} = useSearchStore()
     const [open, setOpen] = useState<boolean>(false)
 
     const currentEngine = getEngineInUse();
-    
-    const {anchorRef, floatingRef, floatingStyle} = useFloating({
-        open,
-        direction: "bottom",
-        align: "end"
-    });
-
-    const {focusOutsideRef} = useFocusOutsideToClose({open, onClose:() => setOpen(false)});
-    const {clickOutsideRef} = useClickOutsideToClose({open, onClose:() => setOpen(false)});
-    const rootRef = useMergeRefs(focusOutsideRef, clickOutsideRef, anchorRef)
-
     const inputBoxRef = useRef<HTMLTextAreaElement>(null)
-
-    const close = () => setOpen(false)
-    const toggle = () => setOpen(!open)
-
-    useKeyEscapeToClose(open, () => close())
 
     const handleSelect = (v: string) => {
         setEngineInUseByName(v)
         inputBoxRef.current?.focus()
-        close()
     }
 
     const handleSubmit = (keyword: string) => {
         const trimmed = keyword?.trim();
-
         if (!trimmed) {
             openLinkInNewTab(currentEngine.homeUrl);
             return;
         }
-
         const urlObj = new URL(currentEngine.url)
         urlObj.searchParams.set(currentEngine.param, keyword)
         openLinkInNewTab(urlObj.toString())
@@ -56,11 +30,9 @@ export const SearchBar = () => {
 
     // ==================== 样式常量 ====================
     const MIN_WIDTH = "min-w-[720px] max-w-[1080px] max-w-[48vw] w-[48vw]"
-
     const PADDING_LEFT = "py-4 pl-[18px] pr-[14px]"
     const PADDING_MID = "py-4 pl-1 pr-1"
     const PADDING_RIGHT = "py-4 pl-5 pr-5"
-
     const TRANSITION_ALL = "transition-all duration-350 ease-out"
 
     // 主搜索框样式
@@ -97,7 +69,7 @@ export const SearchBar = () => {
     )
 
     const ENGINE_BUTTON = cn(
-        "group flex items-start w-fit ",
+        "group flex items-start w-fit",
         TRANSITION_ALL,
         PADDING_RIGHT,
         "text-sBlue hover:bg-sBlue"
@@ -110,23 +82,20 @@ export const SearchBar = () => {
     )
 
     const SIZE_MAP: Record<number, string> = {
-        0:"w-9",
-        1:"w-10",
-        3:"w-[44px]",
-        5:"w-[48px]",
-        2:"w-[46px]",
+        0: "w-9",
+        1: "w-10",
+        3: "w-[44px]",
+        5: "w-[48px]",
+        2: "w-[46px]",
 
-        6:"w-[36px]",
-        7:"w-[48px]",
-        4:"w-[36px]",
-
-
-
+        6: "w-[36px]",
+        7: "w-[48px]",
+        4: "w-[36px]",
     }
 
     // ==================== JSX ====================
     return (
-        <div className="relative w-fit mx-auto" ref={rootRef}>
+        <div className="relative w-fit mx-auto">
             <div className={SEARCH_BOX_BASE}>
                 {/* 搜索图标按钮 */}
                 <button
@@ -169,41 +138,37 @@ export const SearchBar = () => {
                         }}
                     />
                 </div>
-
-                {/* 引擎选择按钮 */}
-                <button onClick={toggle} className={ENGINE_BUTTON}>
-                    <div className={ENGINE_NAME}>
-                        {currentEngine.name}
-                        <RotateOnOpen open={open} className={"text-sm"}>▼</RotateOnOpen>
-                    </div>
-                </button>
-            </div>
-
-            {/* dropdown */}
-            <div style={floatingStyle} ref={floatingRef}>
-                <div className={cn(
-                    "flex flex-row-reverse mt-1 w-fit min-w-34",
-                    "border-4 border-background rounded-md shadow-xl",
-                    "bg-background text-foreground select-none overflow-hidden",
-                )}>
-                    {[...SEARCH_ENGINES]
-                        .sort((a, b) => a.pos - b.pos)
-                        .map(engine => (
-                            <button type="button" key={engine.id} onClick={(e) => {
-                                e.stopPropagation()
-                                handleSelect(engine.name)
-                            }}
-                                    className={cn(
-                                        "px-4 py-3 font-medium text-xl",
-                                        "hover:bg-foreground/15 border-none rounded-sm",
-                                        currentEngine.name === engine.name && "text-sBlue font-bold"
-                                    )}
-                            >
-                                {engine.name}
-                            </button>
-                        ))
-                    }
-                </div>
+                {/* 引擎选择按钮 直接使用自制组件Select */}
+                <Select
+                    open={open} onOpenChange={setOpen}
+                    value={currentEngine.name} onValueChange={handleSelect}
+                    duration={200} exitDuration={200}
+                    align={"end"} offset={6}
+                >
+                    <Select.Trigger>
+                        <div className={cn(ENGINE_BUTTON, "h-full")}>
+                            <div className={ENGINE_NAME}>
+                                {currentEngine.name}
+                                <Select.RotateIcon/>
+                            </div>
+                        </div>
+                    </Select.Trigger>
+                    <Select.Content menuClassName={"flex flex-row-reverse w-fit"}>
+                        {[...SEARCH_ENGINES]
+                            .sort((a, b) => a.pos - b.pos)
+                            .map(engine => (
+                                <Select.Option
+                                    value={engine.name}
+                                    checkIconClassName={"hidden"}       //不使用checkIcon
+                                    itemClassName={cn("px-4 py-6 text-xl font-medium",
+                                        currentEngine.name === engine.name && "text-sBlue font-semibold"
+                                    )}>
+                                    {engine.name}
+                                </Select.Option>
+                            ))
+                        }
+                    </Select.Content>
+                </Select>
             </div>
         </div>
     )

@@ -255,7 +255,8 @@ export const SelectComponent = ({
 
     return (
         <SelectContext.Provider value={contextValue}>
-            <div className={cn("w-fit h-fit", className)} ref={rootRef}>
+            <div className={cn("w-fit", className)} ref={rootRef}>
+                {/*//这里最好移除套层div，避免样式干扰*/}
                 {children}
             </div>
         </SelectContext.Provider>
