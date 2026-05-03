@@ -27,7 +27,7 @@ export function useFloating({
                                 align = "start",
                                 scale = 95,
                                 duration = 200,
-                                exitDuration = 150,
+                                exitDuration = 200,
                                 zIndex = 10,
                                 offset = 4,
                             }: {

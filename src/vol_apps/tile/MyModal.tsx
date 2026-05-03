@@ -1,8 +1,7 @@
-import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
-import {X} from "lucide-react";
 import {useKeyEscapeToClose} from "../02_hooks/useKeys";
 import {type ReactNode, type RefObject, useEffect, useRef} from "react";
+import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
 
 interface Props {
     open: boolean
@@ -24,6 +23,12 @@ export const MyModal = ({
                         }: Props) => {
 
     const modalContentRef = useRef<HTMLDivElement>(null);
+
+    const floatingStyle = useFloatAnimation({
+        open, direction: "bottom", slideDistance: 32,
+        duration: 300, exitDuration:300
+    })
+
     useKeyEscapeToClose(open, () => onOpenChange(false));
 
     useEffect(() => {
@@ -67,23 +72,21 @@ export const MyModal = ({
                     ref={modalContentRef}
                     tabIndex={-1}
                     className={cn(
-                        "flex flex-col",
+                        "flex flex-col mx-auto z-20",
                         "w-fit h-fit min-w-[700px] min-h-[600px]",
                         "bg-background rounded-md border overflow-hidden",
-                        "transition-all duration-250 ease-in-out origin-top z-20",
-                        open
-                            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-                            : "opacity-0 scale-90 -translate-y-2 pointer-events-none"
                     )}
+                    style={floatingStyle}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* 顶部区域：关闭按钮 */}
-                    <div className="flex justify-end">
-                        <Button variant={"link"} size={"icon"}
-                                onClick={() => onOpenChange(false)}>
-                            <X/>
-                        </Button>
-                    </div>
+                    {/*顶部区域：关闭按钮*/}
+                    {/*<div className="flex justify-end">*/}
+                    {/*    <Button variant={"link"} size={"icon"}*/}
+                    {/*            onClick={() => onOpenChange(false)}>*/}
+                    {/*        <X/>*/}
+                    {/*    </Button>*/}
+                    {/*</div>*/}
+
                     {/* 中间区域：自动撑满剩余空间 */}
                     <div className="flex-1">
                         {children}

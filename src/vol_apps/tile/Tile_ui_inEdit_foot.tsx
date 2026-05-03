@@ -9,7 +9,7 @@ export const Tile_ui_inEdit_foot = (
         handleOk,
     }: TileLogic) => {
     return (
-        <div className="flex items-center w-full px-6 pb-8 pt-12">
+        <div className="flex items-center w-full px-6  my-[20px] ">
             <Button ref={ok_ref}
                     variant={"secondary"}
                     className={cn("w-full h-12 text-xl font-bold ",

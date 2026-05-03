@@ -46,6 +46,9 @@ export const SelectContext = createContext<{
     floatingRef?: React.Ref<any>;
     floatingStyle?: CSSProperties;
 
+    duration?: number;
+    exitDuration?: number;
+
 }>({open: false});
 
 export const useSelectContext = () => useContext(SelectContext);
@@ -113,7 +116,7 @@ export const Option = ({
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         onOpenChange?.(false);
         //优先渲染动画，保持流畅
-        setTimeout(()=> {
+        setTimeout(() => {
             onValueChange?.(value)
             onClick?.(e)
         })
@@ -139,9 +142,11 @@ interface TriggerProps {
 export const Trigger = ({children, triggerClassName, ...rest}: TriggerProps) => {
     const child = children;
 
-    const { open,
+    const {
+        open,
         onOpenChange,
-        anchorRef } = useSelectContext();
+        anchorRef
+    } = useSelectContext();
     const originalRef = getElementRef(child);
     const mergedRef = useMergeRefsLoose(anchorRef, originalRef);
 
@@ -160,6 +165,28 @@ export const Trigger = ({children, triggerClassName, ...rest}: TriggerProps) => 
         ...rest,
     });
 };
+
+export const RotateIcon = (
+    {
+        children,
+        opacity,
+    }: {
+        children?: ReactNode ,
+        opacity?: number
+    }
+) => {
+    const {open, duration, exitDuration} = useSelectContext()
+    return (
+        <span
+            className={"inline-block text-sm"}
+            style={{
+                opacity: opacity ?? 0.5,
+                transform: open ? "rotate(180deg)" : "rotate(0deg)",
+                transition: `transform ${open ? duration : exitDuration}ms ease-in-out`,
+            }}
+        >{children ?? <>▼</>}</span>
+    )
+}
 
 interface SelectProps {
     value?: string;
@@ -187,7 +214,7 @@ export const SelectComponent = ({
                                     children,
 
                                     direction = "bottom",
-                                    align = "start" ,
+                                    align = "start",
                                     offset = 4,
                                     duration = 200,
                                     exitDuration = 50,
@@ -214,6 +241,8 @@ export const SelectComponent = ({
         floatingRef,
         floatingStyle,
 
+        duration,
+        exitDuration,
     }), [value, onValueChange, open, onOpenChange,
         anchorRef, floatingStyle]);
 
@@ -226,7 +255,7 @@ export const SelectComponent = ({
 
     return (
         <SelectContext.Provider value={contextValue}>
-            <div className={cn("w-fit h-fit", className)} ref = {rootRef}>
+            <div className={cn("w-fit h-fit", className)} ref={rootRef}>
                 {children}
             </div>
         </SelectContext.Provider>
@@ -258,7 +287,6 @@ export const DemoSelect = () => {
     );
 };
 
-
 /**
  * 从 ReactElement 实例上提取其 ref。
  * 注意：React 运行时 ref 始终会挂载在元素对象上（不在 props 中），
@@ -267,5 +295,20 @@ export const DemoSelect = () => {
 function getElementRef(element: React.ReactElement): React.Ref<any> | undefined {
     return (element as any).ref;
 }
+
+type SelectType = typeof SelectComponent & {
+    Trigger: typeof Trigger;
+    Content: typeof Content;
+    Option: typeof Option;
+    RotateIcon: typeof RotateIcon;
+};
+
+export const Select = Object.assign(SelectComponent, {
+    Trigger,
+    Content,
+    Option,
+    RotateIcon,
+}) as SelectType;
+
 
 

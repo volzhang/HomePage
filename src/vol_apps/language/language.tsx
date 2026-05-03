@@ -1,11 +1,8 @@
 import {type LANGUAGE, useLanguageStore} from "@/vol_apps/language/language_store";
-import {Content, Option, SelectComponent, Trigger} from "../01_components/SelectComponent";
+import {Select} from "@/vol_apps/01_components/SelectComponent"
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
-import {RotateOnOpen} from "@/vol_apps/01_components/RotateOnOpen";
-import { Languages } from "lucide-react";
-
-const TRIGGER_CLASS = "w-34 flex items-center justify-between"
+import {Languages} from "lucide-react";
 
 export const Language = () => {
     const {language, setLanguage} = useLanguageStore();
@@ -13,24 +10,24 @@ export const Language = () => {
 
     return (
         <>
-            <SelectComponent
+            <Select
                 value={language} onValueChange={(v) => setLanguage(v as LANGUAGE)}
                 open={open} onOpenChange={setOpen}
-                duration={200}
+                duration={200} exitDuration={200}
             >
-                <Trigger>
-                    {/* Trigger 能自己搞定open状态 */}
-                    <Button variant="outline" className={TRIGGER_CLASS}>
+                <Select.Trigger>
+                    {/* Trigger 能自己搞定open状态 Button只是为了样式*/}
+                    <Button variant="outline" className={"w-34 flex items-center justify-between"}>
                         <Languages className="size-4 text-foreground"/>
                         {language === "en" ? "English" : "简体中文"}
-                        <RotateOnOpen open={open} duration={200}/>
+                        <Select.RotateIcon/>
                     </Button>
-                </Trigger>
-                <Content>
-                    <Option value="en">English</Option>
-                    <Option value="cn">简体中文</Option>
-                </Content>
-            </SelectComponent>
+                </Select.Trigger>
+                <Select.Content>
+                    <Select.Option value="en">English</Select.Option>
+                    <Select.Option value="cn">简体中文</Select.Option>
+                </Select.Content>
+            </Select>
         </>
     )
 }

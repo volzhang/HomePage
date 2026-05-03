@@ -8,7 +8,7 @@ interface UseFloatAnimationOptions {
     scale?: number;
     duration?: number;
     exitDuration?: number;
-    slideDistance?: number; // 微动距离，默认4
+    slideDistance?: number;
 }
 
 export function useFloatAnimation({
@@ -16,7 +16,7 @@ export function useFloatAnimation({
                                       direction,
                                       scale = 95,
                                       duration = 200,
-                                      exitDuration = 150,
+                                      exitDuration = 200,
                                       slideDistance = 4,
                                   }: UseFloatAnimationOptions) {
 
@@ -37,7 +37,8 @@ export function useFloatAnimation({
         opacity: open ? 1 : 0,
         pointerEvents: (open ? "auto" : "none") as "auto" | "none",
         visibility: (open || visible) ? "visible" : "hidden" as "visible" | "hidden",
-        transform: `scale(${open ? 1 : scale / 100}) translate(${x * slideDistance}px, ${y * slideDistance}px)`,
+        transform: `scale(${open ? 1 : scale / 100}) 
+        translate(${x * slideDistance}px, ${y * slideDistance}px)`,
         // 慎用 transition all 主要不是性能问题 而是可能引入意外的属性变化动画，比如位置变化
         // transition: `all ${open ? duration : exitDuration}ms ease-in-out`
         transition: `opacity ${open ? duration : exitDuration}ms ease-in-out,

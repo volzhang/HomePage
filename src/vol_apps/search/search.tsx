@@ -17,8 +17,7 @@ export const SearchBar = () => {
     const [open, setOpen] = useState<boolean>(false)
 
     const currentEngine = getEngineInUse();
-
-
+    
     const {anchorRef, floatingRef, floatingStyle} = useFloating({
         open,
         direction: "bottom",
@@ -58,7 +57,7 @@ export const SearchBar = () => {
     // ==================== 样式常量 ====================
     const MIN_WIDTH = "min-w-[720px] max-w-[1080px] max-w-[48vw] w-[48vw]"
 
-    const PADDING_LEFT = "py-4 pl-5 pr-5"
+    const PADDING_LEFT = "py-4 pl-[18px] pr-[14px]"
     const PADDING_MID = "py-4 pl-1 pr-1"
     const PADDING_RIGHT = "py-4 pl-5 pr-5"
 
@@ -110,6 +109,21 @@ export const SearchBar = () => {
         "text-sBlue group-hover:text-white"
     )
 
+    const SIZE_MAP: Record<number, string> = {
+        0:"w-9",
+        1:"w-10",
+        3:"w-[44px]",
+        5:"w-[48px]",
+        2:"w-[46px]",
+
+        6:"w-[36px]",
+        7:"w-[48px]",
+        4:"w-[36px]",
+
+
+
+    }
+
     // ==================== JSX ====================
     return (
         <div className="relative w-fit mx-auto" ref={rootRef}>
@@ -122,7 +136,7 @@ export const SearchBar = () => {
                         className={cn("text-[18px] leading-7 h-7 flex items-center justify-center",
                             "text-sBlue group-hover:text-white")}>
                         {currentEngine.icon
-                            ? <img src={currentEngine.icon} className="w-9 object-cover"/>
+                            ? <img src={currentEngine.icon} className={`${SIZE_MAP[currentEngine.id]} object-cover`}/>
                             : <Search strokeWidth={3} className="h-7"/>}
                     </div>
                 </button>

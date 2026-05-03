@@ -8,7 +8,7 @@ import {TextareaField} from "@/vol_apps/tile/TextareaField";
 import {enhanceUrl} from "@/vol_apps/tool/action/enhanceUrl";
 
 
-const CLASS_BASE_OUTLINE = "flex flex-col px-0 mx-6 mb-12 mt-2 gap-4"
+const CLASS_BASE_OUTLINE = "flex flex-col px-0 mx-[24px] mt-[22px] mb-[15px] gap-[15px]"
 const CLASS_BASE = "flex w-full";
 const CLASS_P = "flex items-center justify-start font-bold text-lg w-16 shrink-0"; // 左侧固定宽度
 const CLASS_OUTLINE = cn("flex py-2 pl-3 pr-1 border rounded-md flex-1",
