@@ -78,7 +78,7 @@ export const INITIAL_STYLE: TileStyleState = {
     iconOffset: { x: 0, y: 0 },
 
     fontSize: 14,
-    fontWeight: 550,
+    fontWeight: 500,
     font: FONT_DEFAULT,
 
     textOffset: { x: 0, y: 10 },

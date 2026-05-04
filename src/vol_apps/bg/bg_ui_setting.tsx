@@ -59,6 +59,8 @@ export function BgUiSetting(
         direction: "bottom",
         align: "end",
         offset: 0,
+        duration: 200,
+        exitDuration: 200,
     })
 
     return (

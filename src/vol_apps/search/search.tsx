@@ -158,6 +158,7 @@ export const SearchBar = () => {
                             .sort((a, b) => a.pos - b.pos)
                             .map(engine => (
                                 <Select.Option
+                                    key={engine.name}
                                     value={engine.name}
                                     checkIconClassName={"hidden"}       //不使用checkIcon
                                     itemClassName={cn("px-4 py-6 text-xl font-medium",

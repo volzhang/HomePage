@@ -96,7 +96,7 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
 });
 
 interface OptionProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "value"> {
-    value: string;
+    value?: string;
     children: ReactNode;
     itemClassName?: string;
     checkIconClassName?: string;
@@ -111,13 +111,17 @@ export const Option = ({
                            ...buttonProps
                        }: OptionProps) => {
     const {value: selectedValue, onValueChange, onOpenChange} = useSelectContext();
-    const isSelected = selectedValue === value;
+
+    const isSelected =
+        value
+            ? selectedValue === value
+            : false
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         onOpenChange?.(false);
         //优先渲染动画，保持流畅
         setTimeout(() => {
-            onValueChange?.(value)
+            if (value) onValueChange?.(value)
             onClick?.(e)
         })
     };
@@ -171,7 +175,7 @@ export const RotateIcon = (
         children,
         opacity,
     }: {
-        children?: ReactNode ,
+        children?: ReactNode,
         opacity?: number
     }
 ) => {

@@ -9,8 +9,6 @@ import {SearchBar} from "@/vol_apps/search/search";
 import {Menu} from "@/vol_apps/menu/menu_legacy";
 import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWallpaper";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
-import {RadioDemo} from "@/vol_apps/radio/radio";
-import {RadioBrowserProvider} from "@/vol_apps/tanStackQuery/Api_RadioBrowser";
 import {Language} from "@/vol_apps/language/language";
 
 export const App = () => {
@@ -23,9 +21,6 @@ export const App = () => {
                 <Language />
                 <Theme/>
                 <CmOpen/>
-                <RadioBrowserProvider>
-                    <RadioDemo/>
-                </RadioBrowserProvider>
             </div>
             <div className={"absolute flex flex-row top-2 right-2"}>
                 <Version/>

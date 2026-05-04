@@ -60,7 +60,7 @@ export const MyModal = ({
                 className={cn(
                     "fixed inset-0 bg-black/60",
                     "flex items-center justify-center",
-                    "transition-opacity duration-250 ease-in-out z-10",
+                    "transition-opacity duration-300 ease-in-out z-10",
                     open
                         ? "opacity-100 pointer-events-auto"
                         : "opacity-0 pointer-events-none"
@@ -74,7 +74,8 @@ export const MyModal = ({
                     className={cn(
                         "flex flex-col mx-auto z-20",
                         "w-fit h-fit min-w-[700px] min-h-[600px]",
-                        "bg-background rounded-md border overflow-hidden",
+                        "bg-background rounded-md border",
+                        "max-h-[98vh] overflow-y-auto",
                     )}
                     style={floatingStyle}
                     onClick={(e) => e.stopPropagation()}

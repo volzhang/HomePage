@@ -85,6 +85,8 @@ export type Meta = {
     alt: string;
     icon: string;
     tags: string[];
+
+    //新增 为了扩展tile类型，比如 纯组件显示/音乐播放
 }
 
 export type Tile = {
