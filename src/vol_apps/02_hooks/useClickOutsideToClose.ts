@@ -1,21 +1,20 @@
-// hooks/useClickOutsideToClose.ts
 import {useEffect, useRef} from "react";
-import {useCallbackRef} from "@/vol_apps/02_hooks/00_useCallbackRef";
+import { useCallbackRef } from "@/vol_apps/02_hooks/00_useCallbackRef";
 
-/**
- * 监听容器外部的点击/触摸，触发关闭。
- * @param open - 仅当为 true 时启用监听
- * @param onClose - 关闭回调
- * @returns `anchorRef` - 回调 ref，绑定到容器元素（不限制元素类型）
- */
-export function useClickOutsideToClose({
-                                           open,
-                                           onClose,
-                                       }: {
+interface UseClickOutsideToCloseOptions {
     open: boolean;
     onClose: () => void;
-}) {
-    const [anchorRef, internalRef] = useCallbackRef();
+}
+
+/**
+ * 点击容器外部时关闭。
+ * @returns
+ * - clickOutsideRef  – 绑定到容器元素
+ * - ignoreRef         – 绑定到需要忽略的元素（如 Trigger），点击该元素不会触发关闭
+ */
+export function useClickOutsideToClose({ open, onClose }: UseClickOutsideToCloseOptions) {
+    const [clickOutsideRef, containerDOM] = useCallbackRef();
+    const [ignoreRef, ignoreDOM] = useCallbackRef();
 
     const onCloseRef = useRef(onClose);
     onCloseRef.current = onClose;
@@ -23,19 +22,17 @@ export function useClickOutsideToClose({
     useEffect(() => {
         if (!open) return;
 
-        const handler = (e: MouseEvent | TouchEvent) => {
+        const handler = (e: MouseEvent) => {
             const target = e.target as Node;
-            if (!internalRef.current || internalRef.current.contains(target)) return;
+            if (!containerDOM.current) return;
+            if (containerDOM.current.contains(target)) return;
+            if (ignoreDOM.current?.contains(target)) return;
             onCloseRef.current();
         };
 
         document.addEventListener("mousedown", handler);
-        document.addEventListener("touchstart", handler);
-        return () => {
-            document.removeEventListener("mousedown", handler);
-            document.removeEventListener("touchstart", handler);
-        };
-    }, [open, internalRef]);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [open, containerDOM, ignoreDOM]);
 
-    return {clickOutsideRef: anchorRef};
+    return { clickOutsideRef, clickOutsideIgnoreRef:ignoreRef };
 }

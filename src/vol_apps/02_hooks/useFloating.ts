@@ -1,5 +1,5 @@
 // hooks/useFloating.ts
-import {useAnchorPosition} from "@/vol_apps/02_hooks/02_useAnchorPosition";
+import {useAnchorPosition} from "./04_useAnchorPosition";
 import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
 import type {FloatingAlign, FloatingDirection} from "@/vol_apps/00_types/Types";
 

@@ -9,7 +9,7 @@ import {useFloating} from "../02_hooks/useFloating";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/useFocusOutsideToClose";
-import {useMergeRefs, useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
+import {useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
 
 export const MENU_CLASS = cn(
     "flex flex-col items-center border w-[136px]",
@@ -67,7 +67,14 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
                                                                      itemClassName,
                                                                      checkIconClassName,
                                                                  }, ref) => {
-    const {floatingStyle, floatingRef} = useSelectContext();
+    const {
+        open, onOpenChange,
+        floatingStyle,
+        floatingRef,
+    } = useSelectContext();
+
+    const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
+    useKeyEscapeToClose(open, onClose);
     const mergedRef = useMergeRefsLoose(ref, floatingRef);
 
     return (
@@ -147,10 +154,13 @@ export const Trigger = ({children, triggerClassName, ...rest}: TriggerProps) => 
     const {
         open,
         onOpenChange,
-        anchorRef
+        anchorRef,
+
     } = useSelectContext();
+
     const originalRef = getElementRef(child);
-    const mergedRef = useMergeRefsLoose(anchorRef, originalRef);
+    const mergedRef = useMergeRefsLoose(
+        anchorRef, originalRef);
 
     return cloneElement(child, {
         ref: mergedRef,
@@ -221,7 +231,7 @@ export const SelectComponent = ({
                                     duration = 200,
                                     exitDuration = 50,
 
-                                    className,
+                                    // className,
                                 }: SelectProps) => {
     // 定位与动画
     const {anchorRef, floatingRef, floatingStyle} = useFloating({
@@ -233,34 +243,32 @@ export const SelectComponent = ({
         exitDuration,
     });
 
+    const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
+    const {clickOutsideRef, clickOutsideIgnoreRef} = useClickOutsideToClose({open, onClose});
+    const {focusOutsideRef, focusOutsideIgnoreRef} = useFocusOutsideToClose({open, onClose});
+    const mergedAnchor = useMergeRefsLoose(anchorRef, clickOutsideIgnoreRef, focusOutsideIgnoreRef);
+    const mergedFloating = useMergeRefsLoose(floatingRef, clickOutsideRef, focusOutsideRef);
+
     const contextValue = useMemo(() => ({
         value,
         onValueChange,
         open,
         onOpenChange,
-
-        anchorRef,
-        floatingRef,
+        anchorRef:mergedAnchor,
+        floatingRef:mergedFloating,
         floatingStyle,
-
         duration,
         exitDuration,
-    }), [value, onValueChange, open, onOpenChange,
-        anchorRef, floatingStyle]);
-
-    const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
-
-    useKeyEscapeToClose(open, onClose);
-    const {clickOutsideRef} = useClickOutsideToClose({open, onClose});
-    const {focusOutsideRef} = useFocusOutsideToClose({open, onClose});
-    const rootRef = useMergeRefs(clickOutsideRef, focusOutsideRef)
+    }), [
+        value, onValueChange,
+        open, onOpenChange,
+        anchorRef, floatingRef, floatingStyle,
+        duration, exitDuration,
+    ]);
 
     return (
         <SelectContext.Provider value={contextValue}>
-            <div className={cn("w-fit", className)} ref={rootRef}>
-                {/*//这里最好移除套层div，避免样式干扰*/}
-                {children}
-            </div>
+            {children}
         </SelectContext.Provider>
     );
 };

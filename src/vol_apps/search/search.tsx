@@ -146,10 +146,12 @@ export const SearchBar = () => {
                     align={"end"} offset={6}
                 >
                     <Select.Trigger>
-                        <div className={cn(ENGINE_BUTTON, "h-full")}>
-                            <div className={ENGINE_NAME}>
-                                {currentEngine.name}
-                                <Select.RotateIcon/>
+                        <div className={"w-fit"}>
+                            <div className={cn(ENGINE_BUTTON, "h-full")}>
+                                <div className={ENGINE_NAME}>
+                                    {currentEngine.name}
+                                    <Select.RotateIcon/>
+                                </div>
                             </div>
                         </div>
                     </Select.Trigger>

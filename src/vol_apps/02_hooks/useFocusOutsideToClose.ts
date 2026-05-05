@@ -1,24 +1,20 @@
-// useFocusOutsideToClose.ts
-import {useEffect, useRef} from "react";
-import {useCallbackRef} from "@/vol_apps/02_hooks/00_useCallbackRef";
+import { useEffect, useRef } from "react";
+import { useCallbackRef } from "@/vol_apps/02_hooks/00_useCallbackRef";
+
+interface UseFocusOutsideToCloseOptions {
+    open: boolean;
+    onClose: () => void;
+}
 
 /**
- * Triggers close when focus moves outside the container.
- * @param open - Listening enabled only when true.
- * @param onClose - Callback to close.
- * @returns focusOutsideRef - A ref to attach to the container element.
+ * 焦点移出容器时关闭。
+ * @returns
+ * - focusOutsideRef  – 绑定到容器元素
+ * - ignoreRef         – 绑定到需要忽略的元素，焦点移入时不会触发关闭
  */
-export const useFocusOutsideToClose = (
-    {
-        open,
-        onClose
-    }: {
-        open: boolean,
-        onClose: () => void
-    }) => {
-
-    const [anchorRef, internalRef] = useCallbackRef();
-
+export function useFocusOutsideToClose({ open, onClose }: UseFocusOutsideToCloseOptions) {
+    const [focusOutsideRef, containerDOM] = useCallbackRef();
+    const [ignoreRef, ignoreDOM] = useCallbackRef();
     const onCloseRef = useRef(onClose);
     onCloseRef.current = onClose;
 
@@ -26,24 +22,25 @@ export const useFocusOutsideToClose = (
         if (!open) return;
 
         const handleFocusOut = (e: FocusEvent) => {
-            const container = internalRef.current;
-            if (container && !container.contains(e.relatedTarget as Node)) {
-                onCloseRef.current();
-            }
+            const relatedTarget = e.relatedTarget as Node | null;
+            if (!relatedTarget) return;
+            if (containerDOM.current?.contains(relatedTarget)) return;
+            if (ignoreDOM.current?.contains(relatedTarget)) return;
+            onCloseRef.current();
         };
 
-        const el = internalRef.current;
+        const el = containerDOM.current;
         el?.addEventListener("focusout", handleFocusOut);
 
         if (el) {
             el.tabIndex = -1;
-            el.focus({preventScroll: true});
+            el.focus({ preventScroll: true });
         }
 
         return () => {
             el?.removeEventListener("focusout", handleFocusOut);
         };
-    }, [open]);
+    }, [open, containerDOM, ignoreDOM]);
 
-    return {focusOutsideRef: anchorRef};
-};
+    return { focusOutsideRef, focusOutsideIgnoreRef:ignoreRef };
+}
