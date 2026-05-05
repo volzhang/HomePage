@@ -8,7 +8,7 @@ import {TextareaField} from "@/vol_apps/tile/TextareaField";
 import {enhanceUrl} from "@/vol_apps/tool/action/enhanceUrl";
 
 
-const CLASS_BASE_OUTLINE = "flex flex-col px-0 mx-[24px] mt-[22px] mb-[15px] gap-[15px]"
+const CLASS_BASE_OUTLINE = "flex flex-col px-0 mx-[24px] mt-[22px] gap-[15px]"
 const CLASS_BASE = "flex w-full";
 const CLASS_P = "flex items-center justify-start font-bold text-lg w-16 shrink-0"; // 左侧固定宽度
 const CLASS_OUTLINE = cn("flex py-2 pl-3 pr-1 border rounded-md flex-1",
@@ -92,18 +92,32 @@ export const Tile_ui_inEdit_head = (
             </div>
 
             {/* NAME */}
-            <div className={CLASS_BASE}>
-                <p className={CLASS_P}>{t("Name")}</p>
-                <div className={CLASS_OUTLINE}>
-                    <TextareaField
-                        className={cn(CLASS_TEXTAREA, "break-all")}
-                        value={name}
-                        onCommit={setName}
-                        onLiveChange={setName}
-                        enterFocusRef={ok_ref}
+
+            <div className={"flex flex-row"}>
+                <div className={"flex flex-1 mr-8"}>
+                    <p className={CLASS_P}>{t("Name")}</p>
+                    <div className={CLASS_OUTLINE}>
+                        <TextareaField
+                            className={cn(CLASS_TEXTAREA, "break-all")}
+                            value={name}
+                            onCommit={setName}
+                            onLiveChange={setName}
+                            enterFocusRef={ok_ref}
+                        />
+                    </div>
+                </div>
+
+                <div className={cn("flex flex-1")}>
+                    <p className={CLASS_P}>{t("Icon")}</p>
+                    <ImgFilePickerBtn
+                        className={CLASS_OUTLINE}
+                        inputClassName={cn(CLASS_TEXTAREA, "break-all")}
+                        fileName={iconFileName}
+                        onFilePick={handleIconFilePick}
                     />
                 </div>
             </div>
+
 
             {/* TAG */}
 
@@ -132,15 +146,7 @@ export const Tile_ui_inEdit_head = (
 
             {/* ICON */}
 
-            <div className={cn(CLASS_BASE, "")}>
-                <p className={CLASS_P}>{t("Icon")}</p>
-                <ImgFilePickerBtn
-                    className={CLASS_OUTLINE}
-                    inputClassName={cn(CLASS_TEXTAREA, "break-all")}
-                    fileName={iconFileName}
-                    onFilePick={handleIconFilePick}
-                />
-            </div>
+
         </div>
     )
 }

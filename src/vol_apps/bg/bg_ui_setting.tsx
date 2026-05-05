@@ -8,7 +8,7 @@ import {ImgFilePickerBtn} from "@/vol_apps/tool/action/filePicker";
 import {Folder} from "lucide-react";
 import {useId} from "react";
 import type {BgLogic} from "@/vol_apps/bg/bg_logic";
-import {useFloating} from "@/vol_apps/02_hooks/useFloating";
+import {useFloating} from "../02_hooks/useFloating";
 
 export function BgUiSetting(
     {

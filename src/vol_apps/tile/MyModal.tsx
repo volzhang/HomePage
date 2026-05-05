@@ -73,7 +73,7 @@ export const MyModal = ({
                     tabIndex={-1}
                     className={cn(
                         "flex flex-col mx-auto z-20",
-                        "w-fit h-fit min-w-[700px] min-h-[600px]",
+                        "w-fit h-fit min-w-[700px]",
                         "bg-background rounded-md border",
                         "max-h-[98vh] overflow-y-auto",
                     )}

@@ -2,7 +2,7 @@ import defaultIconBase64 from "@/assets/icon-100.png?inline";
 export { defaultIconBase64 };
 
 export const defaultTile = {
-    id: 0, url: "", meta: {name: "", alt: "", icon: defaultIconBase64, tags: [],}
+    id: 0, url: "", meta: {name: "", alt: "", icon: "", tags: [],}
 };
 
 export const TutorialsTiles: Tile[] = [
@@ -11,7 +11,7 @@ export const TutorialsTiles: Tile[] = [
         meta: {
             name: "Long Press to Drag",
             alt: "Tutorial: Long press and drag to rearrange tiles",
-            icon: defaultIconBase64,
+            icon: "",
             tags: ["Tips", "1"],
         },
     },
@@ -20,7 +20,7 @@ export const TutorialsTiles: Tile[] = [
         meta: {
             name: "Right-Click Me",
             alt: "Tutorial: Right-click (desktop) to edit tile",
-            icon: defaultIconBase64,
+            icon: "",
             tags: ["Tips", "2"],
         },
     },
@@ -29,7 +29,7 @@ export const TutorialsTiles: Tile[] = [
         meta: {
             name: "Right-Click Nearby",
             alt: "Tutorial: Right-click beside the tile to open the context menu",
-            icon: defaultIconBase64,
+            icon: "",
             tags: ["Tips", "3"],
         },
     },
@@ -38,7 +38,7 @@ export const TutorialsTiles: Tile[] = [
         meta: {
             name: "Click Me to Link",
             alt: "Tutorial: Click the tile to open link in a new tab",
-            icon: defaultIconBase64,
+            icon: "",
             tags: ["Tips", "4"],
         },
     },
@@ -47,7 +47,7 @@ export const TutorialsTiles: Tile[] = [
         meta: {
             name: "长按后可拖动",
             alt: "长按后可拖动",
-            icon: defaultIconBase64,
+            icon: "",
             tags: ["中文提示", "1"],
         },
     },
@@ -56,7 +56,7 @@ export const TutorialsTiles: Tile[] = [
         meta: {
             name: "右键点击我",
             alt: "右键点击我",
-            icon: defaultIconBase64,
+            icon: "",
             tags: ["中文提示", "2"],
         },
     },
@@ -65,7 +65,7 @@ export const TutorialsTiles: Tile[] = [
         meta: {
             name: "右键点旁边空白",
             alt: "右键点旁边空白",
-            icon: defaultIconBase64,
+            icon: "",
             tags: ["中文提示", "3"],
         },
     },
@@ -74,7 +74,7 @@ export const TutorialsTiles: Tile[] = [
         meta: {
             name: "左键点击跳转",
             alt: "左键点击跳转",
-            icon: defaultIconBase64,
+            icon: "",
             tags: ["中文提示", "4"],
         },
     },

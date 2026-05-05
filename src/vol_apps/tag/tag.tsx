@@ -1,9 +1,11 @@
 import {Button} from "@/components/ui/button";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
-import {Spinner} from "@/components/ui/spinner";
+// import {Spinner} from "@/components/ui/spinner";
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {BookmarkIcon, LoaderCircle, TriangleAlert } from "lucide-react";
+import {BookmarkIcon, TriangleAlert,
+    // LoaderCircle,
+} from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {type Tag} from "@/vol_apps/tile/tile_store_types.js"
 
@@ -55,35 +57,35 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
     );
 };
 
-export const TagUpdate = () => {
-    const {t} = useLanguageStore()
-    const {tiles, updateTags} = useTileStore();
-    const [isUpdate, setIsUpdate] = useState<boolean>(false);
-
-    const handleClick = () => {
-        setIsUpdate(true);
-        const timerPromise = new Promise(resolve => setTimeout(resolve, 1000));
-        const updatePromise = Promise.resolve().then(() => updateTags(tiles));
-        Promise.all([timerPromise, updatePromise]).finally(() => {
-            setIsUpdate(false);
-        });
-    };
-
-    return (
-        <HoverCard openDelay={0} closeDelay={0}>
-            <HoverCardTrigger asChild>
-                {isUpdate
-                    ? <Spinner className={"size-6 text-sBlue"}></Spinner>
-                    : <LoaderCircle className={"size-6 text-ring hover:text-sBlue"} onClick={handleClick}/>}
-            </HoverCardTrigger>
-            <HoverCardContent className="w-auto" side="bottom" sideOffset={18}>
-                <div className="text-[13px]">
-                    {t("Click to sync tags")}
-                </div>
-            </HoverCardContent>
-        </HoverCard>
-    );
-};
+// const TagUpdate = () => {
+//     const {t} = useLanguageStore()
+//     const {tiles, updateTags} = useTileStore();
+//     const [isUpdate, setIsUpdate] = useState<boolean>(false);
+//
+//     const handleClick = () => {
+//         setIsUpdate(true);
+//         const timerPromise = new Promise(resolve => setTimeout(resolve, 1000));
+//         const updatePromise = Promise.resolve().then(() => updateTags(tiles));
+//         Promise.all([timerPromise, updatePromise]).finally(() => {
+//             setIsUpdate(false);
+//         });
+//     };
+//
+//     return (
+//         <HoverCard openDelay={0} closeDelay={0}>
+//             <HoverCardTrigger asChild>
+//                 {isUpdate
+//                     ? <Spinner className={"size-6 text-sBlue"}></Spinner>
+//                     : <LoaderCircle className={"size-6 text-ring hover:text-sBlue"} onClick={handleClick}/>}
+//             </HoverCardTrigger>
+//             <HoverCardContent className="w-auto" side="bottom" sideOffset={18}>
+//                 <div className="text-[13px]">
+//                     {t("Click to sync tags")}
+//                 </div>
+//             </HoverCardContent>
+//         </HoverCard>
+//     );
+// };
 
 export const TagComponent = () => {
     const {t} = useLanguageStore();
@@ -252,7 +254,7 @@ export const TagComponent = () => {
                 <BroadMatches isBroadMatches={isBroadMatches} handleOnClick={
                     () => setIsBroadMatches(!isBroadMatches)
                 }/>
-                <TagUpdate/>
+                {/*<TagUpdate/>*/}
 
             </div>
         </>

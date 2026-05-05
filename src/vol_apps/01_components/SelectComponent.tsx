@@ -1,15 +1,14 @@
 import {
-    type ButtonHTMLAttributes, createContext,
-    forwardRef, useContext,
-    type ReactNode, useState, cloneElement, useCallback, useMemo, type CSSProperties,
+    type ButtonHTMLAttributes, type ReactNode, type CSSProperties,
+    createContext, forwardRef, useContext, useState, cloneElement, useCallback, useMemo,
 } from "react";
 import {cn} from "@/lib/utils";
 import {CheckIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {useFloating} from "@/vol_apps/02_hooks/useFloating";
+import {useFloating} from "../02_hooks/useFloating";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
-import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose";
+import {useFocusOutsideToClose} from "../02_hooks/useFocusOutsideToClose";
 import {useMergeRefs, useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
 
 export const MENU_CLASS = cn(
@@ -41,7 +40,6 @@ export const SelectContext = createContext<{
     open: boolean;
     onOpenChange?: (open: boolean) => void;
 
-    // hook 传参
     anchorRef?: React.Ref<any>;
     floatingRef?: React.Ref<any>;
     floatingStyle?: CSSProperties;
@@ -59,7 +57,7 @@ interface UListProps {
     menuClassName?: string;
     itemClassName?: string;
     checkIconClassName?: string;
-    className?: string;   // 仅用于便捷追加类名，会与 MENU_CLASS 合并
+    className?: string;
 }
 
 export const Content = forwardRef<HTMLUListElement, UListProps>(({
@@ -273,17 +271,13 @@ export const DemoSelect = () => {
 
     return (
         <SelectComponent
-            value={lang}
-            onValueChange={(val) => setLang(val)}
-            open={open}
-            onOpenChange={setOpen}
-        >
+            value={lang} onValueChange={(val) => setLang(val)}
+            open={open} onOpenChange={setOpen}>
             <Trigger>
-                <Button variant="outline">
+                <Button variant="default">
                     {lang}
                 </Button>
             </Trigger>
-
             <Content>
                 <Option value="en">English</Option>
                 <Option value="cn">简体中文</Option>

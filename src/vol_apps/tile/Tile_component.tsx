@@ -5,8 +5,9 @@ import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {Tilt_3D} from "./Tile_3D";
 import Clock from "@/vol_apps/NixieClock/Clock";
 import {memo} from "react";
+import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
 
-const COMPONENTS: Record<string, React.ComponentType> = {
+export const COMPONENTS: Record<string, React.ComponentType> = {
     "component:clock": Clock
 }
 
@@ -106,7 +107,7 @@ const ValidUrlTile = (
                         top: "50%",
                         transform: `translate(calc(-50% + ${iconOffset.x}px), calc(-50% + ${iconOffset.y}px))`,
                     }}
-                           src={icon}
+                           src={icon || defaultIconBase64}
                            alt="icon"
                     />
                 }

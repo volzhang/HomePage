@@ -4,7 +4,7 @@ import {create} from "zustand";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
-import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/useFocusOutsideToClose";
+import {useFocusOutsideToClose} from "../02_hooks/useFocusOutsideToClose";
 import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs";
 import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
 
@@ -55,8 +55,6 @@ const ContextMenu = (
     }));
 
     return (
-
-
 
         <div ref={rootRef} className="flex w-fit h-fit">
             <UnorderedList options={options} style={style}

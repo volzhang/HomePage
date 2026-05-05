@@ -13,7 +13,7 @@ interface Tilt3DProps {
     radius?: number;
 }
 
-// 只看代码可能不完美，但是显示效果非常好，顺滑。
+// 只看代码可能不完美，但是显示效果非常好。
 export const Tilt_3D: React.FC<Tilt3DProps> = ({
                                                       children,
                                                       maxTilt = 12,
@@ -126,7 +126,7 @@ export const Tilt_3D: React.FC<Tilt3DProps> = ({
                 className="relative will-change-transform"
                 style={{
                     transformStyle: 'preserve-3d',
-                    borderRadius: `${radius}px`,    // ① 卡片外层也带圆角（视觉约束）
+                    borderRadius: `${radius}px`,
                 }}
                 onMouseMove={handleMouseMove}
                 onMouseEnter={handleMouseEnter}
@@ -136,7 +136,7 @@ export const Tilt_3D: React.FC<Tilt3DProps> = ({
                     <div
                         className="pointer-events-none absolute inset-0 z-30"
                         style={{
-                            borderRadius: `${radius}px`, // ② 高光层自己切圆角
+                            borderRadius: `${radius}px`,
                             background: `
                                 radial-gradient(
                                     circle at var(--glare-x, 50%) var(--glare-y, 50%),

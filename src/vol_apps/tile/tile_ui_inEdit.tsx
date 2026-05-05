@@ -3,7 +3,7 @@ import {Tile_ui_inEdit_head} from "@/vol_apps/tile/tile_ui_inEdit_head";
 import {Tile_ui_inEdit_body} from "@/vol_apps/tile/tile_ui_inEdit_body";
 import {useTileLogic} from "@/vol_apps/tile/useTileLogic";
 import {Tile_ui_inEdit_styles} from "@/vol_apps/tile/tile_ui_inEdit_styles";
-import {Tile_component} from "./Tile_component";
+import {COMPONENTS, Tile_component} from "./Tile_component";
 import {MyModal} from "@/vol_apps/tile/MyModal";
 import {Tile_ui_inEdit_foot} from "@/vol_apps/tile/Tile_ui_inEdit_foot";
 
@@ -18,8 +18,11 @@ export const Ui_inEdit_menu = () => {
                      okRef={Logic.ok_ref}
             >
                 <div className="flex flex-col">
-                    <Tile_ui_inEdit_head {...Logic}/>
-                    <div className="mx-6">
+                    {(Logic.link.startsWith("component:") && COMPONENTS[Logic.link] !== undefined)
+                        ? <></>
+                        : <Tile_ui_inEdit_head {...Logic}/>
+                    }
+                    <div className="mx-6 mt-6">
                         <HalfDrawer
                             isOpen={Logic.stylesIsOpen}
                             preview={
