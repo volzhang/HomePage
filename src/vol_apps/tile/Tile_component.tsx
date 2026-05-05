@@ -3,13 +3,9 @@ import {cn} from "@/lib/utils";
 import {Spinner} from "@/components/ui/spinner";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {Tilt_3D} from "./Tile_3D";
-import Clock from "@/vol_apps/NixieClock/Clock";
-import {memo} from "react";
+import {Clock} from "@/vol_apps/NixieClock/Clock";
+import {memo,} from "react";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
-
-export const COMPONENTS: Record<string, React.ComponentType> = {
-    "component:clock": Clock
-}
 
 export type TileComponentProps = TileLogic & {
     // anchorProps?: React.AnchorHTMLAttributes<HTMLAnchorElement>;
@@ -141,6 +137,8 @@ const ComponentTile = (
         tileRadius,
     }: TileComponentProps
 ) => {
+
+
     return (
         <a
             href={link}
@@ -154,7 +152,7 @@ const ComponentTile = (
             )}
             onClick={(e) => {
                 e.preventDefault()
-                // if (!disableClick) openLinkInNewTab(link)
+                if (!disableClick) openLinkInNewTab(link)
             }}
             onContextMenu={(e) => {
                 e.preventDefault()
@@ -167,11 +165,7 @@ const ComponentTile = (
                 borderRadius: `${tileRadius}px`,
                 outline: `${tileOutlineThickness}px solid ${tileOutlineRGBAColor}`,
             }}>
-            <Clock size={tileSize}
-                   bgColorStart={"transparent"}
-                   bgColorEnd={"transparent"}
-            />
-            COMPONENTS[link]
+            <Clock size={tileSize}/>
         </a>
     )
 }
@@ -180,7 +174,7 @@ export const Tile_component = memo((props: TileComponentProps) => {
     return (
         <Tilt_3D radius={props.tileRadius}>
             {
-                (props.link.startsWith("component:") && COMPONENTS[props.link] !== undefined)
+                (props.link.startsWith("https://flipclock.info/"))
                     ? <ComponentTile {...props}/>
                     : <ValidUrlTile {...props}/>
             }

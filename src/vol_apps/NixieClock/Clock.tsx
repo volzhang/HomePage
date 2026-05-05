@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useCallback} from "react";
+import {useRef, useEffect, useCallback} from "react";
 
 /* ---------- Props ---------- */
 interface ClockProps {
@@ -18,7 +18,7 @@ interface ClockProps {
 const degToRad = (deg: number) => (Math.PI / 180) * deg;
 
 /* ---------- 组件 ---------- */
-const Clock: React.FC<ClockProps> = ({
+export const Clock = ({
                                          size = 1000,
                                          strokeColor = "#0078d7",
                                          bgColorStart = "white",
@@ -29,7 +29,8 @@ const Clock: React.FC<ClockProps> = ({
                                          // bgColorStart = '#03303a',
                                          // bgColorEnd = 'black',
                                          // font = 'Helvetica',
-                                     }) => {
+                                     }: ClockProps) => {
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
@@ -135,5 +136,3 @@ const Clock: React.FC<ClockProps> = ({
         />
     );
 };
-
-export default Clock;
