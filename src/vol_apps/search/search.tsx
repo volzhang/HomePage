@@ -3,7 +3,7 @@ import {useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
-import {Select} from "@/vol_apps/01_components/SelectComponent";
+import {Select} from "../01_components/01_SelectComponent";
 
 export const SearchBar = () => {
     const {getEngineInUse, setEngineInUseByName} = useSearchStore()

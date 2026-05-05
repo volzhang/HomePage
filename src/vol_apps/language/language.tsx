@@ -1,5 +1,5 @@
 import {type LANGUAGE, useLanguageStore} from "@/vol_apps/language/language_store";
-import {Select} from "@/vol_apps/01_components/SelectComponent"
+import {Select} from "../01_components/01_SelectComponent"
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Languages} from "lucide-react";
@@ -23,7 +23,7 @@ export const Language = () => {
                         <Select.RotateIcon/>
                     </Button>
                 </Select.Trigger>
-                <Select.Content>
+                <Select.Content menuClassName={"w-34"}>
                     <Select.Option value="en">English</Select.Option>
                     <Select.Option value="cn">简体中文</Select.Option>
                 </Select.Content>

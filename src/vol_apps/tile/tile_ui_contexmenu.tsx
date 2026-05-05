@@ -3,8 +3,8 @@ import {type TileLogic, useTileLogic} from "@/vol_apps/tile/useTileLogic";
 import {create} from "zustand";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
-import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
-import {useFocusOutsideToClose} from "../02_hooks/useFocusOutsideToClose";
+import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
+import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
 import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs";
 import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
 

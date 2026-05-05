@@ -1,27 +1,27 @@
 import {
     type ButtonHTMLAttributes, type ReactNode, type CSSProperties,
-    createContext, forwardRef, useContext, useState, cloneElement, useCallback, useMemo,
+    createContext, forwardRef, useContext, useState, cloneElement, useCallback, useMemo, Children, isValidElement,
 } from "react";
 import {cn} from "@/lib/utils";
 import {CheckIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {useFloating} from "../02_hooks/useFloating";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
-import {useClickOutsideToClose} from "@/vol_apps/02_hooks/useClickOutsideToClose";
-import {useFocusOutsideToClose} from "../02_hooks/useFocusOutsideToClose";
+import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
+import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
 import {useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
 
 export const MENU_CLASS = cn(
-    "flex flex-col items-center border w-[136px]",
-    "bg-background text-foreground",
+    "flex flex-col border items-center",
+    "bg-popover text-foreground",
     "rounded-md shadow-md",
     "select-none",
-    "p-1"
+    "p-1",
 );
 
 export const ITEM_CLASS = cn(
     "flex items-center justify-between w-full",
-    "h-8 bg-background text-foreground",
+    "h-8 bg-popover text-foreground",
     "text-sm rounded-sm",
     "hover:bg-foreground/10",
     "whitespace-nowrap",
@@ -29,9 +29,7 @@ export const ITEM_CLASS = cn(
     "p-2"
 );
 
-export const TRIGGER_CLASS = cn(
-    "w-[136px] flex items-center justify-between"
-)
+export const TRIGGER_CLASS = ""
 
 export const SelectContext = createContext<{
     value?: string;
@@ -44,6 +42,8 @@ export const SelectContext = createContext<{
     floatingRef?: React.Ref<any>;
     floatingStyle?: CSSProperties;
 
+    autoFocusRef?: React.Ref<any>;
+
     duration?: number;
     exitDuration?: number;
 
@@ -52,7 +52,9 @@ export const SelectContext = createContext<{
 export const useSelectContext = () => useContext(SelectContext);
 
 interface UListProps {
-    children?: ReactNode;
+    children?:
+        | React.ReactElement<OptionProps>
+        | React.ReactElement<OptionProps>[];
     options?: { label: ReactNode; value: string }[];
     menuClassName?: string;
     itemClassName?: string;
@@ -70,23 +72,52 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
     const {
         open, onOpenChange,
         floatingStyle,
-        floatingRef,
+        floatingRef, autoFocusRef,
     } = useSelectContext();
 
     const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
     useKeyEscapeToClose(open, onClose);
     const mergedRef = useMergeRefsLoose(ref, floatingRef);
 
+
+    // 将 children 统一为数组
+    const optionElements = useMemo(
+        () => (children ? Children.toArray(children) : []),
+        [children]
+    );
+
+    // 自动给第一个元素注入 autoFocusRef（合并已有 ref）
+    const processedChildren = useMemo(
+        () =>
+            optionElements.map((child, index) => {
+                if (
+                    index === 0 &&
+                    isValidElement(child) &&
+                    child.type === Option // 确保是 Option 组件
+                ) {
+                    const existingRef = (child as any).ref;
+                    const merged = existingRef
+                        ? useMergeRefsLoose(autoFocusRef, existingRef)
+                        : autoFocusRef;
+                    return cloneElement(child, {ref: merged} as any);
+                }
+                return child;
+            }),
+        [optionElements, autoFocusRef]
+    );
+
+
     return (
         <ul
             ref={mergedRef}
-            className={cn(MENU_CLASS, menuClassName)}
+            className={cn(MENU_CLASS, menuClassName,)}
             style={floatingStyle}
         >
             {children
-                ? children
-                : options?.map(opt => (
+                ? processedChildren
+                : options?.map((opt, index) => (
                     <Option
+                        ref={index === 0 ? autoFocusRef : undefined}
                         key={opt.value}
                         value={opt.value}
                         itemClassName={itemClassName}
@@ -107,14 +138,14 @@ interface OptionProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "val
     checkIconClassName?: string;
 }
 
-export const Option = ({
-                           value,
-                           children,
-                           itemClassName,
-                           checkIconClassName,
-                           onClick,
-                           ...buttonProps
-                       }: OptionProps) => {
+export const Option = forwardRef<HTMLButtonElement, OptionProps>(({
+                                                                      value,
+                                                                      children,
+                                                                      itemClassName,
+                                                                      checkIconClassName,
+                                                                      onClick,
+                                                                      ...buttonProps
+                                                                  }: OptionProps, ref) => {
     const {value: selectedValue, onValueChange, onOpenChange} = useSelectContext();
 
     const isSelected =
@@ -134,6 +165,7 @@ export const Option = ({
     return (
         <li className="w-full" role="option" aria-selected={isSelected}>
             <button
+                ref={ref}
                 className={cn(ITEM_CLASS, itemClassName)}
                 onClick={handleClick} {...buttonProps}>
                 {children}
@@ -141,7 +173,7 @@ export const Option = ({
             </button>
         </li>
     );
-};
+})
 
 interface TriggerProps {
     children: React.ReactElement<any>;
@@ -155,7 +187,6 @@ export const Trigger = ({children, triggerClassName, ...rest}: TriggerProps) => 
         open,
         onOpenChange,
         anchorRef,
-
     } = useSelectContext();
 
     const originalRef = getElementRef(child);
@@ -240,22 +271,25 @@ export const SelectComponent = ({
         align,
         offset,
         duration,
-        exitDuration,
+        exitDuration
     });
 
     const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
     const {clickOutsideRef, clickOutsideIgnoreRef} = useClickOutsideToClose({open, onClose});
-    const {focusOutsideRef, focusOutsideIgnoreRef} = useFocusOutsideToClose({open, onClose});
+    const {focusOutsideRef, focusOutsideIgnoreRef, autoFocusRef} = useFocusOutsideToClose({open, onClose});
+
     const mergedAnchor = useMergeRefsLoose(anchorRef, clickOutsideIgnoreRef, focusOutsideIgnoreRef);
+
     const mergedFloating = useMergeRefsLoose(floatingRef, clickOutsideRef, focusOutsideRef);
 
     const contextValue = useMemo(() => ({
-        value,
-        onValueChange,
-        open,
-        onOpenChange,
-        anchorRef:mergedAnchor,
-        floatingRef:mergedFloating,
+        value, onValueChange,
+        open, onOpenChange,
+        anchorRef: mergedAnchor,
+        floatingRef: mergedFloating,
+
+        autoFocusRef,
+
         floatingStyle,
         duration,
         exitDuration,
