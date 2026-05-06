@@ -1,5 +1,5 @@
 import {INITIAL_STYLE, useTileStyleStore, useTileStyleStoreBase} from "./tile_style_store";
-import {useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
@@ -64,12 +64,6 @@ export const useTileLogic = () => {
         setTiles(newTiles);
     };
 
-    // const handleRightClick = useCallback((tileId: number) => {
-    // setTileInEditId(tileId);
-    // setTileUiVisible(true);
-    // }, []);
-
-    // const TileState = useTileStore();
     const TileStyle = useTileStyleStore();
 
     const backgroundRGBAColor = (() => {
@@ -94,6 +88,12 @@ export const useTileLogic = () => {
     })();
 
     const [stylesIsOpen, setStylesIsOpen] = useState(false);
+    useEffect(() => {
+        if (!tileUiVisible) {
+            setStylesIsOpen(false);
+        }
+    }, [tileUiVisible]);
+
     const currentTile = tiles.find(tile => tile.id === tileInEditId);
 
     // LINK
@@ -186,7 +186,6 @@ export const useTileLogic = () => {
         };
         reader.readAsDataURL(file);
     };
-
 
     const handleSearchIcon = async () => {
         const name = currentTile?.meta.name;

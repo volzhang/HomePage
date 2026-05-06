@@ -10,6 +10,7 @@ import {Tile_ui_inEdit_foot} from "@/vol_apps/tile/Tile_ui_inEdit_foot";
 export const Ui_inEdit_menu = () => {
 
     const Logic = useTileLogic();
+
     return (
         <>
             <MyModal open={Logic.tileUiVisible}

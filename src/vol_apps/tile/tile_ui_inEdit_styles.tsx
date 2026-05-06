@@ -4,6 +4,7 @@ import {NumberField, NumberFieldXY} from "@/vol_apps/tile/NumberField";
 import {FontFamily} from "@/vol_apps/tile/FontFamilyField";
 import type {TileLogic} from "@/vol_apps/tile/useTileLogic";
 import {ThrottledColorPicker} from "@/vol_apps/tile/ThrottledColorPickerProps";
+import {useEffect, useState} from "react";
 
 const tileSizeMin = 0;
 const tileSizeMax = 200;
@@ -72,15 +73,19 @@ export const Tile_ui_inEdit_styles = (
 
         INITIAL_STYLE,
 
-        // TILE_OUTLINE, TILE_SIZE, TILE_RADIUS,
-        // IMAGE_BORDER_SIZE, IMAGE_SIZE, IMAGE_OFFSET,
-        // FONT_SIZE, FONT_WEIGHT, FONT_OFFSET,
+        tileUiVisible,
+
     }: TileLogic
 )=>{
+    const [value, setValue] = useState<string[]>([]);
+    useEffect(() => {
+        if (!tileUiVisible) setValue([]);
+    }, [tileUiVisible]);
+
     return(
         <div className={cn("overflow-hidden relative")}>
             <div className={cn("ml-6 px-0")}>
-                <Accordion type="multiple" className="w-full">
+                    <Accordion type="multiple" className="w-full" value={value} onValueChange={(v)=>setValue(v)}>
                     <AccordionItem value="TileBackground">
                         <AccordionTrigger>
                             <p className="font-bold text-lg">{t("Background")}</p>

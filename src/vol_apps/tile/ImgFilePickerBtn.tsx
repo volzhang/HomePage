@@ -1,6 +1,5 @@
-import {cn} from "@/lib/utils";
-import {TextareaField} from "./TextareaField";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {Button} from "@/components/ui/button";
 
 type ImgFilePickerBtnProps = {
     fileName?: string;
@@ -10,10 +9,8 @@ type ImgFilePickerBtnProps = {
 };
 
 export const ImgFilePickerBtn = ({
-                                     fileName,
                                      onFilePick,
                                      className,
-                                     inputClassName,
                                  }: ImgFilePickerBtnProps) => {
 
     const handleClick = async () => {
@@ -46,25 +43,9 @@ export const ImgFilePickerBtn = ({
     };
 
     const {t} = useLanguageStore()
-    const P1 = t("file:")
-    const P2 = t("Click to upload a icon")
-
-    const displayValue = fileName ? P1 + `${fileName}` : P2
-
     return (
-        <div className={cn(className,
-            "bg-secondary text-secondary-foreground",
-            "hover:bg-sBlue"
-        )} onClick={handleClick}>
-            <TextareaField
-                className={cn(inputClassName,
-                    "text-lg",
-                    "pointer-events-none bg-transparent",
-                    "font-medium hover:text-white"
-                )}
-                disabled={true}
-                value={displayValue}
-            />
-        </div>
+        <Button variant={"secondary"} className={className} onClick={handleClick}>
+            {t("Choose Icon")}
+        </Button>
     );
 };

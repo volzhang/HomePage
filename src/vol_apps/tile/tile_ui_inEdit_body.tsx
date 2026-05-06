@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {PanelRightClose, PanelRightOpen, RotateCcw, Trash2} from "lucide-react";
 import type {TileLogic} from "@/vol_apps/tile/useTileLogic";
@@ -14,7 +14,7 @@ export const Tile_ui_inEdit_body = (
         stylesIsOpen,
         setStylesIsOpen,
         children,
-    }: TileLogic & {children: React.ReactNode}
+    }: TileLogic & { children: React.ReactNode }
 ) => {
     return (
         <>
@@ -31,15 +31,15 @@ export const Tile_ui_inEdit_body = (
             <HoverCard openDelay={0} closeDelay={0}>
                 <HoverCardTrigger asChild>
                     <Button variant="secondary" size="icon"
-                            className={cn("absolute bottom-2 right-2 opacity-50",
-                                "hover:opacity-100",
-                                "hover:bg-sBlue",
+                            className={cn("absolute bottom-2 right-2",
+                                "opacity-60 hover:opacity-100",
+                                "hover:bg-sBlue hover:text-white",
                             )}
                             onClick={() => setStylesIsOpen(!stylesIsOpen)}
                     >
                         {stylesIsOpen
-                            ? <PanelRightClose/>
-                            : <PanelRightOpen /> }
+                            ? <PanelRightClose className={"scale-130"}/>
+                            : <PanelRightOpen className={"scale-130"}/>}
                     </Button>
                 </HoverCardTrigger>
                 <HoverCardContent className="w-auto" side="top" sideOffset={18}>
@@ -49,14 +49,18 @@ export const Tile_ui_inEdit_body = (
                 </HoverCardContent>
             </HoverCard>
 
+
+            {/* 重置样式设置 */}
             {hasStyleChanges && (
                 <HoverCard openDelay={0} closeDelay={0}>
                     <HoverCardTrigger asChild>
                         <Button variant="secondary" size="icon"
-                                className={cn("absolute bottom-2 right-13 opacity-50",
-                                    "hover:opacity-100 hover:bg-sBlue",
-                                )} onClick={handleResetStyles}>
-                            <RotateCcw/>
+                                className={cn("absolute bottom-2 right-13",
+                                    "opacity-60 hover:opacity-100",
+                                    "hover:bg-sBlue hover:text-white",
+                                )}
+                                onClick={handleResetStyles}>
+                            <RotateCcw className={"scale-130"}/>
                         </Button>
                     </HoverCardTrigger>
                     <HoverCardContent className="w-auto" side="top" sideOffset={18}>
@@ -67,16 +71,18 @@ export const Tile_ui_inEdit_body = (
                 </HoverCard>
             )}
 
+
+            {/*删除瓷砖*/}
             <HoverCard openDelay={0} closeDelay={0}>
                 <HoverCardTrigger asChild>
                     <Button variant="secondary" size="icon"
-                            className={cn("absolute bottom-2 left-2 opacity-50",
-                                "hover:opacity-100",
-                                "hover:bg-red-500",
+                            className={cn("absolute bottom-2 left-2",
+                                "opacity-60 hover:opacity-100",
+                                "hover:bg-red-500 hover:text-white",
                             )}
                             onClick={handleRemoveTile}
                     >
-                        <Trash2 />
+                        <Trash2 className={"scale-130"}/>
                     </Button>
                 </HoverCardTrigger>
                 <HoverCardContent className="w-auto" side="top" sideOffset={18}>
@@ -85,7 +91,6 @@ export const Tile_ui_inEdit_body = (
                     </div>
                 </HoverCardContent>
             </HoverCard>
-
         </>
     )
 }

@@ -12,7 +12,7 @@ export function useFocusOutsideToClose({
                                        }: UseFocusOutsideToCloseOptions) {
     const [focusOutsideRef, containerDOM] = useCallbackRef();
     const [ignoreRef, ignoreDOM] = useCallbackRef();
-    // Hook 自身创建的初始焦点 Ref，返回给外部使用
+
     const autoFocusRef = useRef<HTMLElement>(null);
     const onCloseRef = useRef(onClose);
     onCloseRef.current = onClose;

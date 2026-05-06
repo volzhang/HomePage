@@ -73,7 +73,8 @@ export function useFloating({
 //     // ...
 // }, [open, calculate]);
 // 2. 浮层尺寸测量时机
-// 目前浮层在 open=false 时可能被 visibility: hidden 或 opacity:0，但 offsetWidth 仍然能读到，这算是运气好。但更健壮的做法是：
+// 目前浮层在 open=false 时可能被 visibility: hidden 或 opacity:0，但 offsetWidth 仍然能读到，这算是运气好。
+// 更健壮的做法是：
 // 浮层始终挂载（display: none 时不测量）
 // 或者在 open 后使用 useLayoutEffect + ResizeObserver 监听浮层自身尺寸变化
 // 3. 边界处理缺失（生产环境痛点）
@@ -81,6 +82,6 @@ export function useFloating({
 // 建议至少加上一个简单的 fallback 策略，比如 bottom 放不下就尝试 top。
 // 4. 支持 Portal
 // 5. 性能
-// resize 和 scroll 建议加节流（requestAnimationFrame 或 lodash throttle）。
+// resize 和 scroll 加节流（requestAnimationFrame 或 lodash throttle）。
 
 

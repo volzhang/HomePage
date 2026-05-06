@@ -155,9 +155,8 @@ const resources: RESOURCES = {
         "Link": "链接",
         "Name": "名字",
         "Tags": "标签",
-        // "Icon": "图标",
 
-        "Click to upload a icon": "点击上传自定义图标",
+        "Choose Icon":"选择图标",
         "file:": "文件名：",
 
         "Fetching": "加载...",

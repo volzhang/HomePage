@@ -3,6 +3,7 @@
     "message": "Home Page"
   },
   "extDescription": {
-    "message": "A beautiful, clean, and privacy-conscious local browser homepage. No ads, no network connection."
+    "message": "A clean, minimal, privacy-focused browser homepage. No ads, no sign-in, and no data uploads."
+  }
   }
 }

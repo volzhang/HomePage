@@ -13,7 +13,7 @@ const CLASS_BASE = "flex w-full";
 const CLASS_P = "flex items-center justify-start font-bold text-lg w-16 shrink-0"; // 左侧固定宽度
 const CLASS_OUTLINE = cn("flex py-2 pl-3 pr-1 border rounded-md flex-1",
     "focus-within:ring-[3px] focus-within:ring-ring/50 focus-within:border-transparent",
-    "transition-ring duration-300 ease-in-out"
+    "transition-ring duration-300 ease-in-out bg-background text-foreground"
 ); // 中间自适应
 const CLASS_INFO = "flex w-fit items-center text-md ml-auto"; // 右侧固定宽度
 const CLASS_INNER = "w-full h-[28px] text-lg";
@@ -29,7 +29,7 @@ export const Tile_ui_inEdit_head = (
         link, setLink, try_handle_name, try_handle_icon, link_ref,
         name, setName,
 
-        iconFileName, handleIconFilePick,
+        handleIconFilePick,
 
         tag, handleTagChange,
 
@@ -94,7 +94,7 @@ export const Tile_ui_inEdit_head = (
             {/* NAME */}
 
             <div className={"flex flex-row"}>
-                <div className={"flex flex-1 mr-8"}>
+                <div className={"flex flex-1 mr-[16px]"}>
                     <p className={CLASS_P}>{t("Name")}</p>
                     <div className={CLASS_OUTLINE}>
                         <TextareaField
@@ -107,12 +107,10 @@ export const Tile_ui_inEdit_head = (
                     </div>
                 </div>
 
-                <div className={cn("flex flex-1")}>
-                    <p className={CLASS_P}>{t("Icon")}</p>
+                <div className={cn("flex w-[130px] rounded-md")}>
                     <ImgFilePickerBtn
-                        className={CLASS_OUTLINE}
-                        inputClassName={cn(CLASS_TEXTAREA, "break-all")}
-                        fileName={iconFileName}
+                        className={"w-full h-full bg-background text-foreground/50 text-[17px] border " +
+                            "hover:bg-sBlue hover:text-white"}
                         onFilePick={handleIconFilePick}
                     />
                 </div>
