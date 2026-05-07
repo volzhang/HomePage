@@ -1,4 +1,4 @@
-import {useMemo, useEffect, useState, useRef} from "react";
+import {useMemo, useEffect, useState, useRef, useCallback} from "react";
 import {useBgStore, img} from "./bg_store";
 import {
     useBingWallpaperArchive,
@@ -7,6 +7,10 @@ import {
 } from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {setBackground} from "./bg_util";
+import {useFileCarousel} from "@/vol_apps/02_hooks/useFileCarousel";
+import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
+import {get, set} from "idb-keyval";
+import {toast} from "sonner";
 
 /**
  * UI pending 控制（带超时）
@@ -116,18 +120,38 @@ export const useBgLogic = () => {
      */
 
     useEffect(() => {
-        if (bgType === "bing" && currentJpg) {
-            if (currentJpg !== bgImg) setBgImg(currentJpg);
-            if (currentCopyright != bgBingCopyright) setBgBingCopyright(currentCopyright)
-            setBgCenter(true);
-            setBgSize("cover");
-            setBgRepeat(false);
-        } else if (bgType === "default") {
-            setBgImg(img);
-            setBgCenter(false);
-            setBgSize("auto");
-            setBgRepeat(true);
-        }
+        const run = async () => {
+            if (bgType === "bing" && currentJpg) {
+                if (currentJpg !== bgImg) setBgImg(currentJpg);
+                if (currentCopyright !== bgBingCopyright) setBgBingCopyright(currentCopyright);
+
+                setBgCenter(true);
+                setBgSize("cover");
+                setBgRepeat(false);
+                return;
+            }
+
+            if (bgType === "default") {
+                setBgImg(img);
+                setBgCenter(false);
+                setBgSize("auto");
+                setBgRepeat(true);
+                return;
+            }
+
+            if (bgType === "custom_dir") {
+                const h = await get("dh");
+                if (!h) {
+                    toast.info(t("Please select folder first"));
+                    setBgType("custom");
+                    return;
+                }
+                setBgCenter(true);
+                setBgSize("contain");
+                setBgRepeat(false);
+            }
+        };
+        void run();
     }, [bgType, currentJpg, currentCopyright]);
 
     /**
@@ -190,10 +214,57 @@ export const useBgLogic = () => {
         if (!nextPending || nextJpg) nextCtrl.stop();
     }, [nextPending, nextJpg]);
 
+
+
+    /**
+     * 文件夹轮播
+     */
+
+    const carouselEnabled = bgType === "custom_dir"
+
+    const handleFile = useCallback(async (f: File) => {
+        const i = await blobToString(f)
+        setBgImg(i)
+    }, [])
+
+    const {setDirHandle} = useFileCarousel({open:carouselEnabled, handle:handleFile, interval:3000})
+
+    const handleDirChange = async () => {
+        // @ts-ignore
+        const h = await window.showDirectoryPicker()
+        const permission = await h.requestPermission({ mode: "read" })
+        if (permission !== "granted") {
+            toast.error("Permission denied")
+            setBgType("custom")
+            return
+        }
+        await set("dh", h)
+        setDirHandle(h)
+        setBgType("custom_dir")
+    }
+
+    const restore = async () => {
+        const h = (await get("dh")) as any;
+        if (!h) {
+            setBgType("custom")
+            return
+        }
+        setDirHandle(h);
+    }
+
+    useEffect(() => {
+        void restore();
+    }, []);
+
+
     /**
      * 输出
      */
     return {
+        // 新增 文件夹轮播
+        handleDirChange,
+
+
         bgType,
         bgRepeat,
         bgCenter,

@@ -1,12 +1,17 @@
 import {createPersistedStore, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 import img from "@/assets/bg-dark.png?inline";
 import type {YYYY_MM_DD} from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
+
 export {img}
 
 export type SizeType = "auto" | "cover" | "contain"
-export type BgType = "default" | "custom" | "bing"
+export type BgType =
+    |"default"
+    | "bing"
+    | "custom"
+    | "custom_dir"
 
-type BgStoreState = {
+    type BgStoreState = {
     bgImg: string;
     bgType: BgType
     bgBingCopyright: string;
@@ -86,7 +91,7 @@ export const useBgStore = createPersistedStore<BgStore>(
             );
         },
         partialize: (state) => {
-            // 排除 otherVisible，其余字段全部持久化
+            // 排除 otherVisible，bgUiVisible，其余字段全部持久化
             const {otherVisible, bgUiVisible, ...rest} = state;
             return rest;
         },

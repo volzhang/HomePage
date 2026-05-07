@@ -21,3 +21,22 @@ export function useTimeout(callback: () => void, delay: number | null | undefine
         return () => clearTimeout(id);
     }, [delay]);
 }
+
+/**
+ * 每 delay 毫秒执行一次 callback
+ * - delay 为 null | undefined 时停止
+ * - 自动清理，始终执行最新 callback
+ */
+export function useInterval(callback: () => void, delay: number | null | undefined) {
+    const savedCallback = useRef(callback);
+
+    useEffect(() => {
+        savedCallback.current = callback;
+    }, [callback]);
+
+    useEffect(() => {
+        if (delay == null) return;
+        const id = setInterval(() => savedCallback.current(), delay);
+        return () => clearInterval(id);
+    }, [delay]);
+}

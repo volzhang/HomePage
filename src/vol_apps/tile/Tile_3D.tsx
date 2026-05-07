@@ -13,7 +13,7 @@ interface Tilt3DProps {
     radius?: number;
 }
 
-// 只看代码可能不完美，但是显示效果非常好。
+// 只看代码可能不完美，但是显示效果很好。
 export const Tilt_3D: React.FC<Tilt3DProps> = ({
                                                       children,
                                                       maxTilt = 12,

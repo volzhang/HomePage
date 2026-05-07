@@ -8,7 +8,6 @@ type HalfDrawerProps = {
     className?: string;
 };
 
-// 简洁稳定版 HalfDrawer
 export const HalfDrawer = ({
                                isOpen,
                                preview,

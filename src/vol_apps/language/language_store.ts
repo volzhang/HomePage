@@ -78,11 +78,16 @@ const resources: RESOURCES = {
         //     "Set Background": "设置背景",
 
         // bg: {
-        "Upload Image": "上传图片",
+        "Please select folder first":"请先选择目录",
+        "Permission denied":"权限已拒绝",
 
+        "Choose Image": "选择图片",
+        "Select Fonder": "选择目录",
+
+        "Daily Bing": "Bing每日壁纸",
+        "Fixed Image": "自定义单张",
+        "Images Carousel": "目录循环",
         "Reset Defaults": "默认设置",
-        "Custom": "自定义",
-        "DailyBing": "Bing每日壁纸",
 
         "Default View": "正常",
         "Hide Others": "只看背景",
