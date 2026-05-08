@@ -4,7 +4,7 @@ import {ImgFilePickerBtn} from "@/vol_apps/tool/action/filePicker";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
-import {Folder, Image} from "lucide-react";
+import {Folder, Image, MessageCircleHeart} from "lucide-react";
 import type {BgType, SizeType} from "@/vol_apps/bg/bg_store";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {
@@ -26,7 +26,7 @@ const BASE = cn("no-scrollbar overflow-y-auto",
 )
 
 const BUTTON_CLASS = cn(
-    "border text-foreground", BG,
+    "border text-foreground", BG, "items-center justify-center",
     "hover:bg-sBlue hover:text-white",
     "h-12 w-full", "text-lg"
 )
@@ -66,10 +66,10 @@ const MyRadio = (
                 "transition-all duration-200 linear"
             )}>
                 <legend className={cn(
-                    "text-lg text-left text-border",
-                    "absolute -top-3.5 left-3",
+                    "text-lg text-left text-border font-semibold",
+                    "absolute -top-3.5 left-[13px]",
                     "bg-popover whitespace-nowrap px-1.5",
-                    "group-hover:text-sBlue group-hover:font-semibold",
+                    "group-hover:text-sBlue",
                     "transition-all duration-200 linear"
                 )}>{title}</legend>
                 {options.map((option) => (
@@ -105,18 +105,18 @@ const Content = (
 
     const bgTypeOptions = [
         {value: "default", label: t("Reset Defaults")},
-        {value: "bing", label: t("Daily Bing")},
-        {value: "custom", label: t("Fixed Image")},
-        {value: "custom_dir", label: t("Images Carousel")},
+        {value: "bing", label: t("Bing Wallpaper")},
+        {value: "custom", label: t("Single Image")},
+        {value: "custom_dir", label: t("Image Carousel")},
 
     ];
     const visibleOptions = [
-        {value: "true", label: t("Default View")},
-        {value: "false", label: t("Hide Others")},
+        {value: "true", label: t("Show All")},
+        {value: "false", label: t("Background Only")},
     ];
     const repeatOptions = [
         {value: "repeat", label: t("Repeat")},
-        {value: "no-repeat", label: t("Single")},
+        {value: "no-repeat", label: t("Once")},
     ];
     const centerOptions = [
         {value: "not-center", label: t("Top Left")},
@@ -130,14 +130,14 @@ const Content = (
 
     const carouselOptions = [
         {value: "random", label: t("Random")},
-        {value: "normal", label: t("Normal")},
+        {value: "sequential", label: t("Sequential")},
     ];
 
     return (
         <div className={BASE}>
-            <Button variant={"default"} className={cn(BUTTON_CLASS)} onClick={handleDirChange}>
-                <Folder className={"scale-125 -translate-x-4"}/>
-                <p className={"-translate-x-2"}>{t("Select Fonder")}</p>
+            <Button variant={"default"} className={cn(BUTTON_CLASS, "gap-5")} onClick={handleDirChange}>
+                <Folder className={"scale-125"}/>
+                <p className={""}>{t("Select Folder")}</p>
             </Button>
             <ImgFilePickerBtn
                 onPick={async (file) => {
@@ -147,9 +147,9 @@ const Content = (
                 children={
                     <Button
                         variant={"default"}
-                        className={cn(BUTTON_CLASS)}>
-                        <Image className={"scale-125 -translate-x-4"}/>
-                        <p className={"-translate-x-2"}>{t("Choose Image")}</p>
+                        className={cn(BUTTON_CLASS, "gap-5")}>
+                        <Image className={"scale-125"}/>
+                        <p className={""}>{t("Choose Image")}</p>
                     </Button>
                 }/>
             <MyRadio title={t("Background Type")}
@@ -176,7 +176,7 @@ const Content = (
                      options={sizeOptions} value={bgSize}
                      onValueChange={(value) => setBgSize(value as SizeType)}/>
 
-            <MyRadio title={t("Images Carousel")}
+            <MyRadio title={t("Image Carousel")}
                      options={carouselOptions}
                      value={
                          bgType === "custom_dir"
@@ -188,15 +188,17 @@ const Content = (
                          setBgType("custom_dir")
                      }}
             >
-                <label className={"col-span-2 mt-3 ml-5 flex flex-row gap-2"}>
+                <label className={"col-span-2 mt-3 ml-5 flex flex-row gap-2 text-md"}>
                     <p className={"flex w-32"}>
-                        {t("Switch every")}
+                        {t("Change every")}
                     </p>
                     <input type={"number"} min={1} max={60 * 60 * 24}
                            className={cn("flex-1 min-w-0 rounded-sm border border-border/50 ",
                                "text-right ring-0 outline-0",
                                "text-sBlue font-bold",
                                "group-hover:border-sBlue/50",
+                               {"text-border": bgType !== "custom_dir"},
+                               "transition-all duration-200 linear"
                            )}
                            value={carouselInterval}
                            onChange={(e) => {
@@ -208,6 +210,19 @@ const Content = (
                     ></input>
                     <p className={"flex w-20"}>{t("sec")}</p>
                 </label>
+                <p className={cn(
+                    "col-span-2 mt-3.5 ml-5",
+                    "text-border text-md group-hover:text-sBlue",
+                    {"group-hover:text-border": bgType !== "custom_dir"},
+                    "transition-all duration-200 linear"
+                )}>
+                    <span className="flex items-start gap-3">
+                        <MessageCircleHeart className="mt-0.5 shrink-0"/>
+                        <span className="leading-relaxed">
+                            {t("Double-click to skip to next image during playback.")}
+                         </span>
+                    </span>
+                </p>
             </MyRadio>
         </div>
     )
@@ -238,7 +253,7 @@ export const BgUiSettings = (props: BgLogic) => {
             onOpenChange={props.setBgUiVisible}
             closeThreshold={0.6}
         >
-            <DrawerContent className={"w-[30%]! max-w-[410px]! min-w-[390px]!"}>
+            <DrawerContent className={"w-[30%]! max-w-[420px]! min-w-[410px]!"}>
                 <DrawerHeader hidden><DrawerTitle/><DrawerDescription/></DrawerHeader>
                 <Content {...props}/>
                 <DrawerFooter className={"h-fit pb-2.5 px-2.5 bg-popover"}>

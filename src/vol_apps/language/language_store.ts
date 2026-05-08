@@ -80,18 +80,21 @@ const resources: RESOURCES = {
         // bg: {
         "Please select folder first":"请先选择目录",
         "Permission denied":"已拒绝授权",
+        "Image changed":"图片已切换",
+
+        "Double-click to skip to next image during playback.":"播放时，双击可切换至下一张",
 
         "Random":"随机",
-        "Normal":"正常",
-        "Switch every":"切换间隔",
+        "Sequential":"顺序",
+        "Change every":"切换间隔",
         "sec":"秒",
 
         "Choose Image": "选择图片",
-        "Select Fonder": "选择目录",
+        "Select Folder": "选择目录",
 
-        "Daily Bing": "Bing每日壁纸",
-        "Fixed Image": "自定义单张",
-        "Images Carousel": "自定义循环",
+        "Bing Wallpaper": "Bing壁纸",
+        "Single Image": "自定义单张",
+        "Image Carousel": "自定义循环",
         "Reset Defaults": "默认设置",
 
         "Background Type":"背景类型",
@@ -99,17 +102,17 @@ const resources: RESOURCES = {
         "Position":"位置",
         // "Images Carousel": "目录循环",
 
-        "Default View": "正常",
-        "Hide Others": "只看背景",
+        "Show All": "显示全部",
+        "Background Only": "只看背景",
         "Repeat": "重复平铺",
-        "Single": "单张",
+        "Once": "单张",
         "Top Left": "左上角",
         "Center": "居中",
         "Original Size": "原始尺寸",
         "Contain": "扩展至边缘",
         "Cover": "扩展至覆盖",
         // "OK": "确定",
-        "Close":"关闭",
+        // "Close":"关闭",
 
         "Fetching Bing wallpaper": "正在获取Bing壁纸",
 

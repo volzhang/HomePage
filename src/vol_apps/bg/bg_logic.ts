@@ -11,6 +11,7 @@ import {useFileCarousel} from "@/vol_apps/02_hooks/useFileCarousel";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {get, set} from "idb-keyval";
 import {toast} from "sonner";
+import {useDoubleClick} from "../02_hooks/useDoubleClick";
 
 /**
  * UI pending 控制（带超时）
@@ -222,19 +223,31 @@ export const useBgLogic = () => {
      * 文件夹轮播
      */
 
+
+
+
     const carouselEnabled = bgType === "custom_dir"
+
+
 
     const handleFile = useCallback(async (f: File) => {
         const i = await blobToString(f)
         setBgImg(i)
     }, [])
 
-    const {setDirHandle} = useFileCarousel({
+    const {setDirHandle, handleNext:handleNextImage} = useFileCarousel({
         open: carouselEnabled,
         handle: handleFile,
         interval: carouselInterval,
         random: carouselRandom,
     })
+
+    const handleNextImg = () => {
+        handleNextImage()
+        toast.success(t("Image changed"))
+    }
+
+    useDoubleClick(carouselEnabled, handleNextImg)
 
     const handleDirChange = async () => {
         // @ts-ignore

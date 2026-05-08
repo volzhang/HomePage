@@ -103,9 +103,9 @@ export const SearchBar = () => {
                     className={SEARCH_ICON_BUTTON}>
                     <div
                         className={cn("text-[18px] leading-7 h-7 flex items-center justify-center",
-                            "text-sBlue group-hover:text-white")}>
+                            "text-sBlue group-hover:text-white select-none")}>
                         {currentEngine.icon
-                            ? <img src={currentEngine.icon} className={`${SIZE_MAP[currentEngine.id]} object-cover`}/>
+                            ? <img src={currentEngine.icon} className={`${SIZE_MAP[currentEngine.id]} object-cover select-none`}/>
                             : <Search strokeWidth={3} className="h-7"/>}
                     </div>
                 </button>
