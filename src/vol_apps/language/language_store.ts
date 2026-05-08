@@ -79,7 +79,13 @@ const resources: RESOURCES = {
 
         // bg: {
         "Please select folder first":"请先选择目录",
-        "Permission denied":"权限已拒绝",
+        "Permission denied":"已拒绝授权",
+
+
+        "Random":"随机",
+        "Normal":"正常",
+        "Switch every":"切换间隔",
+        "sec":"秒",
 
         "Choose Image": "选择图片",
         "Select Fonder": "选择目录",

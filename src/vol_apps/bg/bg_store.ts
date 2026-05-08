@@ -23,6 +23,9 @@ export type BgType =
 
     //新增，用来记录用户选择
     bgBingDate: YYYY_MM_DD | null;
+
+    carouselRandom: boolean;
+    carouselInterval: number;
 }
 
 type BgStoreActions = {
@@ -37,6 +40,9 @@ type BgStoreActions = {
 
     //新增
     setBgBingDate: (value: BgStoreState["bgBingDate"]) => void;
+
+    setCarouselRandom: (value: BgStoreState["carouselRandom"]) => void;
+    setCarouselInterval: (value: BgStoreState["carouselInterval"]) => void;
 }
 
 type BgStore = BgStoreState & BgStoreActions;
@@ -53,6 +59,9 @@ const INITIAL_STATE = {
 
     //新增
     bgBingDate: null,
+
+    carouselRandom: true,
+    carouselInterval: 3,
 };
 
 export const useBgStore = createPersistedStore<BgStore>(
@@ -72,6 +81,9 @@ export const useBgStore = createPersistedStore<BgStore>(
         setBgUiVisible: (bgUiVisible) => set({bgUiVisible}),
 
         setBgBingDate: (bgBingDate) => set({bgBingDate}),
+
+        setCarouselRandom: (carouselRandom) => set({carouselRandom}),
+        setCarouselInterval: (carouselInterval) => set({carouselInterval}),
     }),
     {
         storageType: "idb",

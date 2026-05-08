@@ -21,9 +21,9 @@ export const MENU_CLASS = cn(
 
 export const ITEM_CLASS = cn(
     "flex items-center justify-between w-full",
-    "h-8 bg-popover text-foreground",
+    "h-8 text-foreground",
     "text-sm rounded-sm",
-    "hover:bg-foreground/10",
+    "bg-popover hover:bg-foreground/10",
     "whitespace-nowrap",
     "select-none",
     "p-2"

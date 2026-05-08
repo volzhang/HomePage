@@ -68,6 +68,9 @@ export const useBgLogic = () => {
         setOtherVisible,
         setBgBingDate,
         setBgBingCopyright,
+
+        carouselRandom, setCarouselRandom,
+        carouselInterval, setCarouselInterval,
     } = useBgStore();
 
     const {t, language} = useLanguageStore();
@@ -112,7 +115,7 @@ export const useBgLogic = () => {
         // fallback：当天没有图 → 自动用前一天
         if (!currentPending && !currentJpg) setBgBingDate(preDate)
         // 新用户的初始值
-        if (bgType === "bing" && bgImg === null && currentJpg ) setBgImg(currentJpg)
+        if (bgType === "bing" && bgImg === null && currentJpg) setBgImg(currentJpg)
     }, [currentPending, currentJpg, date]);
 
     /**
@@ -215,7 +218,6 @@ export const useBgLogic = () => {
     }, [nextPending, nextJpg]);
 
 
-
     /**
      * 文件夹轮播
      */
@@ -227,12 +229,17 @@ export const useBgLogic = () => {
         setBgImg(i)
     }, [])
 
-    const {setDirHandle} = useFileCarousel({open:carouselEnabled, handle:handleFile, interval:3000})
+    const {setDirHandle} = useFileCarousel({
+        open: carouselEnabled,
+        handle: handleFile,
+        interval: carouselInterval,
+        random: carouselRandom,
+    })
 
     const handleDirChange = async () => {
         // @ts-ignore
         const h = await window.showDirectoryPicker()
-        const permission = await h.requestPermission({ mode: "read" })
+        const permission = await h.requestPermission({mode: "read"})
         if (permission !== "granted") {
             toast.error("Permission denied")
             setBgType("custom")
@@ -264,13 +271,14 @@ export const useBgLogic = () => {
         // 新增 文件夹轮播
         handleDirChange,
 
-
         bgType,
         bgRepeat,
         bgCenter,
         bgSize,
         otherVisible,
         bgUiVisible,
+
+
 
         setBgType,
         setBgRepeat,
@@ -279,6 +287,9 @@ export const useBgLogic = () => {
         setOtherVisible,
         setBgUiVisible,
         setBgImg,
+
+        carouselInterval, setCarouselInterval,
+        carouselRandom, setCarouselRandom,
 
         bgBingCopyright,
 
