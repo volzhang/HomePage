@@ -75,7 +75,7 @@ const MyRadio = (
                 {options.map((option) => (
                     <label
                         key={option.value}
-                        className={"col-span-1 flex flex-row ml-4 gap-3"}>
+                        className={"col-span-1 flex flex-row ml-4 gap-2"}>
                         <input
                             type="radio"
                             onChange={() => handleChange(option.value)}
@@ -83,7 +83,7 @@ const MyRadio = (
                             value={option.value}
                             checked={value === option.value}
                         ></input>
-                        <p>{option.label}</p>
+                        <p className={"whitespace-nowrap"}>{option.label}</p>
                     </label>
                 ))}
                 {children}
@@ -152,31 +152,31 @@ const Content = (
                         <p className={"-translate-x-2"}>{t("Choose Image")}</p>
                     </Button>
                 }/>
-            <MyRadio title={"背景类型"}
+            <MyRadio title={t("Background Type")}
                      options={bgTypeOptions}
                      value={bgType}
                      onValueChange={async (value) => setBgType(value as BgType)}/>
 
-            <MyRadio title={"预览"}
+            <MyRadio title={t("Preview")}
                      options={visibleOptions}
                      value={otherVisible ? "true" : "false"}
                      onValueChange={(value) => setOtherVisible(value === "true")}/>
 
-            <MyRadio title={"重复"}
+            <MyRadio title={t("Repeat")}
                      options={repeatOptions}
                      value={bgRepeat ? "repeat" : "no-repeat"}
                      onValueChange={(value) => setBgRepeat(value === "repeat")}/>
 
-            <MyRadio title={"位置"}
+            <MyRadio title={t("Position")}
                      options={centerOptions}
                      value={bgCenter ? "center" : "not-center"}
                      onValueChange={(value) => setBgCenter(value === "center")}/>
 
-            <MyRadio title={"尺寸"}
+            <MyRadio title={t("Size")}
                      options={sizeOptions} value={bgSize}
                      onValueChange={(value) => setBgSize(value as SizeType)}/>
 
-            <MyRadio title={"目录循环"}
+            <MyRadio title={t("Images Carousel")}
                      options={carouselOptions}
                      value={
                          bgType === "custom_dir"
@@ -193,8 +193,11 @@ const Content = (
                         {t("Switch every")}
                     </p>
                     <input type={"number"} min={1} max={60 * 60 * 24}
-                           className={cn("flex-1 min-w-0 rounded-sm border border-border/60 ",
-                               "text-right text-sBlue font-bold")}
+                           className={cn("flex-1 min-w-0 rounded-sm border border-border/50 ",
+                               "text-right ring-0 outline-0",
+                               "text-sBlue font-bold",
+                               "group-hover:border-sBlue/50",
+                           )}
                            value={carouselInterval}
                            onChange={(e) => {
                                const MAX = 60 * 60 * 24;

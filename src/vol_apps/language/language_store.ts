@@ -81,7 +81,6 @@ const resources: RESOURCES = {
         "Please select folder first":"请先选择目录",
         "Permission denied":"已拒绝授权",
 
-
         "Random":"随机",
         "Normal":"正常",
         "Switch every":"切换间隔",
@@ -92,8 +91,13 @@ const resources: RESOURCES = {
 
         "Daily Bing": "Bing每日壁纸",
         "Fixed Image": "自定义单张",
-        "Images Carousel": "目录循环",
+        "Images Carousel": "自定义循环",
         "Reset Defaults": "默认设置",
+
+        "Background Type":"背景类型",
+        "Preview":"预览",
+        "Position":"位置",
+        // "Images Carousel": "目录循环",
 
         "Default View": "正常",
         "Hide Others": "只看背景",

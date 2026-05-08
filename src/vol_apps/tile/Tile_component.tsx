@@ -43,6 +43,7 @@ const ValidUrlTile = (
 ) => {
     return <>
         <a
+            draggable={false}
             href={link}
             className={cn("flex flex-col items-center justify-between",
                 {"cursor-auto": disableClick},
@@ -96,7 +97,9 @@ const ValidUrlTile = (
                             </p> : null}
                         </div>
                     </div>
-                    : <img className="absolute max-w-none" style={{
+                    : <img
+                        // draggable={false}
+                        className="absolute max-w-none select-none" style={{
                         width: `${iconSize}px`,
                         height: `${iconSize}px`,
                         left: "50%",
@@ -110,7 +113,7 @@ const ValidUrlTile = (
             </div>
             {/* text */}
             <p
-                className="w-full text-center my-auto break-all whitespace-pre-wrap"
+                className="w-full text-center my-auto break-all whitespace-pre-wrap select-none"
                 style={{
                     fontSize: `${fontSize}px`,
                     fontWeight: fontWeight,
