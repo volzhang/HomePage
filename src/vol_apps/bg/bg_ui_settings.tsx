@@ -104,15 +104,15 @@ const Content = (
 ) => {
 
     const bgTypeOptions = [
-        {value: "default", label: t("Reset Defaults")},
         {value: "bing", label: t("Bing Wallpaper")},
+        {value: "default", label: t("Reset Defaults")},
         {value: "custom", label: t("Single Image")},
         {value: "custom_dir", label: t("Image Carousel")},
 
     ];
     const visibleOptions = [
-        {value: "true", label: t("Show All")},
         {value: "false", label: t("Background Only")},
+        {value: "true", label: t("Show All")},
     ];
     const repeatOptions = [
         {value: "repeat", label: t("Repeat")},

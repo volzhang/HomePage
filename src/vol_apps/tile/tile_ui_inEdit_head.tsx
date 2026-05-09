@@ -98,6 +98,7 @@ export const Tile_ui_inEdit_head = (
                     <p className={CLASS_P}>{t("Name")}</p>
                     <div className={CLASS_OUTLINE}>
                         <TextareaField
+                            placeholder={t("Display Name")}
                             className={cn(CLASS_TEXTAREA, "break-all")}
                             value={name}
                             onCommit={setName}
@@ -118,7 +119,6 @@ export const Tile_ui_inEdit_head = (
 
 
             {/* TAG */}
-
             <div className={CLASS_BASE}>
                 <HoverCard openDelay={0} closeDelay={0}>
                     <HoverCardTrigger asChild>
@@ -134,7 +134,7 @@ export const Tile_ui_inEdit_head = (
                 <div className={CLASS_OUTLINE}>
                     <TextareaField
                         className={cn(CLASS_TEXTAREA, "wrap-break-word")}
-                        placeholder="Display Name"
+                        placeholder={t("tag1 tag2 tag3 ...")}
                         value={tag}
                         onCommit={handleTagChange}
                         enterFocusRef={ok_ref}

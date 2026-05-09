@@ -82,7 +82,7 @@ const resources: RESOURCES = {
         "Permission denied":"已拒绝授权",
         "Image changed":"图片已切换",
 
-        "Double-click to skip to next image during playback.":"播放时，双击可切换至下一张",
+        "Double-click to skip to next image during playback.":"播放时，鼠标双击可切换至下一张",
 
         "Random":"随机",
         "Sequential":"顺序",
@@ -184,7 +184,7 @@ const resources: RESOURCES = {
         "Search Bing for icon": "Bing 搜索图标",
         "Tags (space-separated)": "添加标签，用空格分隔",
         "tag1 tag2 tag3 ...": "标签1 标签2 标签3 ...",
-
+        "Display Name":"显示名",
 
         // 新 展示面板
 
