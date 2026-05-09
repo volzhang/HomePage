@@ -1,5 +1,5 @@
 import {createPersistedStoreWithEqualityFn} from "@/vol_apps/tool/createPersistedStore";
-import { type FontItem } from "@/vol_apps/cm/cm_store";
+import {type FontItem} from "@/vol_apps/cm/cm_store";
 import {shallow} from "zustand/vanilla/shallow";
 
 // ---------- 类型 ----------
@@ -73,53 +73,53 @@ export const INITIAL_STYLE: TileStyleState = {
     tileOutlineOpacity: 1,
 
     iconBorderSize: 100,
-    iconBorderOffset: { x: 0, y: 10 },
+    iconBorderOffset: {x: 0, y: 10},
     iconSize: 100,
-    iconOffset: { x: 0, y: 0 },
+    iconOffset: {x: 0, y: 0},
 
     fontSize: 14,
     fontWeight: 500,
     font: FONT_DEFAULT,
 
-    textOffset: { x: 0, y: 10 },
+    textOffset: {x: 0, y: 10},
     textColor: "#000000",
     textOpacity: 1,
 };
 
 // ---------- Store ----------
-const useTileStyleStoreBase  = createPersistedStoreWithEqualityFn<TileStyleStore>(
+const useTileStyleStoreBase = createPersistedStoreWithEqualityFn<TileStyleStore>(
     "ts",
     (set,) => ({
         ...INITIAL_STYLE,
 
         // 背景
-        setBackgroundColor: (backgroundColor) => set({ backgroundColor }),
-        setBackgroundOpacity: (backgroundOpacity) => set({ backgroundOpacity }),
+        setBackgroundColor: (backgroundColor) => set({backgroundColor}),
+        setBackgroundOpacity: (backgroundOpacity) => set({backgroundOpacity}),
 
         // 磁贴尺寸与圆角
-        setTileSize: (tileSize) => set({ tileSize }),
-        setTileRadius: (tileRadius) => set({ tileRadius }),
+        setTileSize: (tileSize) => set({tileSize}),
+        setTileRadius: (tileRadius) => set({tileRadius}),
 
         // 磁贴轮廓
-        setTileOutlineThickness: (tileOutlineThickness) => set({ tileOutlineThickness }),
-        setTileOutlineColor: (tileOutlineColor) => set({ tileOutlineColor }),
-        setTileOutlineOpacity: (tileOutlineOpacity) => set({ tileOutlineOpacity }),
+        setTileOutlineThickness: (tileOutlineThickness) => set({tileOutlineThickness}),
+        setTileOutlineColor: (tileOutlineColor) => set({tileOutlineColor}),
+        setTileOutlineOpacity: (tileOutlineOpacity) => set({tileOutlineOpacity}),
 
         // 图标
-        setIconBorderSize: (iconBorderSize) => set({ iconBorderSize }),
-        setIconBorderOffset: (iconBorderOffset) => set({ iconBorderOffset }),
-        setIconSize: (iconSize) => set({ iconSize }),
-        setIconOffset: (iconOffset) => set({ iconOffset }),
+        setIconBorderSize: (iconBorderSize) => set({iconBorderSize}),
+        setIconBorderOffset: (iconBorderOffset) => set({iconBorderOffset}),
+        setIconSize: (iconSize) => set({iconSize}),
+        setIconOffset: (iconOffset) => set({iconOffset}),
 
         // 文字样式
-        setFontSize: (fontSize) => set({ fontSize }),
-        setFontWeight: (fontWeight) => set({ fontWeight }),
-        setFont: (font) => set({ font }),
+        setFontSize: (fontSize) => set({fontSize}),
+        setFontWeight: (fontWeight) => set({fontWeight}),
+        setFont: (font) => set({font}),
 
         // 文字偏移与颜色
-        setTextOffset: (textOffset) => set({ textOffset }),
-        setTextOpacity: (textOpacity) => set({ textOpacity }),
-        setTextColor: (textColor) => set({ textColor }),
+        setTextOffset: (textOffset) => set({textOffset}),
+        setTextOpacity: (textOpacity) => set({textOpacity}),
+        setTextColor: (textColor) => set({textColor}),
     }),
 );
 
@@ -135,5 +135,5 @@ export function useTileStyleStore(selector?: (state: TileStyleStore) => unknown)
     return useTileStyleStoreBase((s) => s, shallow);
 }
 
-export { useTileStyleStoreBase };
+export {useTileStyleStoreBase};
 

@@ -4,14 +4,17 @@ import type {YYYY_MM_DD} from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
 
 export {img}
 
-export type SizeType = "auto" | "cover" | "contain"
+export type SizeType =
+    | "auto"
+    | "cover"
+    | "contain"
 export type BgType =
-    |"default"
+    | "default"
     | "bing"
     | "custom"
     | "custom_dir"
 
-    type BgStoreState = {
+type BgStoreState = {
     bgImg: string;
     bgType: BgType
     bgBingCopyright: string;

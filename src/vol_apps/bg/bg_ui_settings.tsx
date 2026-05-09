@@ -180,7 +180,7 @@ const Content = (
                      options={carouselOptions}
                      value={
                          bgType === "custom_dir"
-                             ? carouselRandom ? "random" : "normal"
+                             ? carouselRandom ? "random" : "sequential"
                              : ""
                      }
                      onValueChange={(value) => {
