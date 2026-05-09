@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import {useEffect, useRef} from "react";
 
 /**
  * 延迟执行回调的 Hook。
@@ -8,35 +8,63 @@ import { useEffect, useRef } from 'react';
  */
 export function useTimeout(callback: () => void, delay: number | null | undefined) {
     const savedCallback = useRef(callback);
+    savedCallback.current = callback;
 
     useEffect(() => {
-        savedCallback.current = callback;
-    }, [callback]);
-
-    useEffect(() => {
-        // delay 不合法时不启动定时器
         if (delay == null) return;
-
         const id = setTimeout(() => savedCallback.current(), delay);
         return () => clearTimeout(id);
     }, [delay]);
 }
 
 /**
- * 每 delay 毫秒执行一次 callback
- * - delay 为 null | undefined 时停止
- * - 自动清理，始终执行最新 callback
+ * @param open 开关
+ * @param handler 函数
+ * @param timeout 毫秒
  */
-export function useInterval(callback: () => void, delay: number | null | undefined) {
-    const savedCallback = useRef(callback);
+export const useInterval =
+    ({
+         open = true,
+         handler,
+         timeout = 3000,
+     }: {
+         open?: boolean,
+         handler?: () => void,
+         timeout?: number
+     }
+    ) => {
+        const handlerRef = useRef(handler);
+        handlerRef.current = handler;
 
-    useEffect(() => {
-        savedCallback.current = callback;
-    }, [callback]);
+        const timerIdRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    useEffect(() => {
-        if (delay == null) return;
-        const id = setInterval(() => savedCallback.current(), delay);
-        return () => clearInterval(id);
-    }, [delay]);
-}
+        const clear = () => {
+            if (timerIdRef.current !== null) {
+                clearInterval(timerIdRef.current);
+                timerIdRef.current = null;
+            }
+        }
+
+        const loop = () => {
+            timerIdRef.current = setInterval(() => handlerRef.current?.(), timeout);
+        }
+
+        useEffect(() => {
+            if (!open || !handler || timeout <= 0) {
+                clear();
+                return;
+            }
+            clear()
+            loop()
+            return clear;
+        }, [open, timeout, handler]);
+
+        const handleNext = () => {
+            if (!open) return
+            clear()
+            handlerRef.current?.()
+            loop()
+        }
+
+        return {handleNext,clear,loop}
+    }

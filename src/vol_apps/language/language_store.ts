@@ -90,7 +90,7 @@ const resources: RESOURCES = {
         "sec":"秒",
 
         "Choose Image": "选择图片",
-        "Select Folder": "选择目录",
+        "Choose Folder": "选择目录",
 
         "Bing Wallpaper": "Bing壁纸",
         "Single Image": "自定义单张",
@@ -100,6 +100,7 @@ const resources: RESOURCES = {
         "Background Type":"背景类型",
         "Preview":"预览",
         "Position":"位置",
+        "Image Size":"图片尺寸",
         // "Images Carousel": "目录循环",
 
         "Show All": "显示全部",

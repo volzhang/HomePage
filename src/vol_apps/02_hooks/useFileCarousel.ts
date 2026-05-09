@@ -1,129 +1,75 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
+import {useInterval} from "@/vol_apps/02_hooks/03_useTimeout";
+import {useShuffledIndex} from "@/vol_apps/02_hooks/useShuffledIndex";
 
-interface Options {
-    open: boolean;
-    handle: (file: File) => void;
-    interval?: number; // 秒
-    random?: boolean;
-}
+export const useFileCarousel =
+    ({
+         open,
+         handle,
+         interval = 3000,
+         random = false,
+     }: {
+        open: boolean;
+        handle: (file: File) => void;
+        interval?: number;
+        random?: boolean;
+    }) => {
+        const [dirHandle, setDirHandle] = useState<FileSystemDirectoryHandle | null>(null);
+        const [fileHandles, setFileHandles] = useState<FileSystemFileHandle[] | null>(null)
+        const indexRef = useRef<number>(0)
 
-function shuffle<T>(array: T[]): T[] {
-    const arr = [...array];
-
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-
-    return arr;
-}
-
-export function useFileCarousel({
-                                    open,
-                                    handle,
-                                    interval = 3,
-                                    random = false,
-                                }: Options) {
-    const [dirHandle, setDirHandle] =
-        useState<FileSystemDirectoryHandle | null>(null);
-
-    const handleRef = useRef(handle);
-
-    const filesRef = useRef<FileSystemFileHandle[]>([]);
-
-    const indexRef = useRef(0);
-
-    const openRef = useRef(open);
-
-    useEffect(() => {
+        const handleRef = useRef(handle);
         handleRef.current = handle;
-    }, [handle]);
 
-    useEffect(() => {
-        openRef.current = open;
-    }, [open]);
-
-    const playNext = useCallback(async () => {
-        // 非 open
-        if (!openRef.current) return;
-
-        const files = filesRef.current;
-
-        if (files.length === 0) return;
-
-        // 一轮播放结束后重新洗牌
-        if (
-            random &&
-            indexRef.current > 0 &&
-            indexRef.current % files.length === 0
-        ) {
-            filesRef.current = shuffle(filesRef.current);
-
+        // 重置索引
+        useEffect(() => {
             indexRef.current = 0;
+        }, [fileHandles]);
+
+        const isReady = (): boolean => {
+            return (
+                open
+                && dirHandle !== null
+                && fileHandles !== null
+                && fileHandles.length > 0
+            );
         }
 
-        const fileHandle =
-            filesRef.current[
-            indexRef.current % filesRef.current.length
-                ];
-
-        indexRef.current++;
-
-        const file = await fileHandle.getFile();
-
-        handleRef.current(file);
-    }, [random]);
-
-    useEffect(() => {
-        if (!open || !dirHandle) return;
-
-        let timer: number;
-
-        let destroyed = false;
-
-        const init = async () => {
-            const rawFiles: FileSystemFileHandle[] = [];
-
-            for await (const item of dirHandle.values()) {
-                if (item.kind === "file") {
-                    rawFiles.push(item as FileSystemFileHandle);
-                }
+        // fileHandles
+        useEffect(() => {
+            if (!open || !dirHandle) {
+                setFileHandles(null);
+                return;
             }
+            const init = async () => {
+                const rawFiles: FileSystemFileHandle[] = [];
+                for await (const item of dirHandle!.values()) {
+                    if (item.kind === "file") {
+                        rawFiles.push(item as FileSystemFileHandle);
+                    }
+                }
+                setFileHandles(rawFiles);
+            };
+            void init();
+        }, [open, dirHandle])
 
-            if (destroyed) return;
 
-            if (rawFiles.length === 0) return;
+        const { get } = useShuffledIndex({length: fileHandles?.length || 0, random})
 
-            filesRef.current = random
-                ? shuffle(rawFiles)
-                : rawFiles;
+        //loop
+        const loop = useCallback(async () => {
+            if (!open || !fileHandles || fileHandles.length === 0) return;
+            const idx = get(indexRef.current);
+            const file = await fileHandles[idx].getFile();
+            handleRef.current?.(file);
+            indexRef.current++;
+        }, [open, fileHandles])
 
-            indexRef.current = 0;
+        const { handleNext } = useInterval({open:isReady(), handler: loop, timeout: interval})
 
-            // 立即播放第一个
-            void playNext();
-
-            timer = window.setInterval(() => {
-                void playNext();
-            }, interval * 1000);
+        return {
+            dirHandle,
+            setDirHandle,
+            handleNext,
         };
-
-        void init();
-
-        return () => {
-            destroyed = true;
-
-            clearInterval(timer);
-        };
-    }, [open, dirHandle, interval, random, playNext]);
-
-    return {
-        dirHandle,
-        setDirHandle,
-
-        handleNext: () => {
-            void playNext();
-        },
-    };
-}
+    }

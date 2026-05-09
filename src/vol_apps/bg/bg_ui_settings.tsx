@@ -137,7 +137,7 @@ const Content = (
         <div className={BASE}>
             <Button variant={"default"} className={cn(BUTTON_CLASS, "gap-5")} onClick={handleDirChange}>
                 <Folder className={"scale-125"}/>
-                <p className={""}>{t("Select Folder")}</p>
+                <p className={""}>{t("Choose Folder")}</p>
             </Button>
             <ImgFilePickerBtn
                 onPick={async (file) => {
@@ -172,7 +172,7 @@ const Content = (
                      value={bgCenter ? "center" : "not-center"}
                      onValueChange={(value) => setBgCenter(value === "center")}/>
 
-            <MyRadio title={t("Size")}
+            <MyRadio title={t("Image Size")}
                      options={sizeOptions} value={bgSize}
                      onValueChange={(value) => setBgSize(value as SizeType)}/>
 

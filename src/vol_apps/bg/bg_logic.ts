@@ -223,12 +223,7 @@ export const useBgLogic = () => {
      * 文件夹轮播
      */
 
-
-
-
     const carouselEnabled = bgType === "custom_dir"
-
-
 
     const handleFile = useCallback(async (f: File) => {
         const i = await blobToString(f)
@@ -238,7 +233,7 @@ export const useBgLogic = () => {
     const {setDirHandle, handleNext:handleNextImage} = useFileCarousel({
         open: carouselEnabled,
         handle: handleFile,
-        interval: carouselInterval,
+        interval: carouselInterval * 1000, //秒转毫秒
         random: carouselRandom,
     })
 
@@ -275,7 +270,6 @@ export const useBgLogic = () => {
     useEffect(() => {
         void restore();
     }, []);
-
 
     /**
      * 输出
