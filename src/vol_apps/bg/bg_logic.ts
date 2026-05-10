@@ -235,6 +235,7 @@ export const useBgLogic = () => {
         handle: handleFile,
         interval: carouselInterval * 1000, //秒转毫秒
         random: carouselRandom,
+        accept: "IMAGE",
     })
 
     const handleNextImg = () => {
@@ -242,7 +243,12 @@ export const useBgLogic = () => {
         toast.success(t("Image changed"))
     }
 
-    useDoubleClick(carouselEnabled, handleNextImg)
+    //只在两个位置触发：root空白 + 瓷砖墙间隙
+    useDoubleClick({
+        open:carouselEnabled,
+        handle: handleNextImg,
+        containerSelector: ["#root", "#tiles_beside"]
+    })
 
     const handleDirChange = async () => {
         // @ts-ignore

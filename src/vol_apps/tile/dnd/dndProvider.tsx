@@ -52,7 +52,7 @@ export const SortableTiles = () => {
     }, [displayTiles, Logic, allowFadeIn]);
 
     return (
-        <div className="flex flex-wrap pl-6 pr-1 py-6 gap-7">
+        <div id={"tiles_beside"} className={"flex flex-wrap pl-6 pr-1 py-6 gap-7"}>
             {
                 items.length === 0
                     ? (<div className={cn(

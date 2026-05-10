@@ -30,8 +30,13 @@ export function useFloatAnimation({
 
     // 可见性延迟隐藏
     const [visible, setVisible] = useState(open);
-    useTimeout(() => setVisible(false), open ? null : exitDuration);
-    useEffect(() => {if (open) setVisible(true)}, [open]);
+    useTimeout({
+        handler: () => setVisible(false),
+        timeout: open ? null : exitDuration
+    });
+    useEffect(() => {
+        if (open) setVisible(true)
+    }, [open]);
 
     return {
         opacity: open ? 1 : 0,

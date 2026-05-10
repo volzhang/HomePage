@@ -10,8 +10,10 @@ import {Menu} from "@/vol_apps/menu/menu_legacy";
 import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWallpaper";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {Language} from "@/vol_apps/language/language";
+// import {useLogDoubleClickPath} from "@/vol_apps/02_hooks/useLogDoubleClickPath";
 
 export const App = () => {
+    // useLogDoubleClickPath();
     return (
         <>
             <ToasterUi/>
@@ -25,7 +27,7 @@ export const App = () => {
             <div className={"absolute flex flex-row top-2 right-2"}>
                 <Version/>
             </div>
-            <div className={"flex mt-30 mb-15"}>
+            <div className={"flex mt-[120px] mb-[50px]"}>
                 <SearchBar/>
             </div>
             <Tile_app/>
