@@ -15,7 +15,7 @@ import {type BgLogic} from "@/vol_apps/bg/bg_logic";
 import {Content} from "@/vol_apps/bg/bg_ui_settings";
 
 
-const BORDER_COLOR = "border-sBlue/70"
+const BORDER_COLOR = "border-sBlue"
 
 const Option =
     ({
@@ -38,7 +38,7 @@ const Option =
                 <label className={cn(
                     "relative group",
                     "flex flex-row items-center justify-start",
-                    "rounded-t-sm text-2xl font-bold",
+                    "rounded-t-sm text-[20px] font-bold",
                     "h-fit",
                     "pl-3 py-2 gap-3",
                     "my-0 mx-0",
@@ -54,12 +54,12 @@ const Option =
                 )}
                 >
                     <span className={cn("absolute -right-0.5 -bottom-2 w-0.5 h-2",
-                        Icon === Wallpaper && !checked ? "bg-popover" : "bg-transparent",
-                        "transition-colors duration-250 ease-in-out",
+                        Icon === Wallpaper && !checked ? "bg-border" : "bg-transparent",
+                        "transition-colors duration-250 ease-in-out z-40",
                     )}/>
 
                     <span className={cn("absolute -left-0.5 -bottom-2 w-0.5 h-2",
-                        Icon === Search && !checked ? "bg-popover" : "bg-transparent",
+                        Icon === Search && !checked ? "bg-border" : "bg-transparent",
                         "transition-colors duration-250 ease-in-out",
                     )}/>
 
@@ -131,7 +131,7 @@ export const Settings = (props: BgLogic) => {
                         ))}
                     </div>
                     <div className={cn(
-                        "no-scrollbar overflow-y-auto py-4 mb-0",
+                        "no-scrollbar overflow-y-auto pt-2 mb-0 px-2",
                         "flex justify-center",
                         "z-10 -mt-0.5 pb-1",
                         "border-2",
@@ -147,10 +147,10 @@ export const Settings = (props: BgLogic) => {
                             ?
                             <div className={"h-fit flex flex-col"}>
                                 <Content {...props}/>
-                                <div className={"w-full h-3"}></div>
+                                <div className={"w-full h-2"}></div>
                             </div>
                             :
-                            <div className={"flex h-9 text-md mx-auto text-foreground"}>
+                            <div className={"flex h-20 text-md items-center mx-auto text-foreground"}>
                                 Coming Soon
                             </div>}
                     </div>
