@@ -239,6 +239,12 @@ const resources: RESOURCES = {
         "Using radio streaming may cause the browser to incorrectly mark this page as 'Not fully secure'. This is a browser behavior and does not indicate any real security risk."
             :
             "使用电台播放功能可能会导致浏览器误判本页面为“未完全安全”。这是浏览器的行为提示，并不代表实际存在安全风险。",
+
+
+        //
+        "SearchBar":"搜索栏",
+        "TagBar":"标签栏",
+        "TileWall":"磁砖墙",
     }
 } as const;
 

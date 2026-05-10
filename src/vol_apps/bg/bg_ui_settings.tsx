@@ -7,30 +7,14 @@ import {cn} from "@/lib/utils";
 import {Folder, Image, MessageCircleHeart} from "lucide-react";
 import type {BgType, SizeType} from "@/vol_apps/bg/bg_store";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
-import {
-    Drawer,
-    DrawerContent,
-    DrawerClose,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle
-} from "@/components/ui/drawer";
-
 
 const BG = "bg-popover hover:ring-sBlue hover:ring-2 hover:border-sBlue"
-
-const BASE = cn("no-scrollbar overflow-y-auto",
-    "flex flex-col gap-[10px] p-[10px] h-full",
-    "bg-popover text-foreground"
-)
 
 const BUTTON_CLASS = cn(
     "border text-foreground", BG, "items-center justify-center",
     "hover:bg-sBlue hover:text-white",
     "h-12 w-full", "text-lg"
 )
-
 
 const MyRadio = (
     {
@@ -92,7 +76,7 @@ const MyRadio = (
     )
 }
 
-const Content = (
+export const Content = (
     {
         handleDirChange,
         bgRepeat, bgCenter, otherVisible, bgSize, bgType,
@@ -134,7 +118,10 @@ const Content = (
     ];
 
     return (
-        <div className={BASE}>
+        <div className={cn(
+            "flex flex-col gap-[10px] p-1",
+            "bg-popover text-foreground"
+        )}>
             <Button variant={"default"} className={cn(BUTTON_CLASS, "gap-5")} onClick={handleDirChange}>
                 <Folder className={"scale-125"}/>
                 <p className={""}>{t("Choose Folder")}</p>
@@ -228,7 +215,7 @@ const Content = (
     )
 }
 
-const Btn = ({setBgUiVisible, setOtherVisible}: BgLogic) => {
+export const Btn = ({setBgUiVisible, setOtherVisible}: BgLogic) => {
     const {t} = useLanguageStore()
     return (
         <Button
@@ -243,25 +230,25 @@ const Btn = ({setBgUiVisible, setOtherVisible}: BgLogic) => {
     )
 }
 
-export const BgUiSettings = (props: BgLogic) => {
-
-    return (
-        <Drawer
-            direction="right"
-            modal={true}
-            open={props.bgUiVisible}
-            onOpenChange={props.setBgUiVisible}
-            closeThreshold={0.6}
-        >
-            <DrawerContent className={"w-[30%]! max-w-[420px]! min-w-[410px]!"}>
-                <DrawerHeader hidden><DrawerTitle/><DrawerDescription/></DrawerHeader>
-                <Content {...props}/>
-                <DrawerFooter className={"h-fit pb-2.5 px-2.5 bg-popover"}>
-                    <DrawerClose asChild>
-                        <Btn {...props}/>
-                    </DrawerClose>
-                </DrawerFooter>
-            </DrawerContent>
-        </Drawer>
-    )
-}
+// export const BgUiSettings = (props: BgLogic) => {
+//
+//     return (
+//         <Drawer
+//             direction="right"
+//             modal={true}
+//             open={props.bgUiVisible}
+//             onOpenChange={props.setBgUiVisible}
+//             closeThreshold={0.6}
+//         >
+//             <DrawerContent className={"w-[30%]! max-w-[420px]! min-w-[410px]!"}>
+//                 <DrawerHeader hidden><DrawerTitle/><DrawerDescription/></DrawerHeader>
+//                 <Content {...props}/>
+//                 <DrawerFooter className={"h-fit pb-2.5 px-2.5 bg-popover"}>
+//                     <DrawerClose asChild>
+//                         <Btn {...props}/>
+//                     </DrawerClose>
+//                 </DrawerFooter>
+//             </DrawerContent>
+//         </Drawer>
+//     )
+// }
