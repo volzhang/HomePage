@@ -247,7 +247,7 @@ export const useBgLogic = () => {
     useDoubleClick({
         open:carouselEnabled,
         handle: handleNextImg,
-        containerSelector: ["#root", "#tiles_beside"]
+        containerSelector: ["#root", "#tiles_beside", 'body', 'html'],
     })
 
     const handleDirChange = async () => {

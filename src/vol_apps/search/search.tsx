@@ -95,7 +95,8 @@ export const SearchBar = () => {
 
     // ==================== JSX ====================
     return (
-        <div className="relative w-fit mx-auto">
+        <div className={cn("w-fit mx-auto",
+            "mt-[120px] mb-[50px]")}>
             <div className={SEARCH_BOX_BASE}>
                 {/* 搜索图标按钮 */}
                 <button

@@ -1,36 +1,33 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
-export const useDoubleClick =
-    ({
-        open,
-        handle,
-        containerSelector = '#root'
-     }:{
-    open: boolean,
-    handle: () => void,
-    containerSelector: string | string[] ,
-    }
-) => {
+interface UseDoubleClickOptions {
+    open: boolean;
+    handle: () => void;
+    containerSelector?: string | string[];
+}
+
+export const useDoubleClick = ({
+                                   open,
+                                   handle,
+                                   containerSelector = [
+                                       "#root", "#tiles_beside",
+                                       'body', 'html'],
+                               }: UseDoubleClickOptions) => {
     const handleRef = useRef(handle);
     handleRef.current = handle;
-
-    // 统一转为逗号分隔的选择器字符串，例如 "#root, #hero"
     const selector = Array.isArray(containerSelector)
-        ? containerSelector.join(',')
+        ? containerSelector.join(",")
         : containerSelector;
-
     useEffect(() => {
         if (!open) return;
-        const html = document.documentElement;
-
         const onDoubleClick = (e: MouseEvent) => {
-            const target = e.target as Element;
-            // 只接受目标元素本身匹配选择器
-            if (!target.matches(selector)) return;
+            if (!(e.target instanceof Element)) return;
+            if (!e.target.matches(selector)) return;
             handleRef.current();
         };
-
-        html.addEventListener('dblclick', onDoubleClick);
-        return () => html.removeEventListener('dblclick', onDoubleClick);
+        document.addEventListener("dblclick", onDoubleClick);
+        return () => {
+            document.removeEventListener("dblclick", onDoubleClick);
+        };
     }, [open, selector]);
-}
+};
