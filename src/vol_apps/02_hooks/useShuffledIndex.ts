@@ -1,14 +1,15 @@
 import {useCallback, useEffect, useRef} from "react";
 
 /**
- * 数组索引轮转 Hook
+ * 数组索引乱序
  *
- * @param length 数组长度（>= 1）
+ * @param length 数组长度（>= 1），输入0返回0
  * @param random 是否启用随机模式
  *
  * @returns get(index)
  * index 必须为非负整数
  */
+
 export const useShuffledIndex =
     ({
          length,

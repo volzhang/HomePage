@@ -4,6 +4,7 @@ import { useEffect } from 'react';
  * 双击页面后，在控制台打印事件冒泡路径。
  * 只输出每个元素最通用的信息：tag、id、前3个类名
  */
+
 export function useLogDoubleClickPath() {
     useEffect(() => {
         const onDoubleClick = (e: MouseEvent) => {

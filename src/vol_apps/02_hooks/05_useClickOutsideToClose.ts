@@ -12,6 +12,7 @@ interface UseClickOutsideToCloseOptions {
  * - clickOutsideRef  – 绑定到容器元素
  * - ignoreRef         – 绑定到需要忽略的元素（如 Trigger），点击该元素不会触发关闭
  */
+
 export function useClickOutsideToClose({ open, onClose }: UseClickOutsideToCloseOptions) {
     const [clickOutsideRef, containerDOM] = useCallbackRef();
     const [ignoreRef, ignoreDOM] = useCallbackRef();

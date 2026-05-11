@@ -74,6 +74,11 @@ export const useBgLogic = () => {
         carouselInterval, setCarouselInterval,
     } = useBgStore();
 
+
+    useEffect(() => {
+        if (!bgUiVisible) setOtherVisible(true);
+    }, [bgUiVisible]);
+
     const {t, language} = useLanguageStore();
 
     // 日期
@@ -110,7 +115,6 @@ export const useBgLogic = () => {
     const currentCopyright = useMemo(() => copyright(currentJson), [currentJson]);
     const prevCopyright = useMemo(() => copyright(prevJson), [prevJson]);
     const nextCopyright = useMemo(() => copyright(nextJson), [nextJson]);
-
 
     useEffect(() => {
         // fallback：当天没有图 → 自动用前一天
@@ -290,8 +294,6 @@ export const useBgLogic = () => {
         bgSize,
         otherVisible,
         bgUiVisible,
-
-
 
         setBgType,
         setBgRepeat,
