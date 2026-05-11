@@ -14,8 +14,11 @@ import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {type BgLogic} from "@/vol_apps/bg/bg_logic";
 import {Content} from "@/vol_apps/bg/bg_ui_settings";
 
-
-const BORDER_COLOR = "border-sBlue"
+const BG_COLOR = "bg-popover"
+const OUTLINE_COLOR = "outline-ring"
+const TRANSITION_STYLE = "duration-200 ease-in-out"
+const MAX_WIDTH = "w-[300px]"
+const MIN_WIDTH = "w-[55px]"
 
 const Option =
     ({
@@ -31,7 +34,6 @@ const Option =
         checked?: boolean;
         Icon: ElementType,
         children: string
-
     }) => {
         return (
             <>
@@ -39,52 +41,36 @@ const Option =
                     "relative group",
                     "flex flex-row items-center justify-start",
                     "rounded-t-sm text-[20px] font-bold",
-                    "h-fit",
-                    "pl-3 py-2 gap-3",
-                    "my-0 mx-0",
-                    "whitespace-nowrap",
-                    "bg-popover",
-                    "border-2",
-                    checked ? "z-20" : "z-0",
-                    checked ? "text-sBlue" : "text-foreground",
-                    checked ? BORDER_COLOR : "border-border border-b-transparent",
-                    // checked ? "border-popover" : "border-popover border-b-transparent",
-                    checked ? "w-[300px]" : "w-[52px]",
-                    "transition-[width,color,background-color,transform,opacity] duration-250 ease-in-out",
+                    "pl-[15px] pt-2 pb-[18px] gap-3",
+                    "outline-2 border-0",
+                    BG_COLOR,
+                    checked ? OUTLINE_COLOR : "outline-border",
+                    checked ? "text-sBlue" : "text-border",
+                    checked ? MAX_WIDTH : MIN_WIDTH,
+                    "transition-[width]", TRANSITION_STYLE
                 )}
                 >
-                    <span className={cn("absolute -right-0.5 -bottom-2 w-0.5 h-2",
-                        Icon === Wallpaper && !checked ? "bg-border" : "bg-transparent",
-                        "transition-colors duration-250 ease-in-out z-40",
-                    )}/>
-
-                    <span className={cn("absolute -left-0.5 -bottom-2 w-0.5 h-2",
-                        Icon === Search && !checked ? "bg-border" : "bg-transparent",
-                        "transition-colors duration-250 ease-in-out",
-                    )}/>
-
-                    <span className={cn("absolute left-0 -bottom-0.5 w-full h-0.5 z-30",
-                        checked ? "bg-popover" : "bg-transparent",
-                        "transition-colors duration-250 ease-in-out",
+                    <span className={cn("absolute left-0 h-0.5 z-30",
+                        "bottom-2",
+                        checked ? BG_COLOR : "outline-transparent",
+                        checked ? "w-full" : MIN_WIDTH,
                     )}/>
                     <input value={value}
                            onChange={() => onValueChange?.(value)}
                            checked={checked}
                            type={"radio"} name="setting" className={"sr-only peer"}/>
-                    <Icon className={cn(
-                        "scale-85 shrink-0",
-                        !checked && "group-hover:scale-93",
-                        checked && "scale-100",
-                        "transition-[color, scale] duration-250 ease-in-out",
+                    <Icon className={cn("shrink-0",
+                        "group-hover:text-sBlue",
+                        "group-hover:-translate-y-0.5",
+                        "transform-[translate, color]", TRANSITION_STYLE
                     )}/>
-                    <p className={cn(checked ? "text-sBlue" : "text-transparent",
-                        "transition-colors duration-250 ease-in-out",
+                    <p className={cn("whitespace-nowrap",
+                        !checked && "opacity-0",
                     )}>{children}</p>
                 </label>
             </>
         )
     }
-
 
 export const Settings = (props: BgLogic) => {
 
@@ -109,16 +95,24 @@ export const Settings = (props: BgLogic) => {
 
     return (
         <>
-            {/*<Button variant={"outline"} onClick={() => setOpen(!open)}>设置</Button>*/}
             <Drawer open={props.bgUiVisible}
                     onOpenChange={props.setBgUiVisible}
                     direction={"right"}
                     closeThreshold={0.8}
             >
-
-                <DrawerContent className={"min-w-[400px] w-fit! bg-transparent border-transparent p-2"}>
+                <DrawerContent
+                    onClick={(e)=>{
+                        if (e.target === e.currentTarget) {
+                            props.setBgUiVisible(false)
+                        }
+                    }}
+                    className={cn(
+                    "min-w-[400px] w-fit! border-0!",
+                    "bg-transparent",
+                    "pt-2 pr-2",
+                    )}>
                     <DrawerHeader hidden><DrawerTitle/><DrawerDescription/></DrawerHeader>
-                    <div className={cn("flex flex-row gap-1")}>
+                    <div className={cn("flex flex-row gap-1.5 border-0 outline-0")}>
                         {OPTIONS.map((item) => (
                             <Option
                                 key={item.value}
@@ -131,13 +125,12 @@ export const Settings = (props: BgLogic) => {
                         ))}
                     </div>
                     <div className={cn(
-                        "no-scrollbar overflow-y-auto pt-2 mb-0 px-2",
+                        "no-scrollbar overflow-y-auto max-h-[95%]",
+                        "p-1 -mt-2 z-10",
                         "flex justify-center",
-                        "z-10 -mt-0.5 pb-1",
-                        "border-2",
+                        "border-0 outline-2",
                         "bg-popover",
-                        "border-popover",
-                        BORDER_COLOR,
+                        OUTLINE_COLOR,
                         "rounded-md",
                         value === "background" && "rounded-tr-none",
                         value === "search" && "rounded-tl-none",
@@ -145,9 +138,9 @@ export const Settings = (props: BgLogic) => {
                     >
                         {value === "background"
                             ?
-                            <div className={"h-fit flex flex-col"}>
+                            <div className={"h-full w-full flex flex-col"}>
                                 <Content {...props}/>
-                                <div className={"w-full h-2"}></div>
+                                <div className={"w-full h-0.5 shrink-0"}></div>
                             </div>
                             :
                             <div className={"flex h-20 text-md items-center mx-auto text-foreground"}>
