@@ -1,7 +1,7 @@
 import {createPersistedStore, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 
 import search_bing from "@/assets/search_bing.svg";
-import search_google from "@/assets/search_google.svg";
+import search_google from "@/assets/search_google.png";
 import search_yandex from "@/assets/search_yandex.png";
 import search_yahoo from "@/assets/search_yahoo.png";
 import search_brave from "@/assets/search_brave.svg";

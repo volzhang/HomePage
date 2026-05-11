@@ -6,7 +6,7 @@ import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {Folder, Image, MessageCircleHeart} from "lucide-react";
 import type {BgType, SizeType} from "@/vol_apps/bg/bg_store";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
+// import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 const BG = "bg-popover hover:ring-sBlue hover:ring-2 hover:border-sBlue"
 
@@ -34,10 +34,6 @@ export const MyRadio = (
     }
 ) => {
     const name = useId();
-    const handleChange = (selectedValue: string) => {
-        onValueChange?.(selectedValue);
-    };
-
     return (
         <>
             <fieldset className={cn(
@@ -62,7 +58,7 @@ export const MyRadio = (
                         className={"col-span-1 flex flex-row ml-4 gap-2"}>
                         <input
                             type="radio"
-                            onChange={() => handleChange(option.value)}
+                            onChange={() => onValueChange?.(option.value)}
                             name={name}
                             value={option.value}
                             checked={value === option.value}
@@ -119,7 +115,7 @@ export const Content = (
 
     return (
         <div className={cn(
-            "flex flex-col gap-[10px] p-1",
+            "flex flex-col gap-2.5 p-1",
             "bg-popover text-foreground"
         )}>
             <Button variant={"default"} className={cn(BUTTON_CLASS, "gap-5")} onClick={handleDirChange}>
@@ -215,20 +211,20 @@ export const Content = (
     )
 }
 
-export const Btn = ({setBgUiVisible, setOtherVisible}: BgLogic) => {
-    const {t} = useLanguageStore()
-    return (
-        <Button
-            onClick={() => {
-                setBgUiVisible(false);
-                setOtherVisible(true);
-            }}
-            variant={"default"}
-            className={cn(BUTTON_CLASS, "bg-secondary text-secondary-foreground")}>
-            {t("OK")}
-        </Button>
-    )
-}
+// export const Btn = ({setBgUiVisible, setOtherVisible}: BgLogic) => {
+//     const {t} = useLanguageStore()
+//     return (
+//         <Button
+//             onClick={() => {
+//                 setBgUiVisible(false);
+//                 setOtherVisible(true);
+//             }}
+//             variant={"default"}
+//             className={cn(BUTTON_CLASS, "bg-secondary text-secondary-foreground")}>
+//             {t("OK")}
+//         </Button>
+//     )
+// }
 
 // export const BgUiSettings = (props: BgLogic) => {
 //

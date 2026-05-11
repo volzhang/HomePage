@@ -5,8 +5,8 @@ import {
     ContextMenuSub,
     ContextMenuSubContent,
     ContextMenuSubTrigger,
-    ContextMenuTrigger,} from "@/components/ui/context-menu";
-import {useBgStore} from "@/vol_apps/bg/bg_store";
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
@@ -14,10 +14,11 @@ import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 import {Plus, Download, Upload, Image} from "lucide-react";
 import {useState, type PropsWithChildren} from "react";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {useSettingStore} from "../settings/setting_store";
 
 export function GlobalContextMenu({children}: PropsWithChildren) {
     const {tilesVisible, addTile, setTileInEditId, setTileUiVisible, setTilesVisible} = useTileStore();
-    const {setBgUiVisible} = useBgStore();
+    const {openSetting} = useSettingStore()
     const {t} = useLanguageStore()
 
     const onAddTile = () => {
@@ -36,32 +37,32 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
         <>
             <ContextMenu onOpenChange={handleOpenChange}>
                 {/*<ContextMenuTrigger className= {"fixed inset-0 z-0 border-5 border-red-900"}>*/}
-                <ContextMenuTrigger className= {"w-fit h-fit z-0"}>
+                <ContextMenuTrigger className={"w-fit h-fit z-0"}>
                     {children}
                 </ContextMenuTrigger>
                 <ContextMenuContent key={contentKey} className="w-48">
-                        {tilesVisible
-                            ?
-                            <ContextMenuSub>
-                                <ContextMenuSubTrigger>
-                                    {t("Tiles")}
-                                </ContextMenuSubTrigger>
-                                <ContextMenuSubContent className="w-44">
-                                    <ContextMenuItem inset onClick={onAddTile} disabled={!tilesVisible}>
-                                        {t("Add Tile")}
-                                        <Plus className="ml-auto"/>
-                                    </ContextMenuItem>
-                                    <ContextMenuItem inset className={""}
-                                                     onClick={()=> setTilesVisible(!tilesVisible)} >
-                                        {tilesVisible ? t("Hide Tiles") : t("Show Tiles")}
-                                    </ContextMenuItem>
-                                </ContextMenuSubContent>
-                            </ContextMenuSub>
-                            :
-                            <ContextMenuItem onClick={()=> setTilesVisible(!tilesVisible)} >
-                                {t("Show Tiles")}
-                            </ContextMenuItem>
-                        }
+                    {tilesVisible
+                        ?
+                        <ContextMenuSub>
+                            <ContextMenuSubTrigger>
+                                {t("Tiles")}
+                            </ContextMenuSubTrigger>
+                            <ContextMenuSubContent className="w-44">
+                                <ContextMenuItem inset onClick={onAddTile} disabled={!tilesVisible}>
+                                    {t("Add Tile")}
+                                    <Plus className="ml-auto"/>
+                                </ContextMenuItem>
+                                <ContextMenuItem inset className={""}
+                                                 onClick={() => setTilesVisible(!tilesVisible)}>
+                                    {tilesVisible ? t("Hide Tiles") : t("Show Tiles")}
+                                </ContextMenuItem>
+                            </ContextMenuSubContent>
+                        </ContextMenuSub>
+                        :
+                        <ContextMenuItem onClick={() => setTilesVisible(!tilesVisible)}>
+                            {t("Show Tiles")}
+                        </ContextMenuItem>
+                    }
                     <ContextMenuSub>
                         <ContextMenuSubTrigger>
                             {t("Backup")}
@@ -71,14 +72,15 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
                                 {t("Download Backup")}
                                 <Download className={"ml-auto"}/>
                             </ContextMenuItem>
-                            <ContextMenuItem onClick={() => jsonFilePickerAPI().then(file => persistedStoresRestore(file))}>
+                            <ContextMenuItem
+                                onClick={() => jsonFilePickerAPI().then(file => persistedStoresRestore(file))}>
                                 {t("Import Backup")}
                                 <Upload className={"ml-auto"}/>
                             </ContextMenuItem>
                         </ContextMenuSubContent>
                     </ContextMenuSub>
                     <ContextMenuItem onClick={() => {
-                        setBgUiVisible(true);
+                        openSetting("background")
                     }} className={""}>
                         {t("Set Background")}
                         <Image className="ml-auto"/>

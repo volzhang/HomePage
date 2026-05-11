@@ -22,7 +22,7 @@ type BgStoreState = {
     bgRepeat: boolean;
     bgCenter: boolean;
     otherVisible: boolean;
-    bgUiVisible: boolean;
+    // bgUiVisible: boolean;
 
     //新增，用来记录用户选择
     bgBingDate: YYYY_MM_DD | null;
@@ -39,7 +39,7 @@ type BgStoreActions = {
     setBgCenter: (value: BgStoreState["bgCenter"]) => void;
     setBgSize: (value: BgStoreState["bgSize"]) => void;
     setOtherVisible: (value: BgStoreState["otherVisible"]) => void;
-    setBgUiVisible: (value: BgStoreState["bgUiVisible"]) => void;
+    // setBgUiVisible: (value: BgStoreState["bgUiVisible"]) => void;
 
     //新增
     setBgBingDate: (value: BgStoreState["bgBingDate"]) => void;
@@ -81,7 +81,7 @@ export const useBgStore = createPersistedStore<BgStore>(
         setBgCenter: (bgCenter) => set({bgCenter}),
 
         setOtherVisible: (otherVisible) => set({otherVisible}),
-        setBgUiVisible: (bgUiVisible) => set({bgUiVisible}),
+        // setBgUiVisible: (bgUiVisible) => set({bgUiVisible}),
 
         setBgBingDate: (bgBingDate) => set({bgBingDate}),
 
@@ -107,7 +107,9 @@ export const useBgStore = createPersistedStore<BgStore>(
         },
         partialize: (state) => {
             // 排除 otherVisible，bgUiVisible，其余字段全部持久化
-            const {otherVisible, bgUiVisible, ...rest} = state;
+            const {otherVisible,
+                // bgUiVisible,
+                ...rest} = state;
             return rest;
         },
     }

@@ -12,6 +12,7 @@ import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {get, set} from "idb-keyval";
 import {toast} from "sonner";
 import {useDoubleClick} from "../02_hooks/useDoubleClick";
+import {useSettingStore} from "@/vol_apps/settings/setting_store";
 
 /**
  * UI pending 控制（带超时）
@@ -57,7 +58,7 @@ export const useBgLogic = () => {
         bgRepeat,
         bgCenter,
         otherVisible,
-        bgUiVisible,
+        // bgUiVisible,
         bgBingDate,
         bgBingCopyright,
         setBgImg,
@@ -65,7 +66,7 @@ export const useBgLogic = () => {
         setBgRepeat,
         setBgCenter,
         setBgSize,
-        setBgUiVisible,
+        // setBgUiVisible,
         setOtherVisible,
         setBgBingDate,
         setBgBingCopyright,
@@ -74,10 +75,11 @@ export const useBgLogic = () => {
         carouselInterval, setCarouselInterval,
     } = useBgStore();
 
+    const {open} = useSettingStore()
 
     useEffect(() => {
-        if (!bgUiVisible) setOtherVisible(true);
-    }, [bgUiVisible]);
+        if (!open) setOtherVisible(true);
+    }, [open]);
 
     const {t, language} = useLanguageStore();
 
@@ -293,14 +295,14 @@ export const useBgLogic = () => {
         bgCenter,
         bgSize,
         otherVisible,
-        bgUiVisible,
+        // bgUiVisible,
 
         setBgType,
         setBgRepeat,
         setBgCenter,
         setBgSize,
         setOtherVisible,
-        setBgUiVisible,
+        // setBgUiVisible,
         setBgImg,
 
         carouselInterval, setCarouselInterval,

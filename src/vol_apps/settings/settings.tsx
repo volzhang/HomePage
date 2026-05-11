@@ -1,4 +1,4 @@
-import {type ElementType, useEffect, useState} from "react";
+import {type ElementType} from "react";
 import {Bookmark, Search, SquareMousePointer, Wallpaper} from "lucide-react";
 import {
     Drawer,
@@ -16,6 +16,7 @@ import {Content} from "@/vol_apps/bg/bg_ui_settings";
 import {Setting_tag} from "@/vol_apps/settings/setting_tag";
 import {Setting_tiles} from "@/vol_apps/settings/setting_tiles";
 import {Setting_search} from "@/vol_apps/settings/setting_search";
+import {type SETTING_VALUE, useSettingStore} from "./setting_store";
 
 const BG_COLOR = "bg-popover"
 const OUTLINE_COLOR = "outline-ring"
@@ -30,10 +31,9 @@ const Option =
          checked,
          Icon,
          children,
-
      }: {
-        value: string;
-        onValueChange?: (value: string) => void;
+        value: SETTING_VALUE;
+        onValueChange?: (value: SETTING_VALUE) => void;
         checked?: boolean;
         Icon: ElementType,
         children: string
@@ -77,18 +77,14 @@ const Option =
 
 export const Settings = (props: BgLogic) => {
 
-    useEffect(() => {
-        if (props.bgUiVisible) {
-            setValue("background")
-        }
-
-    }, [props.bgUiVisible])
-
-    const [value, setValue] = useState("search")
+    const {
+        open, setOpen,
+        value, setValue
+    } = useSettingStore()
 
     const {t} = useLanguageStore()
 
-    const OPTIONS: { value: string, label: string, Icon: ElementType } []
+    const OPTIONS: { value: SETTING_VALUE, label: string, Icon: ElementType } []
         = [
         {value: "search", label: t("SearchBar"), Icon: Search},
         {value: "tags", label: t("TagBar"), Icon: Bookmark},
@@ -96,49 +92,36 @@ export const Settings = (props: BgLogic) => {
         {value: "background", label: t("Background"), Icon: Wallpaper},
     ]
 
+    const getCase = () => {
+        if (value === "background") return (
+            <div className={"h-full w-full flex flex-col"}>
+                <Content {...props}/>
+                <div className={"w-full h-0.5 shrink-0"}></div>
+            </div>
+        )
+        if (value === "tags") return <Setting_tag/>;
+        if (value === "search") return <Setting_search/>;
+        if (value === "tiles") return <Setting_tiles/>;
 
-    const getCase = (v: string) => {
-        switch (v) {
-            case "background" :
-                return (
-                    <div className={"h-full w-full flex flex-col"}>
-                        <Content {...props}/>
-                        <div className={"w-full h-0.5 shrink-0"}></div>
-                    </div>
-                )
+        return (
+            <div className={"flex h-20 text-md items-center mx-auto text-foreground"}>
+                Coming Soon
+            </div>
+        )
 
-            case "tags" :
-                return <Setting_tag/>
-
-
-            case "tiles" :
-                return <Setting_tiles/>
-
-
-            case "search" :
-                return <Setting_search/>
-
-
-            default :
-                return (
-                    <div className={"flex h-20 text-md items-center mx-auto text-foreground"}>
-                        Coming Soon
-                    </div>
-                )
-        }
     }
 
     return (
         <>
-            <Drawer open={props.bgUiVisible}
-                    onOpenChange={props.setBgUiVisible}
+            <Drawer open={open}
+                    onOpenChange={setOpen}
                     direction={"right"}
                     closeThreshold={0.8}
             >
                 <DrawerContent
                     onClick={(e) => {
                         if (e.target === e.currentTarget) {
-                            props.setBgUiVisible(false)
+                            setOpen(false)
                         }
                     }}
                     className={cn(
@@ -171,7 +154,7 @@ export const Settings = (props: BgLogic) => {
                         value === "search" && "rounded-tl-none",
                     )}
                     >
-                        {getCase(value)}
+                        {getCase()}
                     </div>
                 </DrawerContent>
             </Drawer>

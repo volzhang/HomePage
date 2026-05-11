@@ -10,7 +10,6 @@ import {
     MenubarSubContent
 } from "@/components/ui/menubar";
 import {cn} from "@/lib/utils";
-import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore";
@@ -21,6 +20,7 @@ import {
 	netscapeBookmarkFilePhaser
 } from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {useSettingStore} from "../settings/setting_store";
 
 //这里手动复制了Button的secondary样式
 const cn_str = "border bg-background " +
@@ -28,7 +28,8 @@ const cn_str = "border bg-background " +
     "dark:bg-input/30 dark:border-input dark:hover:bg-input/50";
 
 export function Menu() {
-    const {setBgUiVisible} = useBgStore();
+    // const {setBgUiVisible} = useBgStore();
+    const {setOpen} = useSettingStore()
     const {tilesVisible, setTilesVisible} = useTileStore();
 
     const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
@@ -106,7 +107,7 @@ export function Menu() {
                                 </MenubarGroup>
                             </MenubarSubContent>
                         </MenubarSub>
-                        <MenubarItem onClick={() => setBgUiVisible(true)}>
+                        <MenubarItem onClick={() => setOpen(true)}>
                             {t("Setting")}
                         </MenubarItem>
                         <MenubarItem onClick={() => openLinkInNewTab("privacy.html")}>

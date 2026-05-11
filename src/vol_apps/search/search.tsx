@@ -83,15 +83,14 @@ export const SearchBar = () => {
     )
 
     const SIZE_MAP: Record<number, string> = {
-        0: "w-9",
-        1: "w-10",
-        3: "w-[44px]",
-        5: "w-[48px]",
-        2: "w-[46px]",
-
-        6: "w-[36px]",
-        7: "w-[48px]",
-        4: "w-[36px]",
+        0: "30px",
+        1: "26px",
+        3: "34px",
+        5: "38px",
+        2: "33px",
+        6: "34px",
+        7: "37px",
+        4: "28px",
     }
 
     const {visible} = useSearchStyleStore()
@@ -102,16 +101,23 @@ export const SearchBar = () => {
             "mt-[120px] mb-[50px]")}>
             <div
                 hidden={!visible}
-                className={SEARCH_BOX_BASE}>
+                className={cn(SEARCH_BOX_BASE)}>
                 {/* 搜索图标按钮 */}
                 <button
                     onClick={() => handleSubmit(inputBoxRef.current?.value ?? "")}
-                    className={SEARCH_ICON_BUTTON}>
+                    className={cn(SEARCH_ICON_BUTTON)}>
                     <div
                         className={cn("text-[18px] leading-7 h-7 flex items-center justify-center",
-                            "text-sBlue group-hover:text-white select-none")}>
+                            "text-sBlue group-hover:text-white ",
+                            "select-none overflow-visible")}>
                         {currentEngine.icon
-                            ? <img src={currentEngine.icon} className={`${SIZE_MAP[currentEngine.id]} object-cover select-none`}/>
+                            ? <img src={currentEngine.icon}
+                                   className={cn("object-cover select-none overflow-visible")}
+                                   style={{
+                                       width:`${SIZE_MAP[currentEngine.id]}`,
+                                       height: `${SIZE_MAP[currentEngine.id]}`
+                                   }}
+                            />
                             : <Search strokeWidth={3} className="h-7"/>}
                     </div>
                 </button>
