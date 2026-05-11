@@ -107,7 +107,7 @@ export function Menu() {
                             </MenubarSubContent>
                         </MenubarSub>
                         <MenubarItem onClick={() => setBgUiVisible(true)}>
-                            {t("Set Background")}
+                            {t("Setting")}
                         </MenubarItem>
                         <MenubarItem onClick={() => openLinkInNewTab("privacy.html")}>
                             {t("Privacy Policy")}

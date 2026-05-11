@@ -4,6 +4,7 @@ import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
 import {Select} from "../01_components/01_SelectComponent";
+import {useSearchStyleStore} from "@/vol_apps/search/search_style_store";
 
 export const SearchBar = () => {
     const {getEngineInUse, setEngineInUseByName} = useSearchStore()
@@ -93,11 +94,15 @@ export const SearchBar = () => {
         4: "w-[36px]",
     }
 
+    const {visible} = useSearchStyleStore()
+
     // ==================== JSX ====================
     return (
         <div className={cn("w-fit mx-auto",
             "mt-[120px] mb-[50px]")}>
-            <div className={SEARCH_BOX_BASE}>
+            <div
+                hidden={!visible}
+                className={SEARCH_BOX_BASE}>
                 {/* 搜索图标按钮 */}
                 <button
                     onClick={() => handleSubmit(inputBoxRef.current?.value ?? "")}

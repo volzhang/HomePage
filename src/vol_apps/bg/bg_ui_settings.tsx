@@ -16,7 +16,7 @@ const BUTTON_CLASS = cn(
     "h-12 w-full", "text-lg"
 )
 
-const MyRadio = (
+export const MyRadio = (
     {
         title,
         options,

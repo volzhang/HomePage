@@ -3,8 +3,10 @@ import {createPersistedStoreWithEqualityFn} from "@/vol_apps/tool/createPersiste
 import {shallow} from "zustand/vanilla/shallow";
 
 type TagStyleState = {
+    visible: boolean,
+
     height: number,
-    gap: number,
+    gap: { x: number; y: number },
 
     backgroundColor: string,
     backgroundOpacity: number,
@@ -19,6 +21,8 @@ type TagStyleState = {
 }
 
 type TagStyleAction = {
+    setVisible: (visible: TagStyleState["visible"]) => void,
+
     setHeight: (height: TagStyleState["height"]) => void,
     setGap: (gap: TagStyleState["gap"]) => void,
 
@@ -42,8 +46,10 @@ const FONT_DEFAULT: FontItem = {
 };
 
 const INITIAL_STYLE: TagStyleState = {
+    visible: true,
+
     height: 20,
-    gap: 8,
+    gap: {x: 16, y: 16},
 
     backgroundColor: "#ffffff",
     backgroundOpacity: 1,
@@ -62,8 +68,10 @@ const useTagStyleStoreBase = createPersistedStoreWithEqualityFn<TagStyleStore>(
     (set,) => ({
         ...INITIAL_STYLE,
 
-        setHeight: (height)=> set({height}),
-        setGap: (gap)=> set({gap}),
+        setVisible: (visible) => set({visible}),
+
+        setHeight: (height) => set({height}),
+        setGap: (gap) => set({gap}),
 
         setBackgroundColor: (backgroundColor) => set({backgroundColor}),
         setBackgroundOpacity: (backgroundOpacity) => set({backgroundOpacity}),
@@ -78,7 +86,12 @@ const useTagStyleStoreBase = createPersistedStoreWithEqualityFn<TagStyleStore>(
     })
 )
 
-export const useTagStyleStore = (selector?: (state: TagStyleStore) => unknown)=> {
+export function useTagStyleStore(): TagStyleStore;
+export function useTagStyleStore<T>(
+    selector: (state: TagStyleStore) => T,
+): T;
+
+export function useTagStyleStore(selector?: (state: TagStyleStore) => unknown) {
     if (selector) return useTagStyleStoreBase(selector, shallow);
     return useTagStyleStoreBase((s) => s, shallow);
 }

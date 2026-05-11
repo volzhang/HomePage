@@ -4,6 +4,7 @@ import {shallow} from "zustand/vanilla/shallow";
 
 // ---------- 类型 ----------
 type TileStyleState = {
+
     backgroundColor: string;
     backgroundOpacity: number;
 

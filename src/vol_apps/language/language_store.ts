@@ -21,6 +21,11 @@ const resources: RESOURCES = {
         "Loading...": "正在加载...",
 
         // tag: {
+        // tag 设置
+
+        "Visible": "显示",
+        "Invisible": "隐藏",
+
         "Click to toggle mode \nCurrently: tiles match ANY selected tags":
             "点击切换模式\n当前：瓷砖匹配 任一 选中标签",
 
@@ -51,6 +56,7 @@ const resources: RESOURCES = {
         // navigation: {
         "Menu": "菜单",
         "Set Background": "设置背景",
+        "Setting": "设置",
 
         "Tiles": "瓷砖",
         "Add Tile": "添加瓷砖",
@@ -78,16 +84,16 @@ const resources: RESOURCES = {
         //     "Set Background": "设置背景",
 
         // bg: {
-        "Please select folder first":"请先选择目录",
-        "Permission denied":"已拒绝授权",
-        "Image changed":"图片已切换",
+        "Please select folder first": "请先选择目录",
+        "Permission denied": "已拒绝授权",
+        "Image changed": "图片已切换",
 
-        "Double-click to skip to next image during playback.":"播放时，鼠标双击可切换至下一张",
+        "Double-click to skip to next image during playback.": "播放时，鼠标双击可切换至下一张",
 
-        "Random":"随机",
-        "Sequential":"顺序",
-        "Change every":"切换间隔",
-        "sec":"秒",
+        "Random": "随机",
+        "Sequential": "顺序",
+        "Change every": "切换间隔",
+        "sec": "秒",
 
         "Choose Image": "选择图片",
         "Choose Folder": "选择目录",
@@ -97,10 +103,10 @@ const resources: RESOURCES = {
         "Image Carousel": "自定义循环",
         "Reset Defaults": "默认设置",
 
-        "Background Type":"背景类型",
-        "Preview":"预览",
-        "Position":"位置",
-        "Image Size":"图片尺寸",
+        "Background Type": "背景类型",
+        "Preview": "预览",
+        "Position": "位置",
+        "Image Size": "图片尺寸",
         // "Images Carousel": "目录循环",
 
         "Show All": "显示全部",
@@ -175,7 +181,7 @@ const resources: RESOURCES = {
         "Name": "名字",
         "Tags": "标签",
 
-        "Choose Icon":"选择图标",
+        "Choose Icon": "选择图标",
         "file:": "文件名：",
 
         "Fetching": "加载...",
@@ -184,7 +190,7 @@ const resources: RESOURCES = {
         "Search Bing for icon": "Bing 搜索图标",
         "Tags (space-separated)": "添加标签，用空格分隔",
         "tag1 tag2 tag3 ...": "标签1 标签2 标签3 ...",
-        "Display Name":"显示名",
+        "Display Name": "显示名",
 
         // 新 展示面板
 
@@ -236,15 +242,16 @@ const resources: RESOURCES = {
         "Select Language": "选择语言",
 
         //
-        "Using radio streaming may cause the browser to incorrectly mark this page as 'Not fully secure'. This is a browser behavior and does not indicate any real security risk."
-            :
+        "Using radio streaming may cause the browser to incorrectly mark this page as 'Not fully secure'. This is a browser behavior and does not indicate any real security risk.":
             "使用电台播放功能可能会导致浏览器误判本页面为“未完全安全”。这是浏览器的行为提示，并不代表实际存在安全风险。",
 
 
         //
-        "SearchBar":"搜索栏",
-        "TagBar":"标签栏",
-        "TileWall":"磁砖墙",
+        "SearchBar": "搜索栏",
+        "TagBar": "标签栏",
+        "TileWall": "磁砖墙",
+
+
     }
 } as const;
 
