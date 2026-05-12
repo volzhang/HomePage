@@ -38,24 +38,30 @@ export const MyRadio = (
         <>
             <fieldset className={cn(
                 "group", "text-lg",
-                "relative rounded-md border",
+                "relative rounded-md border border-border/20",
                 "min-w-0",
-                "grid grid-cols-2",
-                "mt-3 pt-7 pb-6 gap-y-3",
-                "hover:border-sBlue hover:ring-sBlue hover:ring-2",
-                "transition-all duration-200 linear"
+                "grid grid-cols-2 border",
+                "mt-3 pt-6 pb-5 gap-y-2",
+                "hover:border-sBlue",
+                "hover:ring-sBlue hover:ring",
+                "transition-all duration-200 ease-in-out"
             )}>
                 <legend className={cn(
                     "text-lg text-left text-border font-semibold",
-                    "absolute -top-3.5 left-[13px]",
+                    "absolute -top-3.5 left-[9px]",
                     "bg-popover whitespace-nowrap px-1.5",
                     "group-hover:text-sBlue",
-                    "transition-all duration-200 linear"
+                    "transition-all duration-200 ease-in-out"
                 )}>{title}</legend>
                 {options.map((option) => (
                     <label
                         key={option.value}
-                        className={"col-span-1 flex flex-row ml-4 gap-2"}>
+                        className={cn("group col-span-1 flex flex-row ml-4 gap-2",
+                            option.value === value
+                                ? "text-sBlue font-semibold"
+                                : "opacity-15 group-hover:opacity-100",
+                            "transition-all duration-200 ease-in-out"
+                        )}>
                         <input
                             type="radio"
                             onChange={() => onValueChange?.(option.value)}
@@ -63,7 +69,7 @@ export const MyRadio = (
                             value={option.value}
                             checked={value === option.value}
                         ></input>
-                        <p className={"whitespace-nowrap"}>{option.label}</p>
+                        <p className={cn("whitespace-nowrap")}>{option.label}</p>
                     </label>
                 ))}
                 {children}
@@ -171,16 +177,17 @@ export const Content = (
                          setBgType("custom_dir")
                      }}
             >
-                <label className={"col-span-2 mt-3 ml-5 flex flex-row gap-2 text-md"}>
-                    <p className={"flex w-32"}>
+                <label className={cn("col-span-2 mt-3 ml-5 flex flex-row gap-2 text-md",
+                    bgType === "custom_dir"
+                        ? "text-sBlue font-semibold"
+                        : "opacity-15 group-hover:opacity-100",
+                    )
+                }>
+                    <p className={cn("flex w-32")}>
                         {t("Change every")}
                     </p>
                     <input type={"number"} min={1} max={60 * 60 * 24}
-                           className={cn("flex-1 min-w-0 rounded-sm border border-border/50 ",
-                               "text-right ring-0 outline-0",
-                               "text-sBlue font-bold",
-                               "group-hover:border-sBlue/50",
-                               {"text-border": bgType !== "custom_dir"},
+                           className={cn("flex-1 min-w-0 rounded-sm border border-border/50 text-right ring-0 outline-0",
                                "transition-all duration-200 linear"
                            )}
                            value={carouselInterval}
@@ -193,58 +200,25 @@ export const Content = (
                     ></input>
                     <p className={"flex w-20"}>{t("sec")}</p>
                 </label>
-                <p className={cn(
-                    "col-span-2 mt-3.5 ml-5",
-                    "text-border text-md group-hover:text-sBlue",
-                    {"group-hover:text-border": bgType !== "custom_dir"},
-                    "transition-all duration-200 linear"
-                )}>
-                    <span className="flex items-start gap-3">
+                <p className={cn("col-span-2 mt-3.5 ml-5 text-md")}>
+                    <span className={cn("flex items-start gap-2.5",
+                        bgType === "custom_dir"
+                            ? "text-sBlue font-semibold "
+                            : "opacity-20 group-hover:opacity-100",
+                        "transition-all duration-200 linear"
+                        )}>
                         <MessageCircleHeart className="mt-0.5 shrink-0"/>
-                        <span className="leading-relaxed">
-                            {t("Double-click to skip to next image during playback.")}
+                        {bgType === "custom_dir"
+                            ? <span className="leading-relaxed">
+                            {t("Double-click on empty space to go to the next image.")}
                          </span>
+                            : <span className="leading-relaxed">
+                            {t("This feature is currently not enabled.")}
+                         </span>
+                        }
                     </span>
                 </p>
             </MyRadio>
         </div>
     )
 }
-
-// export const Btn = ({setBgUiVisible, setOtherVisible}: BgLogic) => {
-//     const {t} = useLanguageStore()
-//     return (
-//         <Button
-//             onClick={() => {
-//                 setBgUiVisible(false);
-//                 setOtherVisible(true);
-//             }}
-//             variant={"default"}
-//             className={cn(BUTTON_CLASS, "bg-secondary text-secondary-foreground")}>
-//             {t("OK")}
-//         </Button>
-//     )
-// }
-
-// export const BgUiSettings = (props: BgLogic) => {
-//
-//     return (
-//         <Drawer
-//             direction="right"
-//             modal={true}
-//             open={props.bgUiVisible}
-//             onOpenChange={props.setBgUiVisible}
-//             closeThreshold={0.6}
-//         >
-//             <DrawerContent className={"w-[30%]! max-w-[420px]! min-w-[410px]!"}>
-//                 <DrawerHeader hidden><DrawerTitle/><DrawerDescription/></DrawerHeader>
-//                 <Content {...props}/>
-//                 <DrawerFooter className={"h-fit pb-2.5 px-2.5 bg-popover"}>
-//                     <DrawerClose asChild>
-//                         <Btn {...props}/>
-//                     </DrawerClose>
-//                 </DrawerFooter>
-//             </DrawerContent>
-//         </Drawer>
-//     )
-// }

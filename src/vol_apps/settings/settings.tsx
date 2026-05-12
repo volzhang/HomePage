@@ -19,9 +19,8 @@ import {Setting_search} from "@/vol_apps/settings/setting_search";
 import {type SETTING_VALUE, useSettingStore} from "./setting_store";
 
 const BG_COLOR = "bg-popover"
-const OUTLINE_COLOR = "outline-ring"
 const TRANSITION_STYLE = "duration-200 ease-in-out"
-const MAX_WIDTH = "w-[300px]"
+const MAX_WIDTH = "w-[250px]"
 const MIN_WIDTH = "w-[55px]"
 
 const Option =
@@ -43,32 +42,32 @@ const Option =
                 <label className={cn(
                     "relative group",
                     "flex flex-row items-center justify-start",
-                    "rounded-t-sm text-[20px] font-bold",
+                    "text-[20px] font-bold",
                     "pl-[15px] pt-2 pb-[18px] gap-3",
-                    "outline-2 border-0",
+                    "outline-0 border-0",
                     BG_COLOR,
-                    checked ? OUTLINE_COLOR : "outline-border",
-                    checked ? "text-sBlue" : "text-border",
+                    checked ? "text-sBlue" : "text-ring/60",
                     checked ? MAX_WIDTH : MIN_WIDTH,
-                    "transition-[width]", TRANSITION_STYLE
+                    "transition-[width, color, opacity]", TRANSITION_STYLE
                 )}
                 >
-                    <span className={cn("absolute left-0 h-0.5 z-30",
-                        "bottom-2",
-                        checked ? BG_COLOR : "outline-transparent",
-                        checked ? "w-full" : MIN_WIDTH,
+                    <span className={cn("absolute left-[5%] h-[2.5px] z-30 rounded-full bottom-2.5",
+                        checked ? "bg-sBlue" : "bg-ring/40 group-hover:bg-sBlue",
+                        checked ? "w-[92%]" : "w-[70%] left-[15%]",
+                        "transition-[width, color, opacity]", TRANSITION_STYLE
                     )}/>
+
                     <input value={value}
                            onChange={() => onValueChange?.(value)}
                            checked={checked}
                            type={"radio"} name="setting" className={"sr-only peer"}/>
-                    <Icon className={cn("shrink-0",
-                        "group-hover:text-sBlue",
+                    <Icon className={cn("shrink-0 group-hover:text-sBlue",
                         !checked && "group-hover:-translate-y-0.5",
                         "transform-[translate, color]", TRANSITION_STYLE
                     )}/>
                     <p className={cn("whitespace-nowrap",
                         !checked && "opacity-0",
+                        "transition-[color]", TRANSITION_STYLE
                     )}>{children}</p>
                 </label>
             </>
@@ -103,58 +102,40 @@ export const Settings = (props: BgLogic) => {
         if (value === "search") return <Setting_search/>;
         if (value === "tiles") return <Setting_tiles/>;
 
-        return (
-            <div className={"flex h-20 text-md items-center mx-auto text-foreground"}>
-                Coming Soon
-            </div>
-        )
-
+        return <div className={"flex h-20 text-md items-center mx-auto text-foreground"}>Coming Soon</div>
     }
 
     return (
         <>
-            <Drawer open={open}
-                    onOpenChange={setOpen}
-                    direction={"right"}
-                    closeThreshold={0.8}
-            >
+            <Drawer open={open} onOpenChange={setOpen} direction={"right"} closeThreshold={0.8}>
                 <DrawerContent
                     onClick={(e) => {
-                        if (e.target === e.currentTarget) {
-                            setOpen(false)
-                        }
+                        if (e.target === e.currentTarget) setOpen(false)
                     }}
-                    className={cn(
-                        "min-w-[400px] w-fit! border-0!",
-                        "bg-transparent",
-                        "pt-2 pr-2",
-                    )}>
+                    className={cn("min-w-[400px]! w-fit! border-0! bg-transparent pt-1 pr-1")}>
                     <DrawerHeader hidden><DrawerTitle/><DrawerDescription/></DrawerHeader>
-                    <div className={cn("flex flex-row gap-1.5 border-0 outline-0")}>
-                        {OPTIONS.map((item) => (
-                            <Option
-                                key={item.value}
-                                checked={item.value === value}
-                                Icon={item.Icon}
-                                value={item.value}
-                                onValueChange={setValue}>
-                                {item.label}
-                            </Option>
-                        ))}
-                    </div>
-                    <div className={cn(
-                        "no-scrollbar overflow-y-auto max-h-[95%]",
-                        "p-1 -mt-2 z-10",
-                        "flex justify-center",
-                        "border-0 outline-2",
-                        "bg-popover",
-                        OUTLINE_COLOR,
-                        "rounded-md",
-                        value === "background" && "rounded-tr-none",
-                        value === "search" && "rounded-tl-none",
-                    )}
-                    >
-                        {getCase()}
+                    <div className={"rounded-sm shadow-sBlue shadow-lg overflow-hidden"}>
+                        <div className={cn("flex flex-row")}>
+                            {OPTIONS.map((item) => (
+                                <Option key={item.value} checked={item.value === value} Icon={item.Icon}
+                                        value={item.value} onValueChange={setValue}>
+                                    {item.label}
+                                </Option>
+                            ))}
+                        </div>
+                        <div className={cn(
+                            "no-scrollbar overflow-y-auto max-h-[95%]",
+                            "p-1 mt-0 z-10",
+                            "flex justify-center",
+                            "border-0 outline-0",
+                            "bg-popover",
+                            "rounded-b-md",
+                            value === "background" && "rounded-tr-none",
+                            value === "search" && "rounded-tl-none",
+                        )}
+                        >
+                            {getCase()}
+                        </div>
                     </div>
                 </DrawerContent>
             </Drawer>

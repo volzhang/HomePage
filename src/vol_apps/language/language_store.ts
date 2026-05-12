@@ -88,7 +88,8 @@ const resources: RESOURCES = {
         "Permission denied": "已拒绝授权",
         "Image changed": "图片已切换",
 
-        "Double-click to skip to next image during playback.": "播放时，鼠标双击可切换至下一张",
+        "Double-click on empty space to go to the next image.": "鼠标双击空白处可切换至下一张。",
+        "This feature is currently not enabled.": "该功能当前未启用。",
 
         "Random": "随机",
         "Sequential": "顺序",
