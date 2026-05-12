@@ -81,7 +81,7 @@ export const useBgLogic = () => {
         if (!open) setOtherVisible(true);
     }, [open]);
 
-    const {t, language} = useLanguageStore();
+    const {t, language} = useLanguageStore("bg");
 
     // 日期
     const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate]);

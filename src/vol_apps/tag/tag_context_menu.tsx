@@ -6,11 +6,11 @@ import {
     ContextMenuLabel,
     ContextMenuGroup, ContextMenuSub, ContextMenuSubTrigger, ContextMenuSubContent
 } from "@/components/ui/context-menu";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {TriangleAlert} from "lucide-react";
 
 export const Tag_context_menu = (
     {
+        t,
         tag,
         children,
         toggleTag,
@@ -20,7 +20,6 @@ export const Tag_context_menu = (
         deleteTilesWithOnlyThisTag,
     }: any
 ) => {
-    const {t} = useLanguageStore()
     return (
         <ContextMenu>
             <ContextMenuTrigger>

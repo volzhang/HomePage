@@ -7,7 +7,7 @@ import {getDialogConfig} from "@/vol_apps/dndFile/dialogConfig";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export const DndFile = () => {
-	const {t} = useLanguageStore()
+	const {t} = useLanguageStore("dndFile")
 	const cmStore = useCmStore();
 	const {file, openModal, setOpenModal, fileType} = useFileDnD();
 

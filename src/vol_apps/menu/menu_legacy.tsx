@@ -28,12 +28,12 @@ const cn_str = "border bg-background " +
     "dark:bg-input/30 dark:border-input dark:hover:bg-input/50";
 
 export function Menu() {
-    // const {setBgUiVisible} = useBgStore();
+
     const {setOpen} = useSettingStore()
     const {tilesVisible, setTilesVisible} = useTileStore();
 
     const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
-    const {t} = useLanguageStore()
+    const {t} = useLanguageStore("menu")
 
     const OnAddTile = () => {
         const newTileId = tiles.length;

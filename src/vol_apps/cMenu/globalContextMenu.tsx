@@ -19,7 +19,7 @@ import {useSettingStore} from "../settings/setting_store";
 export function GlobalContextMenu({children}: PropsWithChildren) {
     const {tilesVisible, addTile, setTileInEditId, setTileUiVisible, setTilesVisible} = useTileStore();
     const {openSetting} = useSettingStore()
-    const {t} = useLanguageStore()
+    const {t} = useLanguageStore("menu")
 
     const onAddTile = () => {
         const newTileId = addTile();

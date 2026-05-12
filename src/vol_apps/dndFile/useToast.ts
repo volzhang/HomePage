@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 
 export const useToast = () => {
-	const { t } = useLanguageStore()
+	const { t } = useLanguageStore("dndFile")
 	const toastId = useRef<string | number | null>(null);
 
 	const dismissToast = () => {

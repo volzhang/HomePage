@@ -1,6 +1,6 @@
 import {type LANGUAGE, useLanguageStore} from "@/vol_apps/language/language_store";
 import {Select} from "../01_components/01_SelectComponent"
-import {useState} from "react";
+import {startTransition, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Languages} from "lucide-react";
 
@@ -11,7 +11,11 @@ export const Language = () => {
     return (
         <>
             <Select
-                value={language} onValueChange={(v) => setLanguage(v as LANGUAGE)}
+                value={language} onValueChange={(v) => {
+                startTransition(() => {
+                    setLanguage(v as LANGUAGE);
+                });
+            }}
                 open={open} onOpenChange={setOpen}
                 duration={200} exitDuration={200}
             >

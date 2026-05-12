@@ -28,7 +28,7 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
     isBroadMatches: boolean,
     handleOnClick?: () => void,
 }) => {
-    const {t} = useLanguageStore();
+    const {t} = useLanguageStore("tagBar");
     return (
         <HoverCard openDelay={0} closeDelay={0}>
             <HoverCardTrigger asChild>
@@ -61,7 +61,7 @@ export const BroadMatches = ({isBroadMatches, handleOnClick}: {
 };
 
 export const TagComponent = () => {
-    const {t} = useLanguageStore();
+    const {t} = useLanguageStore("tagBar");
 
     const {
         updateTag, toggleTag, deleteTag, hasUntaggedTiles,
@@ -91,7 +91,9 @@ export const TagComponent = () => {
 
         return (
             <>
-                <Tag_context_menu tag={tag}
+                <Tag_context_menu
+                    tag={tag}
+                    t={t}
                     toggleTag = {toggleTag}
                     deleteTag = {deleteTag}
                     setInputString = {setInputString}
