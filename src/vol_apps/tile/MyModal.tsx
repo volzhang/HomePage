@@ -58,6 +58,7 @@ export const MyModal = ({
             {/* 遮罩层 z-10 */}
             <div
                 className={cn(
+                    // "relative",
                     "fixed inset-0 bg-black/60",
                     "flex items-center justify-center",
                     "transition-opacity duration-300 ease-in-out z-10",
@@ -72,7 +73,8 @@ export const MyModal = ({
                     ref={modalContentRef}
                     tabIndex={-1}
                     className={cn(
-                        "flex flex-col mx-auto z-20",
+                        // "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ",
+                        "flex flex-col z-20",
                         "w-fit h-fit min-w-[700px]",
                         "bg-background rounded-md border",
                         "max-h-[98vh] overflow-y-auto",
@@ -80,14 +82,6 @@ export const MyModal = ({
                     style={floatingStyle}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/*顶部区域：关闭按钮*/}
-                    {/*<div className="flex justify-end">*/}
-                    {/*    <Button variant={"link"} size={"icon"}*/}
-                    {/*            onClick={() => onOpenChange(false)}>*/}
-                    {/*        <X/>*/}
-                    {/*    </Button>*/}
-                    {/*</div>*/}
-
                     {/* 中间区域：自动撑满剩余空间 */}
                     <div className="flex-1">
                         {children}

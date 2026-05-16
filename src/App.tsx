@@ -10,19 +10,19 @@ import {Menu} from "@/vol_apps/menu/menu_legacy";
 import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWallpaper";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {Language} from "@/vol_apps/language/language";
-// import {useLogDoubleClickPath} from "@/vol_apps/02_hooks/useLogDoubleClickPath";
+import {Acgm} from "@/vol_apps/acgm/acgm";
 
 export const App = () => {
-    // useLogDoubleClickPath();
     return (
         <>
             <ToasterUi/>
             <Cm/>
             <div className={"flex flex-row gap-2 pl-2 pt-2 w-fit"}>
                 <Menu/>
-                <Language />
+                <Language/>
                 <Theme/>
                 <CmOpen/>
+                <Acgm/>
             </div>
             <div className={"fixed top-2 right-2"}>
                 <Version/>

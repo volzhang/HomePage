@@ -5,7 +5,7 @@ export function usePortal({
                               open,                        // 新增：控制是否挂载容器
                               position,
                               zIndex = 1,
-                              exitDuration = 150,          // 退出动画时长，用于延迟卸载
+                              exitDuration = 0,          // 退出动画时长，用于延迟卸载
                           }: {
     open: boolean;
     position: { top: number; left: number };

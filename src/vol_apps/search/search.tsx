@@ -175,7 +175,7 @@ export const SearchBar = () => {
                                     key={engine.name}
                                     value={engine.name}
                                     checkIconClassName={"hidden"}       //不使用checkIcon
-                                    itemClassName={cn("px-4 py-6 text-xl font-medium",
+                                    itemClassName={cn("px-4 py-6 text-xl font-medium outline-0",
                                         currentEngine.name === engine.name && "text-sBlue font-semibold"
                                     )}>
                                     {engine.name}
