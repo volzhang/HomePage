@@ -165,13 +165,11 @@ export const Acgm = () => {
     return (
         <>
             <Button onClick={()=>setOpen(!open)}
-                    className={cn(isPlaying
-                        ? "bg-sBlue border-sBlue text-white hover:bg-sBlue hover:text-white"
-                        : "",
+                    className={cn(isPlaying && "bg-sBlue border-sBlue text-white hover:bg-sBlue hover:text-white",
                         "transition-colors duration-200 ease-in-out",
                     )}
                 variant={"outline"} size={"icon"}>
-                <Music className={cn(isPlaying && "animate-[bounce_1.5s_linear_infinite] scale-110 translate-y-[2.5px]",
+                <Music className={cn(isPlaying && "animate-[bounce_1.5s_linear_infinite] translate-y-[2.5px]",
                     "transition-[scale, transform] duration-200 ease-in-out",
                     )}
                 />
