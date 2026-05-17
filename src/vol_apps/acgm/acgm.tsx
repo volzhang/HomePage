@@ -111,7 +111,7 @@ export const Acgm = () => {
     const Buttons =
         <div className={cn("h-[60px] w-full flex items-center justify-center gap-px rounded-br-md overflow-hidden")}>
             <button className={cn(
-                "group w-full h-full flex items-center justify-center",
+                "group w-full h-full flex items-center justify-center outline-none",
                 "bg-secondary text-sBlue border-none",
                 "hover:bg-sBlue hover:text-white",
                 "transition-colors duration-200 ease-in-out",
@@ -120,7 +120,7 @@ export const Acgm = () => {
                     : <Repeat strokeWidth={1} className={"text-foreground/60 scale-90"}/>}
             </button>
             <button className={cn(
-                "group w-full h-full flex items-center justify-center",
+                "group w-full h-full flex items-center justify-center outline-none",
                 "bg-secondary  border-none",
                 "hover:bg-sBlue",
                 "transition-colors duration-200 ease-in-out",
@@ -132,7 +132,7 @@ export const Acgm = () => {
                     : <Play className={"text-sBlue fill-sBlue group-hover:text-white group-hover:fill-white scale-85"}/>}
             </button>
             <button className={cn(
-                "w-full h-full flex items-center justify-center",
+                "w-full h-full flex items-center justify-center outline-none",
                 "bg-secondary text-sBlue border-none",
                 "hover:bg-sBlue hover:text-white",
                 "transition-colors duration-200 ease-in-out",

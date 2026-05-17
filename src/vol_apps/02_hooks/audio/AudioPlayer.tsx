@@ -43,7 +43,7 @@ export const AudioPlayer  = (
         <>
             {open &&
             <div>
-                <audio controls={true} ref={audioRef} {...audioProps} src={"https://music.163.com/song/media/outer/url?id=27719865"}/>
+                <audio controls={true} ref={audioRef} {...audioProps}/>
                 <div className={cn("flex flex-col items-start justify-start",
                     "text-foreground bg-background font-mono")}>
                     <textarea onInput={adjustHeight}

@@ -50,7 +50,7 @@ const AcgmList:number[] = [
 
 export const useMyList = () => {
     const {get} = useShuffledIndex({length: AcgmList.length, random: false});
-    const currentRef = useRef(-1);
+    const currentRef = useRef(0);
 
     const {songData, setID} = useNetease()
 
