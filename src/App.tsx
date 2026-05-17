@@ -11,7 +11,7 @@ import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWal
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {Language} from "@/vol_apps/language/language";
 import {Acgm} from "@/vol_apps/acgm/acgm";
-import {AudioProvider} from "@/vol_apps/02_hooks/audio/AudioContext";
+import {AudioProvider} from "@/vol_apps/01_components/audio/AudioContext";
 
 export const App = () => {
     return (

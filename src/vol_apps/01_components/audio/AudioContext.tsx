@@ -1,6 +1,6 @@
 // AudioContext.tsx
 import { createContext, useContext } from "react";
-import { useAudioState } from "@/vol_apps/02_hooks/audio/useAudioState";
+import { useAudioState } from "@/vol_apps/01_components/audio/useAudioState";
 
 type AudioContextType = ReturnType<typeof useAudioState>;
 const AudioContext = createContext<AudioContextType | null>(null);

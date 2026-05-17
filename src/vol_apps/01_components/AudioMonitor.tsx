@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {useAudioState} from "@/vol_apps/02_hooks/audio/useAudioState";
+import {useAudioState} from "@/vol_apps/01_components/audio/useAudioState";
 import {cn} from "@/lib/utils";
 
 export const AudioMonitor = (

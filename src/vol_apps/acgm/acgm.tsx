@@ -8,8 +8,8 @@ import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
 
 import {FetchMonitor} from "@/vol_apps/01_components/FetchMonitor";
 import {useMyList} from "@/vol_apps/acgm/useAcgmList";
-import {AudioPlayer} from "@/vol_apps/02_hooks/audio/AudioPlayer";
-import {useAudioContext} from "@/vol_apps/02_hooks/audio/AudioContext";
+import {AudioPlayer} from "@/vol_apps/01_components/audio/AudioPlayer";
+import {useAudioContext} from "@/vol_apps/01_components/audio/AudioContext";
 
 
 const formatMMSS = (sec: number) => {
@@ -41,7 +41,6 @@ export const Acgm = () => {
         if (!audioUrl) return
         setSrc(audioUrl)
     }, [audioUrl]);
-
 
     // 主按钮
     const handlePlay = async () => {
@@ -176,13 +175,11 @@ export const Acgm = () => {
     return (
         <>
             <Button onClick={()=>setOpen(!open)}
-                    className={cn(
-                        isPlaying ? "bg-sBlue border-sBlue  hover:bg-sBlue "
-                            : "",
+                    className={cn(isPlaying && "bg-sBlue border-sBlue  hover:bg-sBlue text-white hover:text-white",
                         "transition-colors duration-200 ease-in-out",
                     )}
                 variant={"outline"} size={"icon"}>
-                <Music className={cn(isPlaying ? "animate-[bounce_1.5s_linear_infinite] translate-y-[2.5px] text-white hover:text-white" : "",
+                <Music className={cn(isPlaying && "animate-[bounce_1.5s_linear_infinite] translate-y-[2.5px] scale-110 dark:text-sBlue",
                     "transition-[scale, transform] duration-200 ease-in-out",
                     )}
                 />

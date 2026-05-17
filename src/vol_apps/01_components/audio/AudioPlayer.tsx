@@ -1,7 +1,5 @@
 // 返回原生组件audio，和调试界面，方便后续套壳
-
-
-import {useAudioContext} from "@/vol_apps/02_hooks/audio/AudioContext";
+import {useAudioContext} from "@/vol_apps/01_components/audio/AudioContext";
 import {useEffect, useRef} from "react";
 import {cn} from "@/lib/utils";
 
