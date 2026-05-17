@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {useRafThrottleSetState} from "@/vol_apps/02_hooks/throttle/useRafThrottleSetState";
+import {useUserActivation} from "@/vol_apps/02_hooks/useUserInteracted";
 
 /**
  * 连接层：网络是否可用
@@ -99,6 +100,17 @@ type AudioMeta = {
 
 export const useAudioState = () => {
     const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const [src, setSrc] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        if (audioRef.current && src) {
+            audioRef.current.src = src;
+            audioRef.current.load();
+            if (autoPlay) void audioRef.current.play();
+        }
+    }, [src]);
+
     const [state, setState] = useState<AudioState>(() => ({
         connection: "idle",
         data: "empty",
@@ -126,7 +138,7 @@ export const useAudioState = () => {
                 prev.connection === next.connection &&
                 prev.data      === next.data      &&
                 prev.playback  === next.playback
-            ) return prev;   // 引用不变 → React 跳过重渲染
+            ) return prev;
             return next;
         });
 
@@ -179,7 +191,7 @@ export const useAudioState = () => {
     }, []);
 
     /**
-     * 统一播放控制，自动处理浏览器自动播放策略异常
+     * 统一播放控制，自动处理浏览器自动播放策略
      */
     const tryPlay = useCallback(async (shouldPlay: boolean) => {
         const audio = audioRef.current;
@@ -198,12 +210,33 @@ export const useAudioState = () => {
         }
     }, [syncState]);
 
+
+    const connectionIsFialed = state.connection === "failed"
+
+    // 如果src连接失败，提供一个接口
+    const handleFailedRef = useRef<(() => void) | null>(null);
+
+    useEffect(() => {
+        if (!handleFailedRef.current) return;
+        if (!connectionIsFialed) return
+        const timer = setTimeout(() => handleFailedRef.current?.(), 1500);
+        return () => clearTimeout(timer);
+    }, [connectionIsFialed]);
+
     // 如果缓冲好了，是否自动播放（需要用户有过交互）
-    const [autoPlay, setAutoPlay] = useState<boolean>(true)
+    const hasUserInteracted = useUserActivation();
+    const [autoPlay, setAutoPlay] = useState<boolean>(false)
+
+    useEffect(() => {
+        if(!hasUserInteracted) return
+        setAutoPlay(true);
+    }, [hasUserInteracted]);
+
     useEffect(() => {
         if (!autoPlay) return
         if (!audioRef.current) return;
         if (state.data !== "ready") return
+        if (!hasUserInteracted) return;
         const timer = setTimeout(()=>tryPlay(true), 1000);
         return () => clearTimeout(timer);
     }, [state.data, autoPlay]);
@@ -226,9 +259,14 @@ export const useAudioState = () => {
         meta,
         currentTime,
 
+        //src
+        src, setSrc,
+
+        // 快捷操作
         isPlaying,
         tryPlay, togglePlay,
         autoPlay, setAutoPlay,
+        handleFailedRef,
         rePlay,
     };
 };

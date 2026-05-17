@@ -11,7 +11,7 @@ type HttpState =
 
 type FetchTrace = {
     state: HttpState;
-    url: URL | null;
+    url: string | null;
     status: number | null;
     headers: Record<string, string> | null;
     received: number;
@@ -21,7 +21,7 @@ type FetchTrace = {
     endedAt: number | null;
 };
 
-export const useFetchTrace = (url: URL | null) => {
+export const useFetchTrace = (url: string | null) => {
     const abortRef = useRef<AbortController | null>(null);
     const lastSyncRef = useRef(0);
 
