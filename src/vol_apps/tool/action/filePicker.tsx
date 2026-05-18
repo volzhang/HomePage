@@ -12,9 +12,10 @@ export const isJsonFile = (file: any) => {
 interface Props {
 	onPick?: (file: File) => void;
 	children?: ReactElement;
+	className?: string;
 }
 
-export const ImgFilePickerBtn = ({onPick, children}: Props) => {
+export const ImgFilePickerBtn = ({onPick, children, className}: Props) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const handleClick = () => inputRef.current?.click();
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -68,9 +69,9 @@ export const ImgFilePickerBtn = ({onPick, children}: Props) => {
 				onDragLeave={handleDragLeave}
 				onDragOver={handleDragOver}
 				onDrop={handleDrop}
-				className={cn({"ring ring-blue-500 ring-offset-3 rounded-sm":isDragging}, "")}
+				className={cn("flex items-center justify-center", isDragging && "ring ring-blue-500 ring-offset-3 rounded-sm", className)}
 			>
-				{children || <button className={"border border-black p-1 ring-secondary-foreground"}>选择图片文件</button>}
+				{children || <button className={"border border-black p-1 ring-secondary-foreground w-full"}>选择图片文件</button>}
 				<input ref={inputRef} type="file" accept="image/*" onChange={handleChange} hidden/>
 			</div>
 		</>

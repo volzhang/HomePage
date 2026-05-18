@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {useRafThrottleSetState} from "@/vol_apps/02_hooks/throttle/useRafThrottleSetState";
 import {useUserActivation} from "@/vol_apps/02_hooks/useUserInteracted";
 
@@ -126,6 +126,7 @@ export const useAudioState = () => {
     const currentTimeRef = useRef(0);
     const [currentTime, setCurrentTime] = useState(0);
 
+    // update currentTime per 50ms
     useRafThrottleSetState(currentTimeRef, setCurrentTime, 50);
 
     const syncState = useCallback(() => {
@@ -136,8 +137,8 @@ export const useAudioState = () => {
             const next = computeState(audio);
             if (
                 prev.connection === next.connection &&
-                prev.data      === next.data      &&
-                prev.playback  === next.playback
+                prev.data === next.data &&
+                prev.playback === next.playback
             ) return prev;
             return next;
         });
@@ -150,7 +151,7 @@ export const useAudioState = () => {
         }
         setMeta(prev => {
             if (prev.duration !== newDuration || prev.buffered !== newBuffered) {
-                return { duration: newDuration, buffered: newBuffered };
+                return {duration: newDuration, buffered: newBuffered};
             }
             return prev;
         });
@@ -228,7 +229,7 @@ export const useAudioState = () => {
     const [autoPlay, setAutoPlay] = useState<boolean>(false)
 
     useEffect(() => {
-        if(!hasUserInteracted) return
+        if (!hasUserInteracted) return
         setAutoPlay(true);
     }, [hasUserInteracted]);
 
@@ -237,27 +238,32 @@ export const useAudioState = () => {
         if (!audioRef.current) return;
         if (state.data !== "ready") return
         if (!hasUserInteracted) return;
-        const timer = setTimeout(()=>tryPlay(true), 1000);
+        const timer = setTimeout(() => tryPlay(true), 1000);
         return () => clearTimeout(timer);
     }, [state.data, autoPlay]);
 
     const isPlaying = state.playback === "playing"
-    const togglePlay = async ()=>{
+    const togglePlay = async () => {
         await tryPlay(!isPlaying);
     }
 
     const rePlay = async () => {
         if (!audioRef.current) return;
-        if (!audioRef.current) return;
         audioRef.current.currentTime = 0;
         await tryPlay(true);
+    }
+
+    const seekTo = (ratio: number) => {
+        if (!audioRef.current) return;
+        ratio = Math.max(0, Math.min(ratio, 1));
+        audioRef.current.currentTime = meta.duration * ratio;
     }
 
     return {
         audioRef,
         state,
         meta,
-        currentTime,
+        currentTime,seekTo,
 
         //src
         src, setSrc,

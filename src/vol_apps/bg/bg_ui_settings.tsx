@@ -6,14 +6,14 @@ import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {Folder, Image, MessageCircleHeart} from "lucide-react";
 import type {BgType, SizeType} from "@/vol_apps/bg/bg_store";
-// import {useLanguageStore} from "@/vol_apps/language/language_store";
 
-const BG = "bg-popover hover:ring-sBlue hover:ring-2 hover:border-sBlue"
+
 
 const BUTTON_CLASS = cn(
-    "border text-foreground", BG, "items-center justify-center",
-    "hover:bg-sBlue hover:text-white",
-    "h-12 w-full", "text-lg"
+    "bg-popover hover:border-sBlue",
+    "border text-foreground", "items-center justify-center",
+    "hover:bg-sBlue hover:text-white rounded-[2px]",
+    "h-[40px] text-md w-[calc(100%-1rem)] mx-2",
 )
 
 export const MyRadio = (
@@ -37,18 +37,18 @@ export const MyRadio = (
     return (
         <>
             <fieldset className={cn(
-                "group", "text-lg",
-                "relative rounded-md border border-border/20",
+                "group",
+                "relative border border-transparent",
                 "min-w-0",
-                "grid grid-cols-2 border",
-                "mt-3 pt-6 pb-5 gap-y-2",
+                "grid grid-cols-2 border rounded-[2px]",
+                "mt-3 pt-6 pb-2 px-2 gap-1.5",
                 "hover:border-sBlue",
                 "hover:ring-sBlue hover:ring",
                 "transition-all duration-200 ease-in-out"
             )}>
                 <legend className={cn(
                     "text-lg text-left text-border font-semibold",
-                    "absolute -top-3.5 left-[9px]",
+                    "absolute -top-3.5 left-[3px]",
                     "bg-popover whitespace-nowrap px-1.5",
                     "group-hover:text-sBlue",
                     "transition-all duration-200 ease-in-out"
@@ -56,20 +56,27 @@ export const MyRadio = (
                 {options.map((option) => (
                     <label
                         key={option.value}
-                        className={cn("group col-span-1 flex flex-row ml-4 gap-2",
-                            option.value === value
-                                ? "text-sBlue font-semibold"
-                                : "opacity-15 group-hover:opacity-100",
+                        className={cn("group col-span-1 flex flex-row",
                             "transition-all duration-200 ease-in-out"
                         )}>
                         <input
                             type="radio"
+                            className={"sr-only"}
                             onChange={() => onValueChange?.(option.value)}
                             name={name}
                             value={option.value}
                             checked={value === option.value}
                         ></input>
-                        <p className={cn("whitespace-nowrap")}>{option.label}</p>
+                        <p className={cn(
+                            "border w-[200px] h-[34px] text-sm rounded-[2px]",
+                            "flex items-center justify-center",
+                            option.value === value
+                                ? "text-white bg-sBlue"
+                                : "dark:text-white dark:bg-border",
+                            "transition-all duration-200 ease-in-out"
+                        )}>
+                            {option.label}
+                        </p>
                     </label>
                 ))}
                 {children}
@@ -121,14 +128,15 @@ export const Content = (
 
     return (
         <div className={cn(
-            "flex flex-col gap-2.5 p-1",
+            "flex flex-col gap-3 p-1 items-center justify-center",
             "bg-popover text-foreground"
         )}>
-            <Button variant={"default"} className={cn(BUTTON_CLASS, "gap-5")} onClick={handleDirChange}>
-                <Folder className={"scale-125"}/>
-                <p className={""}>{t("Choose Folder")}</p>
+            <Button variant={"default"} className={cn("gap-5 mx-2", BUTTON_CLASS)} onClick={handleDirChange}>
+                <Folder className={"scale-x-120 scale-y-120"}/>
+                {t("Choose Folder")}
             </Button>
             <ImgFilePickerBtn
+                className={"w-full"}
                 onPick={async (file) => {
                     setBgImg(await blobToString(file));
                     setBgType("custom");
@@ -136,9 +144,9 @@ export const Content = (
                 children={
                     <Button
                         variant={"default"}
-                        className={cn(BUTTON_CLASS, "gap-5")}>
-                        <Image className={"scale-125"}/>
-                        <p className={""}>{t("Choose Image")}</p>
+                        className={cn(BUTTON_CLASS, "gap-5 w-[calc(100%-1rem)] mx-2")}>
+                        <Image className={"scale-x-130 scale-y-115"}/>
+                        {t("Choose Image")}
                     </Button>
                 }/>
             <MyRadio title={t("Background Type")}
@@ -177,30 +185,31 @@ export const Content = (
                          setBgType("custom_dir")
                      }}
             >
-                <label className={cn("col-span-2 mt-3 ml-5 flex flex-row gap-2 text-md",
+                <label className={cn("col-span-2 grid grid-cols-2 mt-2 gap-2 text-md",
                     bgType === "custom_dir"
                         ? "text-sBlue font-semibold"
                         : "opacity-15 group-hover:opacity-100",
                     )
                 }>
-                    <p className={cn("flex w-32")}>
-                        {t("Change every")}
-                    </p>
-                    <input type={"number"} min={1} max={60 * 60 * 24}
-                           className={cn("flex-1 min-w-0 rounded-sm border border-border/50 text-right ring-0 outline-0",
-                               "transition-all duration-200 linear"
-                           )}
-                           value={carouselInterval}
-                           onChange={(e) => {
-                               const MAX = 60 * 60 * 24;
-                               const MIN = 1;
-                               const value = Math.min(Math.max(parseInt(e.target.value), MIN), MAX);
-                               setCarouselInterval(value);
-                           }}
-                    ></input>
-                    <p className={"flex w-20"}>{t("sec")}</p>
+                    <p>{t("Change every")}</p>
+                    <div className={"flex flex-row gap-1 text-md"}>
+                        <input type={"number"} min={1} max={60 * 60 * 24}
+                               className={cn("flex-1 min-w-0 rounded-sm border border-border/50 text-right ring-0 outline-0",
+                                   "transition-all duration-200 linear"
+                               )}
+                               value={carouselInterval}
+                               onChange={(e) => {
+                                   const MAX = 60 * 60 * 24;
+                                   const MIN = 1;
+                                   const value = Math.min(Math.max(parseInt(e.target.value), MIN), MAX);
+                                   setCarouselInterval(value);
+                               }}
+                        ></input>
+                        <p>{t("sec")}</p>
+                    </div>
+
                 </label>
-                <p className={cn("col-span-2 mt-3.5 ml-5 text-md")}>
+                <p className={cn("col-span-2 mt-2 ml-0 items-center justify-center text-md")}>
                     <span className={cn("flex items-start gap-2.5",
                         bgType === "custom_dir"
                             ? "text-sBlue font-semibold "

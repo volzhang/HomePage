@@ -44,9 +44,5 @@ export const useNetease = () => {
         void pharse(file)
     }, [file]);
 
-    useEffect(() => {
-        console.log(songData?.title)
-    }, [songData?.title]);
-
     return {setID, songData};
 }
