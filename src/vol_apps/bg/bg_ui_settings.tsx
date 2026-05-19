@@ -8,12 +8,11 @@ import {Folder, Image, MessageCircleHeart} from "lucide-react";
 import type {BgType, SizeType} from "@/vol_apps/bg/bg_store";
 
 
-
 const BUTTON_CLASS = cn(
-    "bg-popover hover:border-sBlue",
-    "border text-foreground", "items-center justify-center",
+    "border bg-popover text-foreground",
+    "flex items-center justify-center",
     "hover:bg-sBlue hover:text-white rounded-[2px]",
-    "h-[40px] text-md w-[calc(100%-1rem)] mx-2",
+    "h-[36px] text-md w-[calc(100%-1rem)] mx-2",
 )
 
 export const MyRadio = (
@@ -44,21 +43,19 @@ export const MyRadio = (
                 "mt-3 pt-6 pb-2 px-2 gap-1.5",
                 "hover:border-sBlue",
                 "hover:ring-sBlue hover:ring",
-                "transition-all duration-200 ease-in-out"
+                "transition-colors duration-250 linear"
             )}>
                 <legend className={cn(
                     "text-lg text-left text-border font-semibold",
                     "absolute -top-3.5 left-[3px]",
                     "bg-popover whitespace-nowrap px-1.5",
                     "group-hover:text-sBlue",
-                    "transition-all duration-200 ease-in-out"
+                    "transition-colors duration-250 linear"
                 )}>{title}</legend>
                 {options.map((option) => (
                     <label
                         key={option.value}
-                        className={cn("group col-span-1 flex flex-row",
-                            "transition-all duration-200 ease-in-out"
-                        )}>
+                        className={cn("group col-span-1 flex flex-row")}>
                         <input
                             type="radio"
                             className={"sr-only"}
@@ -70,10 +67,8 @@ export const MyRadio = (
                         <p className={cn(
                             "border w-[200px] h-[34px] text-sm rounded-[2px]",
                             "flex items-center justify-center",
-                            option.value === value
-                                ? "text-white bg-sBlue"
-                                : "dark:text-white dark:bg-border",
-                            "transition-all duration-200 ease-in-out"
+                            option.value === value && "text-white bg-sBlue",
+                            "transition-colors duration-250 linear"
                         )}>
                             {option.label}
                         </p>
@@ -185,17 +180,18 @@ export const Content = (
                          setBgType("custom_dir")
                      }}
             >
-                <label className={cn("col-span-2 grid grid-cols-2 mt-2 gap-2 text-md",
+                {/* 切图间隔 */}
+                <label className={cn("col-span-2 h-[34px] grid grid-cols-2 mt-2 gap-1 pl-1 text-md",
                     bgType === "custom_dir"
                         ? "text-sBlue font-semibold"
                         : "opacity-15 group-hover:opacity-100",
-                    )
+                )
                 }>
-                    <p>{t("Change every")}</p>
-                    <div className={"flex flex-row gap-1 text-md"}>
+                    <p className={"flex items-center"}>{t("Change every")}</p>
+                    <div className={"flex flex-row gap-1"}>
                         <input type={"number"} min={1} max={60 * 60 * 24}
                                className={cn("flex-1 min-w-0 rounded-sm border border-border/50 text-right ring-0 outline-0",
-                                   "transition-all duration-200 linear"
+                                   "transition-all duration-250 linear"
                                )}
                                value={carouselInterval}
                                onChange={(e) => {
@@ -205,25 +201,26 @@ export const Content = (
                                    setCarouselInterval(value);
                                }}
                         ></input>
-                        <p>{t("sec")}</p>
+                        <p className={"flex items-center"}>{t("sec")}</p>
                     </div>
-
                 </label>
-                <p className={cn("col-span-2 mt-2 ml-0 items-center justify-center text-md")}>
-                    <span className={cn("flex items-start gap-2.5",
+                {/* 操作提示 */}
+                <p className={cn("col-span-2 mt-2 items-center justify-center")}>
+                    <span className={cn("flex items-start gap-2", "transition-all duration-250 linear",
                         bgType === "custom_dir"
                             ? "text-sBlue font-semibold "
                             : "opacity-20 group-hover:opacity-100",
-                        "transition-all duration-200 linear"
-                        )}>
-                        <MessageCircleHeart className="mt-0.5 shrink-0"/>
+                    )}>
+                        <MessageCircleHeart className="shrink-0 ml-1"/>
                         {bgType === "custom_dir"
-                            ? <span className="leading-relaxed">
-                            {t("Double-click on empty space to go to the next image.")}
-                         </span>
-                            : <span className="leading-relaxed">
-                            {t("This feature is currently not enabled.")}
-                         </span>
+                            ?
+                            <span className="leading-relaxed">
+                                {t("Double-click on empty space to go to the next image.")}
+                            </span>
+                            :
+                            <span className="leading-relaxed">
+                                {t("This feature is currently not enabled.")}
+                            </span>
                         }
                     </span>
                 </p>

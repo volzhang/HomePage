@@ -10,8 +10,6 @@ import {Menu} from "@/vol_apps/menu/menu_legacy";
 import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWallpaper";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {Language} from "@/vol_apps/language/language";
-import {Acgm} from "@/vol_apps/acgm/acgm";
-import {AudioProvider} from "@/vol_apps/01_components/audio/AudioContext";
 import {useLogDoubleClickPath} from "@/vol_apps/02_hooks/useLogDoubleClickPath";
 
 export const App = () => {
@@ -25,9 +23,6 @@ export const App = () => {
                 <Language/>
                 <Theme/>
                 <CmOpen/>
-                <AudioProvider>
-                    <Acgm/>
-                </AudioProvider>
             </div>
             <div className={"fixed top-2 right-2"}>
                 <Version/>
