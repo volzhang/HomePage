@@ -13,6 +13,7 @@ export const resources: RESOURCES = {
             "Please select folder first": "请先选择目录",
             "Permission denied": "已拒绝授权",
             "Image changed": "图片已切换",
+            "Custom carousel permission expired. Please select a folder again.":"自定义循环的权限过期，请再次选择文件夹授权。",
 
             "Double-click on empty space to go to the next image.": "鼠标双击空白处可切换至下一张。",
             "This feature is currently not enabled.": "该功能当前未启用。",

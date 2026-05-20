@@ -123,7 +123,7 @@ export const Content = (
 
     return (
         <div className={cn(
-            "flex flex-col gap-3 p-1 items-center justify-center",
+            "flex flex-col gap-3 p-1 items-center justify-center text-md",
             "bg-popover text-foreground"
         )}>
             <Button variant={"default"} className={cn("gap-5 mx-2", BUTTON_CLASS)} onClick={handleDirChange}>
@@ -139,7 +139,7 @@ export const Content = (
                 children={
                     <Button
                         variant={"default"}
-                        className={cn(BUTTON_CLASS, "gap-5 w-[calc(100%-1rem)] mx-2")}>
+                        className={cn(BUTTON_CLASS, "gap-5 w-[calc(100%-1rem)] mx-2 text-md")}>
                         <Image className={"scale-x-130 scale-y-115"}/>
                         {t("Choose Image")}
                     </Button>
@@ -205,7 +205,7 @@ export const Content = (
                     </div>
                 </label>
                 {/* 操作提示 */}
-                <p className={cn("col-span-2 mt-2 items-center justify-center")}>
+                <p className={cn("col-span-2 mt-2 items-center justify-center text-md")}>
                     <span className={cn("flex items-start gap-2", "transition-all duration-250 linear",
                         bgType === "custom_dir"
                             ? "text-sBlue font-semibold "

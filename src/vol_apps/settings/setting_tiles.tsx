@@ -17,7 +17,6 @@ export const Setting_tiles = () => {
                      value={tilesVisible ? "true": "false"}
                      onValueChange={(value) => setTilesVisible(value === "true")}
             />
-            
         </div>
     )
 }

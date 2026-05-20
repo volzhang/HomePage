@@ -242,11 +242,20 @@ export const useBgLogic = () => {
         interval: carouselInterval * 1000, //秒转毫秒
         random: carouselRandom,
         accept: "IMAGE",
+        onHandleErr: () => {
+            toast.error(t("Custom carousel permission expired. Please select a folder again."))
+            setBgType("custom")
+        }
     })
 
-    const handleNextImg = () => {
-        handleNextImage()
-        toast.success(t("Image changed"))
+    const handleNextImg = async () => {
+
+        try {
+            handleNextImage();
+            toast.success(t("Image changed"));
+        } catch {
+            // 已经由 onHandleErr 处理
+        }
     }
 
     //只在两个位置触发：root空白 + 瓷砖墙间隙
@@ -272,10 +281,20 @@ export const useBgLogic = () => {
 
     const restore = async () => {
         const h = (await get("dh")) as any;
+
         if (!h) {
+            toast.error("Please select folder first")
             setBgType("custom")
             return
         }
+
+        const permission = await h.requestPermission({ mode: "read" });
+        if (permission !== "granted") {
+            toast.error(t("Custom carousel permission expired. Please select a folder again."))
+            setBgType("custom")
+            return
+        }
+
         setDirHandle(h);
     }
 

@@ -47,12 +47,14 @@ export const useFileCarousel =
          interval = 3000,
          random = false,
          accept = "ALL",
+         onHandleErr,
      }: {
         open: boolean;
         handle: (file: File) => void;
         interval?: number;
         random?: boolean;
         accept?: AcceptType;
+        onHandleErr?: () => void;
     }) => {
         const [dirHandle, setDirHandle] = useState<FileSystemDirectoryHandle | null>(null);
         const [fileHandles, setFileHandles] = useState<FileSystemFileHandle[] | null>(null)
@@ -111,10 +113,18 @@ export const useFileCarousel =
         const loop = useCallback(async () => {
             if (!open || !fileHandles || fileHandles.length === 0) return;
             const idx = get(indexRef.current);
-            const file = await fileHandles[idx].getFile();
-            handleRef.current?.(file);
-            indexRef.current++;
-        }, [open, fileHandles, get])
+
+            const fileHandle = fileHandles[idx];
+
+            try {
+                const file = await fileHandle.getFile();
+                handleRef.current?.(file);
+                indexRef.current++;
+            } catch (err) {
+                onHandleErr?.();
+            }
+
+        }, [open, fileHandles, get, onHandleErr])
 
         const {handleNext} = useInterval({open: isReady, handler: loop, timeout: interval})
 
