@@ -4,7 +4,6 @@ import {useEffect, useRef} from "react";
 import {cn} from "@/lib/utils";
 
 interface AudioPlayerProps extends React.ComponentPropsWithoutRef<"audio"> {
-    // 可以添加自定义属性，例如 showDebug 等
     open?: boolean;
     children?: React.ReactNode;
 }

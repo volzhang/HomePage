@@ -282,11 +282,13 @@ export const useBgLogic = () => {
     const restore = async () => {
         const h = (await get("dh")) as any;
 
-        if (!h) {
+        if (!h && bgType === "custom_dir") {
             toast.error("Please select folder first")
             setBgType("custom")
             return
         }
+
+        if (!h && bgType !== "custom_dir") return
 
         const permission = await h.requestPermission({ mode: "read" });
         if (permission !== "granted") {

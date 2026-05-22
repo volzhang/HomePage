@@ -12,7 +12,7 @@ const BUTTON_CLASS = cn(
     "border bg-popover text-foreground",
     "flex items-center justify-center",
     "hover:bg-sBlue hover:text-white rounded-[2px]",
-    "h-[36px] text-md w-[calc(100%-1rem)] mx-2",
+    "h-[36px] w-[calc(100%-1rem)] mx-2",
 )
 
 export const MyRadio = (
@@ -128,7 +128,7 @@ export const Content = (
         )}>
             <Button variant={"default"} className={cn("gap-5 mx-2", BUTTON_CLASS)} onClick={handleDirChange}>
                 <Folder className={"scale-x-120 scale-y-120"}/>
-                {t("Choose Folder")}
+                <p className={"text-[16px]"}>{t("Choose Folder")}</p>
             </Button>
             <ImgFilePickerBtn
                 className={"w-full"}
@@ -139,7 +139,7 @@ export const Content = (
                 children={
                     <Button
                         variant={"default"}
-                        className={cn(BUTTON_CLASS, "gap-5 w-[calc(100%-1rem)] mx-2 text-md")}>
+                        className={cn(BUTTON_CLASS, "gap-5 w-[calc(100%-1rem)] mx-2 text-[16px]")}>
                         <Image className={"scale-x-130 scale-y-115"}/>
                         {t("Choose Image")}
                     </Button>
@@ -181,16 +181,16 @@ export const Content = (
                      }}
             >
                 {/* 切图间隔 */}
-                <label className={cn("col-span-2 h-[34px] grid grid-cols-2 mt-2 gap-1 pl-1 text-md",
+                <label className={cn("col-span-2 h-[34px] grid grid-cols-2 mt-2 gap-1 pl-1 text-[16px]",
                     bgType === "custom_dir"
                         ? "text-sBlue font-semibold"
                         : "opacity-15 group-hover:opacity-100",
                 )
                 }>
-                    <p className={"flex items-center"}>{t("Change every")}</p>
+                    <p className={"flex items-center text-[16px]"}>{t("Change every")}</p>
                     <div className={"flex flex-row gap-1"}>
                         <input type={"number"} min={1} max={60 * 60 * 24}
-                               className={cn("flex-1 min-w-0 rounded-sm border border-border/50 text-right ring-0 outline-0",
+                               className={cn("flex-1 min-w-0 rounded-sm border border-border/50 text-right ring-0 outline-0 text-[16px]",
                                    "transition-all duration-250 linear"
                                )}
                                value={carouselInterval}
@@ -201,12 +201,12 @@ export const Content = (
                                    setCarouselInterval(value);
                                }}
                         ></input>
-                        <p className={"flex items-center"}>{t("sec")}</p>
+                        <p className={"flex items-center text-[16px]"}>{t("sec")}</p>
                     </div>
                 </label>
                 {/* 操作提示 */}
-                <p className={cn("col-span-2 mt-2 items-center justify-center text-md")}>
-                    <span className={cn("flex items-start gap-2", "transition-all duration-250 linear",
+                <p className={cn("col-span-2 mt-2 items-center justify-center text-[16px]")}>
+                    <span className={cn("flex items-start gap-2", "transition-all duration-250 linear text-[16px]",
                         bgType === "custom_dir"
                             ? "text-sBlue font-semibold "
                             : "opacity-20 group-hover:opacity-100",
@@ -214,11 +214,11 @@ export const Content = (
                         <MessageCircleHeart className="shrink-0 ml-1"/>
                         {bgType === "custom_dir"
                             ?
-                            <span className="leading-relaxed">
+                            <span className="leading-relaxed text-[16px]">
                                 {t("Double-click on empty space to go to the next image.")}
                             </span>
                             :
-                            <span className="leading-relaxed">
+                            <span className="leading-relaxed text-[16px]">
                                 {t("This feature is currently not enabled.")}
                             </span>
                         }

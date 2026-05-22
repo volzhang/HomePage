@@ -213,7 +213,7 @@ export const Acgm = () => {
                 </div>
                 {/* 调试 */}
                 <div className={cn(
-                    "hidden invisible",
+                    // "hidden invisible",
                     "absolute bottom-0 left-0",
                     "translate-y-full w-fit bg-background text-foreground h-fit overscroll-y-auto")}>
                     <AudioPlayer onEnded={onEnded}>

@@ -111,7 +111,7 @@ export const TagComponent = () => {
                             }
                         }}
                         inEdit={inEdit}
-                        className={cn({"text-white! bg-sBlue!": tag.checked},)}
+                        className={cn({"text-white! bg-sBlue!": tag.checked})}
                         inputProps={
                             {
                                 onBlur: () => {
@@ -206,7 +206,6 @@ export const TagComponent = () => {
                     () => setIsBroadMatches(!isBroadMatches)
                 }/>
                 {/*<TagUpdate/>*/}
-
             </div>
         </>
 
