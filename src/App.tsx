@@ -10,10 +10,10 @@ import {Menu} from "@/vol_apps/menu/menu_legacy";
 import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWallpaper";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {Language} from "@/vol_apps/language/language";
-import {useLogDoubleClickPath} from "@/vol_apps/02_hooks/useLogDoubleClickPath";
+// import {useLogDoubleClickPath} from "@/vol_apps/02_hooks/useLogDoubleClickPath";
 
 export const App = () => {
-    useLogDoubleClickPath()
+    // useLogDoubleClickPath()
     return (
         <>
             <ToasterUi/>

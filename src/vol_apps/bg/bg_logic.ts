@@ -13,6 +13,7 @@ import {get, set} from "idb-keyval";
 import {toast} from "sonner";
 import {useDoubleClick} from "../02_hooks/useDoubleClick";
 import {useSettingStore} from "@/vol_apps/settings/setting_store";
+import {useUserActivation} from "@/vol_apps/02_hooks/useUserInteracted";
 
 /**
  * UI pending 控制（带超时）
@@ -279,26 +280,61 @@ export const useBgLogic = () => {
         setBgType("custom_dir")
     }
 
+    const hasUserInteracted = useUserActivation();
+    const [pendingRestore, setPendingRestore] = useState<FileSystemDirectoryHandle | null>(null);
+    useEffect(() => {
+        if (hasUserInteracted && pendingRestore) {
+            // @ts-ignore
+            pendingRestore.requestPermission({ mode: "read" }).then((permission) => {
+                if (permission === "granted") {
+                    setDirHandle(pendingRestore);
+                    // toast.success(t("Folder permission restored."));
+                } else {
+                    toast.error(t("Custom carousel permission expired. Please select a folder again."));
+                    setBgType("custom");
+                }
+                setPendingRestore(null);
+            }).catch(() => {
+                // toast.error(t("Failed to restore permission."));
+                toast.error(t("Custom carousel permission expired. Please select a folder again."));
+                setBgType("custom");
+                setPendingRestore(null);
+            });
+        }
+    }, [hasUserInteracted, pendingRestore]);
+
     const restore = async () => {
-        const h = (await get("dh")) as any;
+        const storedHandle = (await get("dh")) as FileSystemDirectoryHandle | null;
 
-        if (!h && bgType === "custom_dir") {
-            toast.error("Please select folder first")
-            setBgType("custom")
-            return
+        if (!storedHandle && bgType === "custom_dir") {
+            toast.error("Please select folder first");
+            setBgType("custom");
+            return;
         }
+        if (!storedHandle) return;
 
-        if (!h && bgType !== "custom_dir") return
-
-        const permission = await h.requestPermission({ mode: "read" });
-        if (permission !== "granted") {
-            toast.error(t("Custom carousel permission expired. Please select a folder again."))
-            setBgType("custom")
-            return
+        try {
+            // @ts-ignore
+            const permissionState = await storedHandle.queryPermission({ mode: "read" });
+            if (permissionState === "granted") setDirHandle(storedHandle);
+            else if (permissionState === "prompt") setPendingRestore(storedHandle);
+            else {
+                await set("dh", null);
+                if (bgType === "custom_dir") {
+                    toast.error(t("Custom carousel permission expired. Please select a folder again."));
+                    setBgType("custom");
+                }
+            }
+        } catch (err) {
+            // console.error("Restore folder error", err);
+            await set("dh", null);
+            if (bgType === "custom_dir") {
+                // toast.error(t("Failed to restore folder permission. Please select again."));
+                toast.error(t("Custom carousel permission expired. Please select a folder again."));
+                setBgType("custom");
+            }
         }
-
-        setDirHandle(h);
-    }
+    };
 
     useEffect(() => {
         void restore();
