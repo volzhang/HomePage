@@ -4,9 +4,9 @@ import {formatTimestamp} from "@/vol_apps/02_hooks/format/formatTimestamp";
 import {formatBytes} from "@/vol_apps/02_hooks/format/formatBytes";
 import {cn} from "@/lib/utils";
 
-export function FetchMonitor(
+export const FetchMonitor = (
     {url = "https://bing.com/th?id=OHR.HedgehogMeadow_ZH-CN8845586473_UHD.jpg"}:{url?:string},
-) {
+) => {
 
     const [src, setSrc] = useState<string>(url);
     const {trace, start, cancel} = useFetchTrace(src);

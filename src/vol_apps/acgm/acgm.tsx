@@ -3,7 +3,7 @@ import {toast} from "sonner";
 import {BoomBox, FileMusic, Folder, Forward, Minus, Music, Pause, Play, Repeat, X} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
-import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
+import {useFloatStyles} from "@/vol_apps/02_hooks/float/useFloatStyles";
 
 import {FetchMonitor} from "@/vol_apps/01_components/FetchMonitor";
 import {useMyList} from "@/vol_apps/acgm/useAcgmList";
@@ -15,7 +15,7 @@ import {AudioUI_Cover} from "@/vol_apps/01_components/audio/AudioUI_Cover";
 
 export const Acgm = () => {
     const [open, setOpen] = useState(false);
-    const floatingStyle = useFloatAnimation({open, direction: "bottom",})
+    const floatingStyle = useFloatStyles({open, direction: "bottom",})
 
     const {songData, getNextSongData: getSongData} = useMyList()
 

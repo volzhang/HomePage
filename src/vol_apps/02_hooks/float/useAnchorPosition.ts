@@ -52,11 +52,19 @@ export const useAnchorPosition =
         }, [direction, align, offset])
 
         useLayoutEffect(() => {
-            if (!open) return;
+            const floating = fRef.current;
+            if (!open || !floating) return;
+
             calculate();
+
+            const resizeObserver = new ResizeObserver(() => calculate());
+            resizeObserver.observe(floating);
+
             window.addEventListener("resize", calculate);
             window.addEventListener("scroll", calculate, true);
             return () => {
+                resizeObserver.disconnect();
+
                 window.removeEventListener("resize", calculate);
                 window.removeEventListener("scroll", calculate, true);
             };

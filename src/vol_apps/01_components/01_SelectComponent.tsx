@@ -5,7 +5,7 @@ import {
 import {cn} from "@/lib/utils";
 import {CheckIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {useFloating} from "../02_hooks/useFloating";
+import {useFloating} from "../02_hooks/float/useFloating";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
@@ -41,6 +41,7 @@ export const SelectContext = createContext<{
     anchorRef?: React.Ref<any>;
     floatingRef?: React.Ref<any>;
     floatingStyle?: CSSProperties;
+    floatingPortal?: (node:ReactNode)=> React.ReactPortal | null;
 
     autoFocusRef?: React.Ref<any>;
 
@@ -72,13 +73,13 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
     const {
         open, onOpenChange,
         floatingStyle,
+        floatingPortal,
         floatingRef, autoFocusRef,
     } = useSelectContext();
 
     const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
     useKeyEscapeToClose(open, onClose);
     const mergedRef = useMergeRefsLoose(ref, floatingRef);
-
 
     // 将 children 统一为数组
     const optionElements = useMemo(
@@ -106,28 +107,29 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
         [optionElements, autoFocusRef]
     );
 
-
     return (
-        <ul
-            ref={mergedRef}
-            className={cn(MENU_CLASS, menuClassName,)}
-            style={floatingStyle}
-        >
-            {children
-                ? processedChildren
-                : options?.map((opt, index) => (
-                    <Option
-                        ref={index === 0 ? autoFocusRef : undefined}
-                        key={opt.value}
-                        value={opt.value}
-                        itemClassName={itemClassName}
-                        checkIconClassName={checkIconClassName}
-                    >
-                        {opt.label}
-                    </Option>
-                ))
-            }
-        </ul>
+        floatingPortal?.(
+            <ul
+                ref={mergedRef}
+                className={cn(MENU_CLASS, menuClassName,)}
+                style={floatingStyle}
+            >
+                {children
+                    ? processedChildren
+                    : options?.map((opt, index) => (
+                        <Option
+                            ref={index === 0 ? autoFocusRef : undefined}
+                            key={opt.value}
+                            value={opt.value}
+                            itemClassName={itemClassName}
+                            checkIconClassName={checkIconClassName}
+                        >
+                            {opt.label}
+                        </Option>
+                    ))
+                }
+            </ul>
+        )
     );
 });
 
@@ -265,7 +267,7 @@ export const SelectComponent = ({
                                     // className,
                                 }: SelectProps) => {
     // 定位与动画
-    const {anchorRef, floatingRef, floatingStyle} = useFloating({
+    const {anchorRef, floatingRef, floatingStyle, floatingPortal} = useFloating({
         open,
         direction,
         align,
@@ -273,6 +275,8 @@ export const SelectComponent = ({
         duration,
         exitDuration
     });
+
+    // 有很多hook，先统一处理和合并绑定，然后分发
 
     const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
     const {clickOutsideRef, clickOutsideIgnoreRef} = useClickOutsideToClose({open, onClose});
@@ -287,6 +291,7 @@ export const SelectComponent = ({
         open, onOpenChange,
         anchorRef: mergedAnchor,
         floatingRef: mergedFloating,
+        floatingPortal,
 
         autoFocusRef,
 
@@ -296,7 +301,7 @@ export const SelectComponent = ({
     }), [
         value, onValueChange,
         open, onOpenChange,
-        anchorRef, floatingRef, floatingStyle,
+        anchorRef, floatingRef, floatingStyle, floatingPortal,
         duration, exitDuration,
     ]);
 

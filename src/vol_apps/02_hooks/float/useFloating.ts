@@ -1,7 +1,8 @@
 // hooks/useFloating.ts
-import {useAnchorPosition} from "./04_useAnchorPosition";
-import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
-import type {FloatingAlign, FloatingDirection} from "@/vol_apps/00_types/Types";
+import {useAnchorPosition} from "./useAnchorPosition";
+import type {FloatingAlign, UseFloatAnimationOptions} from "@/vol_apps/00_types/Types";
+import {useBetterPortal} from "@/vol_apps/02_hooks/float/useBetterPortal";
+import {usePureFloatStyles} from "@/vol_apps/02_hooks/float/usePureFloatStyles";
 
 /**
  * 统一处理浮层定位与进出动画的 Hook。
@@ -22,6 +23,11 @@ import type {FloatingAlign, FloatingDirection} from "@/vol_apps/00_types/Types";
  * - `floatingStyle`：包含定位、动画、层级等内联样式
  */
 
+type useFloatingOptions = UseFloatAnimationOptions & {
+    align?: FloatingAlign;
+    zIndex?: number;
+}
+
 export function useFloating({
                                 open,
                                 direction = "bottom",
@@ -31,35 +37,40 @@ export function useFloating({
                                 exitDuration = 200,
                                 zIndex = 10,
                                 offset = 4,
-                            }: {
-    open: boolean;
-    direction?: FloatingDirection;
-    align?: FloatingAlign;
-    scale?: number;
-    duration?: number;
-    exitDuration?: number;
-    zIndex?: number;
-    offset?: number;
-}) {
+                            }: useFloatingOptions) {
 
-    const {anchorRef, floatingRef, fixedPosition} = useAnchorPosition({open, direction, align, offset});
-    const anim = useFloatAnimation({ open, direction, scale, duration, exitDuration });
+    const {portal, visible} = useBetterPortal({open, exitDuration})
+
+    const styles = usePureFloatStyles({
+        open: visible,
+        direction,
+        scale,
+        duration,
+        exitDuration,
+        offset,
+    })
+
+    const {anchorRef, floatingRef, fixedPosition} = useAnchorPosition({
+        open: visible,
+        direction,
+        align,
+        offset
+    });
 
     const floatingStyle: React.CSSProperties = {
         zIndex,
         position: "fixed",
         top: fixedPosition.top,
         left: fixedPosition.left,
-        transform: anim.transform,
-        opacity: anim.opacity,
-        visibility: anim.visibility,
-        pointerEvents: anim.pointerEvents,
-        transition: anim.transition,
+        transform: styles.transform,
+        opacity: styles.opacity,
+        // visibility: anim.visibility,
+        // pointerEvents: anim.pointerEvents,
+        transition: styles.transition,
     };
 
-    return { anchorRef, floatingRef, floatingStyle };
+    return {anchorRef, floatingRef, floatingStyle, floatingPortal: portal};
 }
-
 
 //后续的改进方向
 //1. 定位计算的时机问题

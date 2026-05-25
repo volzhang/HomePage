@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {useInterval} from "@/vol_apps/02_hooks/03_useTimeout";
+import {useInterval} from "@/vol_apps/02_hooks/03_useInterval";
 import {useShuffledIndex} from "./random/useShuffledIndex";
 
 type AcceptType = "ALL" | "IMAGE" | "TEXT";

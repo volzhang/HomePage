@@ -1,7 +1,7 @@
 import {cn} from "@/lib/utils";
 import {useKeyEscapeToClose} from "../02_hooks/useKeys";
 import {type ReactNode, type RefObject, useEffect, useRef} from "react";
-import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
+import {useFloatStyles} from "@/vol_apps/02_hooks/float/useFloatStyles";
 
 interface Props {
     open: boolean
@@ -24,8 +24,8 @@ export const MyModal = ({
 
     const modalContentRef = useRef<HTMLDivElement>(null);
 
-    const floatingStyle = useFloatAnimation({
-        open, direction: "bottom", slideDistance: 32,
+    const floatingStyle = useFloatStyles({
+        open, direction: "bottom", offset: 32,
         duration: 300, exitDuration:300
     })
 

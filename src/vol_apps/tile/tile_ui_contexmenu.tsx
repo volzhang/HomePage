@@ -6,7 +6,7 @@ import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
 import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs";
-import {useFloatAnimation} from "@/vol_apps/02_hooks/useFloatAnimation";
+import {useFloatStyles} from "@/vol_apps/02_hooks/float/useFloatStyles";
 
 type ContextMenuStore = {
     contextMenuOpen: boolean
@@ -30,8 +30,8 @@ const ContextMenu = (
     const {t} = useLanguageStore()
 
     const {contextMenuOpen, contextMenuPosition, setContextMenuOpen} = useTileContextMenuStore()
-    const floatingStyle = useFloatAnimation({
-        open: contextMenuOpen, direction: "right", slideDistance: 0,
+    const floatingStyle = useFloatStyles({
+        open: contextMenuOpen, direction: "right", offset: 0,
         duration: 10, exitDuration: 10
     })
 
