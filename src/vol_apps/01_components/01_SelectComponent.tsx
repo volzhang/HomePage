@@ -1,6 +1,7 @@
 import {
     type ButtonHTMLAttributes, type ReactNode, type CSSProperties,
     createContext, forwardRef, useContext, useState, cloneElement, useCallback, useMemo, Children, isValidElement,
+    startTransition,
 } from "react";
 import {cn} from "@/lib/utils";
 import {CheckIcon} from "lucide-react";
@@ -148,18 +149,21 @@ export const Option = forwardRef<HTMLButtonElement, OptionProps>(({
                                                                       ...buttonProps
                                                                   }: OptionProps, ref) => {
 
-    const {value: selectedValue, onValueChange, onOpenChange} = useSelectContext();
+    const {value: selectedValue, onValueChange, onOpenChange, exitDuration} = useSelectContext();
     const isSelected = value
         ? selectedValue === value
         : false
 
+    // const doubleRaf = useDoubleRaf();
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         onOpenChange?.(false);
         //优先渲染动画，保持流畅
         setTimeout(() => {
-            if (value) onValueChange?.(value)
-            onClick?.(e)
-        })
+            startTransition(()=>{
+                if (value) onValueChange?.(value)
+                onClick?.(e)
+            })
+        }, exitDuration)
     };
 
     return (
@@ -183,15 +187,10 @@ interface TriggerProps {
 export const Trigger = ({children, triggerClassName, ...rest}: TriggerProps) => {
     const child = children;
 
-    const {
-        open,
-        onOpenChange,
-        anchorRef,
-    } = useSelectContext();
+    const {open, onOpenChange, anchorRef} = useSelectContext();
 
     const originalRef = getElementRef(child);
-    const mergedRef = useMergeRefsLoose(
-        anchorRef, originalRef);
+    const mergedRef = useMergeRefsLoose(anchorRef, originalRef);
 
     return cloneElement(child, {
         ref: mergedRef,
@@ -260,7 +259,7 @@ export const SelectComponent = ({
                                     align = "start",
                                     offset = 4,
                                     duration = 200,
-                                    exitDuration = 50,
+                                    exitDuration = 100,
 
                                     // className,
                                 }: SelectProps) => {
