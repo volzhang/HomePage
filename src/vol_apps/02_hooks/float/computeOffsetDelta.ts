@@ -45,34 +45,43 @@ const computeTargetSizeDelta = (
 // 这里的direction是target相对参考点的位置。
 const computeAnchorTypeDelta = (
     {
+        anchorSize,
         targetSize,
         direction,
         anchorType,
     }: {
+        anchorSize: Size
         targetSize: Size
         direction: FloatingDirection
         anchorType: FloatingAnchorType
     }
 ) => {
-    // noinspection JSSuspiciousNameCombination
-    const crossAxisSizeMap = {
-        "top": targetSize.width,
-        "bottom": targetSize.width,
-        "right": targetSize.height,
-        "left": targetSize.height,
-    }
-    const getOffset = ()=>{
+
+    const isVertical = direction === "top" || direction === "bottom"
+    const anchorCross = isVertical ? anchorSize.width : anchorSize.height
+    const targetCross = isVertical ? targetSize.width : targetSize.height
+
+    const getOffset = () => {
         switch (anchorType) {
             case "start": return 0
-            case "center": return crossAxisSizeMap[direction]/2
-            case "end": return crossAxisSizeMap[direction]
+            case "center": return (targetCross - anchorCross) / 2
+            case "end": return (targetCross - anchorCross)
+        }
+    }
+
+    const getDirection = () => {
+        switch (direction) {
+            case "top":return "left"
+            case "bottom":return "left"
+            case "left":return "top"
+            case "right":return "top"
         }
     }
 
     return computeOffsetDelta({
-        direction,
-        offset: getOffset(),
-    })
+        direction: getDirection(),
+        offset: getOffset()
+    });
 }
 
 // 这里的delta，是从 anchorPosition 到 targetPosition，
@@ -122,7 +131,7 @@ export const getDeltaFromAnchorToTarget = (
 )=>{
     const delta_anchorElementSize = computeAnchorSizeDelta({anchorSize, direction})
     const delta_targetElementSize = computeTargetSizeDelta({targetSize, direction})
-    const delta_anchorType = computeAnchorTypeDelta({targetSize, direction, anchorType})
+    const delta_anchorType = computeAnchorTypeDelta({anchorSize, targetSize, direction, anchorType})
     const delta_offset = computeOffsetDelta({direction, offset})
     return sumDeltas(
         delta_anchorElementSize,
