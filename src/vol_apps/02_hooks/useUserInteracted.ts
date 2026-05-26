@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 
 export const useUserActivation = () => {
     const [hasInteracted, setHasInteracted] = useState(() => {
@@ -13,12 +13,10 @@ export const useUserActivation = () => {
             return;
         }
 
-        const markAsInteracted = () => {
-            setHasInteracted(true);
-        };
+        const markAsInteracted = () => setHasInteracted(true)
 
         // 常见用户交互事件
-        const events = ['click', 'touchstart', 'keydown', 'mousedown', 'pointerdown'];
+        const events = ["click", "touchstart", "keydown", "mousedown", "pointerdown"];
 
         events.forEach(event => {
             document.addEventListener(event, markAsInteracted, {
@@ -29,8 +27,8 @@ export const useUserActivation = () => {
 
         return () => {
             events.forEach(event => {
-                document.removeEventListener(event, markAsInteracted);
-            });
+                document.removeEventListener(event, markAsInteracted)
+            })
         };
     }, []);
 

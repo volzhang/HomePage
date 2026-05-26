@@ -1,12 +1,12 @@
 import {type RefObject, useCallback} from "react";
 import {useCallbackRef} from "@/vol_apps/02_hooks/00_useCallbackRef";
-import type {FixedPosition} from "@/vol_apps/00_types/Types";
+import type {Delta} from "@/vol_apps/00_types/Types";
 
 export const useFixedPositionFlush = (
     {
         positionRef,
     }: {
-        positionRef: RefObject<FixedPosition>;
+        positionRef: RefObject<Delta>;
     }
 ) => {
     const [anchorRef, internalRef] = useCallbackRef<HTMLElement>();

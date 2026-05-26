@@ -1,6 +1,6 @@
 // hooks/useFloating.ts
 import {useAnchorPosition} from "./useAnchorPosition";
-import type {FloatingAlign, UseFloatAnimationOptions} from "@/vol_apps/00_types/Types";
+import type {FloatingAnchorType, UseFloatAnimationOptions} from "@/vol_apps/00_types/Types";
 import {useBetterPortal} from "@/vol_apps/02_hooks/float/useBetterPortal";
 import {usePureFloatStyles} from "@/vol_apps/02_hooks/float/usePureFloatStyles";
 
@@ -24,7 +24,7 @@ import {usePureFloatStyles} from "@/vol_apps/02_hooks/float/usePureFloatStyles";
  */
 
 type useFloatingOptions = UseFloatAnimationOptions & {
-    align?: FloatingAlign;
+    align?: FloatingAnchorType;
     zIndex?: number;
 }
 
@@ -53,7 +53,7 @@ export function useFloating({
     const {anchorRef, floatingRef, fixedPosition} = useAnchorPosition({
         open: visible,
         direction,
-        align,
+        anchorType: align,
         offset
     });
 
@@ -71,29 +71,5 @@ export function useFloating({
 
     return {anchorRef, floatingRef, floatingStyle, floatingPortal: portal};
 }
-
-//后续的改进方向
-//1. 定位计算的时机问题
-// 当前在 open 变为 true 时立即 useLayoutEffect 执行 calculate，但此时浮层可能还没完成布局（尤其是含图片、异步内容、flex 等情况）。
-// tsxuseLayoutEffect(() => {
-//     if (!open) return;
-//     const raf = requestAnimationFrame(() => {
-//         calculate();
-//         // 再多测一次，兼容部分复杂布局
-//         requestAnimationFrame(calculate);
-//     });
-//     // ...
-// }, [open, calculate]);
-// 2. 浮层尺寸测量时机
-// 目前浮层在 open=false 时可能被 visibility: hidden 或 opacity:0，但 offsetWidth 仍然能读到，这算是运气好。
-// 更健壮的做法是：
-// 浮层始终挂载（display: none 时不测量）
-// 或者在 open 后使用 useLayoutEffect + ResizeObserver 监听浮层自身尺寸变化
-// 3. 边界处理缺失（生产环境痛点）
-// 当前没有做 flip（方向翻转）和 shift（自动偏移避免超出视口）。这是这类 Hook 最容易被诟病的地方。
-// 建议至少加上一个简单的 fallback 策略，比如 bottom 放不下就尝试 top。
-// 4. 支持 Portal
-// 5. 性能
-// resize 和 scroll 加节流（requestAnimationFrame 或 lodash throttle）。
 
 

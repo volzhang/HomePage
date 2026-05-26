@@ -41,7 +41,7 @@ export const SelectContext = createContext<{
     anchorRef?: React.Ref<any>;
     floatingRef?: React.Ref<any>;
     floatingStyle?: CSSProperties;
-    floatingPortal?: (node:ReactNode)=> React.ReactPortal | null;
+    floatingPortal?: (node: ReactNode) => React.ReactPortal | null;
 
     autoFocusRef?: React.Ref<any>;
 
@@ -72,8 +72,7 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
                                                                  }, ref) => {
     const {
         open, onOpenChange,
-        floatingStyle,
-        floatingPortal,
+        floatingStyle, floatingPortal,
         floatingRef, autoFocusRef,
     } = useSelectContext();
 
@@ -148,12 +147,11 @@ export const Option = forwardRef<HTMLButtonElement, OptionProps>(({
                                                                       onClick,
                                                                       ...buttonProps
                                                                   }: OptionProps, ref) => {
-    const {value: selectedValue, onValueChange, onOpenChange} = useSelectContext();
 
-    const isSelected =
-        value
-            ? selectedValue === value
-            : false
+    const {value: selectedValue, onValueChange, onOpenChange} = useSelectContext();
+    const isSelected = value
+        ? selectedValue === value
+        : false
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         onOpenChange?.(false);

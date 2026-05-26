@@ -2,7 +2,7 @@ import {useCallback, useRef, useEffect} from "react";
 import { useFixedPositionFlush } from "@/vol_apps/02_hooks/darg/useFixedPositionFlush";
 import { useRafThrottle } from "@/vol_apps/02_hooks/throttle/useRafThrottle";
 import { useDragState } from "@/vol_apps/02_hooks/darg/useDragState";
-import type { FixedPosition } from "@/vol_apps/00_types/Types";
+import type { Delta } from "@/vol_apps/00_types/Types";
 import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs";
 
 export const useDraggableFixed = ({
@@ -12,9 +12,9 @@ export const useDraggableFixed = ({
                                   }: {
     initialLeft?: number;
     initialTop?: number;
-    onPositionChange?: (position: FixedPosition) => void;
+    onPositionChange?: (position: Delta) => void;
 } = {}) => {
-    const positionRef = useRef<FixedPosition>({
+    const positionRef = useRef<Delta>({
         left: initialLeft,
         top: initialTop,
     });
@@ -22,7 +22,7 @@ export const useDraggableFixed = ({
     const { anchorRef: fixedAnchorRef, flush } = useFixedPositionFlush({ positionRef });
     const throttledFlush = useRafThrottle(flush);
 
-    const dragStartRef = useRef<FixedPosition & { mx: number; my: number }>({
+    const dragStartRef = useRef<Delta & { mx: number; my: number }>({
         left: 0,
         top: 0,
         mx: 0,
@@ -47,7 +47,7 @@ export const useDraggableFixed = ({
 
         onDragging: (e) => {
             const start = dragStartRef.current;
-            const newPos: FixedPosition = {
+            const newPos: Delta = {
                 left: start.left + (e.clientX - start.mx),
                 top: start.top + (e.clientY - start.my),
             };
@@ -60,7 +60,7 @@ export const useDraggableFixed = ({
 
     const anchorRef = useMergeRefs(dragAnchorRef, fixedAnchorRef)
 
-    const setPosition = useCallback((newPos: FixedPosition) => {
+    const setPosition = useCallback((newPos: Delta) => {
         positionRef.current = { ...newPos }; // 避免引用问题
         flush();
     }, [flush]);
