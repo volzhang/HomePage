@@ -44,11 +44,11 @@ export const Tag_context_menu = (
                         <ContextMenuSubContent className="">
                             <ContextMenuItem onClick={() => deleteTag(tag.id)}>
                                 <TriangleAlert className={"mr-2 text-red-500"}/>
-                                {t("Delete this tag from tiles")}
+                                {t("Delete Tag: Note, it will delete this tag from all tiles without deleting the tiles themselves")}
                             </ContextMenuItem>
                             <ContextMenuItem onClick={() => deleteTilesWithOnlyThisTag(tag.id)} className={""}>
                                 <TriangleAlert className={"mr-2 text-red-500"}/>
-                                {t("Delete Tiles with only this tag")}
+                                {t("Delete Tiles: Note, it will delete tiles with only this tag")}
                             </ContextMenuItem>
                         </ContextMenuSubContent>
                     </ContextMenuSub>

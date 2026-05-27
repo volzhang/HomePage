@@ -154,7 +154,6 @@ export const Option = forwardRef<HTMLButtonElement, OptionProps>(({
         ? selectedValue === value
         : false
 
-    // const doubleRaf = useDoubleRaf();
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         onOpenChange?.(false);
         //优先渲染动画，保持流畅

@@ -5,80 +5,30 @@ export const defaultTile = {
     id: 0, url: "", meta: {name: "", alt: "", icon: "", tags: [],}
 };
 
-export const TutorialsTiles: Tile[] = [
-    {
-        id: 0, url: "",
-        meta: {
-            name: "Long Press to Drag",
-            alt: "Tutorial: Long press and drag to rearrange tiles",
-            icon: "",
-            tags: ["Tips", "1"],
-        },
-    },
-    {
-        id: 1, url: "",
-        meta: {
-            name: "Right-Click Me",
-            alt: "Tutorial: Right-click (desktop) to edit tile",
-            icon: "",
-            tags: ["Tips", "2"],
-        },
-    },
-    {
-        id: 2, url: "",
-        meta: {
-            name: "Right-Click Nearby",
-            alt: "Tutorial: Right-click beside the tile to open the context menu",
-            icon: "",
-            tags: ["Tips", "3"],
-        },
-    },
-    {
-        id: 3, url: "https://github.com/volzhang/HomePage",
-        meta: {
-            name: "Click Me to Link",
-            alt: "Tutorial: Click the tile to open link in a new tab",
-            icon: "",
-            tags: ["Tips", "4"],
-        },
-    },
-    {
-        id: 4, url: "",
-        meta: {
-            name: "长按后可拖动",
-            alt: "长按后可拖动",
-            icon: "",
-            tags: ["中文提示", "1"],
-        },
-    },
-    {
-        id: 5, url: "",
-        meta: {
-            name: "右键点击我",
-            alt: "右键点击我",
-            icon: "",
-            tags: ["中文提示", "2"],
-        },
-    },
-    {
-        id: 6, url: "",
-        meta: {
-            name: "右键点旁边空白",
-            alt: "右键点旁边空白",
-            icon: "",
-            tags: ["中文提示", "3"],
-        },
-    },
-    {
-        id: 7, url: "https://github.com/volzhang/HomePage",
-        meta: {
-            name: "左键点击跳转",
-            alt: "左键点击跳转",
-            icon: "",
-            tags: ["中文提示", "4"],
-        },
-    },
+const english_tag = "Tutorial_Tiles_(right-click_to_delete_these_tiles)";
+const chinese_tag = "教程瓷砖(右键可删除相关瓷砖)"
+
+const tutorialConfig = [
+    { name: "Long Press to Drag", alt: "Tutorial: Long press and drag to rearrange tiles", url: "", tag: english_tag },
+    { name: "Right-Click Me", alt: "Tutorial: Right-click (desktop) to edit tile", url: "", tag: english_tag },
+    { name: "Right-Click Nearby", alt: "Tutorial: Right-click beside the tile to open the context menu", url: "", tag: english_tag },
+    { name: "Click Me to Link", alt: "Tutorial: Click the tile to open link in a new tab", url: "https://github.com/volzhang/HomePage", tag: english_tag },
+    { name: "长按后可拖动", alt: "长按后可拖动", url: "", tag: chinese_tag },
+    { name: "右键点击我", alt: "右键点击我", url: "", tag: chinese_tag },
+    { name: "右键点旁边空白", alt: "右键点旁边空白", url: "", tag: chinese_tag },
+    { name: "左键点击跳转", alt: "左键点击跳转", url: "https://github.com/volzhang/HomePage", tag: chinese_tag },
 ];
+
+export const TutorialsTiles: Tile[] = tutorialConfig.map((item, index) => ({
+    id: index,
+    url: item.url,
+    meta: {
+        name: item.name,
+        alt: item.alt,
+        icon: "",
+        tags: [item.tag],
+    },
+}));
 
 export type Meta = {
     name: string;

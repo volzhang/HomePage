@@ -184,7 +184,6 @@ export const Tile_ui_inEdit_styles = (
                                              min={textOpacityMin} max={textOpacityMax} step={0.01}
                                              fallback={1}/>
 
-
                                 <NumberFieldXY label={t("Text Offset")}
                                                min={textOffsetMin} max={textOffsetMax} step={1}
                                                x={textOffset.x}

@@ -61,8 +61,8 @@ export const resources: RESOURCES = {
             "Rename": "重命名",
 
             "Delete": "删除",
-            "Delete this tag from tiles": "从所有瓷砖中删除此标签",
-            "Delete Tiles with only this tag": "删除所有只有此标签的瓷砖",
+            "Delete Tag: Note, it will delete this tag from all tiles without deleting the tiles themselves": "删除标签：注意，这会从所有瓷砖中删除该标签，但不删除瓷砖",
+            "Delete Tiles: Note, it will delete tiles with only this tag": "删除瓷砖：注意，这会删除所有只含该标签的瓷砖",
 
             "Delete Untagged Tiles": "删除无标签瓷砖",
         },

@@ -46,7 +46,7 @@ export const FontFamily = ({value, onChange}: FontFamilyProps) => {
             <PopoverContent className="w-75 p-0" align="start" side="right">
                 <Command>
                     <CommandInput placeholder={t("search font ...")}/>
-                    <CommandList className="max-h-160 overflow-y-auto">
+                    <CommandList className="overflow-y-auto">
                         <CommandEmpty>{t("No font found")}</CommandEmpty>
                         <CommandGroup heading={t("Font List")}>
                             {fontList.map((item) => (
