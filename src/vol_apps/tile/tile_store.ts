@@ -27,7 +27,7 @@ type TileStoreActions = {
 
     appendTiles: (newTiles: TileStoreState["tiles"]) => void;
 
-    updateTags: (newTiles: TileStoreState["tiles"]) => void;
+    updateTags: (newTiles?: TileStoreState["tiles"]) => void;
 
     //选择视图
     selectedTags: () => Tag["name"][];
@@ -90,9 +90,12 @@ export const useTileStoreBase  = createPersistedStoreWithEqualityFn<TileStore>(
 
         // 所有tiles的函数，都植入updateTags
         updateTags: (newTiles) => set((state) => {
+            const targetTiles =
+                newTiles ?? state.tiles;
+
             const names = [
                 ...new Set(
-                    newTiles.flatMap(tile => tile.meta.tags || [])
+                    targetTiles.flatMap(tile => tile.meta.tags || [])
                 )
             ].filter(Boolean);
 
@@ -264,6 +267,11 @@ export const useTileStoreBase  = createPersistedStoreWithEqualityFn<TileStore>(
             const store = get();
             const tag = store.tags.find(t => t.id === id);
             if (!tag) return;
+
+            if (!name.trim()) {
+                store.deleteTag(id);
+                return;
+            }
 
             const oldName = tag.name;
             if (oldName === name) return;

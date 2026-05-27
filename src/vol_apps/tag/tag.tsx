@@ -67,7 +67,7 @@ export const TagComponent = () => {
         updateTag, toggleTag, deleteTag, hasUntaggedTiles,
         isBroadMatches, untaggedChecked, tags,
         setIsBroadMatches, deleteTilesWithOnlyThisTag, deleteUntaggedTiles, setUntaggedChecked,
-        renameTag
+        renameTag,
     } = useTileStore();
 
     const {gap, visible} = useTagStyleStore()
@@ -129,6 +129,10 @@ export const TagComponent = () => {
                                 },
                             }
                         }
+
+                        // style={{
+                        //     // fontSize:`${}px`
+                        // }}
                     />
                 </Tag_context_menu>
             </>

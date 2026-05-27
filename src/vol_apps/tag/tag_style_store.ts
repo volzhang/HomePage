@@ -6,6 +6,7 @@ type TagStyleState = {
     visible: boolean,
 
     height: number,
+    radius: number,
     gap: { x: number; y: number },
 
     backgroundColor: string,
@@ -24,6 +25,7 @@ type TagStyleAction = {
     setVisible: (visible: TagStyleState["visible"]) => void,
 
     setHeight: (height: TagStyleState["height"]) => void,
+    setRadius: (radius: number) => void,
     setGap: (gap: TagStyleState["gap"]) => void,
 
     setBackgroundColor: (backgroundColor: TagStyleState["backgroundColor"]) => void,
@@ -49,6 +51,7 @@ const INITIAL_STYLE: TagStyleState = {
     visible: true,
 
     height: 20,
+    radius: 0,
     gap: {x: 16, y: 16},
 
     backgroundColor: "#ffffff",
@@ -71,6 +74,7 @@ const useTagStyleStoreBase = createPersistedStoreWithEqualityFn<TagStyleStore>(
         setVisible: (visible) => set({visible}),
 
         setHeight: (height) => set({height}),
+        setRadius: (radius) => set({radius}),
         setGap: (gap) => set({gap}),
 
         setBackgroundColor: (backgroundColor) => set({backgroundColor}),
