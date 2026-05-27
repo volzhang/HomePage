@@ -1,61 +1,53 @@
-import {useLayoutEffect, useRef, useState} from "react";
+import {forwardRef, useEffect, useRef, useState} from "react";
 import {cn} from "@/lib/utils";
 
-export const InputButton = (
-    {
-        value,
-        onValueChange,
-
-        inEdit,
-        handleClick,
-
-        className,
-        inputProps,
-    }:{
-        value?:string,
-        onValueChange?:(value:string) => void,
-
-        inEdit?: boolean,
-        handleClick?:()=>void,
-
-        className?:string
+export const InputButton =
+    forwardRef <HTMLInputElement, {
+        value?: string
+        onValueChange?: (value: string) => void
+        inEdit?: boolean
+        handleClick?: () => void
+        className?: string
         inputProps?: React.ComponentProps<'input'>
-    }
-) => {
+    }>(
+        ({
+            value,
+            onValueChange,
+            inEdit,
+            handleClick,
+            className,
+            inputProps,
+        }, ref
+        ) => {
 
     const measureRef = useRef<HTMLSpanElement>(null)
-
     const [width, setWidth] = useState(0)
-
-    useLayoutEffect(() => {
-        if (!measureRef.current) return
-        const rect = measureRef.current.getBoundingClientRect()
-        setWidth(rect.width)
+    useEffect (() => {
+        if (measureRef.current) setWidth(measureRef.current.offsetWidth);
     },[value])
 
     return (
         <>
-            <div className={"relative flex items-center justify-center"}>
+            <div className={"relative"}>
                 {/*内容+样式 控制宽度*/}
                 <span className={cn(
-                    "invisible",
-                    "w-fit h-fit",
-                    "m-0 border-none outline-none text-center",
+                    "absolute invisible",
+                    "w-fit h-fit inline-flex text-center whitespace-nowrap",
+                    "border-none outline-none",
                     className
                 )}
                     ref={measureRef}
                     >{value}</span>
                 <input
+                    ref = {ref}
                     type ="text"
                     value={value}
                     onChange={e => onValueChange?.(e.target.value)}
                     readOnly={!inEdit}
                     disabled={!inEdit}
                     className={cn(
-                        "absolute inset-0 select-none whitespace-nowrap",
-                        "p-0 m-0 border-none outline-none text-center",
-                        "transition-[width]",
-                        inEdit ? "duration-10" : "duration-100",
+                        "w-fit h-fit inline-flex text-center whitespace-nowrap",
+                        "border-none outline-none ring-0 focus:outline-none",
                         className
                         )}
                     style={{
@@ -70,7 +62,6 @@ export const InputButton = (
                      )}
                 ></div>
             </div>
-
         </>
+    )}
     )
-}

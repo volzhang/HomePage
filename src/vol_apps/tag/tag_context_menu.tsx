@@ -7,19 +7,28 @@ import {
     ContextMenuGroup, ContextMenuSub, ContextMenuSubTrigger, ContextMenuSubContent
 } from "@/components/ui/context-menu";
 import {TriangleAlert} from "lucide-react";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
+import type {Tag} from "@/vol_apps/tile/tile_store_types";
+import type {ReactNode} from "react";
 
 export const Tag_context_menu = (
     {
-        t,
         tag,
         children,
         toggleTag,
         deleteTag,
-        setInputString,
         setInEdit,
         deleteTilesWithOnlyThisTag,
-    }: any
+    }: {
+        tag: Tag;
+        children: ReactNode;
+        toggleTag: (id:Tag["id"])=>void;
+        deleteTag: (id:Tag["id"])=>void;
+        setInEdit: (s:boolean)=>void;
+        deleteTilesWithOnlyThisTag: (id:Tag["id"])=>void;
+    }
 ) => {
+    const {t} = useLanguageStore("tagBar")
     return (
         <ContextMenu>
             <ContextMenuTrigger>
@@ -32,7 +41,7 @@ export const Tag_context_menu = (
                     </ContextMenuLabel>
                     <ContextMenuItem onClick={() => toggleTag(tag.id)}>{t("Toggle selection")}</ContextMenuItem>
                     <ContextMenuItem onClick={() => {
-                        setInputString(tag.name)
+                        // setInputString(tag.name)
                         setInEdit(true)
                     }}>
                         {t("Rename")}

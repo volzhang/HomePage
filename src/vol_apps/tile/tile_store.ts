@@ -60,6 +60,8 @@ type TileStoreActions = {
     deleteTilesWithOnlyThisTag: (id: Tag["id"]) => void
     deleteUntaggedTiles: () => void
 
+    checkOnlyThisTag: (id: Tag["id"]) => void
+
 }
 
 export type TileStore = TileStoreState & TileStoreActions;
@@ -324,6 +326,16 @@ export const useTileStoreBase  = createPersistedStoreWithEqualityFn<TileStore>(
             const newTiles = store.tiles.filter(tile => tile.meta.tags.length > 0);
             store.setTiles(newTiles);
         },
+
+        //2026/5/28 新增
+        checkOnlyThisTag:(id)=>{
+            const tags = get().tags.map((tag) => ({
+                ...tag,
+                checked: tag.id === id,
+            }));
+            set({ tags, untaggedChecked: false });
+        }
+
     }),
     {
         // 水和后立即更新tags，不要用useEffect了

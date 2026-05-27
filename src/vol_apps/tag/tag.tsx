@@ -3,12 +3,8 @@ import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hov
 // import {Spinner} from "@/components/ui/spinner";
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {
-    BookmarkIcon, TriangleAlert,
-    // LoaderCircle,
-} from "lucide-react";
-import {useEffect, useRef, useState} from "react";
-import {type Tag} from "@/vol_apps/tile/tile_store_types.js"
+import {BookmarkIcon, TriangleAlert} from "lucide-react";
+
 
 import {
     ContextMenu,
@@ -19,10 +15,11 @@ import {
     ContextMenuGroup, ContextMenuSubTrigger, ContextMenuSubContent, ContextMenuSub
 } from "@/components/ui/context-menu";
 
-import {AutoWidthInput} from "@/vol_apps/tool/component/input.js";
+// import {AutoWidthInput} from "@/vol_apps/tool/component/input.js";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {useTagStyleStore} from "@/vol_apps/tag/tag_style_store";
-import {Tag_context_menu} from "@/vol_apps/tag/tag_context_menu";
+// import {Tag_context_menu} from "@/vol_apps/tag/tag_context_menu";
+import {NewTagItem} from "@/vol_apps/tag/TagItem";
 
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
     isBroadMatches: boolean,
@@ -67,80 +64,20 @@ export const TagComponent = () => {
         updateTag, toggleTag, deleteTag, hasUntaggedTiles,
         isBroadMatches, untaggedChecked, tags,
         setIsBroadMatches, deleteTilesWithOnlyThisTag, deleteUntaggedTiles, setUntaggedChecked,
-        renameTag,
+        renameTag, checkOnlyThisTag,
     } = useTileStore();
 
     const {gap, visible} = useTagStyleStore()
 
-    const TagItem = ({tag}: { tag: Tag }) => {
-        const [inputString, setInputString] = useState<string>(tag.name)
-        const [inEdit, setInEdit] = useState<boolean>(false);
-        const inputRef = useRef<HTMLInputElement>(null);
-
-        useEffect(() => {
-            if (inEdit) {
-                // 延迟一点，确保 AutoWidthInput 已经渲染
-                const id = setTimeout(() => {
-                    inputRef.current?.focus();
-                    const len = inputString.length;
-                    inputRef.current?.setSelectionRange(len, len);
-                }, 300);
-                return () => clearTimeout(id);
-            }
-        }, [inEdit, inputString]);
-
-        return (
-            <>
-                <Tag_context_menu
-                    tag={tag}
-                    t={t}
-                    toggleTag = {toggleTag}
-                    deleteTag = {deleteTag}
-                    setInputString = {setInputString}
-                    setInEdit = {setInEdit}
-                    deleteTilesWithOnlyThisTag = {deleteTilesWithOnlyThisTag}
-                >
-                    <AutoWidthInput
-                        ref={inputRef}
-                        inputValue={inputString}
-                        onValueChange={setInputString}
-                        handleOnClick={() => {
-                            if (!inEdit) {
-                                tags.forEach(item => updateTag(item.id, {checked: item.id === tag.id}));
-                                if (untaggedChecked) setUntaggedChecked(false);
-                            }
-                        }}
-                        inEdit={inEdit}
-                        className={cn({"text-white! bg-sBlue!": tag.checked})}
-                        inputProps={
-                            {
-                                onBlur: () => {
-                                    renameTag(tag.id, inputString)
-                                    setInEdit(false)
-                                },
-                                onKeyDown: (e) => {
-                                    if (e.key === "Enter") {
-                                        e.currentTarget.blur();
-                                    }
-                                    if (e.key === "Escape") {
-                                        setInputString(tag.name);
-                                        setInEdit(false);
-                                    }
-                                },
-                            }
-                        }
-
-                        // style={{
-                        //     // fontSize:`${}px`
-                        // }}
-                    />
-                </Tag_context_menu>
-            </>
-        );
-    };
-
     const Tags = tags.map(tag => (
-        <TagItem key={tag.id} tag={tag}/>
+        <NewTagItem key={tag.id}
+                    tag={tag}
+                    checkOnlyThisTag={checkOnlyThisTag}
+                    toggleTag={toggleTag}
+                    deleteTag={deleteTag}
+                    renameTag={renameTag}
+                    deleteTilesWithOnlyThisTag={deleteTilesWithOnlyThisTag}
+        />
     ));
 
     const Untagged = hasUntaggedTiles() || untaggedChecked ?
