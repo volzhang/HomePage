@@ -103,26 +103,26 @@ export const NumberFieldXY = ({
 
     return (
         <div className="grid grid-cols-2 w-full items-center">
-            <p>{label}</p>
-            <div className="flex items-center justify-between">
-                <span>x</span>
+            <p className={"col-span-1"}>{label}</p>
+            <div className="col-span-1 flex items-center justify-center gap-1">
+                <span className={"w-fit"}>x</span>
                 <input
                     type="number"
                     value={x}
                     step={step}
                     min={min}
                     max={max}
-                    className="border pl-1"
+                    className="w-full border pl-1"
                     onChange={(e) => handleX(e.target.value, onChangeX)}
                 />
-                <span>y</span>
+                <span className={"w-fit"}>y</span>
                 <input
                     type="number"
                     value={y}
                     step={step}
                     min={min}
                     max={max}
-                    className="border pl-1"
+                    className="w-full border pl-1"
                     onChange={(e) => handleY(e.target.value, onChangeY)}
                 />
             </div>

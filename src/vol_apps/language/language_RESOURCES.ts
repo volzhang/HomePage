@@ -48,6 +48,28 @@ export const resources: RESOURCES = {
         },
 
         tagBar: {
+            "Visible": "显示",
+            "Invisible": "隐藏",
+
+            "Default":"默认",
+            "Custom":"自定义",
+            "Styles":"样式",
+
+            "Background": "背景",
+            "Background Color": "背景色",
+            "Background Opacity": "背景透明度",
+
+            "Text & Font":"文本 & 字体",
+            "Font Size": "字体 大小",
+            "Font Weight": "字体 粗细",
+            "Text Color": "文本 颜色",
+            "Text Opacity": "文本 透明度",
+
+            "Spacing & Radius":"间距和圆角",
+            "Tag Gap":"标签 间距",
+            "Tag Padding":"标签 内边距",
+            "Tag Radius":"标签 圆角",
+
             "Left-click a tag to select only this one.\nRight-click a tag to open menu for more operations.\nClick me to toggle mode.\nCurrently: tiles match ANY selected tags":
                 "左键点击标签，则唯一选中此标签。\n右键点击标签，可打开菜单，支持更多操作。\n点击我切换模式。\n当前：瓷砖匹配 任一 选中标签。",
 

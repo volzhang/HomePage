@@ -5,6 +5,7 @@ import {FontFamily} from "@/vol_apps/tile/FontFamilyField";
 import type {TileLogic} from "@/vol_apps/tile/useTileLogic";
 import {ThrottledColorPicker} from "@/vol_apps/tile/ThrottledColorPickerProps";
 import {useEffect, useState} from "react";
+import {ColorPickerField} from "@/vol_apps/tile/ColorPickerField";
 
 const tileSizeMin = 0;
 const tileSizeMax = 200;
@@ -92,18 +93,15 @@ export const Tile_ui_inEdit_styles = (
                         </AccordionTrigger>
                         <AccordionContent>
                             <div className="flex flex-col gap-2">
-                                <div className="grid grid-cols-2 w-full items-center">
-                                    <p>{t("Background Color")}</p>
-                                    <ThrottledColorPicker
-                                        className="border w-full items-center"
-                                        value={backgroundColor}
-                                        onChange={setBackgroundColor}
-                                        delay={100}
-                                    />
-                                </div>
-                                <NumberField label={t("Background Opacity")} value={backgroundOpacity}
+                                <ColorPickerField label={t("Background Color")}
+                                                  value={backgroundColor}
+                                                  onChange={setBackgroundColor}
+                                ></ColorPickerField>
+                                <NumberField label={t("Background Opacity")}
+                                             value={backgroundOpacity}
                                              onChange={setBackgroundOpacity}
-                                             min={backgroundOpacityMin} max={backgroundOpacityMax} step={0.01}
+                                             min={backgroundOpacityMin} max={backgroundOpacityMax}
+                                             step={0.01}
                                              fallback={1}/>
                             </div>
                         </AccordionContent>

@@ -2,66 +2,67 @@ import {forwardRef, useEffect, useRef, useState} from "react";
 import {cn} from "@/lib/utils";
 
 export const InputButton =
-    forwardRef <HTMLInputElement, {
+    forwardRef<HTMLInputElement, {
         value?: string
         onValueChange?: (value: string) => void
         inEdit?: boolean
         handleClick?: () => void
         className?: string
-        inputProps?: React.ComponentProps<'input'>
+        styles?: React.CSSProperties;
+        inputProps?: React.ComponentProps<"input">
     }>(
         ({
-            value,
-            onValueChange,
-            inEdit,
-            handleClick,
-            className,
-            inputProps,
-        }, ref
+             value,
+             onValueChange,
+             inEdit,
+             handleClick,
+             className,
+             styles,
+             inputProps,
+         }, ref
         ) => {
+            const measureRef = useRef<HTMLSpanElement>(null)
+            const [width, setWidth] = useState(0)
+            useEffect(() => {
+                if (measureRef.current) setWidth(measureRef.current.offsetWidth);
+            }, [value, className, styles])
 
-    const measureRef = useRef<HTMLSpanElement>(null)
-    const [width, setWidth] = useState(0)
-    useEffect (() => {
-        if (measureRef.current) setWidth(measureRef.current.offsetWidth);
-    },[value])
-
-    return (
-        <>
-            <div className={"relative"}>
-                {/*内容+样式 控制宽度*/}
-                <span className={cn(
-                    "absolute invisible",
-                    "w-fit h-fit inline-flex text-center whitespace-nowrap",
-                    "border-none outline-none",
-                    className
-                )}
-                    ref={measureRef}
-                    >{value}</span>
-                <input
-                    ref = {ref}
-                    type ="text"
-                    value={value}
-                    onChange={e => onValueChange?.(e.target.value)}
-                    readOnly={!inEdit}
-                    disabled={!inEdit}
-                    className={cn(
-                        "w-fit h-fit inline-flex text-center whitespace-nowrap",
-                        "border-none outline-none ring-0 focus:outline-none",
-                        className
+            return (
+                <>
+                    <div className={"relative"}>
+                        {/*内容+样式 控制宽度*/}
+                        <span className={cn(
+                            "absolute invisible",
+                            "w-fit h-fit inline-flex text-center whitespace-nowrap",
+                            "border-none outline-none",
+                            className
                         )}
-                    style={{
-                        width: `${width}px`,
-                    }}
-                    {...inputProps}
-                />
-                <div onClick={handleClick}
-                     className={cn(
-                         "absolute inset-0 select-none",
-                         inEdit ? "pointer-events-none" : "pointer-events-auto",
-                     )}
-                ></div>
-            </div>
-        </>
-    )}
+                              style={styles}
+                              ref={measureRef}
+                        >{value}</span>
+                        <input
+                            ref={ref} type="text" value={value}
+                            onChange={e => onValueChange?.(e.target.value)}
+                            readOnly={!inEdit} disabled={!inEdit}
+                            className={cn(
+                                "w-fit h-fit inline-flex text-center whitespace-nowrap",
+                                "border-none outline-none ring-0 focus:outline-none",
+                                className
+                            )}
+                            style={{
+                                width: `${width}px`,
+                                ...styles
+                            }}
+                            {...inputProps}
+                        />
+                        <div onClick={handleClick}
+                             className={cn(
+                                 "absolute inset-0 select-none",
+                                 inEdit ? "pointer-events-none" : "pointer-events-auto",
+                             )}
+                        ></div>
+                    </div>
+                </>
+            )
+        }
     )

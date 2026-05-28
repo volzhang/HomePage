@@ -3,6 +3,7 @@ import {InputButton} from "@/vol_apps/tag/InputButton";
 import type {Tag} from "@/vol_apps/tile/tile_store_types";
 import {Tag_context_menu} from "@/vol_apps/tag/tag_context_menu";
 import {cn} from "@/lib/utils";
+import type {FontItem} from "@/vol_apps/cm/cm_store";
 
 export const NewTagItem = (
     {
@@ -12,15 +13,30 @@ export const NewTagItem = (
         deleteTag,
         checkOnlyThisTag,
         deleteTilesWithOnlyThisTag,
-    }:{
-        tag:Tag
+        tagStyles,
+    }: {
+        tag: Tag
         toggleTag: (id: Tag["id"]) => void
-        renameTag: (id: Tag["id"], name: Tag["name"] ) => void
+        renameTag: (id: Tag["id"], name: Tag["name"]) => void
         deleteTag: (id: Tag["id"]) => void
         checkOnlyThisTag: (id: Tag["id"]) => void
         deleteTilesWithOnlyThisTag: (id: Tag["id"]) => void
+        tagStyles: {
+            textOpacity: number,
+            textColor: string,
+            textPadding: { x: number, y: number },
+
+            fontSize: number,
+            fontWeight: number,
+            font: FontItem,
+
+            backgroundColor: string,
+            backgroundOpacity: number,
+
+            radius: number,
+        }
     }
-)=>{
+) => {
 
     const inputRef = useRef<HTMLInputElement>(null);
     const [inputValue, setInputValue] = useState(tag.name);
@@ -34,50 +50,62 @@ export const NewTagItem = (
         if (!inEdit) checkOnlyThisTag(tag.id)
     }
 
-    const handleRename = ()=> {
+    const handleRename = () => {
         renameTag(tag.id, inputValue)
         setInEdit(false)
     }
 
-    const handleDefault = ()=>{
+    const handleDefault = () => {
         setInputValue(tag.name);
         setInEdit(false);
     }
 
     useEffect(() => {
         if (inEdit) {
-
             const id = setTimeout(() => {
                 inputRef.current?.focus();
                 const len = inputValue.length;
                 inputRef.current?.setSelectionRange(len, len);
             }, 300);
             return () => clearTimeout(id);
-
         }
     }, [inEdit, inputValue]);
+
+
+    const textColorStyle = (() => {
+        if (tagStyles.textColor === "auto") return {};
+
+        const r = parseInt(tagStyles.textColor.slice(1, 3), 16);
+        const g = parseInt(tagStyles.textColor.slice(3, 5), 16);
+        const b = parseInt(tagStyles.textColor.slice(5, 7), 16);
+        return {
+            color: `rgba(${r}, ${g}, ${b}, ${tagStyles.textOpacity})`
+        };
+    })();
+
+    const backgroundColorStyle = (() => {
+        if (tagStyles.backgroundColor === "auto") return {};
+
+        const r = parseInt(tagStyles.backgroundColor.slice(1, 3), 16);
+        const g = parseInt(tagStyles.backgroundColor.slice(3, 5), 16);
+        const b = parseInt(tagStyles.backgroundColor.slice(5, 7), 16);
+        return {
+            backgroundColor: `rgba(${r}, ${g}, ${b}, ${tagStyles.backgroundOpacity})`
+        };
+    })();
 
     return (
         <>
 
             <Tag_context_menu
                 tag={tag}
-                toggleTag = {toggleTag}
-                deleteTag = {deleteTag}
-                setInEdit = {setInEdit}
-                deleteTilesWithOnlyThisTag = {deleteTilesWithOnlyThisTag}
+                toggleTag={toggleTag}
+                deleteTag={deleteTag}
+                setInEdit={setInEdit}
+                deleteTilesWithOnlyThisTag={deleteTilesWithOnlyThisTag}
             >
                 <InputButton
-                    ref = {inputRef}
-                    className={cn(
-                        "px-4 py-2",
-                        "border bg-background text-foreground rounded-md",
-                        "text-[14px]",
-                        "font-medium",
-                        "dark:bg-input/30",
-                        "dark:border-input",
-                        tag.checked && "bg-sBlue! text-white!"
-                    )}
+                    ref={inputRef}
                     value={inputValue}
                     onValueChange={setInputValue}
                     inEdit={inEdit}
@@ -91,6 +119,21 @@ export const NewTagItem = (
                             },
                         }
                     }
+                    className={cn(
+                        "border bg-background text-foreground",
+                        "dark:bg-input/30",
+                        "dark:border-input",
+                        tag.checked && "bg-sBlue! text-white!"
+                    )}
+                    styles={{
+                        fontSize: `${tagStyles.fontSize}px`,
+                        fontWeight: tagStyles.fontWeight,
+                        fontFamily: tagStyles.font.family,
+                        padding: `${tagStyles.textPadding.y}px ${tagStyles.textPadding.x}px`,
+                        borderRadius: `${tagStyles.radius}px`,
+                        ...textColorStyle,
+                        ...backgroundColorStyle,
+                    }}
                 />
             </Tag_context_menu>
 

@@ -85,6 +85,7 @@ export const INITIAL_STYLE: TileStyleState = {
     textOffset: {x: 0, y: 10},
     textColor: "#000000",
     textOpacity: 1,
+
 };
 
 // ---------- Store ----------
@@ -121,6 +122,7 @@ const useTileStyleStoreBase = createPersistedStoreWithEqualityFn<TileStyleStore>
         setTextOffset: (textOffset) => set({textOffset}),
         setTextOpacity: (textOpacity) => set({textOpacity}),
         setTextColor: (textColor) => set({textColor}),
+
     }),
 );
 

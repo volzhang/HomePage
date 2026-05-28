@@ -16,6 +16,8 @@ type TagStyleState = {
     textOpacity: number,
     textColor: string,
 
+    textPadding:{ x: number; y: number };
+
     fontSize: number,
     fontWeight: number,
     font: FontItem,
@@ -35,9 +37,12 @@ type TagStyleAction = {
     setTextOpacity: (textOpacity: TagStyleState["textOpacity"]) => void,
     setTextColor: (textColor: TagStyleState["textColor"]) => void,
 
+    setTextPadding: (textPadding: TagStyleState["textPadding"]) => void,
+
     setFontSize: (fontSize: TagStyleState["fontSize"]) => void,
     setFontWeight: (fontWeight: TagStyleState["fontWeight"]) => void,
     setFont: (font: TagStyleState["font"]) => void,
+
 }
 
 type TagStyleStore = TagStyleState & TagStyleAction;
@@ -51,15 +56,17 @@ const INITIAL_STYLE: TagStyleState = {
     visible: true,
 
     height: 20,
-    radius: 0,
+    radius: 8,
     gap: {x: 16, y: 16},
 
-    backgroundColor: "#ffffff",
+    backgroundColor: "auto",
     backgroundOpacity: 1,
 
     textOffset: {x: 0, y: 0},
-    textColor: "#000000",
+    textColor: "auto",
     textOpacity: 1,
+
+    textPadding: {x: 16, y: 8},
 
     fontSize: 14,
     fontWeight: 400,
@@ -68,7 +75,7 @@ const INITIAL_STYLE: TagStyleState = {
 
 const useTagStyleStoreBase = createPersistedStoreWithEqualityFn<TagStyleStore>(
     "tagStyle",
-    (set,) => ({
+    (set) => ({
         ...INITIAL_STYLE,
 
         setVisible: (visible) => set({visible}),
@@ -84,9 +91,12 @@ const useTagStyleStoreBase = createPersistedStoreWithEqualityFn<TagStyleStore>(
         setTextOpacity: (textOpacity) => set({textOpacity}),
         setTextColor: (textColor) => set({textColor}),
 
+        setTextPadding: (textPadding) => set({textPadding}),
+
         setFontSize: (fontSize) => set({fontSize}),
         setFontWeight: (fontWeight) => set({fontWeight}),
         setFont: (font) => set({font}),
+
     })
 )
 
@@ -99,3 +109,14 @@ export function useTagStyleStore(selector?: (state: TagStyleStore) => unknown) {
     if (selector) return useTagStyleStoreBase(selector, shallow);
     return useTagStyleStoreBase((s) => s, shallow);
 }
+
+export const useTagStyleHasChanges = () => {
+    return useTagStyleStore((state) => {
+        return Object.entries(INITIAL_STYLE).some(([key, defaultValue]) => {
+            const current = state[key as keyof typeof INITIAL_STYLE];
+            return JSON.stringify(current) !== JSON.stringify(defaultValue);
+        });
+    });
+};
+
+export const resetTagStyles = () => useTagStyleStoreBase.setState({...INITIAL_STYLE});

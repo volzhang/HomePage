@@ -13,10 +13,12 @@ export const FONT_DEFAULT = {
 interface FontFamilyProps {
     value: { fullName: string; family: string };
     onChange: (value: { fullName: string; family: string }) => void;
+    PopoverContentSide?: "right" | "left" | "bottom" | "top";
 }
 
-export const FontFamily = ({value, onChange}: FontFamilyProps) => {
+export const FontFamily = ({value, onChange, PopoverContentSide = "right"}: FontFamilyProps) => {
     const {t} = useLanguageStore()
+    // noinspection DuplicatedCode
     const [open, setOpen] = useState(false);
     const [fontList, setFontList] = useState<FontItem[]>([]);
 
@@ -43,10 +45,10 @@ export const FontFamily = ({value, onChange}: FontFamilyProps) => {
                     </div>
                 </div>
             </PopoverTrigger>
-            <PopoverContent className="w-75 p-0" align="start" side="right">
+            <PopoverContent className="w-75 p-0" align="start" side={PopoverContentSide}>
                 <Command>
                     <CommandInput placeholder={t("search font ...")}/>
-                    <CommandList className="overflow-y-auto">
+                    <CommandList className="overflow-y-auto max-h-[600px]">
                         <CommandEmpty>{t("No font found")}</CommandEmpty>
                         <CommandGroup heading={t("Font List")}>
                             {fontList.map((item) => (

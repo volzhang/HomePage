@@ -63,6 +63,13 @@ export const TagComponent = () => {
         renameTag, checkOnlyThisTag,
     } = useTileStore();
 
+    const {
+        font, fontSize, fontWeight,
+        textColor, textOpacity,
+        textPadding, radius,
+        backgroundColor, backgroundOpacity,
+    } = useTagStyleStore();
+
     const {gap, visible} = useTagStyleStore()
 
     const Tags = tags.map(tag => (
@@ -73,6 +80,10 @@ export const TagComponent = () => {
                     deleteTag={deleteTag}
                     renameTag={renameTag}
                     deleteTilesWithOnlyThisTag={deleteTilesWithOnlyThisTag}
+                    tagStyles={{
+                        font, fontSize, fontWeight, textColor, textOpacity, textPadding,
+                        backgroundColor, backgroundOpacity, radius
+                    }}
         />
     ));
 
@@ -132,8 +143,8 @@ export const TagComponent = () => {
                 !visible && "hidden",
             )}
                  style={{
-                     rowGap: `${gap.x}px`,
-                     columnGap: `${gap.y}px`,
+                     rowGap: `${gap.y}px`,
+                     columnGap: `${gap.x}px`,
                  }}
             >
                 {Tags}
@@ -143,6 +154,5 @@ export const TagComponent = () => {
                 }/>
             </div>
         </>
-
     );
 };

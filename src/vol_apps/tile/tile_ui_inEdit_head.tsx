@@ -141,10 +141,7 @@ export const Tile_ui_inEdit_head = (
                     />
                 </div>
             </div>
-
             {/* ICON */}
-
-
         </div>
     )
 }
