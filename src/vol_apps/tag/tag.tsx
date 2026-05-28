@@ -1,10 +1,8 @@
 import {Button} from "@/components/ui/button";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
-// import {Spinner} from "@/components/ui/spinner";
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {BookmarkIcon, TriangleAlert} from "lucide-react";
-
 
 import {
     ContextMenu,
@@ -15,10 +13,8 @@ import {
     ContextMenuGroup, ContextMenuSubTrigger, ContextMenuSubContent, ContextMenuSub
 } from "@/components/ui/context-menu";
 
-// import {AutoWidthInput} from "@/vol_apps/tool/component/input.js";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {useTagStyleStore} from "@/vol_apps/tag/tag_style_store";
-// import {Tag_context_menu} from "@/vol_apps/tag/tag_context_menu";
 import {NewTagItem} from "@/vol_apps/tag/TagItem";
 
 export const BroadMatches = ({isBroadMatches, handleOnClick}: {
@@ -132,8 +128,7 @@ export const TagComponent = () => {
             <div className={cn(
                 "animate-fade-in-scale",
                 "flex flex-wrap items-center px-8 py-4 mx-auto",
-                "w-[88%] min-h-18!",
-                "select-none",
+                "w-[88%] min-h-18! select-none",
                 !visible && "hidden",
             )}
                  style={{
@@ -146,7 +141,6 @@ export const TagComponent = () => {
                 <BroadMatches isBroadMatches={isBroadMatches} handleOnClick={
                     () => setIsBroadMatches(!isBroadMatches)
                 }/>
-                {/*<TagUpdate/>*/}
             </div>
         </>
 

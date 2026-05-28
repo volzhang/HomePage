@@ -24,13 +24,13 @@ export const loadFonts = async (): Promise<FontItem[]> => {
         const availableFonts = await window.queryLocalFonts();
         // 列表太长，简化
         const excludeKeywords = [
+            // "ui",
+            // "gothic",
             "black",
-            "ui",
             "narrow",
             "negreta",
             "cursiva",
             "math",
-            "gothic",
             "code",
             "condensed",
             "semicondensed",
