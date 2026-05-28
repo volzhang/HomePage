@@ -65,7 +65,7 @@ export const resources: RESOURCES = {
             "Text Color": "文本 颜色",
             "Text Opacity": "文本 透明度",
 
-            "Spacing & Radius":"间距和圆角",
+            "Spacing & Radius":"间距 & 圆角",
             "Tag Gap":"标签 间距",
             "Tag Padding":"标签 内边距",
             "Tag Radius":"标签 圆角",
