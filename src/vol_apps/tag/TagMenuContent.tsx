@@ -21,8 +21,8 @@ export const TagMenuContent = (
         tag: Tag;
 
         toggleTag: (id:Tag["id"])=>void;
-        deleteTag?: (id:Tag["id"])=>void;
-        setInEdit?: (s:boolean)=>void;
+        deleteTag: (id:Tag["id"])=>void;
+        setInEdit: (s:boolean)=>void;
         deleteTilesWithOnlyThisTag: (id:Tag["id"])=>void;
     }
 ) => {
@@ -35,14 +35,14 @@ export const TagMenuContent = (
                         {tag.name}
                     </ContextMenuLabel>
                     <ContextMenuItem onClick={() => toggleTag(tag.id)}>{t("Toggle selection")}</ContextMenuItem>
-                    <ContextMenuItem onClick={() => setInEdit?.(true)}>{t("Rename")}</ContextMenuItem>
+                    <ContextMenuItem onClick={() => setInEdit(true)}>{t("Rename")}</ContextMenuItem>
                     <ContextMenuItem onClick={() => openSetting("tags")}>{t("Setting")}</ContextMenuItem>
                     <ContextMenuSub>
                         <ContextMenuSubTrigger className={""}>
                             {t("Delete")}
                         </ContextMenuSubTrigger>
                         <ContextMenuSubContent className="">
-                            <ContextMenuItem onClick={() => deleteTag?.(tag.id)}>
+                            <ContextMenuItem onClick={() => deleteTag(tag.id)}>
                                 <TriangleAlert className={"mr-2 text-red-500"}/>
                                 {t("Delete Tag: Note, it will delete this tag from all tiles without deleting the tiles themselves")}
                             </ContextMenuItem>
