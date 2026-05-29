@@ -4,6 +4,7 @@ import type {Tag} from "@/vol_apps/tile/tile_store_types";
 import {InputButton} from "@/vol_apps/tag/InputButton";
 import type {FontItem} from "@/vol_apps/cm/cm_store";
 import {ContextMenu_Untagged} from "@/vol_apps/tag/ContextMenu_Untagged";
+import {useThemeStore} from "@/vol_apps/theme/theme_store";
 
 export const TagItem_Untagged = (
     {
@@ -44,26 +45,32 @@ export const TagItem_Untagged = (
     }
 
     // noinspection DuplicatedCode
-    const textColorStyle = (() => {
-        if (tagStyles.textColor === "auto") return {};
+    const {theme} = useThemeStore()
 
-        const r = parseInt(tagStyles.textColor.slice(1, 3), 16);
-        const g = parseInt(tagStyles.textColor.slice(3, 5), 16);
-        const b = parseInt(tagStyles.textColor.slice(5, 7), 16);
-        return {
-            color: `rgba(${r}, ${g}, ${b}, ${tagStyles.textOpacity})`
-        };
+    const textColorStyle = (() => {
+        if (tagStyles.textColor === "auto" ) {
+            if (tagStyles.textOpacity === 1) return {}
+            if (theme === "light") return {color: `rgba(10,10,10, ${tagStyles.textOpacity})`}
+            else return {color: `rgba(250,250,250, ${tagStyles.textOpacity})`}
+        } else {
+            const r = parseInt(tagStyles.textColor.slice(1, 3), 16);
+            const g = parseInt(tagStyles.textColor.slice(3, 5), 16);
+            const b = parseInt(tagStyles.textColor.slice(5, 7), 16);
+            return {color: `rgba(${r}, ${g}, ${b}, ${tagStyles.textOpacity})`};
+        }
     })();
 
     const backgroundColorStyle = (() => {
-        if (tagStyles.backgroundColor === "auto") return {};
-
-        const r = parseInt(tagStyles.backgroundColor.slice(1, 3), 16);
-        const g = parseInt(tagStyles.backgroundColor.slice(3, 5), 16);
-        const b = parseInt(tagStyles.backgroundColor.slice(5, 7), 16);
-        return {
-            backgroundColor: `rgba(${r}, ${g}, ${b}, ${tagStyles.backgroundOpacity})`
-        };
+        if (tagStyles.backgroundColor === "auto") {
+            if (tagStyles.backgroundOpacity === 1) return {}
+            if (theme === "light") return {backgroundColor: `rgba(250,250,250, ${tagStyles.backgroundOpacity})`}
+            else return {backgroundColor: `rgba(10,10,10, ${tagStyles.backgroundOpacity})`}
+        } else {
+            const r = parseInt(tagStyles.backgroundColor.slice(1, 3), 16);
+            const g = parseInt(tagStyles.backgroundColor.slice(3, 5), 16);
+            const b = parseInt(tagStyles.backgroundColor.slice(5, 7), 16);
+            return {backgroundColor: `rgba(${r}, ${g}, ${b}, ${tagStyles.backgroundOpacity})`};
+        }
     })();
 
     const handleClick = () => checkOnlyUntagged()
@@ -81,9 +88,8 @@ export const TagItem_Untagged = (
                     inEdit={false}
                     handleClick={handleClick}
                     className={cn(
-                        "border bg-background text-foreground",
+                        "border-none bg-background text-foreground",
                         "dark:bg-input/30",
-                        "dark:border-input",
                         tag.checked && "bg-sBlue! text-white!"
                     )}
                     styles={{

@@ -12,7 +12,6 @@ type TagStyleState = {
     backgroundColor: string,
     backgroundOpacity: number,
 
-    textOffset: { x: number; y: number },
     textOpacity: number,
     textColor: string,
 
@@ -33,7 +32,6 @@ type TagStyleAction = {
     setBackgroundColor: (backgroundColor: TagStyleState["backgroundColor"]) => void,
     setBackgroundOpacity: (backgroundOpacity: TagStyleState["backgroundOpacity"]) => void,
 
-    setTextOffset: (textOffset: TagStyleState["textOffset"]) => void,
     setTextOpacity: (textOpacity: TagStyleState["textOpacity"]) => void,
     setTextColor: (textColor: TagStyleState["textColor"]) => void,
 
@@ -62,7 +60,6 @@ const INITIAL_STYLE: TagStyleState = {
     backgroundColor: "auto",
     backgroundOpacity: 1,
 
-    textOffset: {x: 0, y: 0},
     textColor: "auto",
     textOpacity: 1,
 
@@ -87,7 +84,6 @@ const useTagStyleStoreBase = createPersistedStoreWithEqualityFn<TagStyleStore>(
         setBackgroundColor: (backgroundColor) => set({backgroundColor}),
         setBackgroundOpacity: (backgroundOpacity) => set({backgroundOpacity}),
 
-        setTextOffset: (textOffset) => set({textOffset}),
         setTextOpacity: (textOpacity) => set({textOpacity}),
         setTextColor: (textColor) => set({textColor}),
 

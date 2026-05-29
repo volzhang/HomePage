@@ -104,7 +104,7 @@ export const Setting_tag = () => {
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className={"flex flex-col gap-2"}>
-                            <ColorPickerField label={t("Background Color")} value={backgroundColor}
+                            <ColorPickerField label={t("Background Color")} value={backgroundColor === "auto" ? "#000000" : backgroundColor}
                                               onChange={(v) => setBackgroundColor(v)}/>
                             <NumberField label={t("Background Opacity")} value={backgroundOpacity}
                                          onChange={(v) => setBackgroundOpacity(v)} min={0} max={1} step={0.01}/>
@@ -122,7 +122,7 @@ export const Setting_tag = () => {
                                          min={0} max={40} step={0.5}/>
                             <NumberField label={t("Font Weight")} value={fontWeight} onChange={(v) => setFontWeight(v)}
                                          min={100} max={900} step={50}/>
-                            <ColorPickerField label={t("Text Color")} value={textColor}
+                            <ColorPickerField label={t("Text Color")} value={textColor === "auto"? "#000000" : textColor}
                                               onChange={(v) => setTextColor(v)}/>
                             <NumberField label={t("Text Opacity")} value={textOpacity}
                                          onChange={(v) => setTextOpacity(v)} min={0} max={1} step={0.01}/>
