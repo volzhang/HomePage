@@ -58,10 +58,10 @@ const INITIAL_STYLE: TagStyleState = {
     gap: {x: 16, y: 16},
 
     backgroundColor: "auto",
-    backgroundOpacity: 1,
+    backgroundOpacity: 1.01,
 
     textColor: "auto",
-    textOpacity: 1,
+    textOpacity: 1.01,
 
     textPadding: {x: 16, y: 8},
 

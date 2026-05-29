@@ -78,7 +78,7 @@ export const TagItem = (
 
     const textColorStyle = (() => {
         if (tagStyles.textColor === "auto" ) {
-            if (tagStyles.textOpacity === 1) return {}
+            if (tagStyles.textOpacity === 1.01) return {}
             if (theme === "light") return {color: `rgba(10,10,10, ${tagStyles.textOpacity})`}
             else return {color: `rgba(250,250,250, ${tagStyles.textOpacity})`}
         } else {
@@ -91,7 +91,7 @@ export const TagItem = (
 
     const backgroundColorStyle = (() => {
         if (tagStyles.backgroundColor === "auto") {
-            if (tagStyles.backgroundOpacity === 1) return {}
+            if (tagStyles.backgroundOpacity === 1.01) return {}
             if (theme === "light") return {backgroundColor: `rgba(250,250,250, ${tagStyles.backgroundOpacity})`}
             else return {backgroundColor: `rgba(10,10,10, ${tagStyles.backgroundOpacity})`}
         } else {
