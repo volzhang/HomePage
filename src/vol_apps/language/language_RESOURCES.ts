@@ -53,8 +53,8 @@ export const resources: RESOURCES = {
             "Invisible": "隐藏",
 
             "Tile Matching":"瓷砖匹配",
-            "Has Any Tag":"包含任一标签",
-            "Has All Tags":"包含所有标签",
+            "Matches Any Active Tag":"匹配任一激活的标签",
+            "Matches All Active Tags":"匹配所有激活的标签",
 
             "Default":"默认",
             "Custom":"自定义",

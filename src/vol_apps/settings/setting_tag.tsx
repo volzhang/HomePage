@@ -19,8 +19,8 @@ export const Setting_tag = () => {
     ]
 
     const tagMatchOptions = [
-        {value: "any", label: t("Has Any Tag")},
-        {value: "all", label: t("Has All Tags")}
+        {value: "any", label: t("Matches Any Active Tag")},
+        {value: "all", label: t("Matches All Active Tags")}
     ]
 
     const tagConfigOptions = [
@@ -62,8 +62,8 @@ export const Setting_tag = () => {
             />
 
             <MyRadio title={t("Tile Matching")} options={tagMatchOptions}
-                     value={isBroadMatches ? "all" : "any"}
-                     onValueChange={(value) => setIsBroadMatches(value === "all")}
+                     value={isBroadMatches ? "any" : "all"}
+                     onValueChange={(value) => setIsBroadMatches(value === "any")}
             />
 
             <MyRadio title={t("Styles")} options={tagConfigOptions} value={mode}

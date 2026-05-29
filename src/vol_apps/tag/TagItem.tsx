@@ -73,9 +73,9 @@ export const TagItem = (
     }, [inEdit, inputValue]);
 
 
+    // noinspection DuplicatedCode
     const {theme} = useThemeStore()
 
-    // noinspection DuplicatedCode
     const textColorStyle = (() => {
         if (tagStyles.textColor === "auto" ) {
             if (tagStyles.textOpacity === 1) return {}
