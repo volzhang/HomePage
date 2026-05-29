@@ -1,147 +1,233 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {InputButton} from "@/vol_apps/tag/InputButton";
 import type {Tag} from "@/vol_apps/tile/tile_store_types";
-import {ContextMenu_TagItem} from "@/vol_apps/tag/ContextMenu_TagItem";
 import {cn} from "@/lib/utils";
 import type {FontItem} from "@/vol_apps/cm/cm_store";
 import {useThemeStore} from "@/vol_apps/theme/theme_store";
+import {ContextMenu, ContextMenuTrigger} from "@/components/ui/context-menu";
+import {TagMenuContent, UntaggedMenuContent} from "@/vol_apps/tag/TagMenuContent";
+import {useLanguageStore} from "@/vol_apps/language/language_store";
 
-export const TagItem = (
+type TagItemProps =
+    | {
+    type: "tag"
+
+    tag: Tag
+    renameTag: (id: number, name: string) => void
+    deleteTag: (id: number) => void
+    toggleTag: (id: number) => void
+    checkOnlyThisTag: (id: number) => void
+    deleteTilesWithOnlyThisTag: (id: number) => void
+    tagStyles: TagStyles
+}
+
+    | {
+    type: "untagged"
+
+    checkOnlyUntagged: () => void
+    untaggedChecked: boolean
+    deleteUntaggedTiles: () => void
+    setUntaggedChecked: (checked: boolean) => void
+    tagStyles: TagStyles
+}
+
+export const TagItem = (props: TagItemProps) => {
+
+    const {t} = useLanguageStore("tagBar")
+    const {tagStyles} = props
+
+    if (props.type === "tag") {
+        const {tag, renameTag, deleteTag, checkOnlyThisTag, deleteTilesWithOnlyThisTag, toggleTag} = props
+
+        const {inputRef, inputValue, setInputValue, inEdit, setInEdit, handleRename, handleDefault} =
+            useEditTag({tag, renameTag})
+
+        const tagItemStyle = useTagItemStyle({checked: tag.checked, tagStyles})
+
+        const handleClick = () => {
+            if (!inEdit) checkOnlyThisTag(tag.id)
+        }
+
+        return (
+            <>
+                <ContextMenu>
+                    <ContextMenuTrigger>
+                        <InputButton
+                            ref={inputRef}
+                            value={inputValue}
+                            onValueChange={setInputValue}
+                            inEdit={inEdit}
+                            handleClick={handleClick}
+                            inputProps={{
+                                onBlur: handleRename,
+                                onKeyDown: (e) => {
+                                    if (e.key === "Enter") e.currentTarget.blur();
+                                    if (e.key === "Escape") handleDefault()
+                                }
+                            }}
+                            className={tagItemStyle.className}
+                            styles={tagItemStyle.style}
+                        />
+                    </ContextMenuTrigger>
+                    <TagMenuContent
+                        tag={tag}
+                        toggleTag={toggleTag}
+                        setInEdit={setInEdit}
+                        deleteTag={deleteTag}
+                        deleteTilesWithOnlyThisTag={deleteTilesWithOnlyThisTag}/>
+                </ContextMenu>
+            </>
+        )
+
+    }
+
+    if (props.type === "untagged") {
+        const {
+            checkOnlyUntagged,
+            untaggedChecked,
+            deleteUntaggedTiles,
+            setUntaggedChecked,
+        } = props
+
+        const tagItemStyle = useTagItemStyle({checked: untaggedChecked, tagStyles})
+
+        const handleClick = () => checkOnlyUntagged()
+
+        return (
+            <>
+                <ContextMenu>
+                    <ContextMenuTrigger>
+                        <InputButton
+                            value={t("UntaggedTiles")}
+                            inEdit={false}
+                            handleClick={handleClick}
+                            className={tagItemStyle.className}
+                            styles={tagItemStyle.style}
+                        />
+                    </ContextMenuTrigger>
+                    <UntaggedMenuContent
+                        deleteUntaggedTiles={deleteUntaggedTiles}
+                        setUntaggedChecked={setUntaggedChecked}
+                        untaggedChecked={untaggedChecked}
+                    />
+                </ContextMenu>
+            </>
+        )
+    }
+}
+type TagStyles = {
+    textOpacity: number,
+    textColor: string,
+    textPadding: { x: number, y: number },
+    fontSize: number,
+    fontWeight: number,
+    font: FontItem,
+    backgroundColor: string,
+    backgroundOpacity: number,
+    radius: number,
+}
+
+
+export const useTagItemStyle = (
     {
-        tag,
-        toggleTag,
-        renameTag,
-        deleteTag,
-        checkOnlyThisTag,
-        deleteTilesWithOnlyThisTag,
+        checked,
         tagStyles,
     }: {
-        tag: Tag
-        toggleTag: (id: Tag["id"]) => void
-        renameTag: (id: Tag["id"], name: Tag["name"]) => void
-        deleteTag: (id: Tag["id"]) => void
-        checkOnlyThisTag: (id: Tag["id"]) => void
-        deleteTilesWithOnlyThisTag: (id: Tag["id"]) => void
-        tagStyles: {
-            textOpacity: number,
-            textColor: string,
-            textPadding: { x: number, y: number },
-
-            fontSize: number,
-            fontWeight: number,
-            font: FontItem,
-
-            backgroundColor: string,
-            backgroundOpacity: number,
-
-            radius: number,
-        }
+        checked: boolean
+        tagStyles: TagStyles
     }
 ) => {
 
-    const inputRef = useRef<HTMLInputElement>(null);
-    const [inputValue, setInputValue] = useState(tag.name);
-    const [inEdit, setInEdit] = useState<boolean>(false)
-
-    useEffect(() => {
-        setInputValue(tag.name);
-    }, [tag.name]);
-
-    const handleClick = () => {
-        if (!inEdit) checkOnlyThisTag(tag.id)
-    }
-
-    const handleRename = () => {
-        renameTag(tag.id, inputValue)
-        setInEdit(false)
-    }
-
-    const handleDefault = () => {
-        setInputValue(tag.name);
-        setInEdit(false);
-    }
-
-    useEffect(() => {
-        if (inEdit) {
-            const id = setTimeout(() => {
-                inputRef.current?.focus();
-                const len = inputValue.length;
-                inputRef.current?.setSelectionRange(len, len);
-            }, 300);
-            return () => clearTimeout(id);
-        }
-    }, [inEdit, inputValue]);
-
-
-    // noinspection DuplicatedCode
     const {theme} = useThemeStore()
-
     const textColorStyle = (() => {
-        if (tagStyles.textColor === "auto" ) {
+        if (tagStyles.textColor === "auto") {
             if (tagStyles.textOpacity === 1.01) return {}
             if (theme === "light") return {color: `rgba(10,10,10, ${tagStyles.textOpacity})`}
-            else return {color: `rgba(250,250,250, ${tagStyles.textOpacity})`}
+            if (theme === "dark") return {color: `rgba(250,250,250, ${tagStyles.textOpacity})`}
         } else {
-            const r = parseInt(tagStyles.textColor.slice(1, 3), 16);
-            const g = parseInt(tagStyles.textColor.slice(3, 5), 16);
-            const b = parseInt(tagStyles.textColor.slice(5, 7), 16);
-            return {color: `rgba(${r}, ${g}, ${b}, ${tagStyles.textOpacity})`};
+            const r = parseInt(tagStyles.textColor.slice(1, 3), 16)
+            const g = parseInt(tagStyles.textColor.slice(3, 5), 16)
+            const b = parseInt(tagStyles.textColor.slice(5, 7), 16)
+            return {color: `rgba(${r}, ${g}, ${b}, ${tagStyles.textOpacity})`}
         }
-    })();
+    })()
 
     const backgroundColorStyle = (() => {
         if (tagStyles.backgroundColor === "auto") {
             if (tagStyles.backgroundOpacity === 1.01) return {}
             if (theme === "light") return {backgroundColor: `rgba(250,250,250, ${tagStyles.backgroundOpacity})`}
-            else return {backgroundColor: `rgba(10,10,10, ${tagStyles.backgroundOpacity})`}
+            if (theme === "dark") return {backgroundColor: `rgba(10,10,10, ${tagStyles.backgroundOpacity})`}
         } else {
-            const r = parseInt(tagStyles.backgroundColor.slice(1, 3), 16);
-            const g = parseInt(tagStyles.backgroundColor.slice(3, 5), 16);
-            const b = parseInt(tagStyles.backgroundColor.slice(5, 7), 16);
-            return {backgroundColor: `rgba(${r}, ${g}, ${b}, ${tagStyles.backgroundOpacity})`};
+            const r = parseInt(tagStyles.backgroundColor.slice(1, 3), 16)
+            const g = parseInt(tagStyles.backgroundColor.slice(3, 5), 16)
+            const b = parseInt(tagStyles.backgroundColor.slice(5, 7), 16)
+            return {backgroundColor: `rgba(${r}, ${g}, ${b}, ${tagStyles.backgroundOpacity})`}
         }
-    })();
+    })()
 
-    return (
-        <>
-            <ContextMenu_TagItem
-                tag={tag}
-                toggleTag={toggleTag}
-                deleteTag={deleteTag}
-                setInEdit={setInEdit}
-                deleteTilesWithOnlyThisTag={deleteTilesWithOnlyThisTag}
-            >
-                <InputButton
-                    ref={inputRef}
-                    value={inputValue}
-                    onValueChange={setInputValue}
-                    inEdit={inEdit}
-                    handleClick={handleClick}
-                    inputProps={
-                        {
-                            onBlur: handleRename,
-                            onKeyDown: (e) => {
-                                if (e.key === "Enter") e.currentTarget.blur();
-                                if (e.key === "Escape") handleDefault()
-                            },
-                        }
-                    }
-                    className={cn(
-                        "border-none bg-background text-foreground",
-                        "dark:bg-input/30",
-                        tag.checked && "bg-sBlue! text-white!"
-                    )}
-                    styles={{
-                        fontSize: `${tagStyles.fontSize}px`,
-                        fontWeight: tagStyles.fontWeight,
-                        fontFamily: tagStyles.font.family,
-                        padding: `${tagStyles.textPadding.y}px ${tagStyles.textPadding.x}px`,
-                        borderRadius: `${tagStyles.radius}px`,
-                        ...textColorStyle,
-                        ...backgroundColorStyle,
-                    }}
-                />
-            </ContextMenu_TagItem>
-        </>
-    )
+    return {
+        className: cn(
+            "border-none bg-background text-foreground",
+            "dark:bg-input/30",
+            checked && "bg-sBlue! text-white!"
+        ),
+        style: {
+            fontSize: `${tagStyles.fontSize}px`,
+            fontWeight: tagStyles.fontWeight,
+            fontFamily: tagStyles.font.family,
+            padding: `${tagStyles.textPadding.y}px ${tagStyles.textPadding.x}px`,
+            borderRadius: `${tagStyles.radius}px`,
+            ...textColorStyle,
+            ...backgroundColorStyle,
+        } satisfies React.CSSProperties
+    }
+}
+
+const useEditTag = (
+    {
+        tag,
+        renameTag,
+    }: {
+        tag: Tag
+        renameTag: (id: number, name: string) => void
+    }
+) => {
+
+    const inputRef = useRef<HTMLInputElement>(null)
+    const [value, setValue] = useState(tag.name)
+    const [inEdit, setInEdit] = useState(false)
+
+    useEffect(() => {
+        setValue(tag.name)
+    }, [tag.name])
+
+    useEffect(() => {
+        if (!inEdit) return
+        const id = setTimeout(() => {
+            inputRef.current?.focus()
+            const len = value.length
+            inputRef.current?.setSelectionRange(len, len)
+        }, 300)
+        return () => clearTimeout(id)
+    }, [inEdit, value])
+
+    const handleRename = () => {
+        renameTag(tag.id, value)
+        setInEdit(false)
+    }
+
+    const handleDefault = () => {
+        setValue(tag.name)
+        setInEdit(false)
+    }
+
+    return {
+        inputRef,
+        inputValue: value,
+        setInputValue: setValue,
+        inEdit,
+        setInEdit,
+        handleRename,
+        handleDefault,
+    }
 }
