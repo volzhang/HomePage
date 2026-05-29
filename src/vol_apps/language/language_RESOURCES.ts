@@ -8,7 +8,6 @@ export const resources: RESOURCES = {
     en: {},
     cn: {
         // 直接在这里维护双语显示：k,en_US;v,cn。
-
         bg: {
             "Please select folder first": "请先选择目录",
             "Permission denied": "已拒绝授权",
@@ -48,8 +47,14 @@ export const resources: RESOURCES = {
         },
 
         tagBar: {
+            "Setting":"设置",
+
             "Visible": "显示",
             "Invisible": "隐藏",
+
+            "Tile Matching":"瓷砖匹配",
+            "Has Any Tag":"包含任一标签",
+            "Has All Tags":"包含所有标签",
 
             "Default":"默认",
             "Custom":"自定义",

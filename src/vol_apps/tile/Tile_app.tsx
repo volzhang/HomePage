@@ -1,7 +1,7 @@
 import {useTileStore, useTileStoreBase} from "@/vol_apps/tile/tile_store";
 import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated";
 import {FaviconVemetricProvider} from "@/vol_apps/tanStackQuery/Api_FaviconVemetric";
-import {TagComponent} from "@/vol_apps/tag/tag";
+import {TagComponent} from "@/vol_apps/tag/TagBar";
 import {ScrollAreaForTiles} from "./ScrollAreaForTiles";
 import {GlobalContextMenu} from "@/vol_apps/cMenu/globalContextMenu";
 import {SortableTiles} from "@/vol_apps/tile/dnd/dndProvider";

@@ -7,6 +7,7 @@ import {NumberField, NumberFieldXY} from "@/vol_apps/tile/NumberField";
 import {cn} from "@/lib/utils";
 import {FontFamily} from "@/vol_apps/tile/FontFamilyField";
 import {ColorPickerField} from "@/vol_apps/tile/ColorPickerField";
+import {useTileStore} from "@/vol_apps/tile/tile_store";
 
 export const Setting_tag = () => {
     const {visible, setVisible} = useTagStyleStore()
@@ -15,6 +16,11 @@ export const Setting_tag = () => {
     const tagVisibleOptions = [
         {value: "true", label: t("Visible")},
         {value: "false", label: t("Invisible")}
+    ]
+
+    const tagMatchOptions = [
+        {value: "any", label: t("Has Any Tag")},
+        {value: "all", label: t("Has All Tags")}
     ]
 
     const tagConfigOptions = [
@@ -38,6 +44,7 @@ export const Setting_tag = () => {
     } = useTagStyleStore()
 
     const stylesHasChanged = useTagStyleHasChanges()
+    const {isBroadMatches, setIsBroadMatches} = useTileStore()
 
     const [mode, setMode] = useState<"default" | "custom">(
         stylesHasChanged ? "custom" : "default"
@@ -52,6 +59,11 @@ export const Setting_tag = () => {
             <MyRadio title={t("Visible")} options={tagVisibleOptions}
                      value={visible ? "true" : "false"}
                      onValueChange={(value) => setVisible(value === "true")}
+            />
+
+            <MyRadio title={t("Tile Matching")} options={tagMatchOptions}
+                     value={isBroadMatches ? "all" : "any"}
+                     onValueChange={(value) => setIsBroadMatches(value === "all")}
             />
 
             <MyRadio title={t("Styles")} options={tagConfigOptions} value={mode}
@@ -106,12 +118,14 @@ export const Setting_tag = () => {
                     <AccordionContent>
                         <div className={"flex flex-col gap-2"}>
                             <FontFamily value={font} onChange={(v) => setFont(v)} PopoverContentSide={"bottom"}/>
-                            <NumberField label={t("Font Size")} value={fontSize} onChange={(v) => setFontSize(v)} min={0} max={40} step={0.5}/>
-                            <NumberField label={t("Font Weight")} value={fontWeight} onChange={(v) => setFontWeight(v)} min={100} max={900} step={50}/>
-                            <ColorPickerField label={t("Text Color")} value={textColor} onChange={(v) => setTextColor(v)}/>
+                            <NumberField label={t("Font Size")} value={fontSize} onChange={(v) => setFontSize(v)}
+                                         min={0} max={40} step={0.5}/>
+                            <NumberField label={t("Font Weight")} value={fontWeight} onChange={(v) => setFontWeight(v)}
+                                         min={100} max={900} step={50}/>
+                            <ColorPickerField label={t("Text Color")} value={textColor}
+                                              onChange={(v) => setTextColor(v)}/>
                             <NumberField label={t("Text Opacity")} value={textOpacity}
                                          onChange={(v) => setTextOpacity(v)} min={0} max={1} step={0.01}/>
-
                         </div>
                     </AccordionContent>
                 </AccordionItem>

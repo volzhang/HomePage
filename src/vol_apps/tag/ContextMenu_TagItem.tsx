@@ -10,8 +10,9 @@ import {TriangleAlert} from "lucide-react";
 import {useLanguageStore} from "@/vol_apps/language/language_store";
 import type {Tag} from "@/vol_apps/tile/tile_store_types";
 import type {ReactNode} from "react";
+import {useSettingStore} from "@/vol_apps/settings/setting_store";
 
-export const Tag_context_menu = (
+export const ContextMenu_TagItem = (
     {
         tag,
         children,
@@ -29,6 +30,7 @@ export const Tag_context_menu = (
     }
 ) => {
     const {t} = useLanguageStore("tagBar")
+    const {openSetting} = useSettingStore();
     return (
         <ContextMenu>
             <ContextMenuTrigger>
@@ -40,12 +42,8 @@ export const Tag_context_menu = (
                         {tag.name}
                     </ContextMenuLabel>
                     <ContextMenuItem onClick={() => toggleTag(tag.id)}>{t("Toggle selection")}</ContextMenuItem>
-                    <ContextMenuItem onClick={() => {
-                        // setInputString(tag.name)
-                        setInEdit(true)
-                    }}>
-                        {t("Rename")}
-                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => setInEdit(true)}>{t("Rename")}</ContextMenuItem>
+                    <ContextMenuItem onClick={() => openSetting("tags")}>{t("Setting")}</ContextMenuItem>
                     <ContextMenuSub>
                         <ContextMenuSubTrigger className={""}>
                             {t("Delete")}

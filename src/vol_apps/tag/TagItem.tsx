@@ -1,11 +1,11 @@
 import {useEffect, useRef, useState} from "react";
 import {InputButton} from "@/vol_apps/tag/InputButton";
 import type {Tag} from "@/vol_apps/tile/tile_store_types";
-import {Tag_context_menu} from "@/vol_apps/tag/tag_context_menu";
+import {ContextMenu_TagItem} from "@/vol_apps/tag/ContextMenu_TagItem";
 import {cn} from "@/lib/utils";
 import type {FontItem} from "@/vol_apps/cm/cm_store";
 
-export const NewTagItem = (
+export const TagItem = (
     {
         tag,
         toggleTag,
@@ -96,8 +96,7 @@ export const NewTagItem = (
 
     return (
         <>
-
-            <Tag_context_menu
+            <ContextMenu_TagItem
                 tag={tag}
                 toggleTag={toggleTag}
                 deleteTag={deleteTag}
@@ -135,8 +134,7 @@ export const NewTagItem = (
                         ...backgroundColorStyle,
                     }}
                 />
-            </Tag_context_menu>
-
+            </ContextMenu_TagItem>
         </>
     )
 }

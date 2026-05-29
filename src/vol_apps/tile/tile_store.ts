@@ -61,6 +61,7 @@ type TileStoreActions = {
     deleteUntaggedTiles: () => void
 
     checkOnlyThisTag: (id: Tag["id"]) => void
+    checkOnlyUntagged: () => void,
 
 }
 
@@ -83,7 +84,7 @@ const INITIAL_STATE = {
     tileUiVisible: false,
 }
 
-export const useTileStoreBase  = createPersistedStoreWithEqualityFn<TileStore>(
+export const useTileStoreBase = createPersistedStoreWithEqualityFn<TileStore>(
     "tile",
     (set, get) => ({
         ...INITIAL_STATE,
@@ -111,7 +112,7 @@ export const useTileStoreBase  = createPersistedStoreWithEqualityFn<TileStore>(
                 checked: oldMap.get(name) ?? false
             }));
 
-            return { tags: newTags };
+            return {tags: newTags};
         }),
 
 
@@ -295,7 +296,7 @@ export const useTileStoreBase  = createPersistedStoreWithEqualityFn<TileStore>(
             // 再把新 tag 设回 checked
             const newTag = get().tags.find(t => t.name === name);
             if (newTag && wasChecked) {
-                get().updateTag(newTag.id, { checked: true });
+                get().updateTag(newTag.id, {checked: true});
             }
         },
 
@@ -328,12 +329,20 @@ export const useTileStoreBase  = createPersistedStoreWithEqualityFn<TileStore>(
         },
 
         //2026/5/28 新增
-        checkOnlyThisTag:(id)=>{
+        checkOnlyThisTag: (id) => {
             const tags = get().tags.map((tag) => ({
                 ...tag,
                 checked: tag.id === id,
             }));
-            set({ tags, untaggedChecked: false });
+            set({tags, untaggedChecked: false});
+        },
+
+        checkOnlyUntagged: () => {
+            const tags = get().tags.map((tag) => ({
+                ...tag,
+                checked: false,
+            }));
+            set({tags, untaggedChecked: true});
         }
 
     }),
