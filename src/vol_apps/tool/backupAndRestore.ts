@@ -3,6 +3,8 @@ import { VERSION } from "@/vol_apps/tool/action/fetch";
 import {persistedStores, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 import { downloadAsJsonFile, timeStamp } from "@/vol_apps/tool/action/download";
 import { isPlainObject } from "@/vol_apps/tool/isType/isPlainObject";
+import {atoms} from "@/vol_apps/03_persist_atoms/createAtom";
+import {safeParse} from "valibot";
 
 // ----------------------------------------------------------------------
 // 工具函数：解析备份值，兼容旧备份中字符串化存储的情况
@@ -49,6 +51,7 @@ const parseBackupValue = (value: any) => {
  * @param file - 用户选择的 JSON 备份文件
  * @param mergeTileTiles - 恢复存档时，tiles使用追加模式，默认关
  */
+
 export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean = false): Promise<void> => {
 	const text = await file.text();
 	let backupData: any;
@@ -63,6 +66,17 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
 	if (!isPlainObject(backupData)) {
 		console.error("Backup data is not an object");
 		return;
+	}
+
+	// 合并 atoms 数据
+	for (const [key, atom] of atoms) {
+		if (!(key in backupData)) continue;
+		const parsed = safeParse(atom.schema, backupData[key]);
+		if (!parsed.success) {
+			console.error(`Unable to restore atom: `, key, parsed.issues);
+			continue;
+		}
+		atom.setMemoryValue(parsed.output);
 	}
 
 	const registered = new Map(persistedStores);
@@ -104,6 +118,7 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
  * - 导出的备份文件格式为标准格式 { state: {...}, version: 0 }，供恢复时使用。
  * - 版本号目前固定为 0，后续如需升级可在此处调整。
  */
+
 export const persistedStoresBackup = async (): Promise<void> => {
 	const registered = new Map(persistedStores);
 	const result: Record<string, any> = {};
@@ -113,6 +128,11 @@ export const persistedStoresBackup = async (): Promise<void> => {
 		if (snapshot !== null) {
 			result[key] = snapshot;
 		}
+	}
+
+	// 合并 atoms，后续逐步迁移
+	for (const [key, atom] of atoms) {
+		result[key] = atom.getValue();
 	}
 
 	const filename = `DB[${VERSION}]${timeStamp()}.json`;

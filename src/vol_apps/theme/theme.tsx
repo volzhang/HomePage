@@ -1,10 +1,11 @@
 import {Button} from "@/components/ui/button";
-import {useThemeStore} from "@/vol_apps/theme/theme_store";
+import {useThemeAtom} from "@/vol_apps/theme/themeAtom.ts"
 import {useEffect} from "react";
 import {Moon, Sun} from "lucide-react";
 
 export const Theme = () => {
-	const {theme, setTheme} = useThemeStore();
+	const [theme, setTheme, hydrated] = useThemeAtom();
+
 	useEffect(() => {
 		const root = document.documentElement;
 		if (theme === "dark") {
@@ -18,13 +19,16 @@ export const Theme = () => {
 
 	return (
 		<>
-			<Button
-				className={"animate-fade-in-scale"}
-				variant={"outline"}
-				size={"icon"}
-				onClick={toggleTheme}>
-				{theme === "light" ? <Sun/> : <Moon/>}
-			</Button>
+			{
+				hydrated &&
+				<Button
+					className={"animate-fade-in-scale"}
+					variant={"outline"}
+					size={"icon"}
+					onClick={toggleTheme}>
+					{theme === "light" ? <Sun/> : <Moon/>}
+				</Button>
+			}
 		</>
 	);
 
