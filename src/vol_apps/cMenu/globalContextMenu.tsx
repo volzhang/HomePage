@@ -13,13 +13,13 @@ import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 
 import {Plus, Download, Upload, Image} from "lucide-react";
 import {useState, type PropsWithChildren} from "react";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {useSettingStore} from "../settings/setting_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export function GlobalContextMenu({children}: PropsWithChildren) {
     const {tilesVisible, addTile, setTileInEditId, setTileUiVisible, setTilesVisible} = useTileStore();
     const {openSetting} = useSettingStore()
-    const {t} = useLanguageStore("menu")
+    const {t} = useLanguageAtom("menu")
 
     const onAddTile = () => {
         const newTileId = addTile();

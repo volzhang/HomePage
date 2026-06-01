@@ -5,7 +5,7 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {useState} from "react";
 import { cn } from "@/lib/utils";
 import {loadFonts} from "@/vol_apps/tool/action/loadFonts";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 const FONT_DEFAULT = {
 	fullName: "monospace",
@@ -14,7 +14,7 @@ const FONT_DEFAULT = {
 
 export const CmUiFontFamily = ({className}:{className?:string}) => {
 
-	const {t} = useLanguageStore()
+	const {t} = useLanguageAtom()
 	const {fontMeta, setFontMeta} = useCmStore();
 	// noinspection DuplicatedCode
 	const [open, setOpen] = useState(false);

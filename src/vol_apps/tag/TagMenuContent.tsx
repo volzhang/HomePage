@@ -5,9 +5,9 @@ import {
     ContextMenuGroup, ContextMenuSub, ContextMenuSubTrigger, ContextMenuSubContent
 } from "@/components/ui/context-menu";
 import {TriangleAlert} from "lucide-react";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
 import type {Tag} from "@/vol_apps/tile/tile_store_types";
 import {useSettingStore} from "@/vol_apps/settings/setting_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export const TagMenuContent = (
     {
@@ -26,7 +26,7 @@ export const TagMenuContent = (
         deleteTilesWithOnlyThisTag: (id:Tag["id"])=>void;
     }
 ) => {
-    const {t} = useLanguageStore("tagBar")
+    const {t} = useLanguageAtom("tagBar")
     const {openSetting} = useSettingStore();
     return (
             <ContextMenuContent avoidCollisions={false} alignOffset={18}>
@@ -69,7 +69,7 @@ export const UntaggedMenuContent = (
     }
 ) => {
 
-    const {t} = useLanguageStore("tagBar")
+    const {t} = useLanguageAtom("tagBar")
     const {openSetting} = useSettingStore()
 
     return (

@@ -1,5 +1,4 @@
 import {MyRadio} from "@/vol_apps/bg/bg_ui_settings";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {resetTagStyles, useTagStyleHasChanges, useTagStyleStore} from "@/vol_apps/tag/tag_style_store";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {useEffect, useState} from "react";
@@ -8,10 +7,11 @@ import {cn} from "@/lib/utils";
 import {FontFamily} from "@/vol_apps/tile/FontFamilyField";
 import {ColorPickerField} from "@/vol_apps/tile/ColorPickerField";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export const Setting_tag = () => {
     const {visible, setVisible} = useTagStyleStore()
-    const {t} = useLanguageStore("tagBar")
+    const {t} = useLanguageAtom("tagBar")
 
     const tagVisibleOptions = [
         {value: "true", label: t("Visible")},

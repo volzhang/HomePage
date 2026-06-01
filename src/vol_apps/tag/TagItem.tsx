@@ -6,7 +6,7 @@ import type {FontItem} from "@/vol_apps/cm/cm_store";
 import {useThemeAtom} from "@/vol_apps/theme/themeAtom"
 import {ContextMenu, ContextMenuTrigger} from "@/components/ui/context-menu";
 import {TagMenuContent, UntaggedMenuContent} from "@/vol_apps/tag/TagMenuContent";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 type TagItemProps =
     | {
@@ -33,7 +33,7 @@ type TagItemProps =
 
 export const TagItem = (props: TagItemProps) => {
 
-    const {t} = useLanguageStore("tagBar")
+    const {t} = useLanguageAtom("tagBar")
     const {tagStyles} = props
 
     if (props.type === "tag") {

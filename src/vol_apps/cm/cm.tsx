@@ -17,8 +17,6 @@ import {Compartment} from "@codemirror/state";
 import {searchKeymap, highlightSelectionMatches, search,} from "@codemirror/search";
 import {EditorView, lineNumbers, keymap,} from "@codemirror/view";
 
-import {toast} from "sonner";
-
 export const Cm = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const viewRef = useRef<EditorView | null>(null);
@@ -52,7 +50,7 @@ export const Cm = () => {
 				if (cancelled) return;
 				if (!available && fontMeta.family !== "monospace") {
 					setFontMeta({fullName: "monospace", family: "monospace"});
-					toast.error(`"${fontMeta.family}" 不存在，已回退至 monospace`);
+					// toast.error(`"${fontMeta.family}" 不存在，已回退至 monospace`);
 				}
 			} catch (err) {
 				console.log("字体检查失败", err);

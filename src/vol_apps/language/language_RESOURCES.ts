@@ -260,5 +260,8 @@ export const resources: RESOURCES = {
         "TagBar": "标签栏",
         "TileWall": "磁砖墙",
 
+        //toast
+        "can not open link":"无法打开链接",
+
     }
 } as const;

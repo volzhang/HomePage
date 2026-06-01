@@ -1,12 +1,12 @@
 import {UnorderedList} from "@/vol_apps/01_components/UnorderedList";
 import {type TileLogic, useTileLogic} from "@/vol_apps/tile/useTileLogic";
 import {create} from "zustand";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
 import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs";
 import {useFloatStyles} from "@/vol_apps/02_hooks/float/useFloatStyles";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 type ContextMenuStore = {
     contextMenuOpen: boolean
@@ -27,7 +27,7 @@ export const useTileContextMenuStore = () => TileContextMenuStore()
 const ContextMenu = (
     {contextMenuOptions}: TileLogic
 ) => {
-    const {t} = useLanguageStore()
+    const {t} = useLanguageAtom()
 
     const {contextMenuOpen, contextMenuPosition, setContextMenuOpen} = useTileContextMenuStore()
     const floatingStyle = useFloatStyles({

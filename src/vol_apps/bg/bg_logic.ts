@@ -5,7 +5,7 @@ import {
     getDateWithOffset,
     type BingWallpaperArchiveJson
 } from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
+
 import {setBackground} from "./bg_util";
 import {useFileCarousel} from "@/vol_apps/02_hooks/useFileCarousel";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
@@ -14,6 +14,7 @@ import {toast} from "sonner";
 import {useDoubleClick} from "../02_hooks/useDoubleClick";
 import {useSettingStore} from "@/vol_apps/settings/setting_store";
 import {useUserActivation} from "@/vol_apps/02_hooks/useUserInteracted";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 /**
  * UI pending 控制（带超时）
@@ -82,7 +83,7 @@ export const useBgLogic = () => {
         if (!open) setOtherVisible(true);
     }, [open]);
 
-    const {t, language} = useLanguageStore("bg");
+    const {t, language} = useLanguageAtom("bg");
 
     // 日期
     const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate]);

@@ -3,7 +3,7 @@ import type {FontItem} from "@/vol_apps/cm/cm_store";
 import {loadFonts} from "@/vol_apps/tool/action/loadFonts";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export const FONT_DEFAULT = {
     fullName: "System Default",
@@ -17,7 +17,7 @@ interface FontFamilyProps {
 }
 
 export const FontFamily = ({value, onChange, PopoverContentSide = "right"}: FontFamilyProps) => {
-    const {t} = useLanguageStore()
+    const {t} = useLanguageAtom()
     // noinspection DuplicatedCode
     const [open, setOpen] = useState(false);
     const [fontList, setFontList] = useState<FontItem[]>([]);

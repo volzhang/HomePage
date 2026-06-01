@@ -9,14 +9,11 @@
 // }
 
 import {toast} from "sonner";
-import {LanguageIsDefault} from "@/vol_apps/language/language_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 const ToastErr = (url:string)=>{
-    toast.error(
-        LanguageIsDefault
-            ? `can not open link 👉 ${url} 👈`
-            : `无法打开链接 👉 ${url} 👈`
-    );
+    const {t} = useLanguageAtom()
+    toast.error(t("can not open link") + `👉 ${url} 👈`);
 }
 
 export const openLinkInNewTab = (url: string) => {

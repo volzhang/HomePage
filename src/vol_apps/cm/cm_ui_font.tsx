@@ -6,7 +6,7 @@ import {cn} from "@/lib/utils";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
 import {CmUiFontFamily} from "@/vol_apps/cm/cm_ui_font_family";
 import {useEffect, useState} from "react";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 const MIN_FONT_SIZE = 8;
 const MAX_FONT_SIZE = 128;
@@ -18,7 +18,7 @@ const MIN_LINE_HEIGHT = 8;
 const MAX_LINE_HEIGHT = 256;
 
 export const CmUiFont = () => {
-	const {t} = useLanguageStore()
+	const {t} = useLanguageAtom()
 
 	const {
 		fontPx, setFontPx,

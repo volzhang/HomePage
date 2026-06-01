@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import { toast } from "sonner";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export const useToast = () => {
-	const { t } = useLanguageStore("dndFile")
+	const { t } = useLanguageAtom("dndFile")
 	const toastId = useRef<string | number | null>(null);
 
 	const dismissToast = () => {

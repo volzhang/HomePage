@@ -7,8 +7,7 @@ import {useTopClick} from "@/vol_apps/tanStackQuery/Api_RadioBrowser";
 import {useRadioStore} from "@/vol_apps/radio/radio_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
-
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export const RadioDemo = () => {
 
@@ -72,7 +71,7 @@ export const RadioDemo = () => {
 
     const [imgError, setImgError] = useState(false);
 
-    const {t} = useLanguageStore();
+    const {t} = useLanguageAtom();
 
     return (
         <div className="flex flex-col p-0 gap-0 w-fit items-center">

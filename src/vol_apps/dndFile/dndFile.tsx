@@ -4,10 +4,10 @@ import {DndFileUiModal} from "@/vol_apps/dndFile/dndFile_ui_modal";
 import {useFileDnD} from "@/vol_apps/dndFile/useFileDnD";
 import {createFileHandlers} from "@/vol_apps/dndFile/fileHandlers";
 import {getDialogConfig} from "@/vol_apps/dndFile/dialogConfig";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export const DndFile = () => {
-	const {t} = useLanguageStore("dndFile")
+	const {t} = useLanguageAtom("dndFile")
 	const cmStore = useCmStore();
 	const {file, openModal, setOpenModal, fileType} = useFileDnD();
 

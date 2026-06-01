@@ -4,16 +4,16 @@ import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
 import {enhanceUrl, extractMainDomain} from "@/vol_apps/tool/action/enhanceUrl";
-import {useLanguageStore} from "@/vol_apps/language/language_store";
 import {openLinkInCurrentTab, openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {useFaviconVemetricPng} from "@/vol_apps/tanStackQuery/Api_FaviconVemetric";
 import {isValidUrl} from "@/vol_apps/tool/isType/isValidUrl";
 import {isSortable} from "@dnd-kit/react/sortable";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export type TileLogic = ReturnType<typeof useTileLogic>;
 export const useTileLogic = () => {
 
-    const {t} = useLanguageStore()
+    const {t} = useLanguageAtom()
 
     const {
         tiles, tileInEditId, tileUiVisible,
