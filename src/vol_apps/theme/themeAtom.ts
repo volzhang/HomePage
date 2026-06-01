@@ -14,12 +14,10 @@ const themeDefault = {theme: "light"} as const
 //     version: 1.2
 // }));
 
-type Theme = v.InferOutput<typeof themeSchema>
-
-export const _useThemeAtom = createMigrationAtom<Theme>(
+export const _useThemeAtom = createMigrationAtom(
     {
-        schema: themeSchema,
-        defaultValue: themeDefault,
+        stateSchema: themeSchema,
+        initState: themeDefault,
         key: themeKey,
         getLegacy: () => localStorage.getItem(themeKey),
     }

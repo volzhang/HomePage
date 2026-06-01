@@ -7,16 +7,13 @@ const languageSchema = v.object({
     language: v.picklist(['en', 'cn'])
 })
 
-export type LANGUAGE = v.InferOutput<typeof languageSchema>
-
 const languageKey = "language"
 const languageDefault = {language: "en"} as const
 
-
-const _useLanguageAtom = createMigrationAtom<LANGUAGE>({
+const _useLanguageAtom = createMigrationAtom({
     key: languageKey,
-    defaultValue: languageDefault,
-    schema: languageSchema,
+    initState: languageDefault,
+    stateSchema: languageSchema,
 
     getLegacy: () => localStorage.getItem(languageKey),
 })
@@ -45,7 +42,7 @@ export const useLanguageAtom = (namespace?: string) => {
             }
             return key;
         },
-        [language, namespace]
+        [language.language, namespace]
     );
 
     return {

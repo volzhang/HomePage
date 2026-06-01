@@ -61,8 +61,8 @@ const idbStore = createStore("localforage", "keyvaluepairs")
 
 const _useTagStyleAtom = createMigrationAtom<TagStyle>({
     key:tagStyleKey,
-    defaultValue:tagStyleDefault,
-    schema:tagStyleSchema,
+    initState:tagStyleDefault,
+    stateSchema:tagStyleSchema,
 
     getLegacy: () => get(tagStyleKey, idbStore),
 })

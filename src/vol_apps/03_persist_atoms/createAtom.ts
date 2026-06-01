@@ -1,10 +1,12 @@
 import {useMemo, useSyncExternalStore} from "react";
 import {get, set} from "idb-keyval";
-import {safeParse, type BaseSchema, object, record, number, string, unknown} from "valibot";
+import {safeParse, type BaseSchema,} from "valibot";
+import * as v from "valibot"
+import {runMigration} from "@/vol_apps/03_persist_atoms/runMigration.ts";
 
 type AtomEntry = {
     key: string;
-    valueSchema: BaseSchema<any, any, any>;
+    stateSchema: BaseSchema<any, any, any>;
     dataSchema: BaseSchema<any, any, any>;
 
     getValue: () => unknown;
@@ -13,112 +15,87 @@ type AtomEntry = {
 };
 
 type Listener = () => void;
-
 export const atoms = new Map<string, AtomEntry>();
 
-const MIGRATION_FLAGS_KEY = "_migration_flags";
+// type State = Record<string, unknown>;
+//
+// type Data = {
+//     state: State
+//     version: number
+// }
 
-export const runMigration = async (
-    key: string,
-    migration: () => Promise<void> | void
-) => {
-    const flags: Record<string, boolean> = (await get(MIGRATION_FLAGS_KEY)) ?? {};
-    if (flags[key]) return
-    await migration();
-    await set(MIGRATION_FLAGS_KEY, {...flags, [key]: true});
-};
+const getDataSchema = <T>(schema: BaseSchema<T, any, any>) => {
+    return v.object({state: schema, version: v.number()});
+}
 
-/**
- * 旧存储的数据结构示例：
- * {
- *   "state": { "theme": "dark" },
- *   "version": 1.0
- * }
- */
+const buildData = <T>(state: T) => {
+    return {state, version: 1.0 as const};
+}
 
-export const oldDataSchema = object({
-    state: record(string(), unknown()),  // 键是字符串，值类型未知
-    version: number(),
-});
-
-
-export const createMigration = <T>(
-    {
-        key,
-        valueSchema,
-        getLegacy,
-        setCurrent,
-    }: {
-        key: string;
-        valueSchema: BaseSchema<T, any, any>;
-        getLegacy: () => Promise<unknown> | unknown | undefined;
-        setCurrent: (key: string, value: T) => Promise<void> | void;
-    }
-) => {
-
+export const createMigration = <T>({
+                                       key,
+                                       stateSchema,
+                                       getLegacy,
+                                   }: {
+    key: string;
+    stateSchema: BaseSchema<T, any, any>;
+    getLegacy: () => Promise<unknown> | unknown | undefined;
+}) => {
     return async () => {
         const raw = await getLegacy();
         if (raw == null) return;
 
-        let json: unknown;
+        let data: unknown;
 
         if (typeof raw === "string") {
             try {
-                json = JSON.parse(raw);
+                data = JSON.parse(raw);
             } catch (e) {
-                console.warn(`Migration: failed to parse JSON for key "${key}"`, e);
+                console.warn("Migration: failed to JSON parsee", key, e);
                 return;
             }
         } else if (typeof raw === "object" && raw !== null) {
-            json = raw;
+            data = raw;
         } else {
-            console.warn(`Migration: old data invalid for key "${key}"`);
+            console.warn("Migration: failed to JSON parsee", key)
             return;
         }
 
-        const parseOld = safeParse(oldDataSchema, json);
-
-        if (!parseOld.success) {
-            console.warn(`Migration: old data invalid for key "${key}"`, parseOld.issues);
+        const dataSchema = getDataSchema(stateSchema)
+        const parseData = safeParse(dataSchema, data);
+        if (!parseData.success) {
+            console.warn("Migration: failed to parse data", key, parseData.issues);
             return;
         }
 
-        const value = parseOld.output.state;
+        const state = parseData.output.state;
+        const parseState = safeParse(stateSchema, state);
 
-        if (value === undefined) {
-            console.warn(`Migration: key "${key}" not found in old state`);
+        if (!parseState.success) {
+            console.error("Migration: failed to parse state", key, parseState.issues);
             return;
         }
 
-        const parseValue = safeParse(valueSchema, value);
-
-        if (!parseValue.success) {
-            console.error(`Migration failed for key "${key}":`, parseValue.issues);
-            return;
-        }
-
-        await setCurrent(key, parseValue.output);
+        await set(key, buildData(state));
     };
 };
 
 
-export const createAtom = <T>(
-    {key, valueSchema, defaultValue, migration}: {
-        key: string;
-        valueSchema: BaseSchema<T, any, any>;
-        defaultValue: T;
-        migration?: () => Promise<void> | void;
-    }
-) => {
+export const createAtom = <T>({
+                                  key,
+                                  stateSchema,
+                                  initState,
+                                  migration,
+                              }: {
+    key: string;
+    stateSchema: BaseSchema<T, any, any>;
+    initState: T;
+    migration?: () => Promise<void> | void;
+}) => {
 
-    // version 没有实际作用，只为保持新旧数据schema对齐
-    const newDataSchema = object({
-        state: valueSchema,
-        version: number(),
-    })
-
-    let value: T = defaultValue;
-    let hydrated: boolean = false;
+    const dataSchema = getDataSchema(stateSchema);
+    let state: T = initState;
+    let hydrated = false;
 
     const listeners = new Set<Listener>();
     const emit = () => listeners.forEach(fn => fn());
@@ -131,12 +108,11 @@ export const createAtom = <T>(
             // 2.水合
             const saved = await get(key);
             if (saved !== undefined) {     // 如果不存在则跳过
-                const parseSchema = safeParse(newDataSchema, saved)
+                const parseSchema = safeParse(dataSchema, saved)
                 if (parseSchema.success) {
-                    value = parseSchema.output.state;
-
+                    state = parseSchema.output.state;
                 } else {
-                    console.error("hydration: failed to parse schema: ", key, parseSchema.issues);
+                    console.error("hydration: failed to parse state", key, parseSchema.issues);
                 }
             }
         } catch (error) {
@@ -149,15 +125,15 @@ export const createAtom = <T>(
 
     void migration_and_hydration();
 
-    const getValue = () => value;
+    const getValue = (): T => state;
     const getHydrated = () => hydrated;
 
     const setValue = (next: T) => {
-        if (Object.is(value, next)) return;
+        if (Object.is(state, next)) return;
         if (!hydrated) return;      // 极端一点，必须先水合
-        value = next;
+        state = next;
         emit();
-        void set(key, {state: next, version: 1.0,})
+        void set(key, buildData(state));
     };
 
     const subscribe = (listener: Listener) => {
@@ -176,16 +152,15 @@ export const createAtom = <T>(
 
     // 注册 atoms
     const setMemoryValue = (next: T) => {
-        if (Object.is(value, next)) return;
-        value = next;
+        if (Object.is(state, next)) return;
+        state = next;
         emit();
     };
 
     atoms.set(key, {
         key,
-        valueSchema,
-        dataSchema: newDataSchema,
-
+        stateSchema,
+        dataSchema,
         getValue,
         setValue: setValue as (value: unknown) => void,
         setMemoryValue: setMemoryValue as (value: unknown) => void,
@@ -195,17 +170,18 @@ export const createAtom = <T>(
 }
 
 
-export const createMigrationAtom = <T>(
-    {
-        key, schema, defaultValue, getLegacy
-    }: {
-        key: string;
-        schema: BaseSchema<T, any, any>
-        defaultValue: T;
-
-        getLegacy: () => Promise<unknown> | unknown | undefined;
-    }
-) => {
-    const migration = createMigration({key, valueSchema: schema, getLegacy, setCurrent: set})
-    return createAtom({key, valueSchema: schema, defaultValue, migration})
-}
+export const createMigrationAtom = <T>({
+                                           key,
+                                           stateSchema,
+                                           initState,
+                                           getLegacy,
+                                       }: {
+    key: string;
+    stateSchema: BaseSchema<T, any, any>;
+    initState: T;
+    getLegacy: () => Promise<unknown> | unknown | undefined;
+}) => {
+    const migration = createMigration<T>({key, stateSchema, getLegacy,
+    });
+    return createAtom<T>({key, stateSchema, initState, migration});
+};
