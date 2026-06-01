@@ -1,9 +1,12 @@
 import {createMigrationAtom,} from "@/vol_apps/03_persist_atoms/createAtom.ts";
 import * as v from 'valibot';
 
-const themeSchema = v.picklist(['light', 'dark']);
+const themeSchema = v.object({
+    theme: v.picklist(['light', 'dark'])
+})
+
 const themeKey = "theme"
-const themeDefault = "light"
+const themeDefault = {theme: "light"} as const
 
 // 测试代码
 // localStorage.setItem('theme', JSON.stringify({
@@ -13,7 +16,7 @@ const themeDefault = "light"
 
 type Theme = v.InferOutput<typeof themeSchema>
 
-export const useThemeAtom = createMigrationAtom<Theme>(
+export const _useThemeAtom = createMigrationAtom<Theme>(
     {
         schema: themeSchema,
         defaultValue: themeDefault,
@@ -21,6 +24,16 @@ export const useThemeAtom = createMigrationAtom<Theme>(
         getLegacy: () => localStorage.getItem(themeKey),
     }
 )
+
+export const useThemeAtom = () => {
+    const [theme, setTheme, hydrated] = _useThemeAtom()
+
+    return {
+        theme: theme.theme,
+        setTheme: (theme: "dark" | "light") => setTheme({theme: theme}),
+        hydrated,
+    }
+}
 
 
 

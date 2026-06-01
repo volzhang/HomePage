@@ -4,7 +4,9 @@ import {safeParse, type BaseSchema, object, record, number, string, unknown} fro
 
 type AtomEntry = {
     key: string;
-    schema: BaseSchema<any, any, any>;
+    valueSchema: BaseSchema<any, any, any>;
+    dataSchema: BaseSchema<any, any, any>;
+
     getValue: () => unknown;
     setValue: (value: unknown) => void;
     setMemoryValue: (value: unknown) => void;
@@ -30,28 +32,27 @@ export const runMigration = async (
  * 旧存储的数据结构示例：
  * {
  *   "state": { "theme": "dark" },
- *   "version": 1.2
+ *   "version": 1.0
  * }
  */
 
-const oldDataSchema = object({
+export const oldDataSchema = object({
     state: record(string(), unknown()),  // 键是字符串，值类型未知
     version: number(),
 });
 
+
 export const createMigration = <T>(
     {
         key,
-        schema,
+        valueSchema,
         getLegacy,
         setCurrent,
-        version = 1,
     }: {
         key: string;
-        schema: BaseSchema<T, any, any>;
+        valueSchema: BaseSchema<T, any, any>;
         getLegacy: () => Promise<unknown> | unknown | undefined;
         setCurrent: (key: string, value: T) => Promise<void> | void;
-        version?: 1 | 2
     }
 ) => {
 
@@ -75,55 +76,46 @@ export const createMigration = <T>(
             return;
         }
 
-        const oldResult = safeParse(oldDataSchema, json);
+        const parseOld = safeParse(oldDataSchema, json);
 
-        if (!oldResult.success) {
-            console.warn(`Migration: old data invalid for key "${key}"`, oldResult.issues);
+        if (!parseOld.success) {
+            console.warn(`Migration: old data invalid for key "${key}"`, parseOld.issues);
             return;
         }
 
-        let value: unknown;
-
-        if (version === 1) {
-            // 旧结构：state[key]
-            value = oldResult.output.state[key];
-        }
-
-        else if (version === 2) {
-            // 新结构：state 整体就是 value
-            value = oldResult.output.state;
-        }
-
-        // else if (version === 3) {
-        //     // 完全原样
-        //     value = json;
-        // }
+        const value = parseOld.output.state;
 
         if (value === undefined) {
             console.warn(`Migration: key "${key}" not found in old state`);
             return;
         }
 
-        const result = safeParse(schema, value);
+        const parseValue = safeParse(valueSchema, value);
 
-        if (!result.success) {
-            console.error(`Migration failed for key "${key}":`, result.issues);
+        if (!parseValue.success) {
+            console.error(`Migration failed for key "${key}":`, parseValue.issues);
             return;
         }
 
-        await setCurrent(key, result.output);
+        await setCurrent(key, parseValue.output);
     };
 };
 
 
 export const createAtom = <T>(
-    {key, schema, defaultValue, migration}: {
+    {key, valueSchema, defaultValue, migration}: {
         key: string;
-        schema: BaseSchema<T, any, any>;
+        valueSchema: BaseSchema<T, any, any>;
         defaultValue: T;
         migration?: () => Promise<void> | void;
     }
 ) => {
+
+    // version 没有实际作用，只为保持新旧数据schema对齐
+    const newDataSchema = object({
+        state: valueSchema,
+        version: number(),
+    })
 
     let value: T = defaultValue;
     let hydrated: boolean = false;
@@ -131,39 +123,41 @@ export const createAtom = <T>(
     const listeners = new Set<Listener>();
     const emit = () => listeners.forEach(fn => fn());
 
-    const restore = async () => {
+    const migration_and_hydration = async () => {
         try {
-
-            // 先迁移
+            // 1.迁移
             if (migration) await runMigration(key, migration);
 
-            const saved = await get<unknown>(key);
-            if (saved !== undefined) {      // 如果不存在则跳过
-                const parsed = safeParse(schema, saved)
-                if (parsed.success) {
-                    value = parsed.output;
+            // 2.水合
+            const saved = await get(key);
+            if (saved !== undefined) {     // 如果不存在则跳过
+                const parseSchema = safeParse(newDataSchema, saved)
+                if (parseSchema.success) {
+                    value = parseSchema.output.state;
+
                 } else {
-                    console.error("Unable to parse state: ", key, parsed.issues);
+                    console.error("hydration: failed to parse schema: ", key, parseSchema.issues);
                 }
             }
         } catch (error) {
-            console.error("Unable to restore state: ", error);
+            console.error("migration_and_hydration: failed", error);
         } finally {
             hydrated = true;
             emit();
         }
     };
 
-    void restore();
+    void migration_and_hydration();
 
     const getValue = () => value;
     const getHydrated = () => hydrated;
 
     const setValue = (next: T) => {
         if (Object.is(value, next)) return;
+        if (!hydrated) return;      // 极端一点，必须先水合
         value = next;
         emit();
-        set(key, next).catch(console.error);
+        void set(key, {state: next, version: 1.0,})
     };
 
     const subscribe = (listener: Listener) => {
@@ -189,7 +183,9 @@ export const createAtom = <T>(
 
     atoms.set(key, {
         key,
-        schema,
+        valueSchema,
+        dataSchema: newDataSchema,
+
         getValue,
         setValue: setValue as (value: unknown) => void,
         setMemoryValue: setMemoryValue as (value: unknown) => void,
@@ -201,16 +197,15 @@ export const createAtom = <T>(
 
 export const createMigrationAtom = <T>(
     {
-        key, schema, defaultValue, getLegacy, version = 1
+        key, schema, defaultValue, getLegacy
     }: {
         key: string;
         schema: BaseSchema<T, any, any>
         defaultValue: T;
 
         getLegacy: () => Promise<unknown> | unknown | undefined;
-        version?: 1 | 2
     }
 ) => {
-    const migration = createMigration({key, schema, getLegacy, setCurrent: set, version})
-    return createAtom({key, schema, defaultValue, migration})
+    const migration = createMigration({key, valueSchema: schema, getLegacy, setCurrent: set})
+    return createAtom({key, valueSchema: schema, defaultValue, migration})
 }

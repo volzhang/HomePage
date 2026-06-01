@@ -4,7 +4,7 @@ import {useEffect} from "react";
 import {Moon, Sun} from "lucide-react";
 
 export const Theme = () => {
-	const [theme, setTheme, hydrated] = useThemeAtom();
+	const {theme, setTheme, hydrated} = useThemeAtom();
 
 	useEffect(() => {
 		const root = document.documentElement;

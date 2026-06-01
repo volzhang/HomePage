@@ -70,13 +70,16 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
 
 	// 合并 atoms 数据
 	for (const [key, atom] of atoms) {
+		// find key
 		if (!(key in backupData)) continue;
-		const parsed = safeParse(atom.schema, backupData[key]);
-		if (!parsed.success) {
-			console.error(`Unable to restore atom: `, key, parsed.issues);
-			continue;
+
+		// restore atom
+		const parseData = safeParse(atom.dataSchema, backupData[key]);
+		if (parseData.success) {
+			atom.setValue(parseData.output.state);
+		} else {
+			console.error(`Restore: failed to parse schema: `, key, parseData.issues);
 		}
-		atom.setMemoryValue(parsed.output);
 	}
 
 	const registered = new Map(persistedStores);
@@ -132,7 +135,11 @@ export const persistedStoresBackup = async (): Promise<void> => {
 
 	// 合并 atoms，后续逐步迁移
 	for (const [key, atom] of atoms) {
-		result[key] = atom.getValue();
+		result[key] =
+			{
+				state: atom.getValue(),
+				version: 1.0
+			}
 	}
 
 	const filename = `DB[${VERSION}]${timeStamp()}.json`;

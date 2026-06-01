@@ -138,7 +138,7 @@ export const useTagItemStyle = (
     }
 ) => {
 
-    const [theme] = useThemeAtom()
+    const {theme} = useThemeAtom()
 
     const textColorStyle = (() => {
         if (tagStyles.textColor === "auto") {

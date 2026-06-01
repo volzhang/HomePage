@@ -65,7 +65,6 @@ const _useTagStyleAtom = createMigrationAtom<TagStyle>({
     schema:tagStyleSchema,
 
     getLegacy: () => get(tagStyleKey, idbStore),
-    version: 2
 })
 
 // export const useTagStyleAtom = ()=>{

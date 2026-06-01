@@ -2,7 +2,7 @@ import {Select} from "../01_components/01_SelectComponent"
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Languages} from "lucide-react";
-import {type LANGUAGE, useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export const Language = () => {
     const {language, setLanguage, hydrated} = useLanguageAtom();
@@ -14,7 +14,7 @@ export const Language = () => {
                 hydrated &&
                 <Select
                     value={language} onValueChange={(v) => {
-                    setLanguage(v as LANGUAGE);
+                    setLanguage(v as "cn" | "en");
                 }}
                     open={open} onOpenChange={setOpen}
                     duration={200} exitDuration={200}
