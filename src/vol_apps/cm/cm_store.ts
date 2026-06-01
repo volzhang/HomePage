@@ -1,6 +1,6 @@
 import {createPersistedStore, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 
-export type FontItem = { fullName: string; family: string }
+
 
 type CmStoreState = {
     isVisible: boolean

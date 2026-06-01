@@ -11,3 +11,5 @@ export type UseFloatAnimationOptions = {
     exitDuration?: number;
     offset?: number;
 }
+
+export type FontItem = { fullName: string; family: string }

@@ -2,11 +2,11 @@ import React, {useEffect, useRef, useState} from "react";
 import {InputButton} from "@/vol_apps/tag/InputButton";
 import type {Tag} from "@/vol_apps/tile/tile_store_types";
 import {cn} from "@/lib/utils";
-import type {FontItem} from "@/vol_apps/cm/cm_store";
 import {useThemeAtom} from "@/vol_apps/theme/themeAtom"
 import {ContextMenu, ContextMenuTrigger} from "@/components/ui/context-menu";
 import {TagMenuContent, UntaggedMenuContent} from "@/vol_apps/tag/TagMenuContent";
 import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import type {FontItem} from "@/vol_apps/00_types/Types.ts";
 
 type TagItemProps =
     | {

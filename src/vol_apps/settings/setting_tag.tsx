@@ -1,5 +1,5 @@
 import {MyRadio} from "@/vol_apps/bg/bg_ui_settings";
-import {resetTagStyles, useTagStyleHasChanges, useTagStyleStore} from "@/vol_apps/tag/tag_style_store";
+// import {resetTagStyles, useTagStyleHasChanges, useTagStyleStore} from "@/vol_apps/tag/tag_style_store";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {useEffect, useState} from "react";
 import {NumberField, NumberFieldXY} from "@/vol_apps/tile/NumberField";
@@ -8,9 +8,10 @@ import {FontFamily} from "@/vol_apps/tile/FontFamilyField";
 import {ColorPickerField} from "@/vol_apps/tile/ColorPickerField";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useTagStyleAtom} from "@/vol_apps/tag/TagStyleAtom.ts";
 
 export const Setting_tag = () => {
-    const {visible, setVisible} = useTagStyleStore()
+    const {visible, setVisible} = useTagStyleAtom()
     const {t} = useLanguageAtom("tagBar")
 
     const tagVisibleOptions = [
@@ -41,9 +42,12 @@ export const Setting_tag = () => {
 
         backgroundColor, setBackgroundColor,
         backgroundOpacity, setBackgroundOpacity,
-    } = useTagStyleStore()
 
-    const stylesHasChanged = useTagStyleHasChanges()
+        hasChanges:stylesHasChanged,
+        reset:resetTagStyles,
+    } = useTagStyleAtom()
+
+    // const stylesHasChanged = useTagStyleHasChanges()
     const {isBroadMatches, setIsBroadMatches} = useTileStore()
 
     const [mode, setMode] = useState<"default" | "custom">(

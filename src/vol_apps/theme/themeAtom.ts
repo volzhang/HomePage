@@ -1,7 +1,7 @@
-import {picklist} from "valibot";
 import {createMigrationAtom,} from "@/vol_apps/03_persist_atoms/createAtom.ts";
+import * as v from 'valibot';
 
-const themeSchema = picklist(['light', 'dark']);
+const themeSchema = v.picklist(['light', 'dark']);
 const themeKey = "theme"
 const themeDefault = "light"
 
@@ -11,7 +11,9 @@ const themeDefault = "light"
 //     version: 1.2
 // }));
 
-export const useThemeAtom = createMigrationAtom(
+type Theme = v.InferOutput<typeof themeSchema>
+
+export const useThemeAtom = createMigrationAtom<Theme>(
     {
         schema: themeSchema,
         defaultValue: themeDefault,

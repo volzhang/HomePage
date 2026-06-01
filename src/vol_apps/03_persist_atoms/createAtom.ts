@@ -40,11 +40,18 @@ const oldDataSchema = object({
 });
 
 export const createMigration = <T>(
-    {key, schema, getLegacy, setCurrent,}: {
+    {
+        key,
+        schema,
+        getLegacy,
+        setCurrent,
+        version = 1,
+    }: {
         key: string;
-        schema: BaseSchema<T, any, any>
+        schema: BaseSchema<T, any, any>;
         getLegacy: () => Promise<unknown> | unknown | undefined;
-        setCurrent: (key: string, value: T) => Promise<void> | void
+        setCurrent: (key: string, value: T) => Promise<void> | void;
+        version?: 1 | 2
     }
 ) => {
 
@@ -53,32 +60,52 @@ export const createMigration = <T>(
         if (raw == null) return;
 
         let json: unknown;
+
         if (typeof raw === "string") {
             try {
-                json = JSON.parse(raw)
+                json = JSON.parse(raw);
             } catch (e) {
                 console.warn(`Migration: failed to parse JSON for key "${key}"`, e);
                 return;
             }
-        } else if (typeof raw === "object" && raw !== null) json = raw;
-        else {
+        } else if (typeof raw === "object" && raw !== null) {
+            json = raw;
+        } else {
             console.warn(`Migration: old data invalid for key "${key}"`);
             return;
         }
 
         const oldResult = safeParse(oldDataSchema, json);
+
         if (!oldResult.success) {
-            console.warn(`Migration: old data invalid for key "${key}"`);
+            console.warn(`Migration: old data invalid for key "${key}"`, oldResult.issues);
             return;
         }
 
-        const value = oldResult.output.state[key];
+        let value: unknown;
+
+        if (version === 1) {
+            // 旧结构：state[key]
+            value = oldResult.output.state[key];
+        }
+
+        else if (version === 2) {
+            // 新结构：state 整体就是 value
+            value = oldResult.output.state;
+        }
+
+        // else if (version === 3) {
+        //     // 完全原样
+        //     value = json;
+        // }
+
         if (value === undefined) {
             console.warn(`Migration: key "${key}" not found in old state`);
             return;
         }
 
         const result = safeParse(schema, value);
+
         if (!result.success) {
             console.error(`Migration failed for key "${key}":`, result.issues);
             return;
@@ -86,7 +113,7 @@ export const createMigration = <T>(
 
         await setCurrent(key, result.output);
     };
-}
+};
 
 
 export const createAtom = <T>(
@@ -174,15 +201,16 @@ export const createAtom = <T>(
 
 export const createMigrationAtom = <T>(
     {
-        key, schema, defaultValue, getLegacy,
+        key, schema, defaultValue, getLegacy, version = 1
     }: {
         key: string;
         schema: BaseSchema<T, any, any>
         defaultValue: T;
 
         getLegacy: () => Promise<unknown> | unknown | undefined;
+        version?: 1 | 2
     }
 ) => {
-    const migration = createMigration({key, schema, getLegacy, setCurrent: set})
+    const migration = createMigration({key, schema, getLegacy, setCurrent: set, version})
     return createAtom({key, schema, defaultValue, migration})
 }

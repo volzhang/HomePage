@@ -1,0 +1,119 @@
+//
+// import {createPersistedStoreWithEqualityFn} from "@/vol_apps/tool/createPersistedStore";
+// import {shallow} from "zustand/vanilla/shallow";
+// import type {FontItem} from "@/vol_apps/00_types/Types.ts";
+//
+// type TagStyleState = {
+//     visible: boolean,
+//
+//     height: number,
+//     radius: number,
+//     gap: { x: number; y: number },
+//
+//     backgroundColor: string,
+//     backgroundOpacity: number,
+//
+//     textOpacity: number,
+//     textColor: string,
+//
+//     textPadding:{ x: number; y: number };
+//
+//     fontSize: number,
+//     fontWeight: number,
+//     font: FontItem,
+// }
+//
+// type TagStyleAction = {
+//     setVisible: (visible: TagStyleState["visible"]) => void,
+//
+//     setHeight: (height: TagStyleState["height"]) => void,
+//     setRadius: (radius: number) => void,
+//     setGap: (gap: TagStyleState["gap"]) => void,
+//
+//     setBackgroundColor: (backgroundColor: TagStyleState["backgroundColor"]) => void,
+//     setBackgroundOpacity: (backgroundOpacity: TagStyleState["backgroundOpacity"]) => void,
+//
+//     setTextOpacity: (textOpacity: TagStyleState["textOpacity"]) => void,
+//     setTextColor: (textColor: TagStyleState["textColor"]) => void,
+//
+//     setTextPadding: (textPadding: TagStyleState["textPadding"]) => void,
+//
+//     setFontSize: (fontSize: TagStyleState["fontSize"]) => void,
+//     setFontWeight: (fontWeight: TagStyleState["fontWeight"]) => void,
+//     setFont: (font: TagStyleState["font"]) => void,
+//
+// }
+//
+// type TagStyleStore = TagStyleState & TagStyleAction;
+//
+// const FONT_DEFAULT: FontItem = {
+//     fullName: "System Default",
+//     family: `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif`,
+// };
+//
+// const INITIAL_STYLE: TagStyleState = {
+//     visible: true,
+//
+//     height: 20,
+//     radius: 8,
+//     gap: {x: 16, y: 16},
+//
+//     backgroundColor: "auto",
+//     backgroundOpacity: 1.01,
+//
+//     textColor: "auto",
+//     textOpacity: 1.01,
+//
+//     textPadding: {x: 16, y: 8},
+//
+//     fontSize: 14,
+//     fontWeight: 400,
+//     font: FONT_DEFAULT,
+// };
+//
+// const useTagStyleStoreBase = createPersistedStoreWithEqualityFn<TagStyleStore>(
+//     "tagStyle",
+//     (set) => ({
+//         ...INITIAL_STYLE,
+//
+//         setVisible: (visible) => set({visible}),
+//
+//         setHeight: (height) => set({height}),
+//         setRadius: (radius) => set({radius}),
+//         setGap: (gap) => set({gap}),
+//
+//         setBackgroundColor: (backgroundColor) => set({backgroundColor}),
+//         setBackgroundOpacity: (backgroundOpacity) => set({backgroundOpacity}),
+//
+//         setTextOpacity: (textOpacity) => set({textOpacity}),
+//         setTextColor: (textColor) => set({textColor}),
+//
+//         setTextPadding: (textPadding) => set({textPadding}),
+//
+//         setFontSize: (fontSize) => set({fontSize}),
+//         setFontWeight: (fontWeight) => set({fontWeight}),
+//         setFont: (font) => set({font}),
+//
+//     })
+// )
+//
+// export function useTagStyleStore(): TagStyleStore;
+// export function useTagStyleStore<T>(
+//     selector: (state: TagStyleStore) => T,
+// ): T;
+//
+// export function useTagStyleStore(selector?: (state: TagStyleStore) => unknown) {
+//     if (selector) return useTagStyleStoreBase(selector, shallow);
+//     return useTagStyleStoreBase((s) => s, shallow);
+// }
+//
+// export const useTagStyleHasChanges = () => {
+//     return useTagStyleStore((state) => {
+//         return Object.entries(INITIAL_STYLE).some(([key, defaultValue]) => {
+//             const current = state[key as keyof typeof INITIAL_STYLE];
+//             return JSON.stringify(current) !== JSON.stringify(defaultValue);
+//         });
+//     });
+// };
+//
+// export const resetTagStyles = () => useTagStyleStoreBase.setState({...INITIAL_STYLE});

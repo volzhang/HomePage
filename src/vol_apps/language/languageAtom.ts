@@ -2,13 +2,13 @@ import {picklist} from "valibot";
 import {createMigrationAtom,} from "@/vol_apps/03_persist_atoms/createAtom.ts";
 import {useCallback, useEffect} from "react";
 import {type NamespaceDict, resources} from "@/vol_apps/language/language_RESOURCES.ts";
-
+import * as v from 'valibot';
 
 const languageSchema = picklist(['en', 'cn']);
 const languageKey = "language"
 const languageDefault = "en"
 
-export type LANGUAGE = "en" | "cn";
+export type LANGUAGE = v.InferOutput<typeof languageSchema>
 
 const _useLanguageAtom = createMigrationAtom<LANGUAGE>({
     key:languageKey,

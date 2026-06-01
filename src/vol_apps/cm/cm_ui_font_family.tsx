@@ -1,4 +1,4 @@
-import {type FontItem, useCmStore} from "@/vol_apps/cm/cm_store";
+import {useCmStore} from "@/vol_apps/cm/cm_store";
 import {Button} from "@/components/ui/button";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
@@ -6,6 +6,7 @@ import {useState} from "react";
 import { cn } from "@/lib/utils";
 import {loadFonts} from "@/vol_apps/tool/action/loadFonts";
 import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import type {FontItem} from "@/vol_apps/00_types/Types.ts";
 
 const FONT_DEFAULT = {
 	fullName: "monospace",

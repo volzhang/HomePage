@@ -1,9 +1,9 @@
 import {useState} from "react";
-import type {FontItem} from "@/vol_apps/cm/cm_store";
 import {loadFonts} from "@/vol_apps/tool/action/loadFonts";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
 import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import type {FontItem} from "@/vol_apps/00_types/Types.ts";
 
 export const FONT_DEFAULT = {
     fullName: "System Default",

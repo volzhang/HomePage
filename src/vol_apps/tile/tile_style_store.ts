@@ -1,6 +1,6 @@
 import {createPersistedStoreWithEqualityFn} from "@/vol_apps/tool/createPersistedStore";
-import {type FontItem} from "@/vol_apps/cm/cm_store";
 import {shallow} from "zustand/vanilla/shallow";
+import type {FontItem} from "@/vol_apps/00_types/Types.ts";
 
 // ---------- 类型 ----------
 type TileStyleState = {

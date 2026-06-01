@@ -15,6 +15,7 @@ import {useDoubleClick} from "../02_hooks/useDoubleClick";
 import {useSettingStore} from "@/vol_apps/settings/setting_store";
 import {useUserActivation} from "@/vol_apps/02_hooks/useUserInteracted";
 import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated.ts";
 
 /**
  * UI pending 控制（带超时）
@@ -77,6 +78,8 @@ export const useBgLogic = () => {
         carouselInterval, setCarouselInterval,
     } = useBgStore();
 
+
+
     const {open} = useSettingStore()
 
     useEffect(() => {
@@ -96,19 +99,7 @@ export const useBgLogic = () => {
         wallpaperJson: currentJson,
         wallpaperJpgBase64: currentJpg,
         isPending: currentPending
-    } = useBingWallpaperArchive(language, date);
-
-    const {
-        wallpaperJson: prevJson,
-        wallpaperJpgBase64: prevJpg,
-        isPending: prevPending
-    } = useBingWallpaperArchive(language, preDate);
-
-    const {
-        wallpaperJson: nextJson,
-        wallpaperJpgBase64: nextJpg,
-        isPending: nextPending
-    } = useBingWallpaperArchive(language, nextDate);
+    } = useBingWallpaperArchive(language, date,);
 
     const copyright = (json: BingWallpaperArchiveJson | null) => {
         return json
@@ -117,8 +108,6 @@ export const useBgLogic = () => {
     }
 
     const currentCopyright = useMemo(() => copyright(currentJson), [currentJson]);
-    const prevCopyright = useMemo(() => copyright(prevJson), [prevJson]);
-    const nextCopyright = useMemo(() => copyright(nextJson), [nextJson]);
 
     useEffect(() => {
         // fallback：当天没有图 → 自动用前一天
@@ -169,9 +158,12 @@ export const useBgLogic = () => {
     /**
      * 应用背景
      */
+    const hydrated = useStoreHydrated(useBgStore)
+
     useEffect(() => {
+        if (!hydrated) return
         setBackground(bgImg, bgSize, bgRepeat, bgCenter);
-    }, [bgImg, bgSize, bgRepeat, bgCenter]);
+    }, [bgImg, bgSize, bgRepeat, bgCenter, hydrated]);
 
     /**
      * hide-others
@@ -184,19 +176,15 @@ export const useBgLogic = () => {
     /**
      * UI pending（独立于 query）
      */
-    const nextCtrl = usePendingWithTimeout(3000);
-    const prevCtrl = usePendingWithTimeout(3000);
+    const nextCtrl = usePendingWithTimeout(2*60*1000);
+    const prevCtrl = usePendingWithTimeout(2*60*1000);
 
     /**
      * 用户操作
      */
     const handlePrev = () => {
         if (bgType !== "bing") return;
-
         prevCtrl.start();
-        if (prevJpg) setBgImg(prevJpg);
-        setBgBingCopyright(prevCopyright)
-
         // 让 UI 先响应（关键点）
         setTimeout(() => {
             setBgBingDate(preDate);
@@ -205,10 +193,7 @@ export const useBgLogic = () => {
 
     const handleNext = () => {
         if (bgType !== "bing") return;
-
         nextCtrl.start();
-        if (nextJpg) setBgImg(nextJpg);
-        setBgBingCopyright(nextCopyright)
 
         setTimeout(() => {
             setBgBingDate(nextDate);
@@ -218,13 +203,11 @@ export const useBgLogic = () => {
     /**
      * query 结束 → 终止 UI pending
      */
-    useEffect(() => {
-        if (!prevPending || prevJpg) prevCtrl.stop();
-    }, [prevPending, prevJpg]);
 
     useEffect(() => {
-        if (!nextPending || nextJpg) nextCtrl.stop();
-    }, [nextPending, nextJpg]);
+        if (!currentPending || currentJpg) prevCtrl.stop();
+        if (!currentPending || currentJpg) nextCtrl.stop();
+    }, [currentPending, currentJpg]);
 
 
     /**
