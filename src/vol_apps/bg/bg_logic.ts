@@ -99,7 +99,7 @@ export const useBgLogic = () => {
         wallpaperJson: currentJson,
         wallpaperJpgBase64: currentJpg,
         isPending: currentPending
-    } = useBingWallpaperArchive(language, date,);
+    } = useBingWallpaperArchive(language, date);
 
     const copyright = (json: BingWallpaperArchiveJson | null) => {
         return json

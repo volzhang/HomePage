@@ -1,7 +1,7 @@
 import {useFetchTrace} from "../02_hooks/http/useFetchTrace";
 import {useEffect, useRef, useState} from "react";
-import {formatTimestamp} from "@/vol_apps/04_utils/format/formatTimestamp";
-import {formatBytes} from "@/vol_apps/04_utils/format/formatBytes";
+import {formatTimestamp} from "@/vol_apps/03_utils/format/formatTimestamp";
+import {formatBytes} from "@/vol_apps/03_utils/format/formatBytes";
 import {cn} from "@/lib/utils";
 
 export const FetchMonitor = (

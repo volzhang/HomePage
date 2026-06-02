@@ -1,4 +1,4 @@
-import {createMigrationAtom,} from "@/vol_apps/03_persist_atoms/createAtom.ts";
+import {createAutoMigrationAtom} from "@/vol_apps/04_persist_atoms/createAtom.ts";
 import * as v from 'valibot';
 
 const themeSchema = v.object({
@@ -14,24 +14,15 @@ const themeDefault = {theme: "light"} as const
 //     version: 1.2
 // }));
 
-export const _useThemeAtom = createMigrationAtom(
+export const useThemeAtom = createAutoMigrationAtom(
     {
         stateSchema: themeSchema,
         initState: themeDefault,
         key: themeKey,
-        getLegacy: () => localStorage.getItem(themeKey),
+        legacy: "localstorage"
     }
 )
 
-export const useThemeAtom = () => {
-    const [theme, setTheme, hydrated] = _useThemeAtom()
-
-    return {
-        theme: theme.theme,
-        setTheme: (theme: "dark" | "light") => setTheme({theme: theme}),
-        hydrated,
-    }
-}
 
 
 

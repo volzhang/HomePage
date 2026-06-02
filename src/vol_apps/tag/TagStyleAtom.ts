@@ -1,7 +1,6 @@
 import * as v from 'valibot';
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
-import {createMigrationAtom} from "@/vol_apps/03_persist_atoms/createAtom.ts";
-import {get, createStore} from "idb-keyval";
+import {createAutoMigrationAtom} from "@/vol_apps/04_persist_atoms/createAtom.ts";
 import {useMemo} from "react";
 
 const tagStyleSchema = v.object({
@@ -57,79 +56,15 @@ const tagStyleDefault: TagStyle = {
 
 const tagStyleKey = "tagStyle";
 
-const idbStore = createStore("localforage", "keyvaluepairs")
-
-const _useTagStyleAtom = createMigrationAtom<TagStyle>({
-    key:tagStyleKey,
-    initState:tagStyleDefault,
-    stateSchema:tagStyleSchema,
-
-    getLegacy: () => get(tagStyleKey, idbStore),
+const _useTagStyleAtom = createAutoMigrationAtom<TagStyle>({
+    key: tagStyleKey,
+    initState: tagStyleDefault,
+    stateSchema: tagStyleSchema,
+    legacy: "idb"
 })
 
-// export const useTagStyleAtom = ()=>{
-//     const [tagStyle, setTagStyle, hydrated] = _useTagStyleAtom()
-//
-//     const updateTagStyle = (partial: Partial<TagStyle>)=>{
-//         setTagStyle({
-//             ...tagStyle,
-//             ...partial,
-//         })
-//     }
-//
-//     return {tagStyle, setTagStyle, updateTagStyle, hydrated}
-// }
-
 export const useTagStyleAtom = () => {
-    const [tagStyle, setTagStyle, hydrated] = _useTagStyleAtom();
-
-    const visible = tagStyle.visible;
-    const setVisible = (visible: TagStyle["visible"]) =>
-        setTagStyle({ ...tagStyle, visible });
-
-    const height = tagStyle.height;
-    const setHeight = (height: TagStyle["height"]) =>
-        setTagStyle({ ...tagStyle, height });
-
-    const radius = tagStyle.radius;
-    const setRadius = (radius: TagStyle["radius"]) =>
-        setTagStyle({ ...tagStyle, radius });
-
-    const gap = tagStyle.gap;
-    const setGap = (gap: TagStyle["gap"]) =>
-        setTagStyle({ ...tagStyle, gap });
-
-    const backgroundColor = tagStyle.backgroundColor;
-    const setBackgroundColor = (backgroundColor: TagStyle["backgroundColor"]) =>
-        setTagStyle({ ...tagStyle, backgroundColor });
-
-    const backgroundOpacity = tagStyle.backgroundOpacity;
-    const setBackgroundOpacity = (backgroundOpacity: TagStyle["backgroundOpacity"]) =>
-        setTagStyle({ ...tagStyle, backgroundOpacity });
-
-    const textOpacity = tagStyle.textOpacity;
-    const setTextOpacity = (textOpacity: TagStyle["textOpacity"]) =>
-        setTagStyle({ ...tagStyle, textOpacity });
-
-    const textColor = tagStyle.textColor;
-    const setTextColor = (textColor: TagStyle["textColor"]) =>
-        setTagStyle({ ...tagStyle, textColor });
-
-    const textPadding = tagStyle.textPadding;
-    const setTextPadding = (textPadding: TagStyle["textPadding"]) =>
-        setTagStyle({ ...tagStyle, textPadding });
-
-    const fontSize = tagStyle.fontSize;
-    const setFontSize = (fontSize: TagStyle["fontSize"]) =>
-        setTagStyle({ ...tagStyle, fontSize });
-
-    const fontWeight = tagStyle.fontWeight;
-    const setFontWeight = (fontWeight: TagStyle["fontWeight"]) =>
-        setTagStyle({ ...tagStyle, fontWeight });
-
-    const font = tagStyle.font;
-    const setFont = (font: TagStyle["font"]) =>
-        setTagStyle({ ...tagStyle, font });
+    const {state: tagStyle, setState: setTagStyle, ...rest} = _useTagStyleAtom();
 
     const hasChanges = useMemo(() => {
         return Object.entries(tagStyleDefault).some(([key, defaultValue]) => {
@@ -138,49 +73,7 @@ export const useTagStyleAtom = () => {
         });
     }, [tagStyle]);
 
-    const reset = () =>
-        setTagStyle({ ...tagStyleDefault });
+    const reset = () => setTagStyle({...tagStyleDefault});
 
-    return {
-        hydrated,
-
-        visible,
-        setVisible,
-
-        height,
-        setHeight,
-
-        radius,
-        setRadius,
-
-        gap,
-        setGap,
-
-        backgroundColor,
-        setBackgroundColor,
-
-        backgroundOpacity,
-        setBackgroundOpacity,
-
-        textOpacity,
-        setTextOpacity,
-
-        textColor,
-        setTextColor,
-
-        textPadding,
-        setTextPadding,
-
-        fontSize,
-        setFontSize,
-
-        fontWeight,
-        setFontWeight,
-
-        font,
-        setFont,
-
-        hasChanges,
-        reset,
-    };
+    return {hasChanges, reset, ...rest};
 };

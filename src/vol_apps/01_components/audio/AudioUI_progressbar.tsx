@@ -1,5 +1,5 @@
 import {cn} from "@/lib/utils";
-import {formatMMSS} from "@/vol_apps/04_utils/format/formatToMMSS";
+import {formatMMSS} from "@/vol_apps/03_utils/format/formatToMMSS";
 
 export const Duration = (
     {
