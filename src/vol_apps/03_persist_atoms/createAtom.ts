@@ -2,7 +2,8 @@ import {useMemo, useSyncExternalStore} from "react";
 import {get, set} from "idb-keyval";
 import {safeParse, type BaseSchema,} from "valibot";
 import * as v from "valibot"
-import {runMigration} from "@/vol_apps/03_persist_atoms/runMigration.ts";
+import {runMigration, isMigrated} from "@/vol_apps/03_persist_atoms/runMigration";
+import {createDebouncedSet} from "@/vol_apps/04_utils/createDebouncedSet.ts";
 
 type AtomEntry = {
     key: string;
@@ -15,14 +16,8 @@ type AtomEntry = {
 };
 
 type Listener = () => void;
-export const atoms = new Map<string, AtomEntry>();
 
-// type State = Record<string, unknown>;
-//
-// type Data = {
-//     state: State
-//     version: number
-// }
+export const atoms = new Map<string, AtomEntry>();
 
 const getDataSchema = <T>(schema: BaseSchema<T, any, any>) => {
     return v.object({state: schema, version: v.number()});
@@ -40,32 +35,32 @@ export const createMigration = <T>({
     key: string;
     stateSchema: BaseSchema<T, any, any>;
     getLegacy: () => Promise<unknown> | unknown | undefined;
-}) => {
-    return async () => {
+}): () => Promise<boolean> => {
+    return async (): Promise<boolean> => {
+
         const raw = await getLegacy();
-        if (raw == null) return;
+        if (raw == null) return true;
 
         let data: unknown;
-
         if (typeof raw === "string") {
             try {
                 data = JSON.parse(raw);
             } catch (e) {
                 console.warn("Migration: failed to JSON parsee", key, e);
-                return;
+                return false;
             }
         } else if (typeof raw === "object" && raw !== null) {
             data = raw;
         } else {
             console.warn("Migration: failed to JSON parsee", key)
-            return;
+            return false;
         }
 
         const dataSchema = getDataSchema(stateSchema)
         const parseData = safeParse(dataSchema, data);
         if (!parseData.success) {
             console.warn("Migration: failed to parse data", key, parseData.issues);
-            return;
+            return false;
         }
 
         const state = parseData.output.state;
@@ -73,13 +68,19 @@ export const createMigration = <T>({
 
         if (!parseState.success) {
             console.error("Migration: failed to parse state", key, parseState.issues);
-            return;
+            return false;
         }
 
-        await set(key, buildData(state));
+        const writeIDB = createDebouncedSet(set)
+        try {
+            await writeIDB(key, buildData(state));
+            return true;
+        } catch (error) {
+            console.error("Migration: failed to save", key, error);
+            return false;
+        }
     };
 };
-
 
 export const createAtom = <T>({
                                   key,
@@ -90,7 +91,7 @@ export const createAtom = <T>({
     key: string;
     stateSchema: BaseSchema<T, any, any>;
     initState: T;
-    migration?: () => Promise<void> | void;
+    migration?: () => Promise<boolean>;
 }) => {
 
     const dataSchema = getDataSchema(stateSchema);
@@ -100,40 +101,48 @@ export const createAtom = <T>({
     const listeners = new Set<Listener>();
     const emit = () => listeners.forEach(fn => fn());
 
-    const migration_and_hydration = async () => {
+    // 异步水合
+    const doHydration = async () => {
         try {
-            // 1.迁移
-            if (migration) await runMigration(key, migration);
-
-            // 2.水合
             const saved = await get(key);
-            if (saved !== undefined) {     // 如果不存在则跳过
-                const parseSchema = safeParse(dataSchema, saved)
-                if (parseSchema.success) {
-                    state = parseSchema.output.state;
-                } else {
-                    console.error("hydration: failed to parse state", key, parseSchema.issues);
-                }
+            if (saved?.state !== undefined) {
+                // 不做验证(更快)，注释的是验证版本
+                state = saved.state;
+                // const parseSchema = safeParse(dataSchema, saved)
+                //     if (parseSchema.success) {
+                //         state = parseSchema.output.state;
+                //     } else {
+                //         console.error("hydration: failed to parse state", key, parseSchema.issues);
+                //     }
             }
         } catch (error) {
-            console.error("migration_and_hydration: failed", error);
+            console.error("hydration failed", key, error);
         } finally {
             hydrated = true;
             emit();
         }
     };
 
-    void migration_and_hydration();
+    // 异步迁移
+    const doMigration = async () => {
+        if (migration && !(await isMigrated(key))) void runMigration(key, migration);
+    };
+
+    // 启动水合和迁移，都不阻塞，实测最快，缺点是，如果migration实际发生并完成时，闪屏一次，
+    void doHydration();
+    void doMigration();
 
     const getValue = (): T => state;
     const getHydrated = () => hydrated;
+
+    const writeIDB = createDebouncedSet(set)
 
     const setValue = (next: T) => {
         if (Object.is(state, next)) return;
         if (!hydrated) return;      // 极端一点，必须先水合
         state = next;
         emit();
-        void set(key, buildData(state));
+        void writeIDB(key, buildData(state));
     };
 
     const subscribe = (listener: Listener) => {
@@ -181,7 +190,6 @@ export const createMigrationAtom = <T>({
     initState: T;
     getLegacy: () => Promise<unknown> | unknown | undefined;
 }) => {
-    const migration = createMigration<T>({key, stateSchema, getLegacy,
-    });
+    const migration = createMigration<T>({key, stateSchema, getLegacy});
     return createAtom<T>({key, stateSchema, initState, migration});
 };

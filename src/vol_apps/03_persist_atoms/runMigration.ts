@@ -1,75 +1,51 @@
-import { get, set } from "idb-keyval";
+import {get, set} from "idb-keyval";
+import {createDebouncedSet} from "@/vol_apps/04_utils/createDebouncedSet.ts";
 
 const MIGRATION_FLAGS_KEY = "_migration_flags";
+
 let flags: Record<string, boolean> = {};
-let hydratePromise: Promise<void> | null = null;
-const running = new Map<string, Promise<void>>();
+let hydrated = false;
+let initPromise: Promise<void> | null = null;
+const pending: Record<string, ()=>Promise<boolean>> = {};
 
-// 追踪还有多少个迁移任务正在执行
-let activeTaskCount = 0;
-let flushPromise: Promise<void> | null = null;
-
-// --------------------
-// 水合
-// --------------------
-const ensureHydrated = async () => {
-    if (hydratePromise) return hydratePromise;
-    hydratePromise = (async () => {
-        const stored = await get<Record<string, boolean>>(MIGRATION_FLAGS_KEY);
-        flags = stored && typeof stored === "object" ? stored : {};
-    })();
-    return hydratePromise;
+// 初始化
+const initFlags = async () => {
+    const stored = await get<Record<string, boolean>>(MIGRATION_FLAGS_KEY);
+    flags = stored && typeof stored === "object" ? stored : {};
+    hydrated = true
+    void runPending()
 };
 
-// --------------------
-// 写入 IDB
-// --------------------
-const flushFlags = async () => {
-    // 如果已经有写入操作在进行，直接返回该 Promise，避免重复写入
-    if (flushPromise) return flushPromise;
-    flushPromise = (async () => {
-        await set(MIGRATION_FLAGS_KEY, { ...flags });
-        flushPromise = null;
-    })();
-    return flushPromise;
+const ensureInit = () => {
+    if (!initPromise) initPromise = initFlags();
+    return initPromise;
 };
 
-// --------------------
-// 迁移入口
-// --------------------
-export const runMigration = async (
-    key: string,
-    migration: () => Promise<void> | void,
-) => {
-    await ensureHydrated();
+void ensureInit();
 
-    const existing = running.get(key);
-    if (existing) return existing;
+export const isMigrated = async (key: string): Promise<boolean> => {
+    await ensureInit();
+    return flags[key] === true;
+};
 
-    const task = (async () => {
-        // 增加活跃任务计数
-        activeTaskCount++;
+const DebouncedSet = createDebouncedSet(set)
+const flushFlags = () => DebouncedSet(MIGRATION_FLAGS_KEY, {...flags})
 
-        try {
-            if (flags[key]) return; // 已迁移过，直接返回
+export const runMigration = async (key:string, migration: () => Promise<boolean>) => {
+    if (!hydrated) pending[key] = migration;
+    else {
+        flags[key] = await migration()
+        void flushFlags();
+    }
+};
 
-            await migration();
-            flags[key] = true;      // 更新内存中的标志
-        } finally {
-            activeTaskCount--;
-
-            // 如果所有任务都已完成，且 flags 有更新，则一次性写入 IDB
-            if (activeTaskCount === 0) {
-                await flushFlags();
-            }
-        }
-    })();
-
-    running.set(key, task);
-
-    try {
-        await task;
-    } finally {
-        running.delete(key);
+export const runPending = async () => {
+    const items = Object.entries(pending);
+    for (const [key, migration] of items) {
+        flags[key] = await migration();
+        delete pending[key];
+    }
+    if (items.length > 0) {
+        void flushFlags();   // 批量完成后延迟写入
     }
 };
