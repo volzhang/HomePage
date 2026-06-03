@@ -1,0 +1,30 @@
+// import {createPersistedStoreWithEqualityFn} from "@/vol_apps/tool/createPersistedStore";
+// import {shallow} from "zustand/vanilla/shallow";
+//
+// type SearchStyleState = {
+//     visible: boolean,
+// }
+//
+// type SearchStyleActions = {
+//     setVisible: (visible: SearchStyleState["visible"]) => void,
+// }
+//
+// type SearchStyleStore = SearchStyleState & SearchStyleActions
+//
+// const useTagStyleStoreBase = createPersistedStoreWithEqualityFn<SearchStyleStore>(
+//     "searchStyle",
+//     (set,) => ({
+//             visible: true,
+//             setVisible: (visible) => set({visible}),
+//         })
+// )
+//
+// export function useSearchStyleStore(): SearchStyleStore;
+// export function useSearchStyleStore<T>(
+//     selector: (state: SearchStyleStore) => T,
+// ): T;
+//
+// export function useSearchStyleStore(selector?: (state: SearchStyleStore) => unknown) {
+//     if (selector) return useTagStyleStoreBase(selector, shallow);
+//     return useTagStyleStoreBase((s) => s, shallow);
+// }

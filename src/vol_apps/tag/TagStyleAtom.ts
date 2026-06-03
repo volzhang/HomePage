@@ -27,14 +27,12 @@ const tagStyleSchema = v.object({
     })
 });
 
-type TagStyle = v.InferOutput<typeof tagStyleSchema>;
-
 const FONT_DEFAULT: FontItem = {
     fullName: "System Default",
     family: `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif`,
 };
 
-const tagStyleDefault: TagStyle = {
+const tagStyleInit = {
     visible: true,
 
     height: 20,
@@ -56,24 +54,21 @@ const tagStyleDefault: TagStyle = {
 
 const tagStyleKey = "tagStyle";
 
-const _useTagStyleAtom = createAutoMigrationAtom<TagStyle>({
+const _useTagStyleAtom = createAutoMigrationAtom({
     key: tagStyleKey,
-    initState: tagStyleDefault,
+    initState: tagStyleInit,
     stateSchema: tagStyleSchema,
     legacy: "idb"
 })
 
 export const useTagStyleAtom = () => {
-    const {state: tagStyle, setState: setTagStyle, ...rest} = _useTagStyleAtom();
+    const {state, setState, ...rest} = _useTagStyleAtom();
 
     const hasChanges = useMemo(() => {
-        return Object.entries(tagStyleDefault).some(([key, defaultValue]) => {
-            const current = (tagStyle as any)[key];
-            return JSON.stringify(current) !== JSON.stringify(defaultValue);
-        });
-    }, [tagStyle]);
+        return JSON.stringify(state) !== JSON.stringify(tagStyleInit);
+    }, [state]);
 
-    const reset = () => setTagStyle({...tagStyleDefault});
+    const reset = () => setState(tagStyleInit);
 
     return {hasChanges, reset, ...rest};
 };

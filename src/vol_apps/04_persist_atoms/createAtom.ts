@@ -1,13 +1,9 @@
 // noinspection PointlessBooleanExpressionJS
-
-import {
-    // useCallback,
-    useMemo, useSyncExternalStore
-} from "react";
+import {useMemo, useSyncExternalStore} from "react";
 import {createStore, get, set} from "idb-keyval";
-import {safeParse, type BaseSchema} from "valibot";
-import * as v from "valibot"
-import {runMigration, isMigrated} from "@/vol_apps/04_persist_atoms/runMigration";
+import * as v from "valibot";
+import {type BaseSchema, safeParse} from "valibot";
+import {isMigrated, runMigration} from "@/vol_apps/04_persist_atoms/runMigration";
 import {createDebouncedSet} from "@/vol_apps/03_utils/createDebouncedSet.ts";
 
 type AtomEntry = {
@@ -49,7 +45,7 @@ export const createMigration = <T>({
     return async () => {
 
         const raw = await getLegacy();
-        if (raw == null) return { success: true };
+        if (raw == null) return {success: true};
 
         let data: unknown;
         if (typeof raw === "string") {
@@ -57,20 +53,20 @@ export const createMigration = <T>({
                 data = JSON.parse(raw);
             } catch (e) {
                 console.warn("Migration: failed to JSON parsee", key, e);
-                return { success: false };
+                return {success: false};
             }
         } else if (typeof raw === "object" && raw !== null) {
             data = raw;
         } else {
             console.warn("Migration: failed to JSON parsee data", key)
-            return { success: false };
+            return {success: false};
         }
 
         const dataSchema = getDataSchema(stateSchema)
         const parseData = safeParse(dataSchema, data);
         if (!parseData.success) {
             console.warn("Migration: failed to parse data schema", key, parseData.issues);
-            return { success: false };
+            return {success: false};
         }
 
         const state = parseData.output.state;
@@ -78,7 +74,7 @@ export const createMigration = <T>({
 
         if (!parseState.success) {
             console.error("Migration: failed to parse state schema", key, parseState.issues);
-            return { success: false };
+            return {success: false};
         }
 
         const writeIDB = createDebouncedSet(set)
@@ -91,9 +87,16 @@ export const createMigration = <T>({
             };
         } catch (error) {
             console.error("Migration: failed to writeIDB", key, error);
-            return { success: false };
+            return {success: false};
         }
     };
+};
+
+type AtomHook<T extends State> = {
+    (): readonly [T, (next: T) => void, boolean];
+    useSelector: <R>(
+        selector: (state: T) => R
+    ) => R;
 };
 
 export const createAtom = <T extends State>({
@@ -105,8 +108,8 @@ export const createAtom = <T extends State>({
     key: string;
     stateSchema: BaseSchema<T, any, any>;
     initState: T;
-    migration?: () => Promise<{success:boolean, state?: T}>;
-}) => {
+    migration?: () => Promise<{ success: boolean, state?: T }>;
+}): AtomHook<T> => {
 
     const dataSchema = getDataSchema(stateSchema);
     let state: T = initState;
@@ -184,6 +187,13 @@ export const createAtom = <T extends State>({
         }, [value, hydrated]);
     };
 
+    // useSelector没有实际用处，需要重写 createAtom 使其天然支持所有属性独立订阅（写库保持合并）
+    const useSelector = <R>(selector: (state: T) => R): R => {
+        return useSyncExternalStore(subscribe, () => selector(state));
+    };
+
+    const atomHook: AtomHook<T> = Object.assign(useAtom, {useSelector});
+
     // 注册 atoms
     const setMemoryValue = (next: T) => {
         if (Object.is(state, next)) return;
@@ -200,7 +210,7 @@ export const createAtom = <T extends State>({
         setMemoryValue: setMemoryValue as (value: unknown) => void,
     });
 
-    return useAtom;
+    return atomHook;
 }
 
 const idbStore = createStore("localforage", "keyvaluepairs")
@@ -215,7 +225,7 @@ export const createMigrationAtom = <T extends State>({
     stateSchema: BaseSchema<T, any, any>;
     initState: T;
     legacy: "idb" | "localstorage"
-}) => {
+}): AtomHook<T> => {
     const getLegacy = legacy === "idb"
         ? async () => get(key, idbStore)
         : () => localStorage.getItem(key)
@@ -248,7 +258,7 @@ type AutoProps<T extends State> = {
 //     & { hydrated: boolean };
 
 export const useAutoFields = <T extends Record<string, unknown>>(
-    useAtomHook: () => readonly [T, (next: T) => void, boolean]
+    useAtomHook: AtomHook<T>
 ) => {
     return () => {
         const [state, setState, hydrated] = useAtomHook();
@@ -268,18 +278,22 @@ export const useAutoFields = <T extends Record<string, unknown>>(
     }
 };
 
-export const createAutoMigrationAtom = <T extends State>({
-                                                             key,
-                                                             stateSchema,
-                                                             initState,
-                                                             legacy,
-                                                         }: {
+export const createAutoMigrationAtom = <T extends State>(props: {
     key: string;
     stateSchema: BaseSchema<T, any, any>;
     initState: T;
     legacy: "idb" | "localstorage"
 }) => {
-    const useAtom = createMigrationAtom({key, stateSchema, initState, legacy})
-    return useAutoFields(useAtom)
+
+    const useAtom = createMigrationAtom(props);
+    const useAutoHook = useAutoFields(useAtom);
+
+    return Object.assign(
+        useAutoHook,
+        {
+            useAtomHook: useAtom,
+            useSelector: useAtom.useSelector,
+        }
+    )
 }
 

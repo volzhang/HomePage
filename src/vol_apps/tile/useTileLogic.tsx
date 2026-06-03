@@ -1,4 +1,3 @@
-import {INITIAL_STYLE, useTileStyleStore, useTileStyleStoreBase} from "./tile_style_store";
 import {useEffect, useMemo, useRef, useState} from "react";
 import {useBgStore} from "@/vol_apps/bg/bg_store";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
@@ -9,6 +8,7 @@ import {useFaviconVemetricPng} from "@/vol_apps/tanStackQuery/Api_FaviconVemetri
 import {isValidUrl} from "@/vol_apps/tool/isType/isValidUrl";
 import {isSortable} from "@dnd-kit/react/sortable";
 import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {tileStyleInit, useTileStyleAtom} from "@/vol_apps/tile/tile_style_atom.ts";
 
 export type TileLogic = ReturnType<typeof useTileLogic>;
 export const useTileLogic = () => {
@@ -64,7 +64,7 @@ export const useTileLogic = () => {
         setTiles(newTiles);
     };
 
-    const TileStyle = useTileStyleStore();
+    const {hasChanges, reset, ...TileStyle} = useTileStyleAtom();
 
     const backgroundRGBAColor = (() => {
         const r = parseInt(TileStyle.backgroundColor.slice(1, 3), 16);
@@ -193,17 +193,13 @@ export const useTileLogic = () => {
     }
 
     // BUTTONS
-    const hasStyleChanges = useTileStyleStore((state) =>
-        Object.entries(INITIAL_STYLE).some(([key, defaultValue]) =>
-            JSON.stringify(state[key as keyof typeof INITIAL_STYLE]) !== JSON.stringify(defaultValue)
-        )
-    );
+    const hasStyleChanges = hasChanges
 
     const handleRemoveTile = () => {
         setTileUiVisible(false)
         setTimeout(() => removeTile(tileInEditId), 0)
     };
-    const handleResetStyles = () => useTileStyleStoreBase.setState({...INITIAL_STYLE});
+    const handleResetStyles = reset
 
     // OK
     const ok_ref = useRef<HTMLButtonElement>(null);
@@ -288,7 +284,7 @@ export const useTileLogic = () => {
         tileOutlineRGBAColor,
         textRGBAColor,
 
-        INITIAL_STYLE,
+        INITIAL_STYLE: tileStyleInit
     }
 
 }

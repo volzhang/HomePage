@@ -1,13 +1,14 @@
-import {SEARCH_ENGINES, useSearchStore} from "@/vol_apps/search/search_store";
+
 import {useRef, useState} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
 import {Select} from "../01_components/01_SelectComponent";
-import {useSearchStyleStore} from "@/vol_apps/search/search_style_store";
+import {SEARCH_ENGINES, useSearchAtom} from "@/vol_apps/search/searchAtom.ts";
+import {useSearchStyleAtom} from "@/vol_apps/search/searchStyleAtom.ts";
 
 export const SearchBar = () => {
-    const {getEngineInUse, setEngineInUseByName} = useSearchStore()
+    const {getEngineInUse, setEngineInUseByName} = useSearchAtom()
     const [open, setOpen] = useState<boolean>(false)
 
     const currentEngine = getEngineInUse();
@@ -93,7 +94,7 @@ export const SearchBar = () => {
         4: "28px",
     }
 
-    const {visible} = useSearchStyleStore()
+    const {visible} = useSearchStyleAtom()
 
     // ==================== JSX ====================
     return (
@@ -111,7 +112,7 @@ export const SearchBar = () => {
                             "text-sBlue group-hover:text-white ",
                             "select-none overflow-visible")}>
                         {currentEngine.icon
-                            ? <img src={currentEngine.icon}
+                            ? <img src={currentEngine.icon} alt={""}
                                    className={cn("object-cover select-none overflow-visible")}
                                    style={{
                                        width:`${SIZE_MAP[currentEngine.id]}`,

@@ -1,6 +1,6 @@
 // ThrottledTextareaField.tsx
 import { cn } from "@/lib/utils";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface ThrottledTextareaFieldProps
     extends Omit<

@@ -14,14 +14,18 @@ const themeDefault = {theme: "light"} as const
 //     version: 1.2
 // }));
 
-export const useThemeAtom = createAutoMigrationAtom(
-    {
-        stateSchema: themeSchema,
-        initState: themeDefault,
-        key: themeKey,
-        legacy: "localstorage"
-    }
-)
+export const useThemeAtom = () => {
+    const hook = createAutoMigrationAtom(
+        {
+            stateSchema: themeSchema,
+            initState: themeDefault,
+            key: themeKey,
+            legacy: "localstorage"
+        }
+    )
+    const {state, setState, ...rest} = hook()
+    return {...rest} as const;
+}
 
 
 
