@@ -5,13 +5,13 @@ import {Languages} from "lucide-react";
 import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 
 export const Language = () => {
-    const {language, setLanguage, hydrated} = useLanguageAtom();
+    const {language, setLanguage, languageHydrated} = useLanguageAtom();
     const [open, setOpen] = useState<boolean>(false);
 
     return (
         <>
             {
-                hydrated &&
+                languageHydrated &&
                 <Select
                     value={language} onValueChange={(v) => {
                     setLanguage(v as "cn" | "en");

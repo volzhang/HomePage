@@ -1,0 +1,170 @@
+// // ThrottledTextareaField.tsx
+// import { cn } from "@/lib/utils";
+// import React, { useCallback, useEffect, useRef, useState } from "react";
+//
+// interface ThrottledTextareaFieldProps
+//     extends Omit<
+//         React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+//         "onChange" | "value" | "defaultValue"
+//     > {
+//     value?: string;
+//     defaultValue?: string;
+//     onCommit?: (value: string) => void;       // blur / 结束交互时提交
+//     onEnterSubmit?: (value: string) => void;  // 仅 Enter 键提交
+//     delay?: number;
+// }
+//
+// export const ThrottledTextareaField = ({
+//                                            onCommit,
+//                                            onEnterSubmit,
+//                                            delay = 0,
+//                                            className,
+//                                            onInput,
+//                                            onKeyDown,
+//                                            onBlur,
+//                                            onMouseUp,
+//                                            onTouchEnd,
+//                                            value,
+//                                            defaultValue,
+//                                            ...rest
+//                                        }: ThrottledTextareaFieldProps) => {
+//     const ref = useRef<HTMLTextAreaElement>(null);
+//
+//     const isControlled = value !== undefined;
+//     const initial = (isControlled ? value : defaultValue) ?? "";
+//     const [localValue, setLocalValue] = useState<string>(String(initial));
+//
+//     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+//     const pendingRef = useRef<string | null>(null);
+//     const isThrottlingRef = useRef(false);
+//     const isInteractingRef = useRef(false);
+//
+//     const onCommitRef = useRef(onCommit);
+//     const onEnterSubmitRef = useRef(onEnterSubmit);
+//     useEffect(() => {
+//         onCommitRef.current = onCommit;
+//         onEnterSubmitRef.current = onEnterSubmit;
+//     }, [onCommit, onEnterSubmit]);
+//
+//     const adjustHeight = useCallback(() => {
+//         const el = ref.current;
+//         if (!el) return;
+//         el.style.height = "auto";
+//         el.style.height = el.scrollHeight + "px";
+//     }, []);
+//
+//     useEffect(() => {
+//         adjustHeight();
+//     }, [localValue, adjustHeight]);
+//
+//     // 仅在非用户交互中同步外部 value
+//     useEffect(() => {
+//         if (!isControlled) return;
+//         if (!isInteractingRef.current && value !== localValue) {
+//             setLocalValue(value ?? "");
+//         }
+//     }, [value, isControlled]);
+//
+//     const flush = useCallback(() => {
+//         if (pendingRef.current !== null) {
+//             onCommitRef.current?.(pendingRef.current);
+//             pendingRef.current = null;
+//         }
+//     }, []);
+//
+//     // noinspection DuplicatedCode
+//     const startTimer = useCallback(() => {
+//         timerRef.current = setTimeout(() => {
+//             isThrottlingRef.current = false;
+//             flush();
+//             if (pendingRef.current !== null) {
+//                 isThrottlingRef.current = true;
+//                 startTimer();
+//             }
+//         }, delay);
+//     }, [delay, flush]);
+//
+//     const endInteraction = useCallback(() => {
+//         isInteractingRef.current = false;
+//
+//         if (timerRef.current) {
+//             clearTimeout(timerRef.current);
+//             timerRef.current = null;
+//         }
+//
+//         isThrottlingRef.current = false;
+//         pendingRef.current = localValue;
+//         flush();
+//     }, [flush, localValue]);
+//
+//     useEffect(() => {
+//         return () => {
+//             if (timerRef.current) clearTimeout(timerRef.current);
+//         };
+//     }, []);
+//
+//     return (
+//         <textarea
+//             {...rest}
+//             ref={ref}
+//             rows={1}
+//             wrap="soft"
+//             value={localValue}
+//             className={cn(className)}
+//             onInput={(e) => {
+//                 const next = e.currentTarget.value;
+//                 isInteractingRef.current = true;
+//                 setLocalValue(next);
+//                 pendingRef.current = next;
+//
+//                 if (!isThrottlingRef.current) {
+//                     flush();
+//                     isThrottlingRef.current = true;
+//                     startTimer();
+//                 }
+//                 onInput?.(e);
+//             }}
+//             onKeyDown={(e) => {
+//                 if (e.key === "Enter") {
+//                     if (e.shiftKey) {
+//                         e.stopPropagation();
+//                     } else {
+//                         e.preventDefault();
+//                         e.stopPropagation();
+//
+//                         // 主动结束节流，提交数据
+//                         if (timerRef.current) clearTimeout(timerRef.current);
+//                         isThrottlingRef.current = false;
+//                         pendingRef.current = localValue;
+//                         flush();
+//
+//                         // 触发 Enter 专用回调
+//                         onEnterSubmitRef.current?.(localValue);
+//
+//                         e.currentTarget.blur();
+//                     }
+//                 }
+//
+//                 if (e.key === "Escape") {
+//                     e.preventDefault();
+//                     e.stopPropagation();
+//                     e.currentTarget.blur();
+//                 }
+//
+//                 onKeyDown?.(e);
+//             }}
+//             onBlur={(e) => {
+//                 endInteraction();
+//                 onBlur?.(e);
+//             }}
+//             onMouseUp={(e) => {
+//                 endInteraction();
+//                 onMouseUp?.(e);
+//             }}
+//             onTouchEnd={(e) => {
+//                 endInteraction();
+//                 onTouchEnd?.(e);
+//             }}
+//         />
+//     );
+// };

@@ -3,8 +3,8 @@ import { VERSION } from "@/vol_apps/tool/action/fetch";
 import {persistedStores, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 import { downloadAsJsonFile, timeStamp } from "@/vol_apps/tool/action/download";
 import { isPlainObject } from "@/vol_apps/tool/isType/isPlainObject";
-import {atoms} from "@/vol_apps/04_persist_atoms/createAtom";
 import {safeParse} from "valibot";
+import {atoms} from "@/vol_apps/04_persist_atoms/signal.ts";
 
 // ----------------------------------------------------------------------
 // 工具函数：解析备份值，兼容旧备份中字符串化存储的情况

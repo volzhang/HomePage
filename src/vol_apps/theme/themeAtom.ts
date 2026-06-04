@@ -1,5 +1,11 @@
-import {createAutoMigrationAtom} from "@/vol_apps/04_persist_atoms/createAtom.ts";
 import * as v from 'valibot';
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
+
+// 测试代码
+// localStorage.setItem('theme', JSON.stringify({
+//     state: {theme: 'dark'},
+//     version: 1.2
+// }));
 
 const themeSchema = v.object({
     theme: v.picklist(['light', 'dark'])
@@ -8,24 +14,16 @@ const themeSchema = v.object({
 const themeKey = "theme"
 const themeDefault = {theme: "light"} as const
 
-// 测试代码
-// localStorage.setItem('theme', JSON.stringify({
-//     state: {theme: 'dark'},
-//     version: 1.2
-// }));
+export const themeAtom = createMigratePersistAtom({
+    stateSchema: themeSchema,
+    initState: themeDefault,
+    key: themeKey,
+    legacyDb: "localstorage"
+})
 
-export const useThemeAtom = () => {
-    const hook = createAutoMigrationAtom(
-        {
-            stateSchema: themeSchema,
-            initState: themeDefault,
-            key: themeKey,
-            legacy: "localstorage"
-        }
-    )
-    const {state, setState, ...rest} = hook()
-    return {...rest} as const;
-}
+// export const useThemeAtom = () => {
+//     return themeAtom.useField("theme") ;
+// }
 
 
 

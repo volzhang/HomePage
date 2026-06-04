@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import {createAutoMigrationAtom} from "@/vol_apps/04_persist_atoms/createAtom.ts";
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
 
 const searchStyleSchema = v.object({
     visible: v.boolean()
@@ -8,14 +8,14 @@ const searchStyleSchema = v.object({
 const searchStyleKey = "searchStyle"
 const searchStyleInit = {visible: true}
 
-const _useSearchStyleAtom = createAutoMigrationAtom({
+const searchStyleAtom = createMigratePersistAtom({
     key: searchStyleKey,
     stateSchema: searchStyleSchema,
     initState: searchStyleInit,
-    legacy: "idb",
+    legacyDb: "idb",
 })
 
 export const useSearchStyleAtom = () => {
-    const {hydrated, visible, setVisible} = _useSearchStyleAtom()
-    return {hydrated, visible, setVisible}
+    const {visible, setVisible} = searchStyleAtom.useField("visible");
+    return {visible, setVisible}
 }

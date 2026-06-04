@@ -1,223 +1,248 @@
-import {cn} from "@/lib/utils";
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
-import {NumberField, NumberFieldXY} from "@/vol_apps/tile/NumberField";
-import {FontFamily} from "@/vol_apps/tile/FontFamilyField";
-import type {TileLogic} from "@/vol_apps/tile/useTileLogic";
-import {ThrottledColorPicker} from "@/vol_apps/tile/ThrottledColorPickerProps";
-import {useEffect, useState} from "react";
-import {ColorPickerField} from "@/vol_apps/tile/ColorPickerField";
+import { memo, useState, useEffect } from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { NumberField, NumberFieldXY } from "@/vol_apps/tile/NumberField";
+import { FontFamily } from "@/vol_apps/tile/FontFamilyField";
+import { ColorPickerField } from "@/vol_apps/tile/ColorPickerField";
+import { tileStyleAtom, tileStyleInit } from "@/vol_apps/tile/tile_style_atom";
+import { useLanguageAtom } from "@/vol_apps/language/languageAtom";
 
-const tileSizeMin = 0;
-const tileSizeMax = 200;
+// ==================== 背景设置 ====================
+const BackgroundSection = memo(() => {
+    const { t } = useLanguageAtom("tileEditor");
+    const { backgroundColor, setBackgroundColor } = tileStyleAtom.useField("backgroundColor");
+    const { backgroundOpacity, setBackgroundOpacity } = tileStyleAtom.useField("backgroundOpacity");
 
-const tileRadiusMin = 0;
-const tileRadiusMax = 100;
+    return (
+        <AccordionItem value="TileBackground">
+            <AccordionTrigger>
+                <p className="font-bold text-lg">{t("Background")}</p>
+            </AccordionTrigger>
+            <AccordionContent>
+                <div className="flex flex-col gap-2">
+                    <ColorPickerField
+                        label={t("Background Color")}
+                        value={backgroundColor}
+                        onChange={setBackgroundColor}
+                    />
+                    <NumberField
+                        label={t("Background Opacity")}
+                        value={backgroundOpacity}
+                        onChange={setBackgroundOpacity}
+                        min={0} max={1} step={0.01}
+                        fallback={tileStyleInit.backgroundOpacity}
+                    />
+                </div>
+            </AccordionContent>
+        </AccordionItem>
+    );
+});
 
-const iconBorderSizeMin = 0;
-const iconBorderSizeMax = 200;
+// ==================== 尺寸与圆角 ====================
+const SizeRadiusSection = memo(() => {
+    const { t } = useLanguageAtom("tileEditor");
+    const { tileSize, setTileSize } = tileStyleAtom.useField("tileSize");
+    const { tileRadius, setTileRadius } = tileStyleAtom.useField("tileRadius");
 
-const iconBorderOffsetMin = -100;
-const iconBorderOffsetMax = 100;
+    return (
+        <AccordionItem value="TileSize&Radius">
+            <AccordionTrigger>
+                <p className="font-bold text-lg">{t("Size & Radius")}</p>
+            </AccordionTrigger>
+            <AccordionContent>
+                <div className="flex flex-col gap-2">
+                    <NumberField
+                        label={t("Tile Size")}
+                        value={tileSize}
+                        onChange={setTileSize}
+                        fallback={tileStyleInit.tileSize}
+                        min={0} max={200} step={2}
+                    />
+                    <NumberField
+                        label={t("Tile Radius")}
+                        value={tileRadius}
+                        onChange={setTileRadius}
+                        fallback={tileStyleInit.tileRadius}
+                        min={0} max={100} step={1}
+                    />
+                </div>
+            </AccordionContent>
+        </AccordionItem>
+    );
+});
 
-const iconSizeMin = 0;
-const iconSizeMax = 200;
+// ==================== 图标设置 ====================
+const IconSection = memo(() => {
+    const { t } = useLanguageAtom("tileEditor");
+    const { iconBorderSize, setIconBorderSize } = tileStyleAtom.useField("iconBorderSize");
+    const { iconBorderOffset, setIconBorderOffset } = tileStyleAtom.useField("iconBorderOffset");
+    const { iconSize, setIconSize } = tileStyleAtom.useField("iconSize");
+    const { iconOffset, setIconOffset } = tileStyleAtom.useField("iconOffset");
 
-const iconOffsetMin = -100;
-const iconOffsetMax = 100;
+    return (
+        <AccordionItem value="TileIcon">
+            <AccordionTrigger>
+                <p className="font-bold text-lg">{t("Icon")}</p>
+            </AccordionTrigger>
+            <AccordionContent>
+                <div className="flex flex-col gap-2">
+                    <NumberField
+                        label={t("Icon Border Size")}
+                        value={iconBorderSize}
+                        onChange={setIconBorderSize}
+                        fallback={tileStyleInit.iconBorderSize}
+                        min={0} max={200} step={2}
+                    />
+                    <NumberFieldXY
+                        label={t("Icon Border Offset")}
+                        x={iconBorderOffset.x}
+                        onChangeX={(x) => setIconBorderOffset({ ...iconBorderOffset, x })}
+                        y={iconBorderOffset.y}
+                        onChangeY={(y) => setIconBorderOffset({ ...iconBorderOffset, y })}
+                        fallback={tileStyleInit.iconBorderOffset}
+                        min={-100} max={100} step={1}
+                    />
+                    <NumberField
+                        label={t("Icon Size")}
+                        value={iconSize}
+                        onChange={setIconSize}
+                        fallback={tileStyleInit.iconSize}
+                        min={0} max={200} step={2}
+                    />
+                    <NumberFieldXY
+                        label={t("Icon Offset")}
+                        x={iconOffset.x}
+                        onChangeX={(x) => setIconOffset({ ...iconOffset, x })}
+                        y={iconOffset.y}
+                        onChangeY={(y) => setIconOffset({ ...iconOffset, y })}
+                        fallback={tileStyleInit.iconOffset}
+                        min={-100} max={100} step={1}
+                    />
+                </div>
+            </AccordionContent>
+        </AccordionItem>
+    );
+});
 
-const textOffsetMin = -100;
-const textOffsetMax = 100;
+// ==================== 文本与字体 ====================
+const TextFontSection = memo(() => {
+    const { t } = useLanguageAtom("tileEditor");
+    const { font, setFont } = tileStyleAtom.useField("font");
+    const { fontSize, setFontSize } = tileStyleAtom.useField("fontSize");
+    const { fontWeight, setFontWeight } = tileStyleAtom.useField("fontWeight");
+    const { textColor, setTextColor } = tileStyleAtom.useField("textColor");
+    const { textOpacity, setTextOpacity } = tileStyleAtom.useField("textOpacity");
+    const { textOffset, setTextOffset } = tileStyleAtom.useField("textOffset");
 
-const fontSizeMin = 0;
-const fontSizeMax = 40;
+    return (
+        <AccordionItem value="TileText&Font">
+            <AccordionTrigger>
+                <p className="font-bold text-lg">{t("Text & Font")}</p>
+            </AccordionTrigger>
+            <AccordionContent>
+                <div className="flex flex-col gap-2">
+                    <FontFamily value={font} onChange={setFont} />
+                    <NumberField
+                        label={t("Font Size")}
+                        value={fontSize}
+                        onChange={setFontSize}
+                        fallback={tileStyleInit.fontSize}
+                        min={0} max={40} step={0.5}
+                    />
+                    <NumberField
+                        label={t("Font Weight")}
+                        value={fontWeight}
+                        onChange={setFontWeight}
+                        fallback={tileStyleInit.fontWeight}
+                        min={100} max={900} step={50}
+                    />
+                    <ColorPickerField
+                        label={t("Text Color")}
+                        value={textColor}
+                        onChange={setTextColor}/>
+                    <NumberField
+                        label={t("Text Opacity")}
+                        value={textOpacity}
+                        onChange={setTextOpacity}
+                        fallback={tileStyleInit.textOpacity}
+                        min={0} max={1} step={0.01}
+                    />
+                    <NumberFieldXY
+                        label={t("Text Offset")}
+                        x={textOffset.x}
+                        onChangeX={(x) => setTextOffset({ ...textOffset, x })}
+                        y={textOffset.y}
+                        onChangeY={(y) => setTextOffset({ ...textOffset, y })}
+                        fallback={tileStyleInit.textOffset}
+                        min={-100} max={100} step={1}
+                    />
+                </div>
+            </AccordionContent>
+        </AccordionItem>
+    );
+});
 
-const fontWeightMin = 100;
-const fontWeightMax = 900;
+// ==================== 轮廓设置 ====================
+const OutlineSection = memo(() => {
+    const { t } = useLanguageAtom("tileEditor");
+    const { tileOutlineThickness, setTileOutlineThickness } = tileStyleAtom.useField("tileOutlineThickness");
+    const { tileOutlineColor, setTileOutlineColor } = tileStyleAtom.useField("tileOutlineColor");
+    const { tileOutlineOpacity, setTileOutlineOpacity } = tileStyleAtom.useField("tileOutlineOpacity");
 
-const textOpacityMin = 0;
-const textOpacityMax = 1;
+    return (
+        <AccordionItem value="TileOutline">
+            <AccordionTrigger>
+                <p className="font-bold text-lg">{t("Outline")}</p>
+            </AccordionTrigger>
+            <AccordionContent>
+                <div className="flex flex-col gap-2">
+                    <NumberField
+                        label={t("Outline Thickness")}
+                        value={tileOutlineThickness}
+                        onChange={setTileOutlineThickness}
+                        fallback={tileStyleInit.tileOutlineThickness}
+                        min={0} max={10} step={1}
+                    />
+                    <ColorPickerField
+                        label={t("Outline Color")}
+                        value={tileOutlineColor}
+                        onChange={setTileOutlineColor}
+                    />
+                    <NumberField
+                        label={t("Outline Opacity")}
+                        value={tileOutlineOpacity}
+                        onChange={setTileOutlineOpacity}
+                        fallback={tileStyleInit.tileOutlineOpacity}
+                        min={0} max={1} step={0.01}
+                    />
+                </div>
+            </AccordionContent>
+        </AccordionItem>
+    );
+});
 
-const backgroundOpacityMin = 0;
-const backgroundOpacityMax = 1;
+// ==================== 主组件 ====================
+interface TileUiInEditStylesProps {
+    tileUiVisible: boolean;
+}
 
-const tileOutlineThicknessMin = 0;
-const tileOutlineThicknessMax = 10;
-
-const tileOutlineOpacityMin = 0;
-const tileOutlineOpacityMax = 1;
-
-export const Tile_ui_inEdit_styles = (
-    {
-        t,
-        backgroundColor, setBackgroundColor,
-        backgroundOpacity, setBackgroundOpacity,
-
-        tileSize, setTileSize,
-        tileRadius, setTileRadius,
-
-        tileOutlineThickness, setTileOutlineThickness,
-        tileOutlineColor, setTileOutlineColor,
-        tileOutlineOpacity, setTileOutlineOpacity,
-
-        iconBorderSize, setIconBorderSize,
-        iconBorderOffset, setIconBorderOffset,
-        iconSize, setIconSize,
-        iconOffset, setIconOffset,
-
-        textColor, setTextColor,
-        textOpacity, setTextOpacity,
-
-        fontSize, setFontSize,
-        fontWeight, setFontWeight,
-        font, setFont,
-        textOffset, setTextOffset,
-
-        INITIAL_STYLE,
-
-        tileUiVisible,
-
-    }: TileLogic
-)=>{
+export const Tile_ui_inEdit_styles = memo(({ tileUiVisible }: TileUiInEditStylesProps) => {
     const [value, setValue] = useState<string[]>([]);
+
     useEffect(() => {
         if (!tileUiVisible) setValue([]);
     }, [tileUiVisible]);
 
-    return(
-        <div className={cn("overflow-hidden relative")}>
-            <div className={cn("ml-6 px-0")}>
-                    <Accordion type="multiple" className="w-full" value={value} onValueChange={(v)=>setValue(v)}>
-                    <AccordionItem value="TileBackground">
-                        <AccordionTrigger>
-                            <p className="font-bold text-lg">{t("Background")}</p>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <div className="flex flex-col gap-2">
-                                <ColorPickerField label={t("Background Color")}
-                                                  value={backgroundColor}
-                                                  onChange={setBackgroundColor}
-                                ></ColorPickerField>
-                                <NumberField label={t("Background Opacity")}
-                                             value={backgroundOpacity}
-                                             onChange={setBackgroundOpacity}
-                                             min={backgroundOpacityMin} max={backgroundOpacityMax}
-                                             step={0.01}
-                                             fallback={1}/>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="TileSize&Radius">
-                        <AccordionTrigger>
-                            <p className="font-bold text-lg">{t("Size & Radius")}</p>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <div className="flex flex-col gap-2">
-                                <NumberField label={t("Tile Size")} value={tileSize} onChange={setTileSize}
-                                             fallback={INITIAL_STYLE.tileSize}
-                                             min={tileSizeMin} max={tileSizeMax} step={2}/>
-
-                                <NumberField label={t("Tile Radius")} value={tileRadius} onChange={setTileRadius}
-                                             fallback={INITIAL_STYLE.tileRadius}
-                                             min={tileRadiusMin} max={tileRadiusMax} step={1}/>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="TileIcon">
-                        <AccordionTrigger>
-                            <p className="font-bold text-lg">{t("Icon")}</p>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <div className="flex flex-col gap-2">
-                                <NumberField label={t("Icon Border Size")} value={iconBorderSize}
-                                             onChange={setIconBorderSize} fallback={INITIAL_STYLE.iconBorderSize}
-                                             min={iconBorderSizeMin} max={iconBorderSizeMax} step={2}/>
-
-                                <NumberFieldXY label={t("Icon Border Offset")} x={iconBorderOffset.x}
-                                               onChangeX={(x) => setIconBorderOffset({...iconBorderOffset, x})}
-                                               y={iconBorderOffset.y}
-                                               onChangeY={(y) => setIconBorderOffset({...iconBorderOffset, y})}
-                                               fallback={INITIAL_STYLE.iconBorderOffset}
-                                               min={iconBorderOffsetMin} max={iconBorderOffsetMax} step={1}
-                                />
-
-                                <NumberField label={t("Icon Size")} value={iconSize} onChange={setIconSize}
-                                             fallback={INITIAL_STYLE.iconSize}
-                                             min={iconSizeMin} max={iconSizeMax} step={2}/>
-
-                                <NumberFieldXY label={t("Icon Offset")} x={iconOffset.x}
-                                               onChangeX={(x) => setIconOffset({...iconOffset, x})}
-                                               y={iconOffset.y}
-                                               onChangeY={(y) => setIconOffset({...iconOffset, y})}
-                                               fallback={INITIAL_STYLE.iconOffset}
-                                               min={iconOffsetMin} max={iconOffsetMax} step={1}
-                                />
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="TileText&Font">
-                        <AccordionTrigger>
-                            <p className="font-bold text-lg">{t("Text & Font")}</p>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <div className="flex flex-col gap-2">
-                                <FontFamily value={font} onChange={setFont}/>
-                                <NumberField label={t("Font Size")}
-                                             min={fontSizeMin} max={fontSizeMax} step={0.5}
-                                             value={fontSize}
-                                             onChange={setFontSize} fallback={INITIAL_STYLE.fontSize}/>
-                                <NumberField label={t("Font Weight")}
-                                             min={fontWeightMin} max={fontWeightMax} step={50}
-                                             value={fontWeight}
-                                             onChange={setFontWeight} fallback={INITIAL_STYLE.fontWeight}/>
-
-                                <div className="grid grid-cols-2 w-full items-center">
-                                    <p>{t("Text Color")}</p>
-                                    <ThrottledColorPicker
-                                        className={"border w-full items-center"}
-                                        value={textColor} onChange={setTextColor} />
-                                </div>
-                                <NumberField label={t("Text Opacity")} value={textOpacity}
-                                             onChange={setTextOpacity}
-                                             min={textOpacityMin} max={textOpacityMax} step={0.01}
-                                             fallback={1}/>
-
-                                <NumberFieldXY label={t("Text Offset")}
-                                               min={textOffsetMin} max={textOffsetMax} step={1}
-                                               x={textOffset.x}
-                                               onChangeX={(x) => setTextOffset({...textOffset, x})}
-                                               y={textOffset.y}
-                                               onChangeY={(y) => setTextOffset({...textOffset, y})}
-                                               fallback={INITIAL_STYLE.textOffset}/>
-
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="TileOutline">
-                        <AccordionTrigger>
-                            <p className="font-bold text-lg">{t("Outline")}</p>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <div className="flex flex-col gap-2">
-                                <NumberField label={t("Outline Thickness")} value={tileOutlineThickness}
-                                             onChange={setTileOutlineThickness} fallback={INITIAL_STYLE.tileOutlineThickness}
-                                             min={tileOutlineThicknessMin} max={tileOutlineThicknessMax} step={1}/>
-                                <div className="grid grid-cols-2 w-full items-center">
-                                    <p>{t("Outline Color")}</p>
-                                    <ThrottledColorPicker
-                                        className={"border w-full items-center"}
-                                        value={tileOutlineColor}
-                                        onChange={setTileOutlineColor} />
-                                </div>
-                                <NumberField label={t("Outline Opacity")} value={tileOutlineOpacity}
-                                             onChange={setTileOutlineOpacity}
-                                             min={tileOutlineOpacityMin} max={tileOutlineOpacityMax} step={0.01}
-                                             fallback={1}/>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
+    return (
+        <div className="overflow-hidden relative">
+            <div className="ml-6 px-0">
+                <Accordion type="multiple" className="w-full" value={value} onValueChange={setValue}>
+                    <BackgroundSection />
+                    <SizeRadiusSection />
+                    <IconSection />
+                    <TextFontSection />
+                    <OutlineSection />
                 </Accordion>
             </div>
         </div>
-    )
-}
+    );
+});

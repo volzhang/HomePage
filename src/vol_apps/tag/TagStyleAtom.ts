@@ -1,7 +1,6 @@
 import * as v from 'valibot';
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
-import {createAutoMigrationAtom} from "@/vol_apps/04_persist_atoms/createAtom.ts";
-import {useMemo} from "react";
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
 
 const tagStyleSchema = v.object({
     visible: v.boolean(),
@@ -54,21 +53,9 @@ const tagStyleInit = {
 
 const tagStyleKey = "tagStyle";
 
-const _useTagStyleAtom = createAutoMigrationAtom({
+export const tagStyleAtom = createMigratePersistAtom({
     key: tagStyleKey,
     initState: tagStyleInit,
     stateSchema: tagStyleSchema,
-    legacy: "idb"
+    legacyDb: "idb"
 })
-
-export const useTagStyleAtom = () => {
-    const {state, setState, ...rest} = _useTagStyleAtom();
-
-    const hasChanges = useMemo(() => {
-        return JSON.stringify(state) !== JSON.stringify(tagStyleInit);
-    }, [state]);
-
-    const reset = () => setState(tagStyleInit);
-
-    return {hasChanges, reset, ...rest};
-};

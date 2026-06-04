@@ -1,10 +1,10 @@
 import {Button} from "@/components/ui/button";
-import {useThemeAtom} from "@/vol_apps/theme/themeAtom.ts"
 import {useEffect} from "react";
 import {Moon, Sun} from "lucide-react";
+import {themeAtom} from "@/vol_apps/theme/themeAtom.ts";
 
 export const Theme = () => {
-	const {theme, setTheme, hydrated} = useThemeAtom();
+	const {theme, setTheme, themeHydrated} = themeAtom.useField("theme")
 
 	useEffect(() => {
 		const root = document.documentElement;
@@ -20,7 +20,7 @@ export const Theme = () => {
 	return (
 		<>
 			{
-				hydrated &&
+				themeHydrated &&
 				<Button
 					className={"animate-fade-in-scale"}
 					variant={"outline"}

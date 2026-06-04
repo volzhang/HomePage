@@ -1,7 +1,6 @@
-import {createAutoMigrationAtom} from "@/vol_apps/04_persist_atoms/createAtom.ts";
 import * as v from "valibot";
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
-import {useMemo} from "react";
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
 
 const colorStringSchema = v.pipe(v.string(),
     v.regex(/^#[0-9a-fA-F]{6}$/, '必须是有效的十六进制颜色（如 #ffffff）'))
@@ -72,21 +71,21 @@ export const tileStyleInit = {
     textOpacity: 1,
 }
 
-const _useTileStyleAtom = createAutoMigrationAtom({
+export const tileStyleAtom = createMigratePersistAtom({
     key: tileStyleKey,
     stateSchema: tileStyleSchema,
     initState: tileStyleInit,
-    legacy: "idb",
+    legacyDb: "idb",
 })
 
-export const useTileStyleAtom = () => {
-    const {state, setState, ...rest} = _useTileStyleAtom()
-
-    const hasChanges = useMemo(() => {
-        return JSON.stringify(state) !== JSON.stringify(tileStyleInit);
-    }, [state]);
-
-    const reset = () => setState(tileStyleInit);
-
-    return {...rest, hasChanges, reset,} as const
-}
+// export const useTileStyleAtom = () => {
+//     const {state, setState, ...rest} = _useTileStyleAtom()
+//
+//     const hasChanges = useMemo(() => {
+//         return JSON.stringify(state) !== JSON.stringify(tileStyleInit);
+//     }, [state]);
+//
+//     const reset = () => setState(tileStyleInit);
+//
+//     return {...rest, hasChanges, reset,} as const
+// }

@@ -1,7 +1,7 @@
-import {createAutoMigrationAtom} from "@/vol_apps/04_persist_atoms/createAtom.ts";
-import {useCallback, useEffect} from "react";
+import {useCallback} from "react";
 import {type NamespaceDict, resources} from "@/vol_apps/language/language_RESOURCES.ts";
 import * as v from 'valibot';
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
 
 const languageSchema = v.object({
     language: v.picklist(['en', 'cn'])
@@ -10,22 +10,22 @@ const languageSchema = v.object({
 const languageKey = "language"
 const languageDefault = {language: "en"} as const
 
-const useAutoMigrationAtom = createAutoMigrationAtom({
+const languageAtom = createMigratePersistAtom({
     key: languageKey,
     initState: languageDefault,
     stateSchema: languageSchema,
-    legacy: "localstorage"
+    legacyDb: "localstorage"
 })
 
 export const useLanguageAtom = (namespace?: string) => {
 
-    const {language, setLanguage, hydrated} = useAutoMigrationAtom()
+    const {language, setLanguage, languageHydrated} = languageAtom.useField("language")
 
-    useEffect(() => {
-        if (!hydrated) return;
+    const _setLanguage = (l: "en" | "cn") => {
+        setLanguage(l)
         document.documentElement.lang = language === "cn" ? "zh-CN" : "en";
         document.title = language === "cn" ? "主页" : "Home Page";
-    }, [language, hydrated])
+    }
 
     // 翻译函数
     const t = useCallback(
@@ -45,5 +45,5 @@ export const useLanguageAtom = (namespace?: string) => {
         [language, namespace]
     );
 
-    return {language, setLanguage, hydrated, t};
+    return {language, setLanguage: _setLanguage, languageHydrated, t};
 }

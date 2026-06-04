@@ -1,5 +1,3 @@
-
-import {createAutoMigrationAtom} from "@/vol_apps/04_persist_atoms/createAtom.ts";
 import * as v from "valibot";
 import search_bing from "@/assets/search_bing.svg";
 import search_google from "@/assets/search_google.png";
@@ -9,6 +7,7 @@ import search_baidu from "@/assets/search_baidu.png";
 import search_yahoo from "@/assets/search_yahoo.png";
 import search_brave from "@/assets/search_brave.svg";
 import search_ecosia from "@/assets/search_ecosia.svg";
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
 
 type Engine = {
     id: number;			//标识
@@ -38,15 +37,15 @@ const searchSchema = v.object({
 const searchKey = "search"
 const searchDefault = {engineInUseId: 0}
 
-const _useSearchAtom = createAutoMigrationAtom({
+const searchAtom = createMigratePersistAtom({
     key: searchKey,
     stateSchema: searchSchema,
     initState: searchDefault,
-    legacy: "idb",
+    legacyDb: "idb",
 })
 
 export const useSearchAtom = () => {
-    const {engineInUseId, setEngineInUseId, hydrated} = _useSearchAtom()
+    const {engineInUseId, setEngineInUseId} = searchAtom.useField("engineInUseId")
 
     const  setEngineInUseByName = (engineInUseName: Engine["name"]) => {
             const engine = SEARCH_ENGINES.find((e) => e.name === engineInUseName);
@@ -56,7 +55,6 @@ export const useSearchAtom = () => {
     const getEngineInUse =  () => SEARCH_ENGINES.find((e) => e.id === engineInUseId) || SEARCH_ENGINES[0];
 
     return {
-        hydrated,
         setEngineInUseByName,
         getEngineInUse,
     }

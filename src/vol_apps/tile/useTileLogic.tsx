@@ -8,7 +8,6 @@ import {useFaviconVemetricPng} from "@/vol_apps/tanStackQuery/Api_FaviconVemetri
 import {isValidUrl} from "@/vol_apps/tool/isType/isValidUrl";
 import {isSortable} from "@dnd-kit/react/sortable";
 import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
-import {tileStyleInit, useTileStyleAtom} from "@/vol_apps/tile/tile_style_atom.ts";
 
 export type TileLogic = ReturnType<typeof useTileLogic>;
 export const useTileLogic = () => {
@@ -20,7 +19,6 @@ export const useTileLogic = () => {
         setTiles, tilesByTag, isBroadMatches,
         setTileUiVisible, setTileInEditId,
         updateTile, removeTile
-
     } = useTileStore()
     const {bgImg} = useBgStore()
     const displayTiles = tilesByTag(isBroadMatches ? "ANY" : "ALL")!
@@ -64,28 +62,27 @@ export const useTileLogic = () => {
         setTiles(newTiles);
     };
 
-    const {hasChanges, reset, ...TileStyle} = useTileStyleAtom();
-
-    const backgroundRGBAColor = (() => {
-        const r = parseInt(TileStyle.backgroundColor.slice(1, 3), 16);
-        const g = parseInt(TileStyle.backgroundColor.slice(3, 5), 16);
-        const b = parseInt(TileStyle.backgroundColor.slice(5, 7), 16);
-        return `rgba(${r}, ${g}, ${b}, ${TileStyle.backgroundOpacity})`;
-    })();
-
-    const tileOutlineRGBAColor = (() => {
-        const r = parseInt(TileStyle.tileOutlineColor.slice(1, 3), 16);
-        const g = parseInt(TileStyle.tileOutlineColor.slice(3, 5), 16);
-        const b = parseInt(TileStyle.tileOutlineColor.slice(5, 7), 16);
-        return `rgba(${r}, ${g}, ${b}, ${TileStyle.tileOutlineOpacity})`;
-    })();
-
-    const textRGBAColor = (() => {
-        const r = parseInt(TileStyle.textColor.slice(1, 3), 16);
-        const g = parseInt(TileStyle.textColor.slice(3, 5), 16);
-        const b = parseInt(TileStyle.textColor.slice(5, 7), 16);
-        return `rgba(${r}, ${g}, ${b}, ${TileStyle.textOpacity})`;
-    })();
+    // const {hasChanges, reset, ...TileStyle} = useTileStyleAtom();
+    // const backgroundRGBAColor = (() => {
+    //     const r = parseInt(TileStyle.backgroundColor.slice(1, 3), 16);
+    //     const g = parseInt(TileStyle.backgroundColor.slice(3, 5), 16);
+    //     const b = parseInt(TileStyle.backgroundColor.slice(5, 7), 16);
+    //     return `rgba(${r}, ${g}, ${b}, ${TileStyle.backgroundOpacity})`;
+    // })();
+    //
+    // const tileOutlineRGBAColor = (() => {
+    //     const r = parseInt(TileStyle.tileOutlineColor.slice(1, 3), 16);
+    //     const g = parseInt(TileStyle.tileOutlineColor.slice(3, 5), 16);
+    //     const b = parseInt(TileStyle.tileOutlineColor.slice(5, 7), 16);
+    //     return `rgba(${r}, ${g}, ${b}, ${TileStyle.tileOutlineOpacity})`;
+    // })();
+    //
+    // const textRGBAColor = (() => {
+    //     const r = parseInt(TileStyle.textColor.slice(1, 3), 16);
+    //     const g = parseInt(TileStyle.textColor.slice(3, 5), 16);
+    //     const b = parseInt(TileStyle.textColor.slice(5, 7), 16);
+    //     return `rgba(${r}, ${g}, ${b}, ${TileStyle.textOpacity})`;
+    // })();
 
     const [stylesIsOpen, setStylesIsOpen] = useState(false);
     useEffect(() => {
@@ -193,13 +190,13 @@ export const useTileLogic = () => {
     }
 
     // BUTTONS
-    const hasStyleChanges = hasChanges
+    // const hasStyleChanges = hasChanges
 
     const handleRemoveTile = () => {
         setTileUiVisible(false)
         setTimeout(() => removeTile(tileInEditId), 0)
     };
-    const handleResetStyles = reset
+    // const handleResetStyles = reset
 
     // OK
     const ok_ref = useRef<HTMLButtonElement>(null);
@@ -231,7 +228,9 @@ export const useTileLogic = () => {
 
     return {
         t,
+
         // contextMenu
+        tileId: tileInEditId,
         contextMenuOptions,
         tileInEditId,
         setTileInEditId,
@@ -266,25 +265,18 @@ export const useTileLogic = () => {
 
         //BODY
         handleRemoveTile,
-        handleResetStyles,
-        hasStyleChanges,
+        // handleResetStyles,
+        // hasStyleChanges,
 
         //FOOT
         handleOk,
         ok_ref,
 
         //STYLE
-        ...TileStyle,
         iconBorderOutline: stylesIsOpen,
         stylesIsOpen, setStylesIsOpen,
         bgImg,
 
-        //背景色
-        backgroundRGBAColor,
-        tileOutlineRGBAColor,
-        textRGBAColor,
-
-        INITIAL_STYLE: tileStyleInit
     }
 
 }
