@@ -4,7 +4,7 @@ import {persistedStores, LatestStoreVersion} from "@/vol_apps/tool/createPersist
 import { downloadAsJsonFile, timeStamp } from "@/vol_apps/tool/action/download";
 import { isPlainObject } from "@/vol_apps/tool/isType/isPlainObject";
 import {safeParse} from "valibot";
-import {atoms} from "@/vol_apps/04_persist_atoms/signal.ts";
+import {atoms} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
 
 // ----------------------------------------------------------------------
 // 工具函数：解析备份值，兼容旧备份中字符串化存储的情况
@@ -76,7 +76,7 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
 		// restore atom
 		const parseData = safeParse(atom.dataSchema, backupData[key]);
 		if (parseData.success) {
-			atom.setValue(parseData.output.state);
+			atom.setState(parseData.output.state);
 		} else {
 			console.error(`Restore: failed to parse schema: `, key, parseData.issues);
 		}
@@ -137,7 +137,7 @@ export const persistedStoresBackup = async (): Promise<void> => {
 	for (const [key, atom] of atoms) {
 		result[key] =
 			{
-				state: atom.getValue(),
+				state: atom.getState(),
 				version: 1.0
 			}
 	}

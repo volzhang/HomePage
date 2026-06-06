@@ -20,13 +20,11 @@
 // };
 // //
 // const atoms = new Map<string, AtomEntry>();
-
 //
 // type Listener = () => void;
 //
 // type State = Record<string, unknown>
 //
-
 //
 // const getDataSchema = <T>(schema: BaseSchema<T, any, any>) => {
 //     return v.object({state: schema, version: v.number()});

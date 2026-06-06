@@ -1,20 +1,16 @@
 import {Button} from "@/components/ui/button";
-import {useEffect} from "react";
 import {Moon, Sun} from "lucide-react";
-import {themeAtom} from "@/vol_apps/theme/themeAtom.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms/signal/signal.ts";
+import {useEffect} from "react";
+
 
 export const Theme = () => {
-	const {theme, setTheme, themeHydrated} = themeAtom.useField("theme")
-
+	const {theme, setTheme, themeHydrated} = useSignal("theme", "theme", "dark")
 	useEffect(() => {
 		const root = document.documentElement;
-		if (theme === "dark") {
-			root.classList.add("dark");
-		} else {
-			root.classList.remove("dark");
-		}
-	}, [theme]);
-
+		if (theme === "dark") root.classList.add("dark");
+		else root.classList.remove("dark");
+	}, [theme])
 	const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
 	return (

@@ -1,6 +1,6 @@
 import * as v from "valibot";
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
-import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
 
 const colorStringSchema = v.pipe(v.string(),
     v.regex(/^#[0-9a-fA-F]{6}$/, '必须是有效的十六进制颜色（如 #ffffff）'))

@@ -1,6 +1,6 @@
 import * as v from 'valibot';
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
-import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
 
 const tagStyleSchema = v.object({
     visible: v.boolean(),

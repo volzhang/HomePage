@@ -39,7 +39,6 @@ type BgStoreActions = {
     setBgCenter: (value: BgStoreState["bgCenter"]) => void;
     setBgSize: (value: BgStoreState["bgSize"]) => void;
     setOtherVisible: (value: BgStoreState["otherVisible"]) => void;
-    // setBgUiVisible: (value: BgStoreState["bgUiVisible"]) => void;
 
     //新增
     setBgBingDate: (value: BgStoreState["bgBingDate"]) => void;

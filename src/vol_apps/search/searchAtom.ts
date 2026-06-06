@@ -7,7 +7,7 @@ import search_baidu from "@/assets/search_baidu.png";
 import search_yahoo from "@/assets/search_yahoo.png";
 import search_brave from "@/assets/search_brave.svg";
 import search_ecosia from "@/assets/search_ecosia.svg";
-import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
 
 type Engine = {
     id: number;			//标识

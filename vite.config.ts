@@ -1,45 +1,78 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import path, {resolve} from "path"
+import path, { resolve } from 'path'
 
-// https://vite.dev/config/
+
+const toPosix = (id: string) => id.replace(/\\/g, '/')
+
+const isReact = (id: string) => {
+    const p = toPosix(id);
+    return (
+        p.includes('react/') ||
+        p.includes('react-dom/') ||
+        p.includes('scheduler') ||
+        p.includes('idb-keyval') ||
+        p.includes('valibot') ||
+        p.includes('src/vol_apps/03_utils/createDebouncedSet.ts')
+    );
+}
+
+const isZustand = (id: string) => {
+    const p = toPosix(id);
+    return (
+        p.includes('zustand') ||
+        p.includes('src/vol_apps/tool/createPersistedStore.ts') ||
+        p.includes('src/vol_apps/tool/useStoreHydrated.ts')
+    );
+}
+
+const isMyStore = (id: string) => {
+    const p = toPosix(id)
+    return (
+        p.includes('src/vol_apps/04_persist_atoms/runMigration') ||
+        p.includes('src/vol_apps/04_persist_atoms/signal') ||
+        p.includes('src/vol_apps/04_persist_atoms')
+    )
+}
+
+const isVendor = (id: string) => {
+    return id.includes('node_modules')
+}
+
 export default defineConfig({
-  plugins: [react(),tailwindcss(),],
-  base: './',
-  resolve: {
-    alias: {"@": path.resolve(__dirname, "./src"),},
-  },
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-        privacy: resolve(__dirname, 'privacy.html'), // 新增
-      },
-      output: {
-        manualChunks(id: string) {
-          // 根据模块 ID 返回 chunk 名称
-          if (id.includes('node_modules')) {
-            // 1. React 核心
-            if (id.includes('react/') || id.includes('react-dom/')) {
-              return 'react'
-            }
-            // 2. Radix UI 组件库
-            if (id.includes('@radix') || id.includes('@shadcn')) {
-              return 'ui'
-            }
-            // 3. codemirror
-            if (id.includes('@codemirror')) {
-              return 'cm'
-            }
-            // 3. 其他库
-            return 'vendor'
-          }
-        }
-      }
-    },
-    // 提高警告阈值，避免频繁警告
-    // chunkSizeWarningLimit: 500
-  }
+    plugins: [
+        react(),
+        tailwindcss(),
+    ],
 
+    base: './',
+
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './src'),
+        },
+    },
+
+    build: {
+        reportCompressedSize: true,
+
+        rollupOptions: {
+            input: {
+                main: resolve(__dirname, 'index.html'),
+                privacy: resolve(__dirname, 'privacy.html'),
+            },
+
+            output: {
+                manualChunks(id: string) {
+                    const p = toPosix(id)
+                    if (isReact(p)) return 'public'
+                    if (isZustand(p)) return 'zustand'
+                    if (isMyStore(p)) return 'signal'
+                    if (isVendor(p)) return 'vendor'
+                    return undefined
+                }
+            }
+        }
+    }
 })

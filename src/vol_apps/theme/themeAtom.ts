@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
 
 // 测试代码
 // localStorage.setItem('theme', JSON.stringify({

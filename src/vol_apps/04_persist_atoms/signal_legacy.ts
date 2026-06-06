@@ -1,3 +1,5 @@
+// noinspection PointlessBooleanExpressionJS,DuplicatedCode
+
 import {useSyncExternalStore} from "react";
 import {createStore, get, set} from "idb-keyval";
 import {createDebouncedSet} from "@/vol_apps/03_utils/createDebouncedSet.ts";
@@ -6,23 +8,22 @@ import {type BaseSchema, safeParse} from "valibot";
 import * as v from "valibot";
 import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
 
-type AtomEntry<T extends State = State> = {
-    key: string;
-    dataSchema: BaseSchema<T, any, any>;
-    getValue: () => T;
-    setValue: (value: T) => void;
-};
-
-export const atoms = new Map<string, AtomEntry<any>>();
-
 // type Data<T extends State> = { state: T, version: number }
-type MigrationResult<S extends State> = { success: boolean; state?: S }
-type Migration<S extends State> = () => Promise<MigrationResult<S>>;
-
 type State = Record<string, unknown>;
 type Listener = () => void;
 type Subscriber = (listener: () => void) => () => void
+type MigrationResult<T extends State> = { success: boolean; state?: T }
+type Migration<T extends State> = () => Promise<MigrationResult<T>>;
+type Setter<T> = (v: T) => void;
 
+type AtomEntry<T extends State = State> = {
+    key: string;
+    dataSchema: BaseSchema<T, any, any>;
+    getState: () => T;
+    setState: (s: T) => void;
+};
+
+export const atoms = new Map<string, AtomEntry<any>>();
 const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1)
 
 // @formatter:off
@@ -33,13 +34,11 @@ const createSignal = <T>(initialValue: T) => {
     const emit = () => listeners.forEach(fn => fn());
     const subscribe = (l: Listener) => {listeners.add(l);return () => listeners.delete(l);};
     const get = () => value;
-    const use = () => useSyncExternalStore(subscribe, get);
+    const useSignal = () => useSyncExternalStore(subscribe, get);
     const set = (next: T) => {if (Object.is(value, next)) return;value = next;emit();};
-    return {use, set, get, subscribe};
+    return {useSignal, set, get, subscribe};
 };
-// @formatter:on
 
-// @formatter:off
 // 派生信号
 const createDerivedSignal = <T>(
     compute: () => T,
@@ -50,27 +49,25 @@ const createDerivedSignal = <T>(
     const emit = () => listeners.forEach(fn => fn());
     const subscribe = (l: Listener) => {listeners.add(l);return () => listeners.delete(l);};
     const get = () => value;
-    const use = () => useSyncExternalStore(subscribe, get);
+    const useSignal = () => useSyncExternalStore(subscribe, get);
     deps.forEach(dep => {dep.subscribe(() => {const next = compute();if (!Object.is(value, next)) {value = next;emit();}});});
-    return {use, get, subscribe};
+    return {useSignal, get, subscribe};
 };
 // @formatter:on
 
-// @formatter:off
+// @formatter:on
 const createExpandedSignal = <T>(initialValue: T) => {
     const valueSignal = createSignal(initialValue);
 
-    let callback: ((v:T)=>void) | undefined = undefined
-    const onSet = (fn:((v:T)=>void)) => {
-        callback = fn
-    }
+    let callback: Setter<T> | undefined = undefined
+    const onSet = (fn: Setter<T>) => callback = fn
 
-    const changedSignal = createDerivedSignal(
+    const changedSignal = createDerivedSignal<boolean>(
         () => !deepEqual(valueSignal.get(), initialValue),
         [valueSignal]
     );
 
-    const hydratedSignal = createSignal(false);
+    const hydratedSignal = createSignal<boolean>(false);
 
     // 这里的方法尽可能不相互依赖
     const hydrate = (value?: T) => {
@@ -90,7 +87,7 @@ const createExpandedSignal = <T>(initialValue: T) => {
 
     const signalHook = () => {
         return {
-            use: valueSignal.use,
+            useSignal: valueSignal.useSignal,
             set,
             get: valueSignal.get,
             subscribe: valueSignal.subscribe,
@@ -100,11 +97,11 @@ const createExpandedSignal = <T>(initialValue: T) => {
     signalHook.onSet = onSet
 
     signalHook.isHydrated = hydratedSignal.get;
-    signalHook.useHydrated = hydratedSignal.use;
+    signalHook.useHydrated = hydratedSignal.useSignal;
     signalHook.hydrate = hydrate;
 
     signalHook.isChanged = changedSignal.get;
-    signalHook.useChanged = changedSignal.use;
+    signalHook.useChanged = changedSignal.useSignal;
     signalHook.reset = reset;
 
     signalHook.subscribeToHydrated = hydratedSignal.subscribe;
@@ -114,10 +111,8 @@ const createExpandedSignal = <T>(initialValue: T) => {
 };
 // @formatter:on
 
-// 整合到atom，一次创建多个状态
-export const createAtom = <T extends State>({
-                                                initState,
-                                            }: {
+// 一次创建多个信号
+export const createAtom = <T extends State>({initState}: {
     initState: T
 }) => {
 
@@ -125,28 +120,25 @@ export const createAtom = <T extends State>({
     for (const [key, value] of Object.entries(initState)) signals.set(key, createExpandedSignal(value));
 
     const signalsArray = Array.from(signals.values());
-    
+
     const hydratableDeps = signalsArray.map(s => ({subscribe: s.subscribeToHydrated}));
     const hydratedSignal = createDerivedSignal(
-        ()=> signalsArray.every(s => s.isHydrated()),
-        hydratableDeps
-    )
+        () => signalsArray.every(s => s.isHydrated())
+        , hydratableDeps)
 
     const changeableDeps = signalsArray.map(s => ({subscribe: s.subscribeToChanged}));
     const changedSignal = createDerivedSignal(
-        () => signalsArray.some(s => s.isChanged()),
-        changeableDeps
-    );
+        () => signalsArray.some(s => s.isChanged())
+        , changeableDeps);
 
-    const fullStateDeps = signalsArray.map(s => ({ subscribe: s().subscribe }));
+    const fullStateDeps = signalsArray.map(s => ({subscribe: s().subscribe}));
     const fullState = createDerivedSignal(
         () => {
-            const state: Record<string, unknown> = {};
+            const state: State = {};
             signals.forEach((signal, key) => state[key] = signal().get());
             return state as T;
-        },
-        fullStateDeps
-    );
+        }
+        , fullStateDeps);
 
     const setAtom = (newState: T) => {
         for (const [key, value] of Object.entries(newState)) {
@@ -171,7 +163,7 @@ export const createAtom = <T extends State>({
         const s = signals.get(name as string);
         if (!s) throw new Error(`Field not found: ${String(name)}`);
 
-        const value = s().use() as T[K];
+        const value = s().useSignal() as T[K];
         const setter = s().set as (v: T[K]) => void;
         const fieldHydrated = s.useHydrated();
 
@@ -190,21 +182,18 @@ export const createAtom = <T extends State>({
         };
     };
 
-
-
     // 挂载
     useAtomSetters.signals = signals;
     useAtomSetters.useField = useField;
 
-    useAtomSetters.atomChanged = changedSignal.use
-    useAtomSetters.atomHydrated = hydratedSignal.use;
-
-    useAtomSetters.useFullState = fullState.use;
-    useAtomSetters.getFullState = fullState.get;
-
-    useAtomSetters.setAtom = setAtom;
-
+    useAtomSetters.atomChanged = changedSignal.useSignal
     useAtomSetters.reset = () => signals.forEach(s => s.reset());
+
+    useAtomSetters.atomHydrated = hydratedSignal.useSignal;
+
+    useAtomSetters.useAtom = fullState.useSignal;
+    useAtomSetters.getAtom = fullState.get;
+    useAtomSetters.setAtom = setAtom;
 
     return useAtomSetters
 };
@@ -269,7 +258,6 @@ const createMigration = <T extends State>({
 
         const writeIDB = createDebouncedSet(set)
         try {
-
             await writeIDB(key, buildData(state));
             return {
                 success: true,
@@ -286,8 +274,8 @@ const createMigration = <T extends State>({
 export const createPersitAtom = <T extends State>(config: {
     key: string;
     initState: T;
-    migration?: Migration<T>;         // 可用处理迁移旧数据
     stateSchema: BaseSchema<T, any, any>;
+    migration?: Migration<T>;         // 可用处理迁移旧数据
 }) => {
     const {initState, key, migration, stateSchema} = config;
 
@@ -313,7 +301,6 @@ export const createPersitAtom = <T extends State>(config: {
 
     // 持久化：注册写库方法
     const writeDebounced = createDebouncedSet(set, 500);
-
 
     const persist = () => {
         const fullState: State = {};
@@ -347,26 +334,13 @@ export const createPersitAtom = <T extends State>(config: {
 
     void doMigration();
 
-    // 注册 atoms
-    // const setMemoryValue = (next: T) => {
-    //     if (Object.is(state, next)) return;
-    //     state = next;
-    //     emit();
-    // };
-
-    const dataSchema = getDataSchema(stateSchema)
-
     atoms.set(key, {
         key,
-        dataSchema,
-
-        getValue: useAtom.getFullState,
-        setValue: useAtom.setAtom
-        // setMemoryValue: setMemoryValue as (value: unknown) => void,
+        dataSchema: getDataSchema(stateSchema),
+        getState: useAtom.getAtom,
+        setState: useAtom.setAtom,
     });
 
-    // 返回个人比较舒适的接口 单组件的属性包，hydrated
-    // 形如 {hydrated(var), color(var), setColor(fuc), size, setSize, ...}
     return useAtom
 }
 

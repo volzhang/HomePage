@@ -1,7 +1,7 @@
 import {useCallback} from "react";
 import {type NamespaceDict, resources} from "@/vol_apps/language/language_RESOURCES.ts";
 import * as v from 'valibot';
-import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal.ts";
+import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
 
 const languageSchema = v.object({
     language: v.picklist(['en', 'cn'])
