@@ -9,10 +9,10 @@
 // }
 
 import {toast} from "sonner";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 const ToastErr = (url:string)=>{
-    const {t} = useLanguageAtom()
+    const {t} = useLanguage()
     toast.error(t("can not open link") + `👉 ${url} 👈`);
 }
 

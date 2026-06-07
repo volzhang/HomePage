@@ -1,10 +1,10 @@
 import {MyRadio} from "@/vol_apps/bg/bg_ui_settings";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 export const Setting_tiles = () => {
     const {tilesVisible, setTilesVisible} = useTileStore()
-    const {t} = useLanguageAtom()
+    const {t} = useLanguage()
 
     const tilesVisibleOptions = [
         {value: "true", label: t("Visible")},

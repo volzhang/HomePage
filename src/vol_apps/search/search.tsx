@@ -4,14 +4,16 @@ import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
 import {Select} from "../01_components/01_SelectComponent";
-import {SEARCH_ENGINES, useSearchAtom} from "@/vol_apps/search/searchAtom.ts";
-import {useSearchStyleAtom} from "@/vol_apps/search/searchStyleAtom.ts";
+import {engineInUseIdSignalCfg, SEARCH_ENGINES, setEngineInUseByName, visibleSignalCfg} from "@/vol_apps/search/searchSignal.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
+
 
 export const SearchBar = () => {
-    const {getEngineInUse, setEngineInUseByName} = useSearchAtom()
     const [open, setOpen] = useState<boolean>(false)
 
-    const currentEngine = getEngineInUse();
+    const {engineInUseId} = useSignal(...engineInUseIdSignalCfg)
+    const currentEngine = SEARCH_ENGINES.find((e) => e.id === engineInUseId) || SEARCH_ENGINES[0]
+
     const inputBoxRef = useRef<HTMLTextAreaElement>(null)
 
     const handleSelect = (v: string) => {
@@ -94,7 +96,7 @@ export const SearchBar = () => {
         4: "28px",
     }
 
-    const {visible} = useSearchStyleAtom()
+    const {visible} = useSignal(...visibleSignalCfg)
 
     // ==================== JSX ====================
     return (

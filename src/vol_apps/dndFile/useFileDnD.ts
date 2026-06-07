@@ -4,12 +4,12 @@ import {useToast} from "./useToast";
 import {isLikelyBackUpFile} from "@/vol_apps/tool/isType/isLikelyBackUpFile.js";
 import {isLikelyBookmarkFile} from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
 import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile.js";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 export type FileType = "textFile" | "backupFile" | "bookmarkFile" | "unknown";
 
 export const useFileDnD = () => {
-	const {t} = useLanguageAtom("dndFile")
+	const {t} = useLanguage("dndFile")
 	const dragCounter = useRef(0);
 	const {toastId, dismissToast, waitingToast, updateOrCreateToast} = useToast();
 

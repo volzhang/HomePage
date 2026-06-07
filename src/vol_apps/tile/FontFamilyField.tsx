@@ -2,8 +2,8 @@ import {useState} from "react";
 import {loadFonts} from "@/vol_apps/tool/action/loadFonts";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 export const FONT_DEFAULT = {
     fullName: "System Default",
@@ -17,7 +17,7 @@ interface FontFamilyProps {
 }
 
 export const FontFamily = ({value, onChange, PopoverContentSide = "right"}: FontFamilyProps) => {
-    const {t} = useLanguageAtom()
+    const {t} = useLanguage()
     // noinspection DuplicatedCode
     const [open, setOpen] = useState(false);
     const [fontList, setFontList] = useState<FontItem[]>([]);

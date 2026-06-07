@@ -6,7 +6,7 @@ import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
 import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs";
 import {useFloatStyles} from "@/vol_apps/02_hooks/float/useFloatStyles";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 type ContextMenuStore = {
     contextMenuOpen: boolean
@@ -27,7 +27,7 @@ export const useTileContextMenuStore = () => TileContextMenuStore()
 const ContextMenu = (
     {contextMenuOptions}: TileLogic
 ) => {
-    const {t} = useLanguageAtom()
+    const {t} = useLanguage()
 
     const {contextMenuOpen, contextMenuPosition, setContextMenuOpen} = useTileContextMenuStore()
     const floatingStyle = useFloatStyles({

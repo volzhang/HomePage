@@ -1,0 +1,30 @@
+// import * as v from 'valibot';
+// import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
+
+// 测试代码
+// localStorage.setItem('theme', JSON.stringify({
+//     state: {theme: 'dark'},
+//     version: 1.2
+// }));
+
+// const themeSchema = v.object({
+//     theme: v.picklist(['light', 'dark'])
+// })
+//
+// const themeKey = "theme"
+// const themeDefault = {theme: "light"} as const
+//
+// export const themeAtom = createMigratePersistAtom({
+//     stateSchema: themeSchema,
+//     initState: themeDefault,
+//     key: themeKey,
+//     legacyDb: "localstorage"
+// })
+
+// export const useThemeAtom = () => {
+//     return themeAtom.useField("theme") ;
+// }
+
+
+
+

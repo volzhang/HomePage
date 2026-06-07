@@ -1,5 +1,5 @@
 import {Button} from "@/components/ui/button";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 type ImgFilePickerBtnProps = {
     fileName?: string;
@@ -42,7 +42,7 @@ export const ImgFilePickerBtn = ({
         }
     };
 
-    const {t} = useLanguageAtom()
+    const {t} = useLanguage()
     return (
         <Button variant={"secondary"} className={className} onClick={handleClick}>
             {t("Choose Icon")}

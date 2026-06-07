@@ -1,4 +1,3 @@
-import * as v from "valibot";
 import search_bing from "@/assets/search_bing.svg";
 import search_google from "@/assets/search_google.png";
 import search_duckduckgo from "@/assets/search_duckduckgo.svg";
@@ -7,7 +6,7 @@ import search_baidu from "@/assets/search_baidu.png";
 import search_yahoo from "@/assets/search_yahoo.png";
 import search_brave from "@/assets/search_brave.svg";
 import search_ecosia from "@/assets/search_ecosia.svg";
-import {createMigratePersistAtom} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
+import {createSignalCfg, getSignal} from "@/vol_apps/04_persist_atoms/signal";
 
 type Engine = {
     id: number;			//标识
@@ -30,32 +29,12 @@ export const SEARCH_ENGINES: Engine[] = [
     {id: 7, pos: 7, name: "Ecosia",     url: "https://www.ecosia.org/search",    param: "q",   homeUrl: "https://www.ecosia.org/", icon: search_ecosia},
 ] as const;
 
-const searchSchema = v.object({
-    engineInUseId: v.number()
-})
+export const engineInUseIdSignalCfg = createSignalCfg("search", "engineInUseId", 0)
+export const engineInUseIdSignal = getSignal(...engineInUseIdSignalCfg)
 
-const searchKey = "search"
-const searchDefault = {engineInUseId: 0}
-
-const searchAtom = createMigratePersistAtom({
-    key: searchKey,
-    stateSchema: searchSchema,
-    initState: searchDefault,
-    legacyDb: "idb",
-})
-
-export const useSearchAtom = () => {
-    const {engineInUseId, setEngineInUseId} = searchAtom.useField("engineInUseId")
-
-    const  setEngineInUseByName = (engineInUseName: Engine["name"]) => {
-            const engine = SEARCH_ENGINES.find((e) => e.name === engineInUseName);
-            if (engine) setEngineInUseId(engine.id)
-        }
-
-    const getEngineInUse =  () => SEARCH_ENGINES.find((e) => e.id === engineInUseId) || SEARCH_ENGINES[0];
-
-    return {
-        setEngineInUseByName,
-        getEngineInUse,
-    }
+export const setEngineInUseByName = (engineInUseName: Engine["name"]) => {
+    const engine = SEARCH_ENGINES.find((e) => e.name === engineInUseName);
+    if (engine) engineInUseIdSignal.set(engine.id)
 }
+
+export const visibleSignalCfg = createSignalCfg("searchStyle", "visible", true)

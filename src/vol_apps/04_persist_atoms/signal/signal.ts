@@ -2,7 +2,7 @@
 import {useSyncExternalStore} from "react";
 import {get, set} from "idb-keyval";
 import type {
-    Derived, Empty, Expanded, Listener, Signal, Store, StoreHub, StoreName,
+    Derived, Empty, Expanded, Listener, Signal, SignalConfig, Store, StoreHub, StoreName,
 } from "@/vol_apps/04_persist_atoms/signal/types.ts";
 import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
 import {capitalize} from "@/vol_apps/03_utils/capitalize.ts";
@@ -82,12 +82,13 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
     const activateSignal = (name: string, defaultValue: any): Expanded<any> | undefined => {
         const existing = slots.find(s => s.name === name);
         if (existing) return existing.signal;
+
         const free = slots.find(s => s.name === EMPTY);
         if (!free) return undefined;
-        free.name = name;
 
-        // defaultValue 由useSignal设置，先到先得，没有问题。
+        free.name = name;
         if (free.defaultValue === EMPTY) free.defaultValue = defaultValue;
+        // defaultValue 由useSignal设置，先到先得。建议使用统一props。
 
         return free.signal;
     };
@@ -108,6 +109,24 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         }, signalsArray
     );
 
+    const getState = () => stateSignal.get()
+
+    const setState = (state: Record<string, any>) => {
+        for (const [key, value] of Object.entries(state)) {
+            const existingSlot = slots.find(s => s.name === key);
+            if (existingSlot) existingSlot.signal.set(value);
+            else {
+                const free = slots.find(s => s.name === EMPTY);
+                if (!free) {
+                    console.log(`[Store:${storeName}] 槽位已满，无法恢复字段 "${key}"`);
+                    continue;
+                }
+                free.name = key;
+                free.signal.set(value);
+            }
+        }
+    }
+
     const debouncedPersist = createDebouncedSet(() => {
         const state = stateSignal.get();
         return set(storeName, {state, version: 1.0});
@@ -126,6 +145,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         , signalsArray)
 
     const useStoreChanged = () => changedSignal.use()
+    const getStoreChanged = () => changedSignal.get()
     const useStoreHydrated = () => hydratedSignal.use()
 
     const reset = () => {
@@ -134,23 +154,22 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
             .forEach((s) => s.signal.set(s.defaultValue))
     }
 
-    const hydrate = (data: Record<string, any>) => {
-        // 1. 恢复已知字段
-        for (const [key, value] of Object.entries(data)) {
-            const existingSlot = slots.find(s => s.name === key);
-            if (existingSlot) {
-                existingSlot.signal.hydrate(value);
-            } else {
-                const free = slots.find(s => s.name === EMPTY);
-                if (!free) {
-                    console.log(`[Store:${storeName}] 槽位已满，无法恢复字段 "${key}"`);
-                    continue;
+    const hydrate = (state?: Record<string, any>) => {
+        if (state !== undefined) {
+            for (const [key, value] of Object.entries(state)) {
+                const existingSlot = slots.find(s => s.name === key);
+                if (existingSlot) existingSlot.signal.hydrate(value);
+                else {
+                    const free = slots.find(s => s.name === EMPTY);
+                    if (!free) {
+                        console.log(`[Store:${storeName}] 槽位已满，无法恢复字段 "${key}"`);
+                        continue;
+                    }
+                    free.name = key;
+                    free.signal.hydrate(value);
                 }
-                free.name = key;
-                free.signal.hydrate(value);
             }
         }
-        // 2. 无论是否恢复成功，标记所有槽位（包括未激活）已水合
         slots.forEach(slot => slot.signal.hydrate());
     };
 
@@ -158,7 +177,11 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         activateSignal, getSignal,
 
         useStoreChanged,
+        getStoreChanged,
         useStoreHydrated,
+
+        getState,
+        setState,
 
         hydrate,
         reset,
@@ -179,33 +202,41 @@ const createStoreHub = (): StoreHub => {
         const doHydration = async () => {
             try {
                 const saved = await get(name);
-                if (saved && saved.state && typeof saved.state === 'object') {
-                    store.hydrate(saved.state);
-                } else {
-                    store.hydrate({});
-                }
+                if (saved && saved.state && typeof saved.state === 'object') store.hydrate(saved.state);
+                else store.hydrate();
             } catch {
-                store.hydrate({});
+                store.hydrate();
             }
         }
-
         void doHydration()
     });
 
     return {
         resolveSignal: (storeName, fieldName, defaultValue) => {
-            const existing = stores[storeName]?.getSignal(fieldName);
+            const store = stores[storeName];
+            const existing = store.getSignal(fieldName);
             if (existing) return existing;
-            const newSignal = stores[storeName]?.activateSignal(fieldName, defaultValue);
-            if (!newSignal) throw new Error(
-                `"${fieldName}" 注册失败：Store "${storeName}" 槽位已满。`
-            );
-            return newSignal;
+
+            const signal = store.activateSignal(fieldName, defaultValue);
+            if (!signal) throw new Error(`[${storeName}] no slot available for ${fieldName}`);
+            return signal;
         },
-    };
+
+        getStores: () => {
+            const result:Record<StoreName, Store> = {} as Record<StoreName, Store>
+            Object.entries(stores).forEach(([storeName,store])=>{
+                const state = store.getState();
+                if (Object.entries(state).length === 0) return
+                if (!store.getStoreChanged()) return;
+                result[storeName as StoreName] = store;
+            })
+            return result
+        }
+    }
 };
 
 export const storeHub = createStoreHub();
+
 
 export const useSignal = <T, F extends string>(
     storeName: StoreName, fieldName: F, defaultValue: T,
@@ -213,7 +244,6 @@ export const useSignal = <T, F extends string>(
     const signal = storeHub.resolveSignal(storeName, fieldName, defaultValue);
     const setterName = `set${capitalize(fieldName)}` as const;
     const hydratedName = `${fieldName}Hydrated` as const;
-
     return {
         [fieldName]: signal.use(),
         [setterName]: signal.set,
@@ -226,4 +256,30 @@ export const useSignal = <T, F extends string>(
         [K in F as `${K}Hydrated`]: boolean;
     };
 };
+
+export const getSignal = <T>(
+    storeName: StoreName,
+    fieldName: string,
+    defaultValue: T,
+) => {
+    return storeHub.resolveSignal(
+        storeName,
+        fieldName,
+        defaultValue
+    );
+};
+
+export const createSignalCfg = <
+    S extends StoreName,
+    F extends string,
+    T
+>(
+    storeName: S,
+    fieldName: F,
+    defaultValue: T
+): SignalConfig<S, F, T> => [
+    storeName,
+    fieldName,
+    defaultValue,
+];
 

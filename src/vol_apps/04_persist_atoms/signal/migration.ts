@@ -170,7 +170,7 @@ type CONFIGS = {
     legacyDb:"localstorage"|"idb"
 }[]
 
-const MIGRATION_CONFIGS:CONFIGS = [
+export const MIGRATION_CONFIGS:CONFIGS = [
     { storeName: "theme" as const, stateSchema: themeSchema, legacyDb: "localstorage" as const },
     { storeName: "language" as const, stateSchema: languageSchema, legacyDb: "localstorage" as const },
     { storeName: "search" as const, stateSchema: searchSchema, legacyDb: "idb" as const },

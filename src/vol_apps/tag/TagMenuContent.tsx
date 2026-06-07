@@ -7,7 +7,7 @@ import {
 import {TriangleAlert} from "lucide-react";
 import type {Tag} from "@/vol_apps/tile/tile_store_types";
 import {useSettingStore} from "@/vol_apps/settings/setting_store";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 export const TagMenuContent = (
     {
@@ -26,7 +26,7 @@ export const TagMenuContent = (
         deleteTilesWithOnlyThisTag: (id:Tag["id"])=>void;
     }
 ) => {
-    const {t} = useLanguageAtom("tagBar")
+    const {t} = useLanguage("tagBar")
     const {openSetting} = useSettingStore();
     return (
             <ContextMenuContent avoidCollisions={false} alignOffset={18}>
@@ -69,7 +69,7 @@ export const UntaggedMenuContent = (
     }
 ) => {
 
-    const {t} = useLanguageAtom("tagBar")
+    const {t} = useLanguage("tagBar")
     const {openSetting} = useSettingStore()
 
     return (

@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PanelRightClose, PanelRightOpen, RotateCcw, Trash2 } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { useLanguageAtom } from "@/vol_apps/language/languageAtom";
 import { useBgStore } from "@/vol_apps/bg/bg_store";
 import { useTileStore } from "@/vol_apps/tile/tile_store";
 import { tileStyleAtom } from "@/vol_apps/tile/tile_style_atom";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 interface TileUiInEditBodyProps {
     children: ReactNode;
@@ -19,7 +19,7 @@ export const Tile_ui_inEdit_body = memo(({
                                              stylesIsOpen,
                                              setStylesIsOpen,
                                          }: TileUiInEditBodyProps) => {
-    const { t } = useLanguageAtom();
+    const { t } = useLanguage();
     const bgImg = useBgStore().bgImg;
     const { removeTile, tileInEditId } = useTileStore();
     const atomChanged = tileStyleAtom.atomChanged(); // 整体是否有改动

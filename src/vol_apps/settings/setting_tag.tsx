@@ -6,12 +6,12 @@ import {NumberField, NumberFieldXY} from "@/vol_apps/tile/NumberField";
 import {FontFamily} from "@/vol_apps/tile/FontFamilyField";
 import {ColorPickerField} from "@/vol_apps/tile/ColorPickerField";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 import {tagStyleAtom} from "@/vol_apps/tag/TagStyleAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 // ==================== 可见性 ====================
 const VisibilityRadio = memo(() => {
-    const { t } = useLanguageAtom("tagBar");
+    const { t } = useLanguage("tagBar");
     const { visible, setVisible } = tagStyleAtom.useField("visible");
     const options = [
         { value: "true", label: t("Visible") },
@@ -29,7 +29,7 @@ const VisibilityRadio = memo(() => {
 
 // ==================== 瓷砖匹配 ====================
 const TileMatchingRadio = memo(() => {
-    const { t } = useLanguageAtom("tagBar");
+    const { t } = useLanguage("tagBar");
     const { isBroadMatches, setIsBroadMatches } = useTileStore();
     const options = [
         { value: "any", label: t("Matches Any Active Tag") },
@@ -47,7 +47,7 @@ const TileMatchingRadio = memo(() => {
 
 // ==================== 样式模式（default/custom） ====================
 const StyleModeRadio = memo(() => {
-    const { t } = useLanguageAtom("tagBar");
+    const { t } = useLanguage("tagBar");
     const atomChanged = tagStyleAtom.atomChanged();
     const [mode, setMode] = useState<"default" | "custom">(atomChanged ? "custom" : "default");
 
@@ -75,7 +75,7 @@ const StyleModeRadio = memo(() => {
 
 // ==================== 间距与圆角 ====================
 const SpacingRadiusSection = memo(() => {
-    const { t } = useLanguageAtom("tagBar");
+    const { t } = useLanguage("tagBar");
     const { radius, setRadius } = tagStyleAtom.useField("radius");
     const { gap, setGap } = tagStyleAtom.useField("gap");
     const { textPadding, setTextPadding } = tagStyleAtom.useField("textPadding");
@@ -116,7 +116,7 @@ const SpacingRadiusSection = memo(() => {
 
 // ==================== 背景 ====================
 const BackgroundSection = memo(() => {
-    const { t } = useLanguageAtom("tagBar");
+    const { t } = useLanguage("tagBar");
     const { backgroundColor, setBackgroundColor } = tagStyleAtom.useField("backgroundColor");
     const { backgroundOpacity, setBackgroundOpacity } = tagStyleAtom.useField("backgroundOpacity");
 
@@ -146,7 +146,7 @@ const BackgroundSection = memo(() => {
 
 // ==================== 文本与字体 ====================
 const TextFontSection = memo(() => {
-    const { t } = useLanguageAtom("tagBar");
+    const { t } = useLanguage("tagBar");
     const { font, setFont } = tagStyleAtom.useField("font");
     const { fontSize, setFontSize } = tagStyleAtom.useField("fontSize");
     const { fontWeight, setFontWeight } = tagStyleAtom.useField("fontWeight");

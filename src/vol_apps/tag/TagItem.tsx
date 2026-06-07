@@ -3,8 +3,8 @@ import {InputButton} from "@/vol_apps/tag/InputButton";
 import type {Tag} from "@/vol_apps/tile/tile_store_types";
 import {ContextMenu, ContextMenuTrigger} from "@/components/ui/context-menu";
 import {TagMenuContent, UntaggedMenuContent} from "@/vol_apps/tag/TagMenuContent";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 import {useTagItemStyleFromAtom} from "@/vol_apps/tag/useTagItemStyleFromAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 type TagItemProps =
     | {
@@ -26,7 +26,7 @@ type TagItemProps =
 
 export const TagItem = (props: TagItemProps) => {
 
-    const {t} = useLanguageAtom("tagBar")
+    const {t} = useLanguage("tagBar")
 
     // const {tagStyles} = props
 

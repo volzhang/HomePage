@@ -1,5 +1,6 @@
 export type NamespaceDict = Record<string, string>;
 export type RESOURCES = {
+    // Language: Record<string, NamespaceDict | string>;
     en: Record<string, NamespaceDict | string>;
     cn: Record<string, NamespaceDict | string>;
 };

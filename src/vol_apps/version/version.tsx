@@ -1,10 +1,10 @@
 import {Button} from "@/components/ui/button";
 import {VERSION} from "@/vol_apps/tool/action/fetch";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 export const Version = () => {
-	const {t} = useLanguageAtom()
+	const {t} = useLanguage()
 	return (
 		<Button variant={"outline"}
 				onClick={() => openLinkInNewTab("https://github.com/volzhang/HomePage")}

@@ -20,7 +20,7 @@ import {
 	netscapeBookmarkFilePhaser
 } from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
 import {useSettingStore} from "../settings/setting_store";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 //这里手动复制了Button的secondary样式
 const cn_str = "border bg-background " +
@@ -33,7 +33,7 @@ export function Menu() {
     const {tilesVisible, setTilesVisible} = useTileStore();
 
     const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
-    const {t} = useLanguageAtom("menu")
+    const {t} = useLanguage("menu")
 
     const OnAddTile = () => {
         const newTileId = tiles.length;

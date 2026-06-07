@@ -1,6 +1,8 @@
 import {cn} from "@/lib/utils.ts";
 import {tagStyleAtom} from "@/vol_apps/tag/TagStyleAtom.ts";
-import {themeAtom} from "@/vol_apps/theme/themeAtom.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import type {CSSProperties} from "react";
+import {themeSignalCfg} from "@/vol_apps/theme/theme.tsx";
 
 const computeTagItemStyle = (
     checked: boolean,
@@ -55,13 +57,14 @@ const computeTagItemStyle = (
             borderRadius: `${radius}px`,
             ...textColorStyle,
             ...backgroundColorStyle,
-        } satisfies React.CSSProperties,
+        } satisfies CSSProperties,
     };
 };
 
 // 从 atom 中按需订阅所有样式字段
 export const useTagItemStyleFromAtom = (checked: boolean) => {
-    const { theme } = themeAtom.useField("theme")
+    const {theme} = useSignal(...themeSignalCfg)
+
     const { textColor } = tagStyleAtom.useField("textColor");
     const { textOpacity } = tagStyleAtom.useField("textOpacity");
     const { backgroundColor } = tagStyleAtom.useField("backgroundColor");
@@ -74,7 +77,7 @@ export const useTagItemStyleFromAtom = (checked: boolean) => {
 
     return computeTagItemStyle(
         checked,
-        theme,
+        theme as "light" | "dark",
         textColor,
         textOpacity,
         backgroundColor,

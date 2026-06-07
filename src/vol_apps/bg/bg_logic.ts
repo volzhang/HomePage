@@ -14,8 +14,9 @@ import {toast} from "sonner";
 import {useDoubleClick} from "../02_hooks/useDoubleClick";
 import {useSettingStore} from "@/vol_apps/settings/setting_store";
 import {useUserActivation} from "@/vol_apps/02_hooks/useUserInteracted";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
 import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated.ts";
+import {languageSignalCfg, useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
 
 /**
  * UI pending 控制（带超时）
@@ -86,7 +87,8 @@ export const useBgLogic = () => {
         if (!open) setOtherVisible(true);
     }, [open]);
 
-    const {t, language} = useLanguageAtom("bg");
+    const {t} = useLanguage("bg");
+    const {language} = useSignal(...languageSignalCfg)
 
     // 日期
     const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate]);

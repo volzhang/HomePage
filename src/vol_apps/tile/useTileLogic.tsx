@@ -7,12 +7,12 @@ import {openLinkInCurrentTab, openLinkInNewTab} from "@/vol_apps/tool/action/ope
 import {useFaviconVemetricPng} from "@/vol_apps/tanStackQuery/Api_FaviconVemetric";
 import {isValidUrl} from "@/vol_apps/tool/isType/isValidUrl";
 import {isSortable} from "@dnd-kit/react/sortable";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 export type TileLogic = ReturnType<typeof useTileLogic>;
 export const useTileLogic = () => {
 
-    const {t} = useLanguageAtom()
+    const {t} = useLanguage()
 
     const {
         tiles, tileInEditId, tileUiVisible,

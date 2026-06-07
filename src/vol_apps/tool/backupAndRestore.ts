@@ -1,10 +1,11 @@
 import {useTileStoreBase} from "@/vol_apps/tile/tile_store";
-import { VERSION } from "@/vol_apps/tool/action/fetch";
+import {VERSION} from "@/vol_apps/tool/action/fetch";
 import {persistedStores, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
-import { downloadAsJsonFile, timeStamp } from "@/vol_apps/tool/action/download";
-import { isPlainObject } from "@/vol_apps/tool/isType/isPlainObject";
+import {downloadAsJsonFile, timeStamp} from "@/vol_apps/tool/action/download";
+import {isPlainObject} from "@/vol_apps/tool/isType/isPlainObject";
 import {safeParse} from "valibot";
 import {atoms} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
+import {storeHub} from "@/vol_apps/04_persist_atoms/signal";
 
 // ----------------------------------------------------------------------
 // 工具函数：解析备份值，兼容旧备份中字符串化存储的情况
@@ -22,13 +23,13 @@ import {atoms} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
  * 将任何可能的字符串形式还原为对象，方便后续统一处理。
  */
 const parseBackupValue = (value: any) => {
-	if (typeof value !== "string") return value;
+    if (typeof value !== "string") return value;
 
-	try {
-		return JSON.parse(value);
-	} catch {
-		return value;
-	}
+    try {
+        return JSON.parse(value);
+    } catch {
+        return value;
+    }
 };
 
 // ------------------ 恢复 ------------------
@@ -53,58 +54,66 @@ const parseBackupValue = (value: any) => {
  */
 
 export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean = false): Promise<void> => {
-	const text = await file.text();
-	let backupData: any;
+    const text = await file.text();
+    let backupData: any;
 
-	try {
-		backupData = JSON.parse(text);
-	} catch (e) {
-		console.error("Invalid JSON backup file", e);
-		return;
-	}
+    try {
+        backupData = JSON.parse(text);
+    } catch (e) {
+        console.error("Invalid JSON backup file", e);
+        return;
+    }
 
-	if (!isPlainObject(backupData)) {
-		console.error("Backup data is not an object");
-		return;
-	}
+    if (!isPlainObject(backupData)) {
+        console.error("Backup data is not an object");
+        return;
+    }
 
-	// 合并 atoms 数据
-	for (const [key, atom] of atoms) {
-		// find key
-		if (!(key in backupData)) continue;
+    // 合并 atoms 数据
+    for (const [key, atom] of atoms) {
+        // find key
+        if (!(key in backupData)) continue;
+        // restore atom
+        const parseData = safeParse(atom.dataSchema, backupData[key]);
+        if (parseData.success) {
+            atom.setState(parseData.output.state);
+        } else {
+            console.error(`Restore: failed to parse schema: `, key, parseData.issues);
+        }
+    }
 
-		// restore atom
-		const parseData = safeParse(atom.dataSchema, backupData[key]);
-		if (parseData.success) {
-			atom.setState(parseData.output.state);
-		} else {
-			console.error(`Restore: failed to parse schema: `, key, parseData.issues);
-		}
-	}
+    // 合并storeHub 数据
+    // 这个恢复不太一样，没有办法验证数据格式，有一定风险
+    Object.entries(storeHub.getStores()).forEach(([storeName, store]) => {
+        // find storeName
+        if (!(storeName in backupData)) return;
+        const state = backupData[storeName]?.state;
+        store.setState(state)
+    })
 
-	const registered = new Map(persistedStores);
+    const registered = new Map(persistedStores);
 
-	for (const [key, entry] of registered) {
-		if (!Object.prototype.hasOwnProperty.call(backupData, key)) continue;
+    for (const [key, entry] of registered) {
+        if (!Object.prototype.hasOwnProperty.call(backupData, key)) continue;
 
-		const value = backupData[key];
-		const runtimeSnapshot = parseBackupValue(value);
-		const stateToRestore = runtimeSnapshot.state;
+        const value = backupData[key];
+        const runtimeSnapshot = parseBackupValue(value);
+        const stateToRestore = runtimeSnapshot.state;
 
-		if (!stateToRestore) {
-			console.warn(`Missing "state" field in backup for key "${key}"`);
-			continue;
-		}
+        if (!stateToRestore) {
+            console.warn(`Missing "state" field in backup for key "${key}"`);
+            continue;
+        }
 
-		const store = entry.store as any;
+        const store = entry.store as any;
 
-		// 特殊处理 tile 合并模式
-		if (key === "tile" && mergeTileTiles && Array.isArray(stateToRestore.tiles)) {
-			useTileStoreBase.getState().appendTiles(stateToRestore.tiles);
-		} else {
-			store.setState(stateToRestore);
-		}
-	}
+        // 特殊处理 tile 合并模式
+        if (key === "tile" && mergeTileTiles && Array.isArray(stateToRestore.tiles)) {
+            useTileStoreBase.getState().appendTiles(stateToRestore.tiles);
+        } else {
+            store.setState(stateToRestore);
+        }
+    }
 };
 
 // ------------------ 备份 ------------------
@@ -123,27 +132,34 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
  */
 
 export const persistedStoresBackup = async (): Promise<void> => {
-	const registered = new Map(persistedStores);
-	const result: Record<string, any> = {};
+    const registered = new Map(persistedStores);
+    const result: Record<string, any> = {};
 
-	for (const [key] of registered.entries()) {
-		const snapshot = getCurrentPersistedSnapshot(key);
-		if (snapshot !== null) {
-			result[key] = snapshot;
-		}
-	}
+    for (const [key] of registered.entries()) {
+        const snapshot = getCurrentPersistedSnapshot(key);
+        if (snapshot !== null) {
+            result[key] = snapshot;
+        }
+    }
 
-	// 合并 atoms，后续逐步迁移
-	for (const [key, atom] of atoms) {
-		result[key] =
-			{
-				state: atom.getState(),
-				version: 1.0
-			}
-	}
+    // 合并 atoms
+    for (const [key, atom] of atoms) {
+        result[key] = {
+            state: atom.getState(),
+            version: 1.0
+        }
+    }
 
-	const filename = `DB[${VERSION}]${timeStamp()}.json`;
-	await downloadAsJsonFile(result, filename);
+    // 合并 storeHub
+    Object.entries(storeHub.getStores()).forEach(([storeName, store]) => {
+        result[storeName] = {
+            state: store.getState(),
+            version: 1.0
+        }
+    })
+
+    const filename = `DB[${VERSION}]${timeStamp()}.json`;
+    await downloadAsJsonFile(result, filename);
 };
 
 /**
@@ -160,18 +176,18 @@ export const persistedStoresBackup = async (): Promise<void> => {
  */
 
 const getCurrentPersistedSnapshot = (storeKey: string) => {
-	const entry = persistedStores.get(storeKey);
-	if (!entry) return null;
+    const entry = persistedStores.get(storeKey);
+    if (!entry) return null;
 
-	const currentState = entry.store.getState();
+    const currentState = entry.store.getState();
 
-	// 过滤掉函数类型，因为函数无法被 JSON.stringify 正常序列化
-	const plainState = Object.fromEntries(
-		Object.entries(currentState).filter(([, value]) => typeof value !== "function")
-	);
+    // 过滤掉函数类型，因为函数无法被 JSON.stringify 正常序列化
+    const plainState = Object.fromEntries(
+        Object.entries(currentState).filter(([, value]) => typeof value !== "function")
+    );
 
-	return {
-		state: plainState,
-		version: LatestStoreVersion,
-	};
+    return {
+        state: plainState,
+        version: LatestStoreVersion,
+    };
 };

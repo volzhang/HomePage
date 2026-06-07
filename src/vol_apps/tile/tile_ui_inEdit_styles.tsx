@@ -4,11 +4,11 @@ import { NumberField, NumberFieldXY } from "@/vol_apps/tile/NumberField";
 import { FontFamily } from "@/vol_apps/tile/FontFamilyField";
 import { ColorPickerField } from "@/vol_apps/tile/ColorPickerField";
 import { tileStyleAtom, tileStyleInit } from "@/vol_apps/tile/tile_style_atom";
-import { useLanguageAtom } from "@/vol_apps/language/languageAtom";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 // ==================== 背景设置 ====================
 const BackgroundSection = memo(() => {
-    const { t } = useLanguageAtom("tileEditor");
+    const { t } = useLanguage("tileEditor");
     const { backgroundColor, setBackgroundColor } = tileStyleAtom.useField("backgroundColor");
     const { backgroundOpacity, setBackgroundOpacity } = tileStyleAtom.useField("backgroundOpacity");
 
@@ -39,7 +39,7 @@ const BackgroundSection = memo(() => {
 
 // ==================== 尺寸与圆角 ====================
 const SizeRadiusSection = memo(() => {
-    const { t } = useLanguageAtom("tileEditor");
+    const { t } = useLanguage("tileEditor");
     const { tileSize, setTileSize } = tileStyleAtom.useField("tileSize");
     const { tileRadius, setTileRadius } = tileStyleAtom.useField("tileRadius");
 
@@ -72,7 +72,7 @@ const SizeRadiusSection = memo(() => {
 
 // ==================== 图标设置 ====================
 const IconSection = memo(() => {
-    const { t } = useLanguageAtom("tileEditor");
+    const { t } = useLanguage("tileEditor");
     const { iconBorderSize, setIconBorderSize } = tileStyleAtom.useField("iconBorderSize");
     const { iconBorderOffset, setIconBorderOffset } = tileStyleAtom.useField("iconBorderOffset");
     const { iconSize, setIconSize } = tileStyleAtom.useField("iconSize");
@@ -125,7 +125,7 @@ const IconSection = memo(() => {
 
 // ==================== 文本与字体 ====================
 const TextFontSection = memo(() => {
-    const { t } = useLanguageAtom("tileEditor");
+    const { t } = useLanguage("tileEditor");
     const { font, setFont } = tileStyleAtom.useField("font");
     const { fontSize, setFontSize } = tileStyleAtom.useField("fontSize");
     const { fontWeight, setFontWeight } = tileStyleAtom.useField("fontWeight");
@@ -183,7 +183,7 @@ const TextFontSection = memo(() => {
 
 // ==================== 轮廓设置 ====================
 const OutlineSection = memo(() => {
-    const { t } = useLanguageAtom("tileEditor");
+    const { t } = useLanguage("tileEditor");
     const { tileOutlineThickness, setTileOutlineThickness } = tileStyleAtom.useField("tileOutlineThickness");
     const { tileOutlineColor, setTileOutlineColor } = tileStyleAtom.useField("tileOutlineColor");
     const { tileOutlineOpacity, setTileOutlineOpacity } = tileStyleAtom.useField("tileOutlineOpacity");

@@ -1,4 +1,4 @@
-# Signal Store
+# Signal
 
 ## 设计目标
 
@@ -151,15 +151,7 @@ isHydrated()
 useHydrated()
 ```
 
-未来也可以继续扩展：
-
-```txt
-dirty
-validate
-metadata
-persist
-```
-
+未来也可以继续扩展
 而不影响基础 Signal 的简单性。
 
 ---
@@ -237,21 +229,6 @@ useSignal(
 ```
 
 作为唯一入口。
-
----
-
-推荐：
-
-```ts
-const {
-    theme,
-    setTheme
-} = useSignal(
-    "theme",
-    "theme",
-    "dark"
-)
-```
 
 ---
 

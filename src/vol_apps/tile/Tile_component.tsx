@@ -5,8 +5,8 @@ import { openLinkInNewTab } from "@/vol_apps/tool/action/openLink";
 import { Tilt_3D } from "./Tile_3D";
 import { defaultIconBase64 } from "@/vol_apps/tile/tile_store_types";
 import { tileStyleAtom } from "@/vol_apps/tile/tile_style_atom";
-import { useLanguageAtom } from "@/vol_apps/language/languageAtom";
 import {useTileBackgroundColor, useTileOutlineColor, useTileTextColor } from "@/vol_apps/tile/tile_style_hooks.ts"
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 type TileComponentProps = {
     tileId: number;
@@ -28,7 +28,7 @@ const ValidUrlTile = ({
                           onTileRightClick,
                           iconBorderOutline,
                       }: TileComponentProps) => {
-    const { t } = useLanguageAtom(); // 国际化直接在内部获取
+    const { t } = useLanguage(); // 国际化直接在内部获取
 
     // ---- 样式字段精准订阅 ----
     const { tileSize } = tileStyleAtom.useField("tileSize");

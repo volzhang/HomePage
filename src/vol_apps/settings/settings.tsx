@@ -16,7 +16,7 @@ import {Setting_tag} from "@/vol_apps/settings/setting_tag";
 import {Setting_tiles} from "@/vol_apps/settings/setting_tiles";
 import {Setting_search} from "@/vol_apps/settings/setting_search";
 import {type SETTING_VALUE, useSettingStore} from "./setting_store";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 const BG_COLOR = "bg-popover"
 const TRANSITION_STYLE = "duration-200 ease-in-out"
@@ -81,7 +81,7 @@ export const Settings = (props: BgLogic) => {
         value, setValue
     } = useSettingStore()
 
-    const {t} = useLanguageAtom()
+    const {t} = useLanguage()
 
     const OPTIONS: { value: SETTING_VALUE, label: string, Icon: ElementType } []
         = [

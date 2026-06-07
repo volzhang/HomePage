@@ -28,10 +28,14 @@ export type Store = {
     activateSignal: (filedName: string, defaultValue: any) => Expanded<any> | undefined;
     getSignal: (filedName: string) => Expanded<any> | undefined;
 
+    getState: () => Record<string, any>,
+    setState: (state: Record<string, any>) => void;
+
     useStoreChanged: () => boolean,
+    getStoreChanged: () => boolean,
     useStoreHydrated: () => boolean,
 
-    hydrate: (data: Record<string, any>) => void;
+    hydrate: (state?: Record<string, any>) => void;
     reset: () => void;
 }
 
@@ -41,4 +45,11 @@ export type Empty = typeof EMPTY
 
 export type StoreHub = {
     resolveSignal: <T>(storeName: StoreName, fieldName: string, defaultValue: T) => Expanded<T>;
+    getStores: () => Record<StoreName, Store>
 };
+
+export type SignalConfig<
+    S extends StoreName,
+    F extends string,
+    T
+> = readonly [S, F, T];

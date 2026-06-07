@@ -1,10 +1,10 @@
 import {Button} from "@/components/ui/button";
 import {useCmStore} from "@/vol_apps/cm/cm_store";
-import {useLanguageAtom} from "@/vol_apps/language/languageAtom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 
 export const CmUiLineNumbers = () => {
-	const {t} = useLanguageAtom()
+	const {t} = useLanguage()
 
 	const {enableLineNumbers, setEnableLineNumbers} = useCmStore();
 
