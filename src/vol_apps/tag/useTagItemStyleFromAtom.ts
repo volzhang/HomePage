@@ -1,8 +1,8 @@
 import {cn} from "@/lib/utils.ts";
-import {tagStyleAtom} from "@/vol_apps/tag/TagStyleAtom.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
 import type {CSSProperties} from "react";
-import {themeSignalCfg} from "@/vol_apps/theme/theme.tsx";
+import {tagStyleConfig} from "@/vol_apps/tag/TagStyleAtom.ts";
+import {themeConfig} from "@/vol_apps/theme/theme.tsx";
 
 const computeTagItemStyle = (
     checked: boolean,
@@ -61,19 +61,18 @@ const computeTagItemStyle = (
     };
 };
 
-// 从 atom 中按需订阅所有样式字段
 export const useTagItemStyleFromAtom = (checked: boolean) => {
-    const {theme} = useSignal(...themeSignalCfg)
+    const {theme} = useSignal(...themeConfig("theme"))
 
-    const { textColor } = tagStyleAtom.useField("textColor");
-    const { textOpacity } = tagStyleAtom.useField("textOpacity");
-    const { backgroundColor } = tagStyleAtom.useField("backgroundColor");
-    const { backgroundOpacity } = tagStyleAtom.useField("backgroundOpacity");
-    const { fontSize } = tagStyleAtom.useField("fontSize");
-    const { fontWeight } = tagStyleAtom.useField("fontWeight");
-    const { font } = tagStyleAtom.useField("font");
-    const { textPadding } = tagStyleAtom.useField("textPadding");
-    const { radius } = tagStyleAtom.useField("radius");
+    const { textColor } = useSignal(...tagStyleConfig("textColor"));
+    const { textOpacity } = useSignal(...tagStyleConfig("textOpacity"));
+    const { backgroundColor } = useSignal(...tagStyleConfig("backgroundColor"));
+    const { backgroundOpacity } = useSignal(...tagStyleConfig("backgroundOpacity"));
+    const { fontSize } = useSignal(...tagStyleConfig("fontSize"));
+    const { fontWeight } = useSignal(...tagStyleConfig("fontWeight"));
+    const { font } = useSignal(...tagStyleConfig("font"));
+    const { textPadding } = useSignal(...tagStyleConfig("textPadding"));
+    const { radius } = useSignal(...tagStyleConfig("radius"));
 
     return computeTagItemStyle(
         checked,

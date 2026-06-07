@@ -1,8 +1,8 @@
 // noinspection DuplicatedCode
 import {useSyncExternalStore} from "react";
-import {get, set} from "idb-keyval";
+import {del, get, set} from "idb-keyval";
 import type {
-    Derived, Empty, Expanded, Listener, Signal, SignalConfig, Store, StoreHub, StoreName,
+    Derived, Expanded, Listener, Signal, SignalSlot, Store, StoreHub, StoreName,
 } from "@/vol_apps/04_persist_atoms/signal/types.ts";
 import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
 import {capitalize} from "@/vol_apps/03_utils/capitalize.ts";
@@ -66,12 +66,6 @@ const createExpandedSignal = <T>(
 }
 // @formatter:on
 
-type SignalSlot<T> = {
-    signal: Expanded<T>;
-    name: string | Empty;
-    defaultValue: T | Empty;  // 修正拼写
-};
-
 const createStore = (storeName: StoreName, maxSlots: number,): Store => {
     const slots: SignalSlot<unknown>[] = Array.from({length: maxSlots}, () => ({
         signal: createExpandedSignal<any>(EMPTY),
@@ -81,7 +75,12 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
 
     const activateSignal = (name: string, defaultValue: any): Expanded<any> | undefined => {
         const existing = slots.find(s => s.name === name);
-        if (existing) return existing.signal;
+        if (existing) {
+            // 有可能水合注册，需要补初始值
+            if (existing.defaultValue === EMPTY) existing.defaultValue = defaultValue
+            if (existing.signal.get() === EMPTY) existing.signal.set(defaultValue)  //实际应该不可能，先留着
+            return existing.signal;
+        }
 
         const free = slots.find(s => s.name === EMPTY);
         if (!free) return undefined;
@@ -89,6 +88,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         free.name = name;
         if (free.defaultValue === EMPTY) free.defaultValue = defaultValue;
         // defaultValue 由useSignal设置，先到先得。建议使用统一props。
+        free.signal.set(defaultValue);
 
         return free.signal;
     };
@@ -109,6 +109,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         }, signalsArray
     );
 
+    // 全量合法 State
     const getState = () => stateSignal.get()
 
     const setState = (state: Record<string, any>) => {
@@ -127,9 +128,25 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         }
     }
 
+    // 变化部分的State
+    const getChangedState = (): Record<string, any> => {
+        const currentState = stateSignal.get();
+        const changed: Record<string, any> = {};
+        for (const [key, value] of Object.entries(currentState)) {
+            const slot = slots.find(s => s.name === key);
+            if (slot && slot.defaultValue !== EMPTY && !deepEqual(value, slot.defaultValue)) {
+                changed[key] = value;
+            }
+        }
+        return changed;
+    };
+
     const debouncedPersist = createDebouncedSet(() => {
-        const state = stateSignal.get();
-        return set(storeName, {state, version: 1.0});
+        const changed = getChangedState();
+        if (Object.keys(changed).length === 0) {
+            return del(storeName);
+        }
+        return set(storeName, {state: changed, version: 1.0});
     }, 500);
 
     stateSignal.subscribe(() => debouncedPersist());
@@ -141,7 +158,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
 
     const changedSignal = createDerivedSignal<boolean>(
         () => slots.filter(s => (s.name !== EMPTY) && (s.defaultValue !== EMPTY))
-            .some(s => s.signal.get() !== s.defaultValue)
+            .some(s => !deepEqual(s.signal.get(), s.defaultValue))
         , signalsArray)
 
     const useStoreChanged = () => changedSignal.use()
@@ -156,16 +173,16 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
 
     const hydrate = (state?: Record<string, any>) => {
         if (state !== undefined) {
-            for (const [key, value] of Object.entries(state)) {
-                const existingSlot = slots.find(s => s.name === key);
+            for (const [fieldName, value] of Object.entries(state)) {
+                const existingSlot = slots.find(s => s.name === fieldName);
                 if (existingSlot) existingSlot.signal.hydrate(value);
                 else {
                     const free = slots.find(s => s.name === EMPTY);
                     if (!free) {
-                        console.log(`[Store:${storeName}] 槽位已满，无法恢复字段 "${key}"`);
+                        console.log(`[Store:${storeName}] 槽位已满，水合失败: "${fieldName}"`);
                         continue;
                     }
-                    free.name = key;
+                    free.name = fieldName;
                     free.signal.hydrate(value);
                 }
             }
@@ -211,27 +228,28 @@ const createStoreHub = (): StoreHub => {
         void doHydration()
     });
 
+    const getStore = (storeName: StoreName) => stores[storeName]
+
     return {
         resolveSignal: (storeName, fieldName, defaultValue) => {
-            const store = stores[storeName];
-            const existing = store.getSignal(fieldName);
-            if (existing) return existing;
-
+            const store = getStore(storeName);
             const signal = store.activateSignal(fieldName, defaultValue);
             if (!signal) throw new Error(`[${storeName}] no slot available for ${fieldName}`);
             return signal;
         },
 
         getStores: () => {
-            const result:Record<StoreName, Store> = {} as Record<StoreName, Store>
-            Object.entries(stores).forEach(([storeName,store])=>{
+            const result: Record<StoreName, Store> = {} as Record<StoreName, Store>
+            Object.entries(stores).forEach(([storeName, store]) => {
                 const state = store.getState();
                 if (Object.entries(state).length === 0) return
                 if (!store.getStoreChanged()) return;
                 result[storeName as StoreName] = store;
             })
             return result
-        }
+        },
+
+        getStore,
     }
 };
 
@@ -269,17 +287,14 @@ export const getSignal = <T>(
     );
 };
 
-export const createSignalCfg = <
-    S extends StoreName,
-    F extends string,
-    T
->(
-    storeName: S,
-    fieldName: F,
-    defaultValue: T
-): SignalConfig<S, F, T> => [
-    storeName,
-    fieldName,
-    defaultValue,
-];
-
+export const createStoreConfig =
+    <TFields extends Record<string, any>>(
+        config: {
+            storeName: StoreName;
+            fields: TFields;
+        }
+    ) => {
+        return <K extends keyof TFields>(fieldName: K): [StoreName, K, TFields[K]] => {
+            return [config.storeName, fieldName, config.fields[fieldName]];
+        };
+    };

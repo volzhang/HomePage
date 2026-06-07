@@ -1,7 +1,8 @@
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {TagItem} from "@/vol_apps/tag/TagItem";
-import {tagStyleAtom} from "@/vol_apps/tag/TagStyleAtom.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {tagStyleConfig} from "@/vol_apps/tag/TagStyleAtom.ts";
 
 export const TagComponent = () => {
     const {
@@ -11,8 +12,8 @@ export const TagComponent = () => {
         renameTag, checkOnlyThisTag, checkOnlyUntagged,
     } = useTileStore();
 
-    const { visible } = tagStyleAtom.useField("visible");
-    const { gap } = tagStyleAtom.useField("gap");
+    const { visible } = useSignal(...tagStyleConfig("visible"))
+    const { gap } = useSignal(...tagStyleConfig("gap"))
 
     const Tags = tags.map(tag => (
         <TagItem

@@ -1,10 +1,16 @@
-import {createSignalCfg, getSignal, useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {createStoreConfig, getSignal, useSignal} from "@/vol_apps/04_persist_atoms/signal";
 import {useCallback} from "react";
 import {type NamespaceDict, resources} from "@/vol_apps/language/language_RESOURCES.ts";
 
 type Language = "en" | "cn"
-export const languageSignalCfg = createSignalCfg("language", "language", "en" as Language)
-const languageSignal = getSignal(...languageSignalCfg);
+export const languageConfig = createStoreConfig({
+    storeName:"language",
+    fields:{
+        language:"en" as Language,
+    }
+})
+
+const languageSignal = getSignal(...languageConfig("language"));
 
 const syncLanguage = () => {
     const l = languageSignal.get();
@@ -15,7 +21,7 @@ syncLanguage();
 languageSignal.subscribe(syncLanguage)
 
 export const useLanguage = (namespace?: string) => {
-    const {language} = useSignal(...languageSignalCfg);
+    const {language} = useSignal(...languageConfig("language"));
     const t = useCallback(
         (key: string): string => {
             const lang = languageSignal.get();

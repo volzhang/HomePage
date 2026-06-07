@@ -1,10 +1,10 @@
 import {MyRadio} from "@/vol_apps/bg/bg_ui_settings";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
-import {visibleSignalCfg} from "@/vol_apps/search/searchSignal.ts";
+import {searchStyleConfig} from "@/vol_apps/search/searchSignal.ts";
 
 export const Setting_search = () => {
-    const {visible, setVisible} = useSignal(...visibleSignalCfg)
+    const {visible, setVisible} = useSignal(...searchStyleConfig("visible"))
     const {t} = useLanguage()
 
     const searchVisibleOptions = [

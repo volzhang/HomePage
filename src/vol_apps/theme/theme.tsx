@@ -1,13 +1,16 @@
 import {Button} from "@/components/ui/button";
 import {Moon, Sun} from "lucide-react";
 import {useEffect} from "react";
-import {createSignalCfg, useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {createStoreConfig, useSignal} from "@/vol_apps/04_persist_atoms/signal";
 
 type Theme = "dark" | "light";
-export const themeSignalCfg = createSignalCfg("theme", "theme", "dark" as Theme);
+export const themeConfig = createStoreConfig({
+    storeName: "theme",
+    fields: { theme: "dark" as Theme},
+});
 
 export const Theme = () => {
-    const {theme, setTheme, themeHydrated} = useSignal(...themeSignalCfg)
+    const {theme, setTheme, themeHydrated} = useSignal(...themeConfig("theme"));
 
     useEffect(() => {
         const root = document.documentElement;

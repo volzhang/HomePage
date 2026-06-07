@@ -15,7 +15,7 @@ import {useDoubleClick} from "../02_hooks/useDoubleClick";
 import {useSettingStore} from "@/vol_apps/settings/setting_store";
 import {useUserActivation} from "@/vol_apps/02_hooks/useUserInteracted";
 import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated.ts";
-import {languageSignalCfg, useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {languageConfig, useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
 
 /**
@@ -88,7 +88,7 @@ export const useBgLogic = () => {
     }, [open]);
 
     const {t} = useLanguage("bg");
-    const {language} = useSignal(...languageSignalCfg)
+    const {language} = useSignal(...languageConfig("language"))
 
     // 日期
     const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate]);
