@@ -1,6 +1,6 @@
 import {MyRadio} from "@/vol_apps/bg/bg_ui_settings";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
-import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {searchStyleConfig} from "@/vol_apps/search/searchSignal.ts";
 
 export const Setting_search = () => {

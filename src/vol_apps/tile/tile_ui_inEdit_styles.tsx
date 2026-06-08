@@ -3,14 +3,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { NumberField, NumberFieldXY } from "@/vol_apps/tile/NumberField";
 import { FontFamily } from "@/vol_apps/tile/FontFamilyField";
 import { ColorPickerField } from "@/vol_apps/tile/ColorPickerField";
-import { tileStyleAtom, tileStyleInit } from "@/vol_apps/tile/tile_style_atom";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
+import {tileStyleConfig} from "@/vol_apps/tile/tile_style_atom.ts";
 
 // ==================== 背景设置 ====================
 const BackgroundSection = memo(() => {
     const { t } = useLanguage("tileEditor");
-    const { backgroundColor, setBackgroundColor } = tileStyleAtom.useField("backgroundColor");
-    const { backgroundOpacity, setBackgroundOpacity } = tileStyleAtom.useField("backgroundOpacity");
+
+    const { backgroundColor, setBackgroundColor } = useSignal(...tileStyleConfig("backgroundColor"))
+    const { backgroundOpacity, setBackgroundOpacity } = useSignal(...tileStyleConfig("backgroundOpacity"))
 
     return (
         <AccordionItem value="TileBackground">
@@ -29,7 +31,7 @@ const BackgroundSection = memo(() => {
                         value={backgroundOpacity}
                         onChange={setBackgroundOpacity}
                         min={0} max={1} step={0.01}
-                        fallback={tileStyleInit.backgroundOpacity}
+                        // fallback={tileStyleInit.backgroundOpacity}
                     />
                 </div>
             </AccordionContent>
@@ -40,8 +42,8 @@ const BackgroundSection = memo(() => {
 // ==================== 尺寸与圆角 ====================
 const SizeRadiusSection = memo(() => {
     const { t } = useLanguage("tileEditor");
-    const { tileSize, setTileSize } = tileStyleAtom.useField("tileSize");
-    const { tileRadius, setTileRadius } = tileStyleAtom.useField("tileRadius");
+    const { tileSize, setTileSize } = useSignal(...tileStyleConfig("tileSize"))
+    const { tileRadius, setTileRadius } = useSignal(...tileStyleConfig("tileRadius"))
 
     return (
         <AccordionItem value="TileSize&Radius">
@@ -54,14 +56,14 @@ const SizeRadiusSection = memo(() => {
                         label={t("Tile Size")}
                         value={tileSize}
                         onChange={setTileSize}
-                        fallback={tileStyleInit.tileSize}
+                        // fallback={tileStyleInit.tileSize}
                         min={0} max={200} step={2}
                     />
                     <NumberField
                         label={t("Tile Radius")}
                         value={tileRadius}
                         onChange={setTileRadius}
-                        fallback={tileStyleInit.tileRadius}
+                        // fallback={tileStyleInit.tileRadius}
                         min={0} max={100} step={1}
                     />
                 </div>
@@ -73,10 +75,10 @@ const SizeRadiusSection = memo(() => {
 // ==================== 图标设置 ====================
 const IconSection = memo(() => {
     const { t } = useLanguage("tileEditor");
-    const { iconBorderSize, setIconBorderSize } = tileStyleAtom.useField("iconBorderSize");
-    const { iconBorderOffset, setIconBorderOffset } = tileStyleAtom.useField("iconBorderOffset");
-    const { iconSize, setIconSize } = tileStyleAtom.useField("iconSize");
-    const { iconOffset, setIconOffset } = tileStyleAtom.useField("iconOffset");
+    const { iconBorderSize, setIconBorderSize } = useSignal(...tileStyleConfig("iconBorderSize"))
+    const { iconBorderOffset, setIconBorderOffset } = useSignal(...tileStyleConfig("iconBorderOffset"))
+    const { iconSize, setIconSize } = useSignal(...tileStyleConfig("iconSize"))
+    const { iconOffset, setIconOffset } = useSignal(...tileStyleConfig("iconOffset"))
 
     return (
         <AccordionItem value="TileIcon">
@@ -89,7 +91,7 @@ const IconSection = memo(() => {
                         label={t("Icon Border Size")}
                         value={iconBorderSize}
                         onChange={setIconBorderSize}
-                        fallback={tileStyleInit.iconBorderSize}
+                        // fallback={tileStyleInit.iconBorderSize}
                         min={0} max={200} step={2}
                     />
                     <NumberFieldXY
@@ -98,14 +100,14 @@ const IconSection = memo(() => {
                         onChangeX={(x) => setIconBorderOffset({ ...iconBorderOffset, x })}
                         y={iconBorderOffset.y}
                         onChangeY={(y) => setIconBorderOffset({ ...iconBorderOffset, y })}
-                        fallback={tileStyleInit.iconBorderOffset}
+                        // fallback={tileStyleInit.iconBorderOffset}
                         min={-100} max={100} step={1}
                     />
                     <NumberField
                         label={t("Icon Size")}
                         value={iconSize}
                         onChange={setIconSize}
-                        fallback={tileStyleInit.iconSize}
+                        // fallback={tileStyleInit.iconSize}
                         min={0} max={200} step={2}
                     />
                     <NumberFieldXY
@@ -114,7 +116,7 @@ const IconSection = memo(() => {
                         onChangeX={(x) => setIconOffset({ ...iconOffset, x })}
                         y={iconOffset.y}
                         onChangeY={(y) => setIconOffset({ ...iconOffset, y })}
-                        fallback={tileStyleInit.iconOffset}
+                        // fallback={tileStyleInit.iconOffset}
                         min={-100} max={100} step={1}
                     />
                 </div>
@@ -126,12 +128,12 @@ const IconSection = memo(() => {
 // ==================== 文本与字体 ====================
 const TextFontSection = memo(() => {
     const { t } = useLanguage("tileEditor");
-    const { font, setFont } = tileStyleAtom.useField("font");
-    const { fontSize, setFontSize } = tileStyleAtom.useField("fontSize");
-    const { fontWeight, setFontWeight } = tileStyleAtom.useField("fontWeight");
-    const { textColor, setTextColor } = tileStyleAtom.useField("textColor");
-    const { textOpacity, setTextOpacity } = tileStyleAtom.useField("textOpacity");
-    const { textOffset, setTextOffset } = tileStyleAtom.useField("textOffset");
+    const { font, setFont } = useSignal(...tileStyleConfig("font"))
+    const { fontSize, setFontSize } = useSignal(...tileStyleConfig("fontSize"))
+    const { fontWeight, setFontWeight } = useSignal(...tileStyleConfig("fontWeight"))
+    const { textColor, setTextColor } = useSignal(...tileStyleConfig("textColor"))
+    const { textOpacity, setTextOpacity } = useSignal(...tileStyleConfig("textOpacity"))
+    const { textOffset, setTextOffset } = useSignal(...tileStyleConfig("textOffset"))
 
     return (
         <AccordionItem value="TileText&Font">
@@ -145,14 +147,14 @@ const TextFontSection = memo(() => {
                         label={t("Font Size")}
                         value={fontSize}
                         onChange={setFontSize}
-                        fallback={tileStyleInit.fontSize}
+                        // fallback={tileStyleInit.fontSize}
                         min={0} max={40} step={0.5}
                     />
                     <NumberField
                         label={t("Font Weight")}
                         value={fontWeight}
                         onChange={setFontWeight}
-                        fallback={tileStyleInit.fontWeight}
+                        // fallback={tileStyleInit.fontWeight}
                         min={100} max={900} step={50}
                     />
                     <ColorPickerField
@@ -163,7 +165,7 @@ const TextFontSection = memo(() => {
                         label={t("Text Opacity")}
                         value={textOpacity}
                         onChange={setTextOpacity}
-                        fallback={tileStyleInit.textOpacity}
+                        // fallback={tileStyleInit.textOpacity}
                         min={0} max={1} step={0.01}
                     />
                     <NumberFieldXY
@@ -172,7 +174,7 @@ const TextFontSection = memo(() => {
                         onChangeX={(x) => setTextOffset({ ...textOffset, x })}
                         y={textOffset.y}
                         onChangeY={(y) => setTextOffset({ ...textOffset, y })}
-                        fallback={tileStyleInit.textOffset}
+                        // fallback={tileStyleInit.textOffset}
                         min={-100} max={100} step={1}
                     />
                 </div>
@@ -184,9 +186,9 @@ const TextFontSection = memo(() => {
 // ==================== 轮廓设置 ====================
 const OutlineSection = memo(() => {
     const { t } = useLanguage("tileEditor");
-    const { tileOutlineThickness, setTileOutlineThickness } = tileStyleAtom.useField("tileOutlineThickness");
-    const { tileOutlineColor, setTileOutlineColor } = tileStyleAtom.useField("tileOutlineColor");
-    const { tileOutlineOpacity, setTileOutlineOpacity } = tileStyleAtom.useField("tileOutlineOpacity");
+    const { tileOutlineThickness, setTileOutlineThickness } = useSignal(...tileStyleConfig("tileOutlineThickness"))
+    const { tileOutlineColor, setTileOutlineColor } = useSignal(...tileStyleConfig("tileOutlineColor"))
+    const { tileOutlineOpacity, setTileOutlineOpacity } = useSignal(...tileStyleConfig("tileOutlineOpacity"))
 
     return (
         <AccordionItem value="TileOutline">
@@ -199,7 +201,6 @@ const OutlineSection = memo(() => {
                         label={t("Outline Thickness")}
                         value={tileOutlineThickness}
                         onChange={setTileOutlineThickness}
-                        fallback={tileStyleInit.tileOutlineThickness}
                         min={0} max={10} step={1}
                     />
                     <ColorPickerField
@@ -211,7 +212,6 @@ const OutlineSection = memo(() => {
                         label={t("Outline Opacity")}
                         value={tileOutlineOpacity}
                         onChange={setTileOutlineOpacity}
-                        fallback={tileStyleInit.tileOutlineOpacity}
                         min={0} max={1} step={0.01}
                     />
                 </div>

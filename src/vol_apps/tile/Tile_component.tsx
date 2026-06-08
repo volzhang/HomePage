@@ -4,9 +4,10 @@ import { Spinner } from "@/components/ui/spinner";
 import { openLinkInNewTab } from "@/vol_apps/tool/action/openLink";
 import { Tilt_3D } from "./Tile_3D";
 import { defaultIconBase64 } from "@/vol_apps/tile/tile_store_types";
-import { tileStyleAtom } from "@/vol_apps/tile/tile_style_atom";
+import {tileStyleConfig} from "@/vol_apps/tile/tile_style_atom";
 import {useTileBackgroundColor, useTileOutlineColor, useTileTextColor } from "@/vol_apps/tile/tile_style_hooks.ts"
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
 
 type TileComponentProps = {
     tileId: number;
@@ -31,17 +32,19 @@ const ValidUrlTile = ({
     const { t } = useLanguage(); // 国际化直接在内部获取
 
     // ---- 样式字段精准订阅 ----
-    const { tileSize } = tileStyleAtom.useField("tileSize");
-    const { tileRadius } = tileStyleAtom.useField("tileRadius");
-    const { tileOutlineThickness } = tileStyleAtom.useField("tileOutlineThickness");
-    const { iconBorderSize } = tileStyleAtom.useField("iconBorderSize");
-    const { iconBorderOffset } = tileStyleAtom.useField("iconBorderOffset");
-    const { iconSize } = tileStyleAtom.useField("iconSize");
-    const { iconOffset } = tileStyleAtom.useField("iconOffset");
-    const { fontSize } = tileStyleAtom.useField("fontSize");
-    const { fontWeight } = tileStyleAtom.useField("fontWeight");
-    const { font } = tileStyleAtom.useField("font");
-    const { textOffset } = tileStyleAtom.useField("textOffset");
+    const { tileSize } = useSignal(...tileStyleConfig("tileSize"))
+
+    const { tileRadius } = useSignal(...tileStyleConfig("tileRadius"))
+    const { tileOutlineThickness } = useSignal(...tileStyleConfig("tileOutlineThickness"))
+    const { iconBorderSize } = useSignal(...tileStyleConfig("iconBorderSize"))
+    const { iconBorderOffset } = useSignal(...tileStyleConfig("iconBorderOffset"))
+    const { iconSize } = useSignal(...tileStyleConfig("iconSize"))
+    const { iconOffset } = useSignal(...tileStyleConfig("iconOffset"))
+    const { fontSize } = useSignal(...tileStyleConfig("fontSize"))
+    const { fontWeight } = useSignal(...tileStyleConfig("fontWeight"))
+    const { font } = useSignal(...tileStyleConfig("font"))
+    const { textOffset } = useSignal(...tileStyleConfig("textOffset"))
+
 
     const backgroundRGBAColor = useTileBackgroundColor();
     const tileOutlineRGBAColor = useTileOutlineColor();
@@ -142,7 +145,7 @@ const ValidUrlTile = ({
 };
 
 export const Tile_component = memo((props: TileComponentProps) => {
-    const { tileRadius } = tileStyleAtom.useField("tileRadius");
+    const { tileRadius } = useSignal(...tileStyleConfig("tileRadius"))
     return (
         <Tilt_3D radius={tileRadius}>
             <ValidUrlTile {...props} />

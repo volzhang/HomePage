@@ -5,8 +5,8 @@ import { PanelRightClose, PanelRightOpen, RotateCcw, Trash2 } from "lucide-react
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { useBgStore } from "@/vol_apps/bg/bg_store";
 import { useTileStore } from "@/vol_apps/tile/tile_store";
-import { tileStyleAtom } from "@/vol_apps/tile/tile_style_atom";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {storeHub} from "@/vol_apps/04_persist_atoms";
 
 interface TileUiInEditBodyProps {
     children: ReactNode;
@@ -22,8 +22,11 @@ export const Tile_ui_inEdit_body = memo(({
     const { t } = useLanguage();
     const bgImg = useBgStore().bgImg;
     const { removeTile, tileInEditId } = useTileStore();
-    const atomChanged = tileStyleAtom.atomChanged(); // 整体是否有改动
-    const resetStyles = () => tileStyleAtom.reset();
+
+    const atomChanged = storeHub.getStore("ts").useStoreChanged() // 整体是否有改动
+    const resetStyles = storeHub.getStore("ts").reset
+
+
 
     const handleRemoveTile = () => {
         removeTile(tileInEditId);

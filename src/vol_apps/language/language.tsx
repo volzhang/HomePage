@@ -2,7 +2,7 @@ import {Select} from "../01_components/01_SelectComponent"
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Languages} from "lucide-react";
-import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {languageConfig} from "@/vol_apps/language/useLanguage.ts";
 
 export const Language = () => {

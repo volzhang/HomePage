@@ -1,4 +1,4 @@
-import {createStoreConfig, getSignal, useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {createStoreConfig, getSignal, useSignal} from "@/vol_apps/04_persist_atoms";
 import {useCallback} from "react";
 import {type NamespaceDict, resources} from "@/vol_apps/language/language_RESOURCES.ts";
 

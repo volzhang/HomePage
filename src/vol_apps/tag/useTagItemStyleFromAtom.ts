@@ -1,5 +1,5 @@
 import {cn} from "@/lib/utils.ts";
-import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
 import type {CSSProperties} from "react";
 import {tagStyleConfig} from "@/vol_apps/tag/TagStyleAtom.ts";
 import {themeConfig} from "@/vol_apps/theme/theme.tsx";

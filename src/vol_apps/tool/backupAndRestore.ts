@@ -3,9 +3,7 @@ import {VERSION} from "@/vol_apps/tool/action/fetch";
 import {persistedStores, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 import {downloadAsJsonFile, timeStamp} from "@/vol_apps/tool/action/download";
 import {isPlainObject} from "@/vol_apps/tool/isType/isPlainObject";
-import {safeParse} from "valibot";
-import {atoms} from "@/vol_apps/04_persist_atoms/signal_legacy.ts";
-import {storeHub} from "@/vol_apps/04_persist_atoms/signal";
+import {storeHub} from "@/vol_apps/04_persist_atoms";
 
 // ----------------------------------------------------------------------
 // 工具函数：解析备份值，兼容旧备份中字符串化存储的情况
@@ -70,17 +68,17 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
     }
 
     // 合并 atoms 数据
-    for (const [key, atom] of atoms) {
-        // find key
-        if (!(key in backupData)) continue;
-        // restore atom
-        const parseData = safeParse(atom.dataSchema, backupData[key]);
-        if (parseData.success) {
-            atom.setState(parseData.output.state);
-        } else {
-            console.error(`Restore: failed to parse schema: `, key, parseData.issues);
-        }
-    }
+    // for (const [key, atom] of atoms) {
+    //     // find key
+    //     if (!(key in backupData)) continue;
+    //     // restore atom
+    //     const parseData = safeParse(atom.dataSchema, backupData[key]);
+    //     if (parseData.success) {
+    //         atom.setState(parseData.output.state);
+    //     } else {
+    //         console.error(`Restore: failed to parse schema: `, key, parseData.issues);
+    //     }
+    // }
 
     // 合并storeHub 数据
     // 这个恢复不太一样，没有办法验证数据格式，有一定风险
@@ -143,12 +141,12 @@ export const persistedStoresBackup = async (): Promise<void> => {
     }
 
     // 合并 atoms
-    for (const [key, atom] of atoms) {
-        result[key] = {
-            state: atom.getState(),
-            version: 1.0
-        }
-    }
+    // for (const [key, atom] of atoms) {
+    //     result[key] = {
+    //         state: atom.getState(),
+    //         version: 1.0
+    //     }
+    // }
 
     // 合并 storeHub
     Object.entries(storeHub.getStores()).forEach(([storeName, store]) => {

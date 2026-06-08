@@ -1,7 +1,7 @@
 import {Button} from "@/components/ui/button";
 import {Moon, Sun} from "lucide-react";
 import {useEffect} from "react";
-import {createStoreConfig, useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {createStoreConfig, useSignal} from "@/vol_apps/04_persist_atoms";
 
 type Theme = "dark" | "light";
 export const themeConfig = createStoreConfig({

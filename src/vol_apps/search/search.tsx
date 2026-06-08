@@ -5,7 +5,7 @@ import {cn} from "@/lib/utils";
 import {Search} from "lucide-react";
 import {Select} from "../01_components/01_SelectComponent";
 import {SEARCH_ENGINES, searchConfig, searchStyleConfig, setEngineInUseByName} from "@/vol_apps/search/searchSignal.ts";
-import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
 
 
 export const SearchBar = () => {

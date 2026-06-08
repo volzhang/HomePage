@@ -1,7 +1,7 @@
 import {cn} from "@/lib/utils";
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {TagItem} from "@/vol_apps/tag/TagItem";
-import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {tagStyleConfig} from "@/vol_apps/tag/TagStyleAtom.ts";
 
 export const TagComponent = () => {

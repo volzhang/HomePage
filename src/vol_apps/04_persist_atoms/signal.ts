@@ -3,7 +3,7 @@ import {useSyncExternalStore} from "react";
 import {del, get, set} from "idb-keyval";
 import type {
     Derived, Expanded, Listener, Signal, SignalSlot, Store, StoreHub, StoreName,
-} from "@/vol_apps/04_persist_atoms/signal/types.ts";
+} from "@/vol_apps/04_persist_atoms/types.ts";
 import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
 import {capitalize} from "@/vol_apps/03_utils/capitalize.ts";
 import {createDebouncedSet} from "@/vol_apps/03_utils/createDebouncedSet.ts";
@@ -15,6 +15,7 @@ export const STORE_CONFIG = {
     searchStyle: 2,
     tagStyle: 20,
     ts: 20,
+    bg: 20,
 };
 
 export const EMPTY = Symbol("empty");

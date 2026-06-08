@@ -26,7 +26,7 @@
 //     })
 // });
 
-import {createStoreConfig} from "@/vol_apps/04_persist_atoms/signal";
+import {createStoreConfig} from "@/vol_apps/04_persist_atoms";
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
 
 const FONT_DEFAULT: FontItem = {

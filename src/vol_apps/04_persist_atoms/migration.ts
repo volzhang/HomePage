@@ -2,9 +2,9 @@
 import { get, set } from "idb-keyval";
 import { safeParse, object, number, type BaseSchema } from "valibot";
 import { createDebouncedSet } from "@/vol_apps/03_utils/createDebouncedSet.ts";
-import {storeHub} from "@/vol_apps/04_persist_atoms/signal/signal.ts";
+import {storeHub} from "@/vol_apps/04_persist_atoms/signal.ts";
 import * as v from "valibot";
-import type {StoreName} from "@/vol_apps/04_persist_atoms/signal/types.ts";
+import type {StoreName} from "@/vol_apps/04_persist_atoms/types.ts";
 
 // ────────── 迁移标志管理──────────
 const MIGRATION_FLAGS_KEY = "_migration_flags";

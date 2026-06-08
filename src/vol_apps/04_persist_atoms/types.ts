@@ -1,4 +1,4 @@
-import {EMPTY, type STORE_CONFIG} from "@/vol_apps/04_persist_atoms/signal/signal.ts";
+import {EMPTY, type STORE_CONFIG} from "@/vol_apps/04_persist_atoms/signal.ts";
 
 export type Listener = () => void;
 export type Subscriber = (listener: Listener) => () => void;
