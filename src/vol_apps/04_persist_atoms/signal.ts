@@ -15,7 +15,7 @@ export const STORE_CONFIG = {
     searchStyle: 2,
     tagStyle: 20,
     ts: 20,
-    bg: 20,
+    // bg: 20,
 };
 
 export const EMPTY = Symbol("empty");
@@ -251,6 +251,8 @@ const createStoreHub = (): StoreHub => {
         },
 
         getStore,
+
+        stores,
     }
 };
 

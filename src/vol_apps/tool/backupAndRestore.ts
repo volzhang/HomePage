@@ -67,25 +67,13 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
         return;
     }
 
-    // 合并 atoms 数据
-    // for (const [key, atom] of atoms) {
-    //     // find key
-    //     if (!(key in backupData)) continue;
-    //     // restore atom
-    //     const parseData = safeParse(atom.dataSchema, backupData[key]);
-    //     if (parseData.success) {
-    //         atom.setState(parseData.output.state);
-    //     } else {
-    //         console.error(`Restore: failed to parse schema: `, key, parseData.issues);
-    //     }
-    // }
-
     // 合并storeHub 数据
-    // 这个恢复不太一样，没有办法验证数据格式，有一定风险
-    Object.entries(storeHub.getStores()).forEach(([storeName, store]) => {
+    // 没有办法验证数据格式，有一定风险
+    Object.entries(storeHub.stores).forEach(([storeName, store]) => {
         // find storeName
-        if (!(storeName in backupData)) return;
+        if (!(storeName in backupData)) return
         const state = backupData[storeName]?.state;
+        console.log(state)
         store.setState(state)
     })
 

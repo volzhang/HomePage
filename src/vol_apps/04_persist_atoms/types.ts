@@ -51,6 +51,7 @@ export type StoreHub = {
     resolveSignal: <T>(storeName: StoreName, fieldName: string, defaultValue: T) => Expanded<T>;
     getStores: () => Record<StoreName, Store>
     getStore: (storeName: StoreName) => Store,
+    stores: Record<StoreName, Store>
 };
 
 export type SignalConfig<

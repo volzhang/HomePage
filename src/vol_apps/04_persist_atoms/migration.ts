@@ -1,5 +1,5 @@
 // migration.ts
-import { get, set } from "idb-keyval";
+import {createStore, get, set} from "idb-keyval";
 import { safeParse, object, number, type BaseSchema } from "valibot";
 import { createDebouncedSet } from "@/vol_apps/03_utils/createDebouncedSet.ts";
 import {storeHub} from "@/vol_apps/04_persist_atoms/signal.ts";
@@ -87,7 +87,7 @@ const createStoreMigration = <T extends Record<string, unknown>>({
 }): (() => Promise<{ success: boolean; state?: T }>) => {
     const getLegacy =
         legacyDb === "idb"
-            ? () => get(storeName)
+            ? () => get(storeName, createStore("localforage", "keyvaluepairs"))
             : () => {
                 const raw = localStorage.getItem(storeName);
                 return raw ? JSON.parse(raw) : null;

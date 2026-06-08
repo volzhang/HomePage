@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useDoubleRaf} from "@/vol_apps/02_hooks/raf/useDoubleRaf";
 import {createPortal} from "react-dom";
 
@@ -23,9 +23,12 @@ export const useBetterPortal = (
         }
     }, [open]);
 
-    const portal = (node: React.ReactNode | null | undefined) => {
+    const portal = (
+        node: React.ReactNode | null | undefined,
+        container: HTMLElement | DocumentFragment = document.body,
+    ) => {
         if (!mounted || node == null) return null;
-        return createPortal(node, document.body);
+        return createPortal(node, container);
     };
 
     return {visible, portal,};
