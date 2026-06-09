@@ -1,26 +1,55 @@
-let initialized = false;
+import {createStore, get} from "idb-keyval";
+import {img} from "@/vol_apps/bg/bg_store.ts";
+import {addBootstrapTask} from "@/vol_apps/bootstrap/bootstrap.ts";
 
 let layerA: HTMLDivElement;
 let layerB: HTMLDivElement;
 
 let current = "a";
 
-function initBgLayer() {
-    if (initialized) return;
+export const bgInitState = {
+    bgImg:img,
+    bgSize:"auto",
+    bgRepeat:true,
+    bgCenter:false,
+}
 
+// waitForDoubleFrame 替代 void next.offsetHeight;
+// const waitForDoubleFrame = () => {
+//     return new Promise(resolve => {
+//         requestAnimationFrame(() => {
+//             requestAnimationFrame(resolve);
+//         });
+//     });
+// }
+
+const initBgLayer = async () => {
     layerA = document.createElement("div");
     layerB = document.createElement("div");
 
     layerA.id = "bg-layer-a";
     layerB.id = "bg-layer-b";
 
+    const data = await get("bg", createStore("localforage","keyvaluepairs"))
+    if (data !== undefined) {
+        const date = JSON.parse(data)
+        const state = date.state
+        bgInitState.bgImg = state?.bgImg
+        bgInitState.bgSize = state?.bgSize
+        bgInitState.bgRepeat = state?.bgRepeat
+        bgInitState.bgCenter = state?.bgCenter
+    }
+
     const baseStyle = `
 		position: fixed;
 		inset: 0;
-		background-size: cover;
-		background-position: center;
-		background-repeat: no-repeat;
-		transition: opacity 1s ease-in-out;
+
+        background-image: url(${bgInitState.bgImg});
+        background-size: ${bgInitState.bgSize};
+        background-position: ${bgInitState.bgRepeat ? "center" : "top left"};
+        background-repeat: ${bgInitState.bgCenter ? "repeat" : "no-repeat"};
+
+		transition: opacity 1s;
 		will-change: opacity;
 		z-index: -999;
 		pointer-events: none;
@@ -28,42 +57,36 @@ function initBgLayer() {
 
     layerA.style.cssText = baseStyle + "opacity:1;";
     layerB.style.cssText = baseStyle + "opacity:0;";
-
-    document.body.appendChild(layerA);
     document.body.appendChild(layerB);
+    document.body.appendChild(layerA);
 
-    initialized = true;
+    // console.log({bgImg, bgSize, bgRepeat, bgCenter});
 }
 
-export const setBackground = (
+addBootstrapTask(()=> initBgLayer())
+
+
+export const setBackground = async (
     base64: string,
     bgSize: string,
     bgRepeat: boolean,
     bgCenter: boolean
 ) => {
-    initBgLayer();
-
     const next = current === "a" ? layerB : layerA;
-    void next.offsetHeight;
     const prev = current === "a" ? layerA : layerB;
-    void prev.offsetHeight;
 
     // 设置新样式
     next.style.backgroundImage = `url("${base64}")`;
-    void next.offsetHeight;
     next.style.backgroundSize = bgSize;
-    void next.offsetHeight;
-    next.style.backgroundRepeat = bgRepeat ? "repeat" : "no-repeat";
-    void next.offsetHeight;
     next.style.backgroundPosition = bgCenter ? "center" : "top left";
-    void next.offsetHeight;
+    next.style.backgroundRepeat = bgRepeat ? "repeat" : "no-repeat";
+    // void next.offsetHeight;
 
     // 触发交叉淡化
     next.style.opacity = "1";
-    void next.offsetHeight;
+    // void next.offsetHeight;
 
     prev.style.opacity = "0";
-    void prev.offsetHeight;
 
     current = current === "a" ? "b" : "a";
 };

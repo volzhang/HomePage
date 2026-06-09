@@ -9,7 +9,7 @@ import {tileStyleConfig} from "@/vol_apps/tile/tile_style_atom.ts";
 
 // ==================== 背景设置 ====================
 const BackgroundSection = memo(() => {
-    const { t } = useLanguage("tileEditor");
+    const { t } = useLanguage();
 
     const { backgroundColor, setBackgroundColor } = useSignal(...tileStyleConfig("backgroundColor"))
     const { backgroundOpacity, setBackgroundOpacity } = useSignal(...tileStyleConfig("backgroundOpacity"))
@@ -41,7 +41,7 @@ const BackgroundSection = memo(() => {
 
 // ==================== 尺寸与圆角 ====================
 const SizeRadiusSection = memo(() => {
-    const { t } = useLanguage("tileEditor");
+    const { t } = useLanguage();
     const { tileSize, setTileSize } = useSignal(...tileStyleConfig("tileSize"))
     const { tileRadius, setTileRadius } = useSignal(...tileStyleConfig("tileRadius"))
 
@@ -74,7 +74,7 @@ const SizeRadiusSection = memo(() => {
 
 // ==================== 图标设置 ====================
 const IconSection = memo(() => {
-    const { t } = useLanguage("tileEditor");
+    const { t } = useLanguage();
     const { iconBorderSize, setIconBorderSize } = useSignal(...tileStyleConfig("iconBorderSize"))
     const { iconBorderOffset, setIconBorderOffset } = useSignal(...tileStyleConfig("iconBorderOffset"))
     const { iconSize, setIconSize } = useSignal(...tileStyleConfig("iconSize"))
@@ -127,7 +127,7 @@ const IconSection = memo(() => {
 
 // ==================== 文本与字体 ====================
 const TextFontSection = memo(() => {
-    const { t } = useLanguage("tileEditor");
+    const { t } = useLanguage();
     const { font, setFont } = useSignal(...tileStyleConfig("font"))
     const { fontSize, setFontSize } = useSignal(...tileStyleConfig("fontSize"))
     const { fontWeight, setFontWeight } = useSignal(...tileStyleConfig("fontWeight"))
@@ -185,7 +185,7 @@ const TextFontSection = memo(() => {
 
 // ==================== 轮廓设置 ====================
 const OutlineSection = memo(() => {
-    const { t } = useLanguage("tileEditor");
+    const { t } = useLanguage();
     const { tileOutlineThickness, setTileOutlineThickness } = useSignal(...tileStyleConfig("tileOutlineThickness"))
     const { tileOutlineColor, setTileOutlineColor } = useSignal(...tileStyleConfig("tileOutlineColor"))
     const { tileOutlineOpacity, setTileOutlineOpacity } = useSignal(...tileStyleConfig("tileOutlineOpacity"))
