@@ -85,6 +85,7 @@ const createStoreMigration = <T extends Record<string, unknown>>({
     stateSchema: BaseSchema<T, any, any>;
     legacyDb: "idb" | "localstorage";
 }): (() => Promise<{ success: boolean; state?: T }>) => {
+    // 不管怎么样，只迁移一次，必定返回 success:true
     const getLegacy =
         legacyDb === "idb"
             ? () => get(storeName, createStore("localforage", "keyvaluepairs"))
@@ -98,24 +99,41 @@ const createStoreMigration = <T extends Record<string, unknown>>({
             const raw = await getLegacy();
             if (raw == null) return { success: true };
 
+            let data: unknown;
+            if (typeof raw === "string") {
+                try {
+                    data = JSON.parse(raw);
+                } catch (e) {
+                    console.warn("Migration: JSON parsee failed", storeName, e);
+                    return {success: true};
+                }
+            } else if (typeof raw === "object" && raw !== null) {
+                data = raw;
+            } else {
+                console.warn("Migration: failed to parsee data", storeName)
+                return {success: true};
+            }
+
             const dataSchema = getDataSchema(stateSchema);
-            const parsedData = safeParse(dataSchema, raw);
+            const parsedData = safeParse(dataSchema, data);
+
             if (!parsedData.success) {
                 console.warn(`Migration: outer schema mismatch for "${storeName}"`, parsedData.issues);
-                return { success: false };
+                return { success: true };
             }
 
             const state = parsedData.output.state;
             const parsedState = safeParse(stateSchema, state);
+
             if (!parsedState.success) {
                 console.warn(`Migration: state schema mismatch for "${storeName}"`, parsedState.issues);
-                return { success: false };
+                return { success: true };
             }
 
             return { success: true, state: parsedState.output };
         } catch (err) {
             console.error(`Migration: unexpected error for "${storeName}"`, err);
-            return { success: false };
+            return { success: true };
         }
     };
 };

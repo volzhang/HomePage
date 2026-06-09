@@ -243,6 +243,7 @@
 //
 //         const dataSchema = getDataSchema(stateSchema)
 //         const parseData = safeParse(dataSchema, data);
+
 //         if (!parseData.success) {
 //             console.warn("Migration: failed to parse data schema", key, parseData.issues);
 //             return {success: false};
