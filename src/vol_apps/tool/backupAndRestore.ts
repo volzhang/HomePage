@@ -73,7 +73,6 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
         // find storeName
         if (!(storeName in backupData)) return
         const state = backupData[storeName]?.state;
-        console.log(state)
         store.setState(state)
     })
 
@@ -127,14 +126,6 @@ export const persistedStoresBackup = async (): Promise<void> => {
             result[key] = snapshot;
         }
     }
-
-    // 合并 atoms
-    // for (const [key, atom] of atoms) {
-    //     result[key] = {
-    //         state: atom.getState(),
-    //         version: 1.0
-    //     }
-    // }
 
     // 合并 storeHub
     Object.entries(storeHub.getStores()).forEach(([storeName, store]) => {

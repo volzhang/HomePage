@@ -2,7 +2,7 @@
 import {useSyncExternalStore} from "react";
 import {del, get, set} from "idb-keyval";
 import type {
-    Derived, Expanded, Listener, Signal, SignalSlot, Store, StoreHub, StoreName,
+    Derived, Empty, Expanded, Listener, Signal, SignalSlot, Store, StoreHub, StoreName,
 } from "@/vol_apps/04_persist_atoms/types.ts";
 import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
 import {capitalize} from "@/vol_apps/03_utils/capitalize.ts";
@@ -50,61 +50,90 @@ const createDerivedSignal = <T>(
 
 // @formatter:off
 const createExpandedSignal = <T>(
-    defaultValue: T,
+    value: T,
 ): Expanded<T> => {
-    const valueSignal = createSignal<T>(defaultValue);
-    const hydrated = createSignal<boolean>(false)
+    const valueSignal = createSignal<T>(value);
 
+    const hydrated = createSignal<boolean>(false)
     const isHydrated = hydrated.get
     const useHydrated = hydrated.use
     const hydrate = (next?: T) => {
         if (!hydrated.get()) {
-            if (next !== undefined) valueSignal.set(next)
             hydrated.set(true)
+            if (next !== undefined) valueSignal.set(next)
         }
     }
-    return {...valueSignal, isHydrated, useHydrated, hydrate,}
+
+    let defaultValue:T|Empty = EMPTY;
+    const changed = createDerivedSignal<boolean>(()=>{
+        // 这里并不优雅和逻辑严密
+        if (defaultValue === EMPTY) {
+            // console.log('isChanged called without default value set.');
+            return false;
+        }
+        else {return !deepEqual(valueSignal.get(), defaultValue)}
+    }, [valueSignal])
+
+    const setDefault = (value: T) => {
+        if (defaultValue === EMPTY) defaultValue = value
+    }
+
+    const getDefault = () => defaultValue
+
+    const reset = () => {
+        if (defaultValue !== EMPTY) valueSignal.set(defaultValue)
+    }
+
+    const isChanged = changed.get
+    const useChanged = changed.use
+
+    return {...valueSignal, isHydrated, useHydrated, hydrate, isChanged, useChanged, setDefault, reset, getDefault};
 }
 // @formatter:on
 
 const createStore = (storeName: StoreName, maxSlots: number,): Store => {
     const slots: SignalSlot<unknown>[] = Array.from({length: maxSlots}, () => ({
         signal: createExpandedSignal<any>(EMPTY),
-        name: EMPTY,
-        defaultValue: EMPTY,
+        fieldName: EMPTY,
     }));
 
     const activateSignal = (name: string, defaultValue: any): Expanded<any> | undefined => {
-        const existing = slots.find(s => s.name === name);
+        const existing = slots.find(s => s.fieldName === name);
         if (existing) {
-            // 有可能水合注册，需要补初始值
-            if (existing.defaultValue === EMPTY) existing.defaultValue = defaultValue
-            if (existing.signal.get() === EMPTY) existing.signal.set(defaultValue)  //实际应该不可能，先留着
+            // defaultValue 由useSignal设置，先到先得。建议使用统一props。
+            existing.signal.setDefault(defaultValue)
+
+            if (!existing.signal.isHydrated()) {
+                existing.signal.set(defaultValue)       // 如果没有水合过，设置值
+            } else {
+                if (existing.signal.get() === EMPTY) existing.signal.set(defaultValue)      // 水合过但是没有设置值，设置值
+            }
             return existing.signal;
         }
 
-        const free = slots.find(s => s.name === EMPTY);
+        const free = slots.find(s => s.fieldName === EMPTY);
         if (!free) return undefined;
 
-        free.name = name;
-        if (free.defaultValue === EMPTY) free.defaultValue = defaultValue;
+        free.fieldName = name;
         // defaultValue 由useSignal设置，先到先得。建议使用统一props。
-        free.signal.set(defaultValue);
+        free.signal.setDefault(defaultValue)
+        free.signal.set(defaultValue)
 
         return free.signal;
     };
 
     const getSignal = (name: string): Expanded<any> | undefined =>
-        slots.find(s => s.name === name)?.signal;
+        slots.find(s => s.fieldName === name)?.signal;
 
     const signalsArray = slots.map(slot => slot.signal);
 
+    // 监控全量state，排除无初始值的signal
     const stateSignal = createDerivedSignal(() => {
             const snapshot: Record<string, any> = {};
             slots
-                .filter(s => (s.name !== EMPTY) && (s.defaultValue !== EMPTY))
+                .filter(s => ((s.fieldName !== EMPTY) && (s.signal.getDefault() !== EMPTY)))
                 .forEach(s => {
-                    snapshot[s.name as string] = s.signal.get();
+                    snapshot[s.fieldName as string] = s.signal.get();
                 })
             return snapshot;
         }, signalsArray
@@ -113,17 +142,20 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
     // 全量合法 State
     const getState = () => stateSignal.get()
 
+    // 用于恢复存档
     const setState = (state: Record<string, any>) => {
-        for (const [key, value] of Object.entries(state)) {
-            const existingSlot = slots.find(s => s.name === key);
+        const kvArray = Object.entries(state)
+        if (kvArray.length === 0) return;
+        for (const [key, value] of kvArray) {
+            const existingSlot = slots.find(s => s.fieldName === key);
             if (existingSlot) existingSlot.signal.set(value);
             else {
-                const free = slots.find(s => s.name === EMPTY);
+                const free = slots.find(s => s.fieldName === EMPTY);
                 if (!free) {
                     console.log(`[Store:${storeName}] 槽位已满，无法恢复字段 "${key}"`);
                     continue;
                 }
-                free.name = key;
+                free.fieldName = key;
                 free.signal.set(value);
             }
         }
@@ -134,14 +166,15 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         const currentState = stateSignal.get();
         const changed: Record<string, any> = {};
         for (const [key, value] of Object.entries(currentState)) {
-            const slot = slots.find(s => s.name === key);
-            if (slot && slot.defaultValue !== EMPTY && !deepEqual(value, slot.defaultValue)) {
+            const slot = slots.find(s => s.fieldName === key);
+            if (slot && (slot.signal.isChanged() === true)) {
                 changed[key] = value;
             }
         }
         return changed;
     };
 
+    // 写库方法：策略，防抖+最小化写入
     const debouncedPersist = createDebouncedSet(() => {
         const changed = getChangedState();
         if (Object.keys(changed).length === 0) {
@@ -150,40 +183,40 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         return set(storeName, {state: changed, version: 1.0});
     }, 500);
 
+    // 订阅写库方法
     stateSignal.subscribe(() => debouncedPersist());
 
     const hydratedSignal = createDerivedSignal<boolean>(
-        () => slots.filter(s => (s.name !== EMPTY))
+        () => slots.filter(s => (s.fieldName !== EMPTY))
             .every(s => s.signal.isHydrated())
         , signalsArray)
 
     const changedSignal = createDerivedSignal<boolean>(
-        () => slots.filter(s => (s.name !== EMPTY) && (s.defaultValue !== EMPTY))
-            .some(s => !deepEqual(s.signal.get(), s.defaultValue))
+        () => slots.filter(s => (s.fieldName !== EMPTY))
+            .some(s => s.signal.isChanged())
         , signalsArray)
 
     const useStoreChanged = () => changedSignal.use()
     const getStoreChanged = () => changedSignal.get()
-    const useStoreHydrated = () => hydratedSignal.use()
-
     const reset = () => {
         if (!changedSignal.get()) return
-        slots.filter(s => s.name !== EMPTY && (s.defaultValue !== EMPTY))
-            .forEach((s) => s.signal.set(s.defaultValue))
+        slots.filter(s => s.fieldName !== EMPTY)
+            .forEach((s) => s.signal.reset())
     }
 
+    const useStoreHydrated = () => hydratedSignal.use()
     const hydrate = (state?: Record<string, any>) => {
         if (state !== undefined) {
             for (const [fieldName, value] of Object.entries(state)) {
-                const existingSlot = slots.find(s => s.name === fieldName);
+                const existingSlot = slots.find(s => s.fieldName === fieldName);
                 if (existingSlot) existingSlot.signal.hydrate(value);
                 else {
-                    const free = slots.find(s => s.name === EMPTY);
+                    const free = slots.find(s => s.fieldName === EMPTY);
                     if (!free) {
                         console.log(`[Store:${storeName}] 槽位已满，水合失败: "${fieldName}"`);
                         continue;
                     }
-                    free.name = fieldName;
+                    free.fieldName = fieldName;
                     free.signal.hydrate(value);
                 }
             }
@@ -241,6 +274,7 @@ const createStoreHub = (): StoreHub => {
             return signal;
         },
 
+        // 下载存档专用的方法
         getStores: () => {
             const result: Record<StoreName, Store> = {} as Record<StoreName, Store>
             Object.entries(stores).forEach(([storeName, store]) => {

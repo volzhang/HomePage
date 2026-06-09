@@ -20,12 +20,18 @@ export type Expanded<T> = Signal<T> & {
     isHydrated: () => boolean
     useHydrated: () => boolean
     hydrate: (next?: T) => void
+
+    isChanged: () => (boolean | Empty)
+    useChanged: () => (boolean | Empty)
+
+    setDefault: (value: T) => void;
+    getDefault: () => T | Empty;
+    reset: () => void;
 };
 
 export type SignalSlot<T> = {
     signal: Expanded<T>;
-    name: string | Empty;
-    defaultValue: T | Empty;
+    fieldName: string | Empty;
 };
 
 export type Store = {
