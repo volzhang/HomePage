@@ -6,7 +6,7 @@ import {
     type BingWallpaperArchiveJson
 } from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
 
-import {bgInitState, setBackground} from "./bg_util";
+import {setBackground} from "./bg_util";
 import {useFileCarousel} from "@/vol_apps/02_hooks/useFileCarousel";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {get, set} from "idb-keyval";
@@ -17,7 +17,6 @@ import {useUserActivation} from "@/vol_apps/02_hooks/useUserInteracted";
 import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated.ts";
 import {languageConfig, useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
-import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
 
 /**
  * UI pending 控制（带超时）
@@ -79,6 +78,8 @@ export const useBgLogic = () => {
         carouselRandom, setCarouselRandom,
         carouselInterval, setCarouselInterval,
     } = useBgStore();
+
+
 
     const {open} = useSettingStore()
 
@@ -160,22 +161,10 @@ export const useBgLogic = () => {
      * 应用背景
      */
     const hydrated = useStoreHydrated(useBgStore)
-    const prevParams = useRef(bgInitState);
 
     useEffect(() => {
         if (!hydrated) return
-        const prev = prevParams.current;
-
-        // 有差异才渲染
-        if (deepEqual(
-            prev, {bgImg, bgSize, bgRepeat, bgCenter}
-        )) {
-            console.log("same", prev)
-            return
-        }
-        void setBackground(bgImg, bgSize, bgRepeat, bgCenter);
-        prevParams.current = {bgImg, bgSize, bgRepeat, bgCenter};
-
+        setBackground(bgImg, bgSize, bgRepeat, bgCenter);
     }, [bgImg, bgSize, bgRepeat, bgCenter, hydrated]);
 
     /**

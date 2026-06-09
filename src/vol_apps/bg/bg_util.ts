@@ -1,9 +1,3 @@
-import {addBootstrapTask} from "@/vol_apps/bootstrap/bootstrap.ts";
-import {createStore, get} from "idb-keyval";
-import {img} from "@/vol_apps/bg/bg_store.ts";
-
-// Note: 初始化背景，使用原生JS，不能用react
-
 let initialized = false;
 
 let layerA: HTMLDivElement;
@@ -11,23 +5,7 @@ let layerB: HTMLDivElement;
 
 let current = "a";
 
-export const bgInitState = {
-    bgImg:img,
-    bgSize:"auto",
-    bgRepeat:true,
-    bgCenter:false,
-}
-
-// waitForDoubleFrame 替代 void next.offsetHeight;
-const waitForDoubleFrame = () => {
-    return new Promise(resolve => {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(resolve);
-        });
-    });
-}
-
-const initBgLayer = async () => {
+function initBgLayer() {
     if (initialized) return;
 
     layerA = document.createElement("div");
@@ -36,29 +14,12 @@ const initBgLayer = async () => {
     layerA.id = "bg-layer-a";
     layerB.id = "bg-layer-b";
 
-    const data = await get("bg", createStore("localforage","keyvaluepairs"))
-
-    if (data !== undefined) {
-        const date = JSON.parse(data)
-        const state = date.state
-        bgInitState.bgImg = state?.bgImg
-        bgInitState.bgSize = state?.bgImgSize
-        bgInitState.bgRepeat = state?.bgImgRepeat
-        bgInitState.bgCenter = state?.bgImgCenter
-    }
-
-    const bgImg = bgInitState.bgImg ?? img;
-    const bgSize = bgInitState.bgSize ?? "auto"
-    const bgRepeat = bgInitState.bgRepeat ?? "true"
-    const bgCenter = bgInitState.bgCenter ?? "false"
-
     const baseStyle = `
 		position: fixed;
 		inset: 0;
-		background-image: url(${bgImg});
-		background-size: ${bgSize};
-		background-position: ${bgCenter ? "center" : "top left"};
-		background-repeat: ${bgRepeat ? "repeat" : "no-repeat"};
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
 		transition: opacity 1s ease-in-out;
 		will-change: opacity;
 		z-index: -999;
@@ -74,29 +35,35 @@ const initBgLayer = async () => {
     initialized = true;
 }
 
-addBootstrapTask(()=>initBgLayer())
-
-export const setBackground = async (
+export const setBackground = (
     base64: string,
     bgSize: string,
     bgRepeat: boolean,
     bgCenter: boolean
 ) => {
+    initBgLayer();
 
     const next = current === "a" ? layerB : layerA;
+    void next.offsetHeight;
     const prev = current === "a" ? layerA : layerB;
+    void prev.offsetHeight;
 
     // 设置新样式
     next.style.backgroundImage = `url("${base64}")`;
+    void next.offsetHeight;
     next.style.backgroundSize = bgSize;
+    void next.offsetHeight;
     next.style.backgroundRepeat = bgRepeat ? "repeat" : "no-repeat";
+    void next.offsetHeight;
     next.style.backgroundPosition = bgCenter ? "center" : "top left";
-    await waitForDoubleFrame();
+    void next.offsetHeight;
 
     // 触发交叉淡化
     next.style.opacity = "1";
-    await waitForDoubleFrame();
+    void next.offsetHeight;
+
     prev.style.opacity = "0";
+    void prev.offsetHeight;
 
     current = current === "a" ? "b" : "a";
 };
