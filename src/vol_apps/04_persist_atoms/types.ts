@@ -8,7 +8,7 @@ export type Signal<T> = {
     set: (next: T) => void;
     get: () => T;
     subscribe: Subscriber;
-    emit: () => void;
+    // emit: () => void;
 };
 
 export type Derived<T> = {

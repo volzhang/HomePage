@@ -29,7 +29,7 @@ const createSignal = <T>(initialValue: T): Signal<T> => {
     const get = () => value;
     const use = () => useSyncExternalStore(subscribe, get);
     const set = (next: T) => {if (deepEqual(get(), next)) return;value = next;emit();};
-    return {use, set, get, subscribe, emit};
+    return {use, set, get, subscribe};
 };
 
 // 派生信号
@@ -83,7 +83,6 @@ const createExpandedSignal = <T>(
         }
     }
 
-
     return {...valueSignal, isHydrated, useHydrated, hydrate, isChanged, useChanged, setDefault, reset, getDefault};
 }
 // @formatter:on
@@ -102,7 +101,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
 
             if (!existing.signal.isHydrated()) {
                 existing.signal.set(defaultValue)       // 如果没有水合过，设置值
-                existing.signal.emit()
+                // existing.signal.emit()
             } else {
                 if (existing.signal.get() === EMPTY) {
                     existing.signal.set(defaultValue)           // 水合过但是没有设置值，设置值

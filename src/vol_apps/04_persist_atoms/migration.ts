@@ -228,7 +228,7 @@ void (async function executeMigrations() {
                 }
             }
 
-            void store.persisit()
+            void set(storeName, state);
             return result;
         });
     }
