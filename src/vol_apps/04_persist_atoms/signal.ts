@@ -296,23 +296,62 @@ const createStoreHub = (): StoreHub => {
 
 export const storeHub = createStoreHub();
 
+// export const useSignal = <T, F extends string>(
+//     storeName: StoreName, fieldName: F, defaultValue: T,
+// ) => {
+//     const signal = storeHub.resolveSignal(storeName, fieldName, defaultValue);
+//     const setterName = `set${capitalize(fieldName)}` as const;
+//     const hydratedName = `${fieldName}Hydrated` as const;
+//     return {
+//         [fieldName]: signal.use(),
+//         [setterName]: signal.set,
+//         [hydratedName]: signal.useHydrated(),
+//     } as {
+//         [K in F]: T;
+//     } & {
+//         [K in F as `set${Capitalize<K>}`]: (value: T) => void;
+//     } & {
+//         [K in F as `${K}Hydrated`]: boolean;
+//     };
+// };
 
-export const useSignal = <T, F extends string>(
-    storeName: StoreName, fieldName: F, defaultValue: T,
-) => {
-    const signal = storeHub.resolveSignal(storeName, fieldName, defaultValue);
-    const setterName = `set${capitalize(fieldName)}` as const;
-    const hydratedName = `${fieldName}Hydrated` as const;
-    return {
-        [fieldName]: signal.use(),
-        [setterName]: signal.set,
-        [hydratedName]: signal.useHydrated(),
-    } as {
+type UseSignal = {
+    <T, F extends string>(storeName: StoreName, fieldName: F, defaultValue: T): {
         [K in F]: T;
     } & {
         [K in F as `set${Capitalize<K>}`]: (value: T) => void;
     } & {
         [K in F as `${K}Hydrated`]: boolean;
+    };
+    <T, F extends string>(tuple: [StoreName, F, T]): {
+        [K in F]: T;
+    } & {
+        [K in F as `set${Capitalize<K>}`]: (value: T) => void;
+    } & {
+        [K in F as `${K}Hydrated`]: boolean;
+    };
+};
+
+export const useSignal: UseSignal = (...args: any[]) => {
+    let storeName: StoreName;
+    let fieldName: string;
+    let defaultValue: any;
+
+    if (Array.isArray(args[0])) {
+        [storeName, fieldName, defaultValue] = args[0];
+    } else {
+        [storeName, fieldName, defaultValue] = args;
+    }
+
+    const signal = storeHub.resolveSignal(storeName, fieldName, defaultValue);
+
+    const setterName = `set${capitalize(fieldName)}` as const;
+    const hydratedName = `${fieldName}Hydrated` as const;
+
+    return {
+        [fieldName]: signal.use(),
+        [setterName]: signal.set,
+        [hydratedName]: signal.useHydrated(),
     };
 };
 
