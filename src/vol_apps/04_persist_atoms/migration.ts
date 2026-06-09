@@ -139,8 +139,10 @@ const createStoreMigration = <T extends Record<string, unknown>>({
 };
 
 // ────────── 迁移配置──────────
-const colorStringSchema = v.pipe(v.string(),
-    v.regex(/^#[0-9a-fA-F]{6}$/, '必须是有效的十六进制颜色（如 #ffffff）'))
+// const colorStringSchema = v.pipe(v.string(),
+//     v.regex(/^#[0-9a-fA-F]{6}$/, '必须是有效的十六进制颜色（如 #ffffff）'))
+
+const colorStringSchema = v.string()
 
 const themeSchema = v.object({theme: v.picklist(['light', 'dark'])})
 const languageSchema = v.object({language: v.picklist(['en', 'cn'])})
