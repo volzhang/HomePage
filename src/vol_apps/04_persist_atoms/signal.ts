@@ -83,7 +83,7 @@ const createExpandedSignal = <T>(
         }
     }
 
-    return {...valueSignal, isHydrated, useHydrated, hydrate, isChanged, useChanged, setDefault, reset, getDefault};
+    return {...valueSignal, isHydrated, useHydrated, hydrate, isChanged, useChanged, setDefault, reset, getDefault, defaultValueSignal};
 }
 // @formatter:on
 
@@ -124,7 +124,9 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
     const getSignal = (name: string): Expanded<any> | undefined =>
         slots.find(s => s.fieldName === name)?.signal;
 
-    const signalsArray = slots.map(slot => slot.signal);
+    const valueSignalsArray = slots.map(slot => slot.signal);
+    const defaultValueSignalsArray = slots.map(slot => slot.signal.defaultValueSignal);
+
 
     // 监控全量state，排除无初始值的signal
     const stateSignal = createDerivedSignal(() => {
@@ -135,7 +137,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
                     snapshot[s.fieldName as string] = s.signal.get();
                 })
             return snapshot;
-        }, signalsArray
+        }, [...valueSignalsArray, ...defaultValueSignalsArray]
     );
 
     // 全量合法 State
@@ -188,12 +190,12 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
     const hydratedSignal = createDerivedSignal<boolean>(
         () => slots.filter(s => (s.fieldName !== EMPTY))
             .every(s => s.signal.isHydrated())
-        , signalsArray)
+        , [...valueSignalsArray, ...defaultValueSignalsArray])
 
     const changedSignal = createDerivedSignal<boolean>(
         () => slots.filter(s => (s.fieldName !== EMPTY))
             .some(s => s.signal.isChanged())
-        , signalsArray)
+        , [...valueSignalsArray, ...defaultValueSignalsArray])
 
     const useStoreChanged = () => changedSignal.use()
     const getStoreChanged = () => changedSignal.get()

@@ -228,7 +228,6 @@ void (async function executeMigrations() {
                 }
             }
 
-            void set(storeName, state);
             return result;
         });
     }

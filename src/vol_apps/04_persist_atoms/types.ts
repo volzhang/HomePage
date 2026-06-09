@@ -28,6 +28,7 @@ export type Expanded<T> = Signal<T> & {
     setDefault: (value: T) => void;
     getDefault: () =>T | Empty;
     reset: () => void;
+    defaultValueSignal: Signal<T|Empty>;
 };
 
 export type SignalSlot<T> = {
