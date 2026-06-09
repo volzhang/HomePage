@@ -64,23 +64,21 @@ const createExpandedSignal = <T>(
         }
     }
 
-    let defaultValue:T|Empty = EMPTY;
+    // let defaultValue:T|Empty = EMPTY;
+    const defaultValueSignal = createSignal<T|Empty>(EMPTY)
     const changed = createDerivedSignal<boolean>(()=>{
         // 这里并不优雅和逻辑严密
-        if (defaultValue === EMPTY) {
-            // console.log('isChanged called without default value set.');
-            return false;
-        }
-        else {return !deepEqual(valueSignal.get(), defaultValue)}
-    }, [valueSignal])
+        if (defaultValueSignal.get() === EMPTY) return false;
+        else {return !deepEqual(valueSignal.get(), defaultValueSignal.get())}
+    }, [valueSignal, defaultValueSignal]);
 
     const setDefault = (value: T) => {
-        if (defaultValue === EMPTY) defaultValue = value
+        if (defaultValueSignal.get() === EMPTY) defaultValueSignal.set(value)
     }
-
-    const getDefault = () => defaultValue
+    const getDefault = defaultValueSignal.get
 
     const reset = () => {
+        const defaultValue = getDefault()
         if (defaultValue !== EMPTY) valueSignal.set(defaultValue)
     }
 

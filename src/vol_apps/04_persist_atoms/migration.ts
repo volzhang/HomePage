@@ -212,7 +212,7 @@ void (async function executeMigrations() {
             const slots = store.slots;
             const state = result.state
 
-            console.log(state)
+            // console.log(state)
             for (const [field, value] of Object.entries(state)) {
 
                 const existing = slots.find(s => s.fieldName === field);

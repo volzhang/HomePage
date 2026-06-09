@@ -25,7 +25,7 @@ export type Expanded<T> = Signal<T> & {
     useChanged: () => (boolean | Empty)
 
     setDefault: (value: T) => void;
-    getDefault: () => T | Empty;
+    getDefault: () =>T | Empty;
     reset: () => void;
 };
 
