@@ -214,16 +214,19 @@ void (async function executeMigrations() {
 
             console.log(state)
             for (const [field, value] of Object.entries(state)) {
+                if (field === "radius") console.log(field, value)
                 const existing = slots.find(s => s.name === field);
                 if (existing) {
                     const signal = existing.signal;
                     signal.hydrate(value)
                     signal.set(value)
+                    console.log("signal", signal)
                 } else {
                     const free = slots.find(s => s.name === EMPTY);
                     if (!free) continue;
                     free.name = field;
                     free.signal.hydrate(value)
+                    console.log("free", free)
                 }
             }
             return result;
