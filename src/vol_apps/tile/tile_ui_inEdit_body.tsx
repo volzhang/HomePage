@@ -21,12 +21,13 @@ export const Tile_ui_inEdit_body = memo(({
                                          }: TileUiInEditBodyProps) => {
     const { t } = useLanguage();
     const bgImg = useBgStore().bgImg;
-    const { removeTile, tileInEditId } = useTileStore();
+    const { removeTile, tileInEditId, setTileUiVisible } = useTileStore();
 
     const atomChanged = storeHub.getStore("ts").useStoreChanged() // 整体是否有改动
     const resetStyles = storeHub.getStore("ts").reset
 
     const handleRemoveTile = () => {
+        setTileUiVisible(false)
         removeTile(tileInEditId);
     };
 

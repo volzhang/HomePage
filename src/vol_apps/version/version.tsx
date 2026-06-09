@@ -1,7 +1,7 @@
 import {Button} from "@/components/ui/button";
-import {VERSION} from "@/vol_apps/tool/action/fetch";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {VERSION} from "@/main.tsx";
 
 export const Version = () => {
 	const {t} = useLanguage()

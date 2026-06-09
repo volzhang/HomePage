@@ -1,6 +1,5 @@
 import {createStore, get} from "idb-keyval";
 import {img} from "@/vol_apps/bg/bg_store.ts";
-import {addBootstrapTask} from "@/vol_apps/bootstrap/bootstrap.ts";
 
 let layerA: HTMLDivElement;
 let layerB: HTMLDivElement;
@@ -23,7 +22,7 @@ export const bgInitState = {
 //     });
 // }
 
-const initBgLayer = async () => {
+export const initBgLayer = async () => {
     layerA = document.createElement("div");
     layerB = document.createElement("div");
 
@@ -34,10 +33,12 @@ const initBgLayer = async () => {
     if (data !== undefined) {
         const date = JSON.parse(data)
         const state = date.state
-        bgInitState.bgImg = state?.bgImg
-        bgInitState.bgSize = state?.bgSize
-        bgInitState.bgRepeat = state?.bgRepeat
-        bgInitState.bgCenter = state?.bgCenter
+        if (state !== undefined) {
+            bgInitState.bgImg = state?.bgImg
+            bgInitState.bgSize = state?.bgSize
+            bgInitState.bgRepeat = state?.bgRepeat
+            bgInitState.bgCenter = state?.bgCenter
+        }
     }
 
     const baseStyle = `
@@ -46,8 +47,8 @@ const initBgLayer = async () => {
 
         background-image: url(${bgInitState.bgImg});
         background-size: ${bgInitState.bgSize};
-        background-position: ${bgInitState.bgRepeat ? "center" : "top left"};
-        background-repeat: ${bgInitState.bgCenter ? "repeat" : "no-repeat"};
+        background-position: ${bgInitState.bgCenter ? "center" : "top left"};
+        background-repeat: ${bgInitState.bgRepeat ? "repeat" : "no-repeat"};
 
 		transition: opacity 1s;
 		will-change: opacity;
@@ -60,11 +61,7 @@ const initBgLayer = async () => {
     document.body.appendChild(layerB);
     document.body.appendChild(layerA);
 
-    // console.log({bgImg, bgSize, bgRepeat, bgCenter});
 }
-
-addBootstrapTask(()=> initBgLayer())
-
 
 export const setBackground = async (
     base64: string,
