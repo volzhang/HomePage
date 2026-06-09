@@ -212,12 +212,13 @@ void (async function executeMigrations() {
             const slots = store.slots;
             const state = result.state
 
+            console.log(state)
             for (const [field, value] of Object.entries(state)) {
                 const existing = slots.find(s => s.name === field);
                 if (existing) {
                     const signal = existing.signal;
+                    signal.hydrate(value)
                     signal.set(value)
-                    signal.hydrate()
                 } else {
                     const free = slots.find(s => s.name === EMPTY);
                     if (!free) continue;
