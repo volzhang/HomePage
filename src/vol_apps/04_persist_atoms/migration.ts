@@ -214,7 +214,6 @@ void (async function executeMigrations() {
 
             // console.log(state)
             for (const [field, value] of Object.entries(state)) {
-
                 const existing = slots.find(s => s.fieldName === field);
                 if (existing) {
                     const signal = existing.signal;
@@ -226,9 +225,10 @@ void (async function executeMigrations() {
                     free.fieldName = field;
                     free.signal.hydrate(value)
                     free.signal.set(value)
-                    free.signal.emit()
                 }
             }
+
+            void store.persisit()
             return result;
         });
     }

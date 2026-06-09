@@ -102,8 +102,11 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
 
             if (!existing.signal.isHydrated()) {
                 existing.signal.set(defaultValue)       // 如果没有水合过，设置值
+                existing.signal.emit()
             } else {
-                if (existing.signal.get() === EMPTY) existing.signal.set(defaultValue)      // 水合过但是没有设置值，设置值
+                if (existing.signal.get() === EMPTY) {
+                    existing.signal.set(defaultValue)           // 水合过但是没有设置值，设置值
+                }
             }
             return existing.signal;
         }
@@ -235,6 +238,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         reset,
 
         slots,
+        persisit:debouncedPersist
     };
 };
 

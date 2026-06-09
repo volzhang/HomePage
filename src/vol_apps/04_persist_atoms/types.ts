@@ -50,6 +50,7 @@ export type Store = {
     reset: () => void;
 
     slots: SignalSlot<unknown>[]
+    persisit: ()=>Promise<void>;
 }
 
 export type StoreName = keyof typeof STORE_CONFIG;
