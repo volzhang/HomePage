@@ -2,7 +2,7 @@
 import {createStore, get, set} from "idb-keyval";
 import { safeParse, object, number, type BaseSchema } from "valibot";
 import { createDebouncedSet } from "@/vol_apps/03_utils/createDebouncedSet.ts";
-import {storeHub} from "@/vol_apps/04_persist_atoms/signal.ts";
+import {EMPTY, storeHub} from "@/vol_apps/04_persist_atoms/signal.ts";
 import * as v from "valibot";
 import type {StoreName} from "@/vol_apps/04_persist_atoms/types.ts";
 
@@ -209,17 +209,22 @@ void (async function executeMigrations() {
             if (!result.success || !result.state) return result;
             const storeName = cfg.storeName
             const store = storeHub.getStore(storeName);
+            const slots = store.slots;
             const state = result.state
-            store.hydrate(state)
-            // for (const [field, value] of Object.entries(result.state)) {
-            //
-            //     const store = storeHub.getStore(storeName)
-            //     signal?.hydrate(result.state)
-            //     signal.set(value);
-            //     if (!signal.isHydrated()) {
-            //         signal.hydrate();
-            //     }
-            // }
+
+            for (const [field, value] of Object.entries(state)) {
+                const existing = slots.find(s => s.name === field);
+                if (existing) {
+                    const signal = existing.signal;
+                    signal.set(value)
+                    signal.hydrate()
+                } else {
+                    const free = slots.find(s => s.name === EMPTY);
+                    if (!free) continue;
+                    free.name = field;
+                    free.signal.hydrate(value)
+                }
+            }
             return result;
         });
     }

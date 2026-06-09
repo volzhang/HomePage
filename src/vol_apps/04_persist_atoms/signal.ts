@@ -203,6 +203,8 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
 
         hydrate,
         reset,
+
+        slots,
     };
 };
 

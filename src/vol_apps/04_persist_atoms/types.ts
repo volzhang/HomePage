@@ -41,6 +41,8 @@ export type Store = {
 
     hydrate: (state?: Record<string, any>) => void;
     reset: () => void;
+
+    slots: SignalSlot<unknown>[]
 }
 
 export type StoreName = keyof typeof STORE_CONFIG;
@@ -53,9 +55,3 @@ export type StoreHub = {
     getStore: (storeName: StoreName) => Store,
     stores: Record<StoreName, Store>
 };
-
-export type SignalConfig<
-    S extends StoreName,
-    F extends string,
-    T
-> = readonly [S, F, T];
