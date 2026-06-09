@@ -207,13 +207,19 @@ void (async function executeMigrations() {
         await runMigration(cfg.storeName, async () => {
             const result = await migrationFn();
             if (!result.success || !result.state) return result;
-            for (const [field, value] of Object.entries(result.state)) {
-                const signal = storeHub.resolveSignal(cfg.storeName, field, value);
-                signal.set(value);
-                if (!signal.isHydrated()) {
-                    signal.hydrate();
-                }
-            }
+            const storeName = cfg.storeName
+            const store = storeHub.getStore(storeName);
+            const state = result.state
+            store.hydrate(state)
+            // for (const [field, value] of Object.entries(result.state)) {
+            //
+            //     const store = storeHub.getStore(storeName)
+            //     signal?.hydrate(result.state)
+            //     signal.set(value);
+            //     if (!signal.isHydrated()) {
+            //         signal.hydrate();
+            //     }
+            // }
             return result;
         });
     }
