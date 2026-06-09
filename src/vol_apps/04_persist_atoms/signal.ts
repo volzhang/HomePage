@@ -15,7 +15,6 @@ export const STORE_CONFIG = {
     searchStyle: 2,
     tagStyle: 20,
     ts: 20,
-    // bg: 20,
 };
 
 export const EMPTY = Symbol("empty");
@@ -30,7 +29,7 @@ const createSignal = <T>(initialValue: T): Signal<T> => {
     const get = () => value;
     const use = () => useSyncExternalStore(subscribe, get);
     const set = (next: T) => {if (deepEqual(get(), next)) return;value = next;emit();};
-    return {use, set, get, subscribe};
+    return {use, set, get, subscribe, emit};
 };
 
 // 派生信号
@@ -54,17 +53,6 @@ const createExpandedSignal = <T>(
 ): Expanded<T> => {
     const valueSignal = createSignal<T>(value);
 
-    const hydrated = createSignal<boolean>(false)
-    const isHydrated = hydrated.get
-    const useHydrated = hydrated.use
-    const hydrate = (next?: T) => {
-        if (!hydrated.get()) {
-            hydrated.set(true)
-            if (next !== undefined) valueSignal.set(next)
-        }
-    }
-
-    // let defaultValue:T|Empty = EMPTY;
     const defaultValueSignal = createSignal<T|Empty>(EMPTY)
     const changed = createDerivedSignal<boolean>(()=>{
         // 这里并不优雅和逻辑严密
@@ -84,6 +72,17 @@ const createExpandedSignal = <T>(
 
     const isChanged = changed.get
     const useChanged = changed.use
+
+    const hydrated = createSignal<boolean>(false)
+    const isHydrated = hydrated.get
+    const useHydrated = hydrated.use
+    const hydrate = (next?: T) => {
+        if (!hydrated.get()) {
+            hydrated.set(true)
+            if (next !== undefined) valueSignal.set(next)
+        }
+    }
+
 
     return {...valueSignal, isHydrated, useHydrated, hydrate, isChanged, useChanged, setDefault, reset, getDefault};
 }

@@ -226,6 +226,7 @@ void (async function executeMigrations() {
                     free.fieldName = field;
                     free.signal.hydrate(value)
                     free.signal.set(value)
+                    free.signal.emit()
                 }
             }
             return result;
