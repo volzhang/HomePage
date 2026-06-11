@@ -7,7 +7,6 @@ import {ImgFilePickerBtn} from "@/vol_apps/tile/ImgFilePickerBtn";
 import {TextareaField} from "@/vol_apps/tile/TextareaField";
 import {enhanceUrl} from "@/vol_apps/tool/action/enhanceUrl";
 
-
 const CLASS_BASE_OUTLINE = "flex flex-col px-0 mx-[24px] mt-[22px] gap-[15px]"
 const CLASS_BASE = "flex w-full";
 const CLASS_P = "flex items-center justify-start font-bold text-lg w-16 shrink-0"; // 左侧固定宽度
@@ -26,7 +25,7 @@ export const Tile_ui_inEdit_head = (
         handleAutoFetchIcon,
         handleSearchIcon,
 
-        link, setLink, try_handle_name, try_handle_icon, link_ref,
+        link, setLink, try_handle_name, try_handle_icon, link_ref, buildLink,
         name, setName,
 
         handleIconFilePick,
@@ -47,11 +46,11 @@ export const Tile_ui_inEdit_head = (
                                    className={cn(CLASS_TEXTAREA, "break-all")}
                                    placeholder="https://"
                                    transform={enhanceUrl}
-                                   onLiveChange={setLink}
+                                   // onLiveChange={setLink}
                                    onCommit={async (v) => {
                                        setLink(v)
                                        try_handle_name(v)
-                                       await try_handle_icon()
+                                       void try_handle_icon(buildLink(v))
                                    }}
                                    enterFocusRef={ok_ref}
                                    value={link}
@@ -65,7 +64,7 @@ export const Tile_ui_inEdit_head = (
                                 isFetchingIcon
                                     ? <Spinner strokeWidth={3} className={"size-7 text-sBlue"}></Spinner>
                                     : <LoaderCircle strokeWidth={3} className={"size-7 hover:text-sBlue"}
-                                                    onClick={handleAutoFetchIcon}/>
+                                                    onClick={()=>handleAutoFetchIcon(link)}/>
                             }
                         </HoverCardTrigger>
                         <HoverCardContent className="w-auto" side="top" sideOffset={18}>

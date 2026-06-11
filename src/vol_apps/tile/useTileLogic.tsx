@@ -4,10 +4,10 @@ import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
 import {enhanceUrl, extractMainDomain} from "@/vol_apps/tool/action/enhanceUrl";
 import {openLinkInCurrentTab, openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
-import {useFaviconVemetricPng} from "@/vol_apps/tanStackQuery/Api_FaviconVemetric";
-import {isValidUrl} from "@/vol_apps/tool/isType/isValidUrl";
 import {isSortable} from "@dnd-kit/react/sortable";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {useFetchFavicon} from "@/vol_apps/tile/favicon_vemetric/useFaviconVemetric.ts";
+import {useFixedPending} from "@/vol_apps/02_hooks/usePending.ts";
 
 export type TileLogic = ReturnType<typeof useTileLogic>;
 export const useTileLogic = () => {
@@ -62,28 +62,6 @@ export const useTileLogic = () => {
         setTiles(newTiles);
     };
 
-    // const {hasChanges, reset, ...TileStyle} = useTileStyleAtom();
-    // const backgroundRGBAColor = (() => {
-    //     const r = parseInt(TileStyle.backgroundColor.slice(1, 3), 16);
-    //     const g = parseInt(TileStyle.backgroundColor.slice(3, 5), 16);
-    //     const b = parseInt(TileStyle.backgroundColor.slice(5, 7), 16);
-    //     return `rgba(${r}, ${g}, ${b}, ${TileStyle.backgroundOpacity})`;
-    // })();
-    //
-    // const tileOutlineRGBAColor = (() => {
-    //     const r = parseInt(TileStyle.tileOutlineColor.slice(1, 3), 16);
-    //     const g = parseInt(TileStyle.tileOutlineColor.slice(3, 5), 16);
-    //     const b = parseInt(TileStyle.tileOutlineColor.slice(5, 7), 16);
-    //     return `rgba(${r}, ${g}, ${b}, ${TileStyle.tileOutlineOpacity})`;
-    // })();
-    //
-    // const textRGBAColor = (() => {
-    //     const r = parseInt(TileStyle.textColor.slice(1, 3), 16);
-    //     const g = parseInt(TileStyle.textColor.slice(3, 5), 16);
-    //     const b = parseInt(TileStyle.textColor.slice(5, 7), 16);
-    //     return `rgba(${r}, ${g}, ${b}, ${TileStyle.textOpacity})`;
-    // })();
-
     const [stylesIsOpen, setStylesIsOpen] = useState(false);
     useEffect(() => {
         if (!tileUiVisible) {
@@ -101,10 +79,14 @@ export const useTileLogic = () => {
     const name = currentTile?.meta.name || ""
     const setName = (name: string) => updateTile(tileInEditId, {meta: {name}})
 
-    const setLink = (input: string) => {
-        const finalUrl = URL.canParse(input)
+    const buildLink = (input: string) => {
+        return URL.canParse(input)
             ? input
-            : enhanceUrl(input);
+            : enhanceUrl(input)
+    }
+
+    const setLink = (input: string) => {
+        const finalUrl = buildLink(input)
         if (finalUrl !== link) {
             updateTile(tileInEditId, {url: finalUrl});
         }
@@ -120,35 +102,30 @@ export const useTileLogic = () => {
         });
     };
 
-    const try_handle_icon = async () => {
-        if (icon === defaultIconBase64) {
-            await handleAutoFetchIcon()
-        }
+    const try_handle_icon = async (v: string) => {
+        if (icon === defaultIconBase64) void handleAutoFetchIcon(v)
     }
 
     // Auto-Fetch Icon
-    const [isFetchingIcon, setIsFetchingIcon] = useState<boolean>(false)
+    const [domain, setDomain] = useState<string>("");
+    const {isPending, currentJpg, succeed, percent, restart} = useFetchFavicon({
+        domain:domain,
+        size:96,
+        autoStart: true
+    })
 
-    const {refetch} = useFaviconVemetricPng(
-        link.replace(/\/$/, ""),                    //这里去掉末尾斜杠/，可以提高成功率
-        96, {enabled: false});
+    const fixedIsPendingIcon = useFixedPending(10*1000, 1000, isPending)
 
-    const handleAutoFetchIcon = async () => {
-        if (!isValidUrl(link)) return;
-        if (isFetchingIcon) return;
-        setIsFetchingIcon(true)
+    useEffect(() => {
+        if (succeed && currentJpg && !isPending) {
+            updateTile(tileInEditId, { meta: { icon: currentJpg } });
+        }
+    }, [succeed, currentJpg, isPending]);
 
-        const timerPromise = new Promise(resolve => setTimeout(resolve, 1000));
-        const updatePromise = (async () => {
-            const res = await refetch();
-            if (res.data) {
-                updateTile(tileInEditId, {meta: {icon: res.data}});
-            }
-        })();
-
-        Promise.all([timerPromise, updatePromise]).finally(() => {
-            setIsFetchingIcon(false);
-        });
+    const handleAutoFetchIcon = async (v: string) => {
+        setDomain("");
+        setDomain(v.replace(/\/$/, ""));
+        restart()
     };
 
     // TAG
@@ -259,7 +236,9 @@ export const useTileLogic = () => {
         icon, setIcon,
         iconFileName, handleIconFilePick,
 
-        isFetchingIcon,
+        isFetchingIcon: fixedIsPendingIcon,
+        buildLink,
+        percent,
         handleAutoFetchIcon,
         handleSearchIcon,
 

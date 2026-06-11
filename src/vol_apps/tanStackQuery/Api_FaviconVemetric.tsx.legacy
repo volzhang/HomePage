@@ -1,0 +1,65 @@
+// import {QueryClient, useQuery} from "@tanstack/react-query";
+// import {type PersistedClient, type Persister, PersistQueryClientProvider} from "@tanstack/react-query-persist-client";
+// import {del, get, set} from "idb-keyval";
+// import React from "react";
+// import {type BlobString, blobToString} from "@/vol_apps/tool/a2b/blobToString";
+//
+// const queryClient = new QueryClient({
+//     defaultOptions: {
+//         queries: {
+//             staleTime: 1000 * 60 * 60 * 24,          //保鲜周期 1d
+//             gcTime: 1000 * 60 * 60 * 24,        //清除垃圾周期 1d
+//         },
+//     },
+// });
+//
+// const idbPersister_key = "Favicon_Vemetric";
+// const idbPersister = (key: string): Persister => ({
+//     persistClient: async (client: PersistedClient) => {
+//         await set(key, client);
+//     },
+//     restoreClient: async () => {
+//         return await get<PersistedClient>(key) ?? undefined;
+//     },
+//     removeClient: async () => {
+//         await del(key);
+//     },
+// });
+//
+// export const FaviconVemetricProvider = ({children}: { children: React.ReactNode }) => {
+//     const persister = idbPersister(idbPersister_key);
+//     return (
+//         <PersistQueryClientProvider client={queryClient} persistOptions={{persister}}>
+//             {children}
+//         </PersistQueryClientProvider>
+//     );
+// };
+//
+// export const useFaviconVemetricPng = (
+//     domain: string,
+//     size: number = 96,
+//     options?: { enabled?: boolean }
+// ) => {
+//     const enabled = options?.enabled ?? true;
+//     const queryKey = ["favicon_vemetric", domain, size];
+//     const url = `https://favicon.vemetric.com/${domain}?size=${size}`;
+//     // noinspection DuplicatedCode
+//     const queryFn = async () => {
+//         const res = await fetch(url!);
+//         if (!res.ok) throw new Error(`image fetch failed: ${res.status}`);
+//         const blob = await res.blob();
+//         return await blobToString(blob);
+//     };
+//
+//     const { data, isPending, error, refetch } = useQuery<BlobString>({
+//         queryKey, queryFn, enabled: enabled && !!domain,
+//     });
+//
+//     return { IconPngBase64: data, isPending, error, refetch};
+// }
+//
+//
+//
+//
+//
+//

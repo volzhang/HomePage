@@ -34,15 +34,6 @@ const isStore = (id: string) => {
     );
 }
 
-// const isMyStore = (id: string) => {
-//     const p = toPosix(id)
-//     return (
-//         p.includes('src/vol_apps/04_persist_atoms/runMigration') ||
-//         p.includes('src/vol_apps/04_persist_atoms/signal') ||
-//         p.includes('src/vol_apps/04_persist_atoms')
-//     )
-// }
-
 const isVendor = (id: string) => {
     return id.includes('node_modules')
 }

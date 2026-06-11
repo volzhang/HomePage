@@ -1,20 +1,21 @@
-import { memo } from "react";
-import { cn } from "@/lib/utils";
-import { Spinner } from "@/components/ui/spinner";
-import { openLinkInNewTab } from "@/vol_apps/tool/action/openLink";
-import { Tilt_3D } from "./Tile_3D";
-import { defaultIconBase64 } from "@/vol_apps/tile/tile_store_types";
+import React, {memo} from "react";
+import {cn} from "@/lib/utils";
+import {Spinner} from "@/components/ui/spinner";
+import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
+import {Tilt_3D} from "./Tile_3D";
+import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
 import {tileStyleConfig} from "@/vol_apps/tile/tile_style_atom";
-import {useTileBackgroundColor, useTileOutlineColor, useTileTextColor } from "@/vol_apps/tile/tile_style_hooks.ts"
+import {useTileBackgroundColor, useTileOutlineColor, useTileTextColor} from "@/vol_apps/tile/tile_style_hooks.ts"
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms";
+import type {TileLogic} from "@/vol_apps/tile/useTileLogic.tsx";
 
-type TileComponentProps = {
-    tileId: number;
-    link: string;
-    icon: string;
-    name: string;
-    isFetchingIcon: boolean;
+type TileComponentProps = TileLogic & {
+    // tileId: number;
+    // link: string;
+    // icon: string;
+    // name: string;
+    // isFetchingIcon: boolean;
     disableClick?: boolean;
     iconBorderOutline?: boolean;
     onTileRightClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
@@ -28,22 +29,23 @@ const ValidUrlTile = ({
                           disableClick,
                           onTileRightClick,
                           iconBorderOutline,
+                          // percent,
                       }: TileComponentProps) => {
-    const { t } = useLanguage(); // 国际化直接在内部获取
+    const {t} = useLanguage(); // 国际化直接在内部获取
 
     // ---- 样式字段精准订阅 ----
-    const { tileSize } = useSignal(...tileStyleConfig("tileSize"))
+    const {tileSize} = useSignal(tileStyleConfig("tileSize"))
 
-    const { tileRadius } = useSignal(...tileStyleConfig("tileRadius"))
-    const { tileOutlineThickness } = useSignal(...tileStyleConfig("tileOutlineThickness"))
-    const { iconBorderSize } = useSignal(...tileStyleConfig("iconBorderSize"))
-    const { iconBorderOffset } = useSignal(...tileStyleConfig("iconBorderOffset"))
-    const { iconSize } = useSignal(...tileStyleConfig("iconSize"))
-    const { iconOffset } = useSignal(...tileStyleConfig("iconOffset"))
-    const { fontSize } = useSignal(...tileStyleConfig("fontSize"))
-    const { fontWeight } = useSignal(...tileStyleConfig("fontWeight"))
-    const { font } = useSignal(...tileStyleConfig("font"))
-    const { textOffset } = useSignal(...tileStyleConfig("textOffset"))
+    const {tileRadius} = useSignal(tileStyleConfig("tileRadius"))
+    const {tileOutlineThickness} = useSignal(tileStyleConfig("tileOutlineThickness"))
+    const {iconBorderSize} = useSignal(tileStyleConfig("iconBorderSize"))
+    const {iconBorderOffset} = useSignal(tileStyleConfig("iconBorderOffset"))
+    const {iconSize} = useSignal(tileStyleConfig("iconSize"))
+    const {iconOffset} = useSignal(tileStyleConfig("iconOffset"))
+    const {fontSize} = useSignal(tileStyleConfig("fontSize"))
+    const {fontWeight} = useSignal(tileStyleConfig("fontWeight"))
+    const {font} = useSignal(tileStyleConfig("font"))
+    const {textOffset} = useSignal(tileStyleConfig("textOffset"))
 
 
     const backgroundRGBAColor = useTileBackgroundColor();
@@ -56,7 +58,7 @@ const ValidUrlTile = ({
             href={link}
             className={cn(
                 "flex flex-col items-center justify-between",
-                { "cursor-auto": disableClick },
+                {"cursor-auto": disableClick},
                 "transition-all duration-300 delay-0 ease-linear",
                 "hover:shadow-sBlue/50 hover:shadow-xl"
             )}
@@ -104,9 +106,10 @@ const ValidUrlTile = ({
                                         "font-semibold text-center",
                                         "bg-transparent text-sBlue"
                                     )}
-                                    style={{ fontSize: `${iconBorderSize / 7}px` }}
+                                    style={{fontSize: `${iconBorderSize / 7}px`}}
                                 >
                                     {t("Fetching")}
+                                    {/*{percent.toFixed(0) + "%"}*/}
                                 </p>
                             )}
                         </div>
@@ -145,7 +148,7 @@ const ValidUrlTile = ({
 };
 
 export const Tile_component = memo((props: TileComponentProps) => {
-    const { tileRadius } = useSignal(...tileStyleConfig("tileRadius"))
+    const {tileRadius} = useSignal(tileStyleConfig("tileRadius"))
     return (
         <Tilt_3D radius={tileRadius}>
             <ValidUrlTile {...props} />
