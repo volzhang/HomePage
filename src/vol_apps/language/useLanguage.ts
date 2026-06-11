@@ -2,7 +2,7 @@ import {createStoreConfig, getSignal, useSignal} from "@/vol_apps/04_persist_ato
 import {useCallback} from "react";
 import {type NamespaceDict, resources} from "@/vol_apps/language/language_RESOURCES.ts";
 
-type Language = "en" | "cn"
+export type Language = "en" | "cn"
 export const languageConfig = createStoreConfig({
     storeName:"language",
     fields:{

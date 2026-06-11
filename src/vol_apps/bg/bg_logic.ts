@@ -1,11 +1,5 @@
 import {useMemo, useEffect, useState, useRef, useCallback} from "react";
 import {useBgStore, img} from "./bg_store";
-import {
-    useBingWallpaperArchive,
-    getDateWithOffset,
-    type BingWallpaperArchiveJson
-} from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
-
 import {bgInitState, setBackground} from "./bg_util";
 import {useFileCarousel} from "@/vol_apps/02_hooks/useFileCarousel";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
@@ -18,41 +12,9 @@ import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated.ts";
 import {languageConfig, useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
 import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
-
-/**
- * UI pending 控制（带超时）
- */
-function usePendingWithTimeout(timeout = 3000) {
-    const [pending, setPending] = useState(false);
-    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const start = () => {
-        if (timerRef.current) clearTimeout(timerRef.current);
-
-        setPending(true);
-
-        timerRef.current = setTimeout(() => {
-            setPending(false);
-            timerRef.current = null;
-        }, timeout);
-    };
-
-    const stop = () => {
-        if (timerRef.current) {
-            clearTimeout(timerRef.current);
-            timerRef.current = null;
-        }
-        setPending(false);
-    };
-
-    useEffect(() => {
-        return () => {
-            if (timerRef.current) clearTimeout(timerRef.current);
-        };
-    }, []);
-
-    return {pending, start, stop};
-}
+import {useFetchWallpaper, getDateWithOffset} from "@/vol_apps/bg/bg_api.tsx";
+import {useFixedPending} from "@/vol_apps/02_hooks/usePending.ts";
+// import {waitForDoubleFrame} from "@/vol_apps/03_utils/waitForDoubleFrame.ts";
 
 export type BgLogic = ReturnType<typeof useBgLogic>;
 export const useBgLogic = () => {
@@ -63,7 +25,6 @@ export const useBgLogic = () => {
         bgRepeat,
         bgCenter,
         otherVisible,
-        // bgUiVisible,
         bgBingDate,
         bgBingCopyright,
         setBgImg,
@@ -71,7 +32,6 @@ export const useBgLogic = () => {
         setBgRepeat,
         setBgCenter,
         setBgSize,
-        // setBgUiVisible,
         setOtherVisible,
         setBgBingDate,
         setBgBingCopyright,
@@ -80,8 +40,6 @@ export const useBgLogic = () => {
         carouselInterval, setCarouselInterval,
     } = useBgStore();
 
-
-
     const {open} = useSettingStore()
 
     useEffect(() => {
@@ -89,35 +47,49 @@ export const useBgLogic = () => {
     }, [open]);
 
     const {t} = useLanguage("bg");
-    const {language} = useSignal(...languageConfig("language"))
+    const {language} = useSignal(languageConfig("language"))
 
     // 日期
-    const date = useMemo(() => bgBingDate ?? getDateWithOffset(), [bgBingDate]);
+    const yesterday = getDateWithOffset(undefined, -1)
+    const date = useMemo(() => bgBingDate ?? yesterday, [bgBingDate]);
     const preDate = useMemo(() => getDateWithOffset(date, -1), [date]);
     const nextDate = useMemo(() => getDateWithOffset(date, +1), [date]);
-    // console.log(date)
 
-    // 查询
-    const {
-        wallpaperJson: currentJson,
-        wallpaperJpgBase64: currentJpg,
-        isPending: currentPending
-    } = useBingWallpaperArchive(language, date);
+    // 需求：
+    // 1，首次启动，如果bgBingDate为null，useFetchWallpaper autoStart 为true
+    // 2，首次启动后，bgBingDate 变化一次后，useFetchWallpaper autoStart 为true
+    // 3，其他时候，首次启动后，useFetchWallpaper autoStart 为 false，避免无意义fetch
 
-    const copyright = (json: BingWallpaperArchiveJson | null) => {
-        return json
-            ? `${json.title ?? ""} ${json.copyright ?? ""} | ${json.date ?? ""}`
-            : ""
-    }
-
-    const currentCopyright = useMemo(() => copyright(currentJson), [currentJson]);
+    const snapshotRef = useRef(bgBingDate)
+    const startRef = useRef(false)
 
     useEffect(() => {
-        // fallback：当天没有图 → 自动用前一天
-        if (!currentPending && !currentJpg) setBgBingDate(preDate)
-        // 新用户的初始值
-        if (bgType === "bing" && bgImg === null && currentJpg) setBgImg(currentJpg)
-    }, [currentPending, currentJpg, date]);
+        if (!startRef.current) startRef.current = true
+    }, [bgBingDate]);
+
+    const { currentJpg, currentJson, isPending, succeed, percent} = useFetchWallpaper({
+        language,
+        date,
+        autoStart: startRef.current || bgBingDate === null || snapshotRef.current !== bgBingDate
+    });
+
+    const currentItem = useMemo(() => {
+        if (!Array.isArray(currentJson)) return null;
+        return currentJson.find((item: any) => item.date === date);
+    }, [currentJson, date]);
+
+    // 同步copyrightText 和 bgBingDate
+    useEffect(() => {
+        if (!isPending && succeed && currentItem) {
+            const copyrightText = `${currentItem.title ?? ""} ${currentItem.copyright ?? ""} | ${currentItem.date ?? ""}`;
+            setBgBingCopyright(copyrightText);
+            setBgBingDate(currentItem.date);
+        }
+    }, [isPending, currentJpg, currentItem, bgBingCopyright, succeed]);
+
+    const fixedPending = useFixedPending(1000*60, 1000*2, isPending);
+
+    //////////////////
 
     /**
      * bgType 切换
@@ -127,7 +99,7 @@ export const useBgLogic = () => {
         const run = async () => {
             if (bgType === "bing" && currentJpg) {
                 if (currentJpg !== bgImg) setBgImg(currentJpg);
-                if (currentCopyright !== bgBingCopyright) setBgBingCopyright(currentCopyright);
+                // if (currentCopyright !== bgBingCopyright) setBgBingCopyright(currentCopyright);
 
                 setBgCenter(true);
                 setBgSize("cover");
@@ -156,7 +128,7 @@ export const useBgLogic = () => {
             }
         };
         void run();
-    }, [bgType, currentJpg, currentCopyright]);
+    }, [bgType, currentJpg]);
 
     /**
      * 应用背景
@@ -184,39 +156,30 @@ export const useBgLogic = () => {
     /**
      * UI pending（独立于 query）
      */
-    const nextCtrl = usePendingWithTimeout(2*60*1000);
-    const prevCtrl = usePendingWithTimeout(2*60*1000);
+    // const nextCtrl = usePendingWithTimeout(60*1000, 2000);
+    // const prevCtrl = usePendingWithTimeout(60*1000, 2000);
 
     /**
      * 用户操作
      */
-    const handlePrev = () => {
+    const handlePrev = async () => {
         if (bgType !== "bing") return;
-        prevCtrl.start();
-        // 让 UI 先响应（关键点）
-        setTimeout(() => {
-            setBgBingDate(preDate);
-        });
+        setBgBingDate(preDate);
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (bgType !== "bing") return;
-        nextCtrl.start();
-
-        setTimeout(() => {
-            setBgBingDate(nextDate);
-        });
+        setBgBingDate(nextDate);
     };
 
-    /**
-     * query 结束 → 终止 UI pending
-     */
-
-    useEffect(() => {
-        if (!currentPending || currentJpg) prevCtrl.stop();
-        if (!currentPending || currentJpg) nextCtrl.stop();
-    }, [currentPending, currentJpg]);
-
+    // /**
+    //  * query 结束 → 终止 UI pending
+    //  */
+    //
+    // useEffect(() => {
+    //     if (!isPending || currentJpg) prevCtrl.stop();
+    //     if (!isPending || currentJpg) nextCtrl.stop();
+    // }, [isPending, currentJpg]);
 
     /**
      * 文件夹轮播
@@ -344,26 +307,25 @@ export const useBgLogic = () => {
         bgCenter,
         bgSize,
         otherVisible,
-        // bgUiVisible,
 
         setBgType,
         setBgRepeat,
         setBgCenter,
         setBgSize,
         setOtherVisible,
-        // setBgUiVisible,
         setBgImg,
 
         carouselInterval, setCarouselInterval,
         carouselRandom, setCarouselRandom,
 
         bgBingCopyright,
+        bgBingDate,
 
         handleNext,
         handlePrev,
 
-        nextIsPending: nextCtrl.pending,
-        prevIsPending: prevCtrl.pending,
+        percent, isPending,
+        fixedPending,
         t,
     };
 }

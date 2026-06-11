@@ -1,6 +1,6 @@
 import * as v from "valibot";
 import {useEffect, useState} from "react";
-import {useFetchTrace} from "@/vol_apps/02_hooks/http/useFetchTrace";
+import {useFetchTrace} from "@/vol_apps/02_hooks/http/useFetchTrace.ts";
 
 export const SongDataSchema = v.object({
     id: v.union([v.number(), v.string()]),

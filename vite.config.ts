@@ -3,14 +3,19 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path, { resolve } from 'path'
 
-
 const toPosix = (id: string) => id.replace(/\\/g, '/')
 
 const isReact = (id: string) => {
     const p = toPosix(id);
     return (
         p.includes('react/') ||
-        p.includes('react-dom/') ||
+        p.includes('react-dom/')
+    );
+}
+
+const isPublic = (id: string) => {
+    const p = toPosix(id);
+    return (
         p.includes('scheduler') ||
         p.includes('idb-keyval') ||
         p.includes('valibot') ||
@@ -18,23 +23,25 @@ const isReact = (id: string) => {
     );
 }
 
-const isZustand = (id: string) => {
+const isStore = (id: string) => {
     const p = toPosix(id);
     return (
         p.includes('zustand') ||
         p.includes('src/vol_apps/tool/createPersistedStore.ts') ||
-        p.includes('src/vol_apps/tool/useStoreHydrated.ts')
+        p.includes('src/vol_apps/tool/useStoreHydrated.ts') ||
+        p.includes('src/vol_apps/04_persist_atoms/migration') ||
+        p.includes('src/vol_apps/04_persist_atoms/signal')
     );
 }
 
-const isMyStore = (id: string) => {
-    const p = toPosix(id)
-    return (
-        p.includes('src/vol_apps/04_persist_atoms/runMigration') ||
-        p.includes('src/vol_apps/04_persist_atoms/signal') ||
-        p.includes('src/vol_apps/04_persist_atoms')
-    )
-}
+// const isMyStore = (id: string) => {
+//     const p = toPosix(id)
+//     return (
+//         p.includes('src/vol_apps/04_persist_atoms/runMigration') ||
+//         p.includes('src/vol_apps/04_persist_atoms/signal') ||
+//         p.includes('src/vol_apps/04_persist_atoms')
+//     )
+// }
 
 const isVendor = (id: string) => {
     return id.includes('node_modules')
@@ -66,9 +73,9 @@ export default defineConfig({
             output: {
                 manualChunks(id: string) {
                     const p = toPosix(id)
-                    if (isReact(p)) return 'public'
-                    if (isZustand(p)) return 'zustand'
-                    if (isMyStore(p)) return 'signal'
+                    if (isReact(p)) return 'react'
+                    if (isPublic(p)) return 'public'
+                    if (isStore(p)) return 'store'
                     if (isVendor(p)) return 'vendor'
                     return undefined
                 }

@@ -7,7 +7,7 @@ import {Version} from "@/vol_apps/version/version";
 import {Cm} from "@/vol_apps/cm/cm";
 import {SearchBar} from "@/vol_apps/search/search";
 import {Menu} from "@/vol_apps/menu/menu_legacy";
-import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWallpaper";
+// import {BingWallpaperArchiveProvider} from "./vol_apps/tanStackQuery/Api_BingWallpaper";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {Language} from "@/vol_apps/language/language";
 import "@/vol_apps/04_persist_atoms/migration.ts";
@@ -31,8 +31,8 @@ export const App = () => {
             <SearchBar/>
             <Tile_app/>
             <DndFile/>
-            <BingWallpaperArchiveProvider>
-                <BgApp/>
-            </BingWallpaperArchiveProvider>
+            {/*<BingWallpaperArchiveProvider>*/}
+            <BgApp/>
+            {/*</BingWallpaperArchiveProvider>*/}
         </>);
 };

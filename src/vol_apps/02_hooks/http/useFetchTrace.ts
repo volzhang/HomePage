@@ -9,7 +9,7 @@ type HttpState =
     | "error"
     | "aborted";
 
-type FetchTrace = {
+export type FetchTrace = {
     state: HttpState;
     url: string | null;
     status: number | null;
@@ -19,11 +19,13 @@ type FetchTrace = {
     file: Blob | null;
     startedAt: number;
     endedAt: number | null;
+    error: Error | null;
 };
 
 export const useFetchTrace = (url: string | null) => {
     const abortRef = useRef<AbortController | null>(null);
     const lastSyncRef = useRef(0);
+    const requestIdRef = useRef(0);
 
     const [trace, setTrace] = useState<FetchTrace>({
         state: "idle",
@@ -35,14 +37,8 @@ export const useFetchTrace = (url: string | null) => {
         file: null,
         startedAt: 0,
         endedAt: null,
+        error: null
     });
-
-    const sync = (patch: Partial<FetchTrace>) => {
-        setTrace((prev) => ({
-            ...prev,
-            ...patch,
-        }));
-    };
 
     const start = useCallback(async () => {
         if (!url) return;
@@ -57,7 +53,18 @@ export const useFetchTrace = (url: string | null) => {
 
         let received = 0;
 
-        sync({
+        const requestId = ++requestIdRef.current;
+        const safeUpdate = (
+            patch: Partial<FetchTrace>
+        ) => {
+            if (requestId !== requestIdRef.current) return;
+            setTrace(prev => ({
+                ...prev,
+                ...patch,
+            }));
+        };
+
+        safeUpdate({
             state: "connecting",
             url,
             status: null,
@@ -67,6 +74,7 @@ export const useFetchTrace = (url: string | null) => {
             file: null,
             startedAt,
             endedAt: null,
+            error: null,
         });
 
         try {
@@ -74,12 +82,22 @@ export const useFetchTrace = (url: string | null) => {
                 signal: controller.signal,
             });
 
+            if (!res.ok) {
+                safeUpdate({
+                    state: "error",
+                    status: res.status,
+                    error: new Error(`HTTP ${res.status}: ${res.statusText}`),
+                    endedAt: Date.now(),
+                });
+                return;
+            }
+
             const headersObj: Record<string, string> = {};
             res.headers.forEach((v, k) => {
                 headersObj[k] = v;
             });
 
-            sync({
+            safeUpdate({
                 state: "headers",
                 status: res.status,
                 headers: headersObj,
@@ -92,7 +110,7 @@ export const useFetchTrace = (url: string | null) => {
 
             // 没有响应体，直接完成
             if (!reader) {
-                sync({
+                safeUpdate({
                     state: "done",
                     received: 0,
                     total,
@@ -103,7 +121,7 @@ export const useFetchTrace = (url: string | null) => {
             }
 
             // 有 body 才进入 loading 状态
-            sync({state: "loading", total});
+            safeUpdate({state: "loading", total});
 
             const chunks: BlobPart[] = [];
             while (true) {
@@ -118,25 +136,29 @@ export const useFetchTrace = (url: string | null) => {
                 const now = Date.now();
                 if (now - lastSyncRef.current > 250) {
                     lastSyncRef.current = now;
-                    sync({received});
+                    safeUpdate({received});
                 }
             }
 
             const file = new Blob(chunks);
 
-            sync({
+            safeUpdate({
                 state: "done",
                 received,
                 file,
+                total,
                 endedAt: Date.now(),
             });
         } catch (e: any) {
-            sync({
+            safeUpdate({
                 state: e?.name === "AbortError" ? "aborted" : "error",
+                error: e instanceof Error ? e : new Error(String(e)),
                 endedAt: Date.now(),
             });
         } finally {
-            abortRef.current = null;
+            if (abortRef.current === controller) {
+                abortRef.current = null;
+            }
         }
     }, [url]);
 

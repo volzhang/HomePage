@@ -64,15 +64,15 @@ const computeTagItemStyle = (
 export const useTagItemStyleFromAtom = (checked: boolean) => {
     const {theme} = useSignal(...themeConfig("theme"))
 
-    const { textColor } = useSignal(...tagStyleConfig("textColor"));
-    const { textOpacity } = useSignal(...tagStyleConfig("textOpacity"));
-    const { backgroundColor } = useSignal(...tagStyleConfig("backgroundColor"));
-    const { backgroundOpacity } = useSignal(...tagStyleConfig("backgroundOpacity"));
-    const { fontSize } = useSignal(...tagStyleConfig("fontSize"));
-    const { fontWeight } = useSignal(...tagStyleConfig("fontWeight"));
-    const { font } = useSignal(...tagStyleConfig("font"));
-    const { textPadding } = useSignal(...tagStyleConfig("textPadding"));
-    const { radius } = useSignal(...tagStyleConfig("radius"));
+    const { textColor } = useSignal(tagStyleConfig("textColor"));
+    const { textOpacity } = useSignal(tagStyleConfig("textOpacity"));
+    const { backgroundColor } = useSignal(tagStyleConfig("backgroundColor"));
+    const { backgroundOpacity } = useSignal(tagStyleConfig("backgroundOpacity"));
+    const { fontSize } = useSignal(tagStyleConfig("fontSize"));
+    const { fontWeight } = useSignal(tagStyleConfig("fontWeight"));
+    const { font } = useSignal(tagStyleConfig("font"));
+    const { textPadding } = useSignal(tagStyleConfig("textPadding"));
+    const { radius } = useSignal(tagStyleConfig("radius"));
 
     return computeTagItemStyle(
         checked,

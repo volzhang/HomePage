@@ -1,6 +1,6 @@
 import {createPersistedStore, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 import img from "@/assets/bg-dark.png?inline";
-import type {YYYY_MM_DD} from "@/vol_apps/tanStackQuery/Api_BingWallpaper";
+import type {YYYY_MM_DD} from "@/vol_apps/bg/bg_api.tsx";
 
 export {img}
 
@@ -50,7 +50,7 @@ type BgStoreActions = {
 type BgStore = BgStoreState & BgStoreActions;
 
 const INITIAL_STATE = {
-    bgType: "default",          //可以保留
+    bgType: "bing",          //可以保留
     bgImg: img,                 //核心
     bgBingCopyright: "",        //可以保留
     bgSize: "auto",

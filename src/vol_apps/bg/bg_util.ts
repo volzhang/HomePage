@@ -23,45 +23,52 @@ export const bgInitState = {
 // }
 
 export const initBgLayer = async () => {
-    layerA = document.createElement("div");
-    layerB = document.createElement("div");
-
-    layerA.id = "bg-layer-a";
-    layerB.id = "bg-layer-b";
-
-    const data = await get("bg", createStore("localforage","keyvaluepairs"))
+    // 1. 从 IndexedDB 恢复上次的状态
+    const data = await get("bg", createStore("localforage", "keyvaluepairs"));
     if (data !== undefined) {
-        const date = JSON.parse(data)
-        const state = date.state
+        const date = JSON.parse(data);
+        const state = date.state;
         if (state !== undefined) {
-            bgInitState.bgImg = state?.bgImg
-            bgInitState.bgSize = state?.bgSize
-            bgInitState.bgRepeat = state?.bgRepeat
-            bgInitState.bgCenter = state?.bgCenter
+            bgInitState.bgImg = state?.bgImg;
+            bgInitState.bgSize = state?.bgSize;
+            bgInitState.bgRepeat = state?.bgRepeat;
+            bgInitState.bgCenter = state?.bgCenter;
         }
     }
 
+    // 2. 预加载背景图，确保整张图解码完成
+    await new Promise<void>((resolve) => {
+        const preloadImg = new Image();
+        preloadImg.onload = () => resolve();
+        preloadImg.onerror = () => {
+            resolve(); // 不阻塞初始化
+        };
+        preloadImg.src = bgInitState.bgImg;
+    });
+
+    // 3. 图片完全就绪，创建图层并插入 DOM
+    layerA = document.createElement("div");
+    layerB = document.createElement("div");
+    layerA.id = "bg-layer-a";
+    layerB.id = "bg-layer-b";
+
     const baseStyle = `
-		position: fixed;
-		inset: 0;
-
-        background-image: url(${bgInitState.bgImg});
-        background-size: ${bgInitState.bgSize};
-        background-position: ${bgInitState.bgCenter ? "center" : "top left"};
-        background-repeat: ${bgInitState.bgRepeat ? "repeat" : "no-repeat"};
-
-		transition: opacity 1s;
-		will-change: opacity;
-		z-index: -999;
-		pointer-events: none;
-	`;
-
+    position: fixed;
+    inset: 0;
+    background-image: url(${bgInitState.bgImg});
+    background-size: ${bgInitState.bgSize};
+    background-position: ${bgInitState.bgCenter ? "center" : "top left"};
+    background-repeat: ${bgInitState.bgRepeat ? "repeat" : "no-repeat"};
+    transition: opacity 1s;
+    will-change: opacity;
+    z-index: -999;
+    pointer-events: none;
+  `;
     layerA.style.cssText = baseStyle + "opacity:1;";
     layerB.style.cssText = baseStyle + "opacity:0;";
     document.body.appendChild(layerB);
     document.body.appendChild(layerA);
-
-}
+};
 
 export const setBackground = async (
     base64: string,
