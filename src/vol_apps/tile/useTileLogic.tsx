@@ -6,7 +6,8 @@ import {enhanceUrl, extractMainDomain} from "@/vol_apps/tool/action/enhanceUrl";
 import {openLinkInCurrentTab, openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {isSortable} from "@dnd-kit/react/sortable";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
-import {useFetchFavicon} from "@/vol_apps/tile/favicon_vemetric/useFaviconVemetric.ts";
+import {apiFaviconVemetric} from "@/vol_apps/tool/api/apiFaviconVemetric.ts";
+// import {useFetchFavicon} from "@/vol_apps/tile/favicon_vemetric/useFaviconVemetric.ts";
 import {useFixedPending} from "@/vol_apps/02_hooks/usePending.ts";
 
 export type TileLogic = ReturnType<typeof useTileLogic>;
@@ -102,30 +103,40 @@ export const useTileLogic = () => {
         });
     };
 
-    const try_handle_icon = async (v: string) => {
-        if (icon === defaultIconBase64) void handleAutoFetchIcon(v)
-    }
+    // const try_handle_icon = async (v: string) => {
+    //     if (icon === defaultIconBase64) void handleAutoFetchIcon(v)
+    // }
 
     // Auto-Fetch Icon
-    const [domain, setDomain] = useState<string>("");
-    const {isPending, currentJpg, succeed, percent, restart} = useFetchFavicon({
-        domain:domain,
-        size:96,
-        autoStart: true
-    })
+    const [isFetchingIcon, setIsFetchingIcon] = useState(false);
+    // const [percent, setPercent] = useState(0);
 
-    const fixedIsPendingIcon = useFixedPending(10*1000, 1000, isPending)
+    // 包装：最小保持 1 秒，最大 5 秒
+    const fixedIsPendingIcon = useFixedPending(10 * 1000, 1000, isFetchingIcon);
 
-    useEffect(() => {
-        if (succeed && currentJpg && !isPending) {
-            updateTile(tileInEditId, { meta: { icon: currentJpg } });
+    const handleAutoFetchIcon = async (domainInput: string) => {
+        const cleanDomain = domainInput.replace(/\/$/, "");
+        if (!cleanDomain) return;
+        setIsFetchingIcon(true);
+        // setPercent(0);
+        try {
+            const result = await apiFaviconVemetric(cleanDomain, 128);
+            if (result) {
+                updateTile(tileInEditId, { meta: { icon: result } });
+                // setPercent(100);
+            } else {
+                // setPercent(0);
+            }
+        } catch {
+            // setPercent(0);
+        } finally {
+            setIsFetchingIcon(false);
         }
-    }, [succeed, currentJpg, isPending]);
+    };
 
-    const handleAutoFetchIcon = async (v: string) => {
-        // setDomain("");
-        setDomain(v.replace(/\/$/, ""));
-        restart()
+    // 注意：try_handle_icon 保持不变，调用 handleAutoFetchIcon
+    const try_handle_icon = async (v: string) => {
+        if (icon === defaultIconBase64) void handleAutoFetchIcon(v);
     };
 
     // TAG
@@ -238,7 +249,7 @@ export const useTileLogic = () => {
 
         isFetchingIcon: fixedIsPendingIcon,
         buildLink,
-        percent,
+        // percent,
         handleAutoFetchIcon,
         handleSearchIcon,
 

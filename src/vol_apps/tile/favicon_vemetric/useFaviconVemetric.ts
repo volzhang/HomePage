@@ -4,7 +4,7 @@ import {blobToString} from "@/vol_apps/tool/a2b/blobToString.ts";
 
 export const useFetchFavicon = ({
                                     domain,
-                                    size = 96,
+                                    size = 128,
                                     autoStart = false,
 }:{
     domain: string,

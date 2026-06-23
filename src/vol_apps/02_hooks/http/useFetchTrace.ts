@@ -1,5 +1,7 @@
 import {useCallback, useRef, useState} from "react";
 
+const STREAM_THRESHOLD_BYTES = 1024*1024
+
 type HttpState =
     | "idle"
     | "connecting"
@@ -105,6 +107,26 @@ export const useFetchTrace = (url: string | null) => {
 
             const totalHeader = res.headers.get("content-length");
             const total = totalHeader ? Number(totalHeader) : null;
+
+
+            // ---- 策略分流：小文件快速通道 ----
+            if (total !== null && total < STREAM_THRESHOLD_BYTES) {
+                const blob = await res.blob();
+                // 弥补 res.blob() 无法被 AbortController 中断的缺陷
+                if (controller.signal.aborted) {
+                    throw new DOMException('Aborted', 'AbortError');
+                }
+                safeUpdate({
+                    state: "done",
+                    received: blob.size,
+                    total: blob.size,
+                    file: blob,
+                    endedAt: Date.now(),
+                    error: null,
+                });
+                return; // 提前结束，不碰下面的流式代码
+            }
+// ----------------------------------------
 
             const reader = res.body?.getReader();
 
