@@ -50,7 +50,7 @@ type BgStoreActions = {
 type BgStore = BgStoreState & BgStoreActions;
 
 const INITIAL_STATE = {
-    bgType: "bing",          //可以保留
+    bgType: "default",          //可以保留
     bgImg: img,                 //核心
     bgBingCopyright: "",        //可以保留
     bgSize: "auto",

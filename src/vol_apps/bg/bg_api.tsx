@@ -133,7 +133,7 @@ export const useFetchWallpaper = (props: {
             jsonState === 'error' ||
             jsonState === 'aborted'
         ) {
-            console.log(jpgStatus, jsonStatus, succeed)
+            // console.log(jpgStatus, jsonStatus, succeed)
             setIsPending(false);
             setSucceed(false);
             return;

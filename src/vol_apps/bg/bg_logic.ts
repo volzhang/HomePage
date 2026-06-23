@@ -50,7 +50,7 @@ export const useBgLogic = () => {
     const {language} = useSignal(languageConfig("language"))
 
     // 日期
-    const yesterday = getDateWithOffset(undefined, -1)
+    const yesterday = getDateWithOffset(undefined, -2)
     const date = useMemo(() => bgBingDate ?? yesterday, [bgBingDate]);
     const preDate = useMemo(() => getDateWithOffset(date, -1), [date]);
     const nextDate = useMemo(() => getDateWithOffset(date, +1), [date]);

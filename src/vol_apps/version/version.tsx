@@ -8,7 +8,7 @@ export const Version = () => {
 	return (
 		<Button variant={"outline"}
 				onClick={() => openLinkInNewTab("https://github.com/volzhang/HomePage")}
-				className={"animate-fade-in-scale w-fit select-none"}>
+				className={"opacity-0 hover:opacity-100 w-fit select-none "}>
 			{t("Version")}：{VERSION}
 		</Button>
 	);
