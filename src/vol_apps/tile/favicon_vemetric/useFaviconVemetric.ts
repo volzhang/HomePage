@@ -11,9 +11,16 @@ export const useFetchFavicon = ({
     size: number,
     autoStart: boolean
 }) => {
-    const url = domain
-        ? `https://favicon.vemetric.com/${encodeURIComponent(domain)}?size=${size}`
+
+    const hostname = domain
+        ? new URL(domain).hostname
+        : null
+
+    const url = hostname
+        ? `https://favicon.vemetric.com/${hostname}?size=${size}`
         : null;
+
+    console.log(url)
 
     const {trace, start, cancel} = useFetchTrace(url);
 
@@ -59,6 +66,7 @@ export const useFetchFavicon = ({
                 blobToString(file)
                     .then((base64) => {
                         setCurrentJpg(base64);
+                        console.log(base64);
                         setIsPending(false);
                         setSucceed(true);
                     })

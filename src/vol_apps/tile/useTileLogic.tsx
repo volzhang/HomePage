@@ -123,7 +123,7 @@ export const useTileLogic = () => {
     }, [succeed, currentJpg, isPending]);
 
     const handleAutoFetchIcon = async (v: string) => {
-        setDomain("");
+        // setDomain("");
         setDomain(v.replace(/\/$/, ""));
         restart()
     };
