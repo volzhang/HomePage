@@ -1,7 +1,7 @@
 import {type Language} from "@/vol_apps/language/useLanguage.ts";
 import {useEffect, useState} from "react";
-import {useFetchTrace} from "@/vol_apps/02_hooks/http/useFetchTrace.ts";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString.ts";
+import {useFetchTraceV2} from "@/vol_apps/02_hooks/http/useFetchTraceV2.ts";
 
 type YYYY = "2024" | "2025" | "2026";
 type MM = `0${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}` | `1${0 | 1 | 2}`;
@@ -76,18 +76,19 @@ export const useFetchWallpaper = (props: {
     autoStart?: boolean;
 }) => {
     const urls = buildEndpoint(props);
-    const jsonTrace = useFetchTrace(urls.json);
-    const jpgTrace = useFetchTrace(urls.jpg);
+
+    const jsonTrace = useFetchTraceV2(urls.json);
+    const jpgTrace = useFetchTraceV2(urls.jpg);
 
     // 获取数据的内部函数（依赖最新的 trace）
     const getJpgBase64 = async () => {
-        if (!jpgTrace.trace.file) return null;
-        return await blobToString(jpgTrace.trace.file);
+        if (!jpgTrace.trace.bodyBlob) return null;
+        return await blobToString(jpgTrace.trace.bodyBlob);
     };
 
     const getJson = async () => {
-        if (!jsonTrace.trace.file) return null;
-        const text = await jsonTrace.trace.file.text();
+        if (!jsonTrace.trace.bodyBlob) return null;
+        const text = await jsonTrace.trace.bodyBlob.text();
         return JSON.parse(text);
     };
 
@@ -97,55 +98,51 @@ export const useFetchWallpaper = (props: {
     const [isPending, setIsPending] = useState(false);
     const [succeed, setSucceed] = useState(false);
 
-    // 请求控制
+    // 自动启动逻辑
     useEffect(() => {
         if (!props.autoStart) return;
 
         setIsPending(true);
         void jsonTrace.start();
         void jpgTrace.start();
+
         return () => {
             setIsPending(false);
-            jsonTrace.cancel();
-            jpgTrace.cancel();
+            // jsonTrace.cancel();
+            // jpgTrace.cancel();
         };
-    }, [props.language, props.date]);
+    }, [props.language, props.date, jsonTrace.start, jpgTrace.start, props.autoStart]);
 
-    // 监听两个 trace 的完成状态
+    // console.log('jpgTotal:', jpgTrace.trace.contentLength);
+    // console.log('jsonReceived:', jsonTrace.trace.received);
+    // console.log('jpgReceived:', jpgTrace.trace.received);
 
-    // const jsonTot = jsonTrace.trace.total;
-    const jpgTot = jpgTrace.trace.total ;
-    const rev = jsonTrace.trace.received + jpgTrace.trace.received;
-    const percent = jpgTot !== null
-            ? (rev / (jsonTrace.trace.received + jpgTot)) * 100
-            : 0;
+    // 进度计算（
+    const jpgTotal = jpgTrace.trace.contentLength;
+    const jsonReceived = jsonTrace.trace.received;
+    const jpgReceived = jpgTrace.trace.received;
+    const rev = jsonReceived + jpgReceived;
+    const percent = jpgTotal !== null
+        ? (rev / (jsonReceived + jpgTotal)) * 100
+        : 0;
 
-    const jpgState = jpgTrace.trace.state;
-    const jsonState = jsonTrace.trace.state;
-    const jpgStatus = jpgTrace.trace.status;
-    const jsonStatus = jsonTrace.trace.status;
-
+    // 统一的状态监听
     useEffect(() => {
+        const jsonDone = jsonTrace.trace.state === "idle" && jsonTrace.trace.error === null && jsonTrace.trace.bodyBlob !== null;
+        const jpgDone = jpgTrace.trace.state === "idle" && jpgTrace.trace.error === null && jpgTrace.trace.bodyBlob !== null;
 
-        if (
-            jpgState === 'error' ||
-            jpgState === 'aborted' ||
-            jsonState === 'error' ||
-            jsonState === 'aborted'
-        ) {
-            // console.log(jpgStatus, jsonStatus, succeed)
+        const jsonError = jsonTrace.trace.error && jsonTrace.trace.error.name !== "AbortError";
+        const jpgError = jpgTrace.trace.error && jpgTrace.trace.error.name !== "AbortError";
+
+        // 处理错误（任一发生错误即失败）
+        if (jsonError || jpgError) {
             setIsPending(false);
             setSucceed(false);
             return;
         }
 
-        if (
-            jpgState === 'done'
-            && jsonState === 'done'
-            && jpgStatus === 200
-            && jsonStatus === 200
-        ) {
-            // 成功获取数据后，替换旧数据
+        // 处理成功（两者都完成且无错误）
+        if (jsonDone && jpgDone) {
             Promise.all([getJpgBase64(), getJson()])
                 .then(([jpgBase64, jsonData]) => {
                     if (jpgBase64) setCurrentJpg(jpgBase64);
@@ -158,7 +155,14 @@ export const useFetchWallpaper = (props: {
                     setSucceed(false);
                 });
         }
-    }, [jpgTrace.trace.state, jsonTrace.trace.state, jpgTrace.trace.status, jsonTrace.trace.status]);
+    }, [
+        jsonTrace.trace.state,
+        jsonTrace.trace.error,
+        jsonTrace.trace.bodyBlob,
+        jpgTrace.trace.state,
+        jpgTrace.trace.error,
+        jpgTrace.trace.bodyBlob,
+    ]);
 
     return {
         // 主要数据

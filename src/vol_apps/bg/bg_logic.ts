@@ -58,20 +58,48 @@ export const useBgLogic = () => {
     // 需求：
     // 1，首次启动，如果bgBingDate为null，useFetchWallpaper autoStart 为true
     // 2，首次启动后，bgBingDate 变化一次后，useFetchWallpaper autoStart 为true
-    // 3，其他时候，首次启动后，useFetchWallpaper autoStart 为 false，避免无意义fetch
+    // 3，首次启动后，bgType切换为"bing"， useFetchWallpaper autoStart 为true
+    // 4，其他时候，首次启动后，useFetchWallpaper autoStart 为 false，避免无意义fetch
 
-    const snapshotRef = useRef(bgBingDate)
+    const bgBingDateSnapshotRef = useRef(bgBingDate)
+    const bgTypeSnapshotRef = useRef(bgType)
+
     const startRef = useRef(false)
 
     useEffect(() => {
-        if (!startRef.current) startRef.current = true
+        if (startRef.current) {
+            return
+        }
+
+        if (bgBingDateSnapshotRef.current !== null
+            && bgBingDate !== bgBingDateSnapshotRef.current) {
+            startRef.current = true
+        }
+
     }, [bgBingDate]);
+
+    useEffect(()=>{
+        if (startRef.current) {
+            return
+        }
+
+        if (bgTypeSnapshotRef.current !== "bing" && bgType === "bing") {
+            startRef.current = true
+        }
+
+    }, [bgType])
+
+    const autoStart = startRef.current || bgBingDate === null || bgBingDateSnapshotRef.current !== bgBingDate
 
     const { currentJpg, currentJson, isPending, succeed, percent} = useFetchWallpaper({
         language,
         date,
-        autoStart: startRef.current || bgBingDate === null || snapshotRef.current !== bgBingDate
+        autoStart,
     });
+
+    // useEffect(() => {
+    //     // console.log(autoStart, percent, "%")
+    // }, [percent]);
 
     const currentItem = useMemo(() => {
         if (!Array.isArray(currentJson)) return null;
