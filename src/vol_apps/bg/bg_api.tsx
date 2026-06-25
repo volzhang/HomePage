@@ -145,10 +145,18 @@ export const useFetchWallpaper = (props: {
         if (jsonDone && jpgDone) {
             Promise.all([getJpgBase64(), getJson()])
                 .then(([jpgBase64, jsonData]) => {
-                    if (jpgBase64) setCurrentJpg(jpgBase64);
-                    if (jsonData) setCurrentJson(jsonData);
-                    setIsPending(false);
-                    setSucceed(true);
+                    if (jpgBase64 && jsonData) {
+                        console.log(jpgBase64);
+                        console.log(jsonData);
+                        setCurrentJpg(jpgBase64);
+                        setCurrentJson(jsonData);
+                        setIsPending(false);
+                        setSucceed(true);
+                    } else {
+                        // 任一数据缺失，视为失败
+                        setIsPending(false);
+                        setSucceed(false);
+                    }
                 })
                 .catch(() => {
                     setIsPending(false);

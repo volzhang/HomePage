@@ -64,42 +64,26 @@ export const useBgLogic = () => {
     const bgBingDateSnapshotRef = useRef(bgBingDate)
     const bgTypeSnapshotRef = useRef(bgType)
 
-    const startRef = useRef(false)
+    //1
+    const [autoStart, setAutoStart] = useState(() => bgBingDate === null);
 
+    //2
     useEffect(() => {
-        if (startRef.current) {
-            return
-        }
-
-        if (bgBingDateSnapshotRef.current !== null
-            && bgBingDate !== bgBingDateSnapshotRef.current) {
-            startRef.current = true
-        }
-
+        if (autoStart) return
+        if (bgBingDateSnapshotRef.current !== null && bgBingDate !== bgBingDateSnapshotRef.current)
+            setAutoStart(true)
     }, [bgBingDate]);
 
-    useEffect(()=>{
-        if (startRef.current) {
-            return
-        }
-
-        if (bgTypeSnapshotRef.current !== "bing" && bgType === "bing") {
-            startRef.current = true
-        }
-
+    //3
+    useEffect(() => {
+        if (autoStart) return
+        if (bgTypeSnapshotRef.current !== "bing" && bgType === "bing")
+            setAutoStart(true)
     }, [bgType])
 
-    const autoStart = startRef.current || bgBingDate === null || bgBingDateSnapshotRef.current !== bgBingDate
-
-    const { currentJpg, currentJson, isPending, succeed, percent} = useFetchWallpaper({
-        language,
-        date,
-        autoStart,
+    const {currentJpg, currentJson, isPending, succeed, percent} = useFetchWallpaper({
+        language, date, autoStart
     });
-
-    // useEffect(() => {
-    //     // console.log(autoStart, percent, "%")
-    // }, [percent]);
 
     const currentItem = useMemo(() => {
         if (!Array.isArray(currentJson)) return null;
@@ -115,7 +99,7 @@ export const useBgLogic = () => {
         }
     }, [isPending, currentJpg, currentItem, bgBingCopyright, succeed]);
 
-    const fixedPending = useFixedPending(1000*60, 1000*2, isPending);
+    const fixedPending = useFixedPending(1000 * 60, 1000 * 2, isPending);
 
     //////////////////
 
@@ -170,6 +154,7 @@ export const useBgLogic = () => {
         if (deepEqual(prev, {bgImg, bgSize, bgRepeat, bgCenter})) return
 
         void setBackground(bgImg, bgSize, bgRepeat, bgCenter);
+
         prevParams.current = {bgImg, bgSize, bgRepeat, bgCenter};
     }, [bgImg, bgSize, bgRepeat, bgCenter, hydrated]);
 
@@ -220,7 +205,7 @@ export const useBgLogic = () => {
         setBgImg(i)
     }, [])
 
-    const {setDirHandle, handleNext:handleNextImage} = useFileCarousel({
+    const {setDirHandle, handleNext: handleNextImage} = useFileCarousel({
         open: carouselEnabled,
         handle: handleFile,
         interval: carouselInterval * 1000, //秒转毫秒
@@ -244,7 +229,7 @@ export const useBgLogic = () => {
 
     //只在两个位置触发：root空白 + 瓷砖墙间隙
     useDoubleClick({
-        open:carouselEnabled,
+        open: carouselEnabled,
         handle: handleNextImg,
         containerSelector: ["#root", "#tiles_beside", 'body', 'html'],
     })
@@ -268,7 +253,7 @@ export const useBgLogic = () => {
     useEffect(() => {
         if (hasUserInteracted && pendingRestore) {
             // @ts-ignore
-            pendingRestore.requestPermission({ mode: "read" }).then((permission) => {
+            pendingRestore.requestPermission({mode: "read"}).then((permission) => {
                 if (permission === "granted") {
                     setDirHandle(pendingRestore);
                     // toast.success(t("Folder permission restored."));
@@ -298,7 +283,7 @@ export const useBgLogic = () => {
 
         try {
             // @ts-ignore
-            const permissionState = await storedHandle.queryPermission({ mode: "read" });
+            const permissionState = await storedHandle.queryPermission({mode: "read"});
             if (permissionState === "granted") setDirHandle(storedHandle);
             else if (permissionState === "prompt") setPendingRestore(storedHandle);
             else {
