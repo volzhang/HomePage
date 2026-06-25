@@ -14,25 +14,26 @@ import {useCallback, useRef, useState} from "react";
 // 2.使用idbkeyvalue保存，（response元数据和 res.body文件数据，只做备份，不做引用）
 
 type FetchTrace = {
-    state: "idle" | "pending";
+    state: "idle" | "pending" | "success" | "error";
     bodyBlob: Blob | null;
     received: number;
     contentLength: number | null;
+    progress: number;
     error: Error | null;
 };
 
 const STREAM_THRESHOLD_BYTES = 1024 * 1024;
-const UPDATE_RECEIVED_DURATION = 500
+const UPDATE_RECEIVED_DURATION = 333
 const INIT_TRACE: FetchTrace = {
     state: "idle",
     bodyBlob: null,
     received: 0,
     contentLength: null,
+    progress: 0,
     error: null,
 }
 
 export const useFetchTraceV2 = (url: string | null) => {
-        const lastSyncRef = useRef(0);
         // 锁
         const isFetchingRef = useRef(false);
         // 取消进程
@@ -56,9 +57,10 @@ export const useFetchTraceV2 = (url: string | null) => {
             abortControllerRef.current = controller;
             isFetchingRef.current = true;
 
-            // init
+            // init/reset
             let received: number = 0;
-            lastSyncRef.current = 0;
+            let lastSync: number = 0;
+
             updateTrace({...INIT_TRACE, state: "pending"});
 
             try {
@@ -75,7 +77,7 @@ export const useFetchTraceV2 = (url: string | null) => {
                 if (!res.ok) {
                     const error = new Error(`ResolvedError ${res.status}: ${res.statusText}`);
                     error.name = "ResolvedError";
-                    updateTrace({...INIT_TRACE, state: "idle", error});
+                    updateTrace({...INIT_TRACE, state: "error", error});
                     return;
                 }
 
@@ -90,12 +92,19 @@ export const useFetchTraceV2 = (url: string | null) => {
                 if (res.body) {
 
                     // 小文件分支：直接读取
-                    if (contentLength !== null && contentLength < STREAM_THRESHOLD_BYTES) {
+                    // 通常小文件的 totalHeader === null
+                    if ((contentLength !== null && contentLength < STREAM_THRESHOLD_BYTES)
+                        || (contentLength === null)) {
                         const bodyBlob = await res.blob();
                         if (controller.signal.aborted) return;
 
                         received = bodyBlob.size;
-                        updateTrace({state: "idle", bodyBlob, contentLength, received, error: null});
+                        updateTrace({
+                            state: "success",
+                            bodyBlob, contentLength, received,
+                            progress: 100,
+                            error: null
+                        });
                         return
                     }
 
@@ -112,34 +121,45 @@ export const useFetchTraceV2 = (url: string | null) => {
                             received += value.length;
                         }
 
-                        // update received per 500ms
+                        // update received per UPDATE_RECEIVED_DURATION
                         const now = Date.now();
-                        if (now - lastSyncRef.current > UPDATE_RECEIVED_DURATION) {
-                            lastSyncRef.current = now;
-                            // console.log(received)
-                            updateTrace({received});
+                        if (now - lastSync > UPDATE_RECEIVED_DURATION) {
+                            lastSync = now;
+                            const progress = contentLength ? Math.min((received / contentLength) * 100, 100) : 0;
+                            updateTrace({received, progress});
                         }
                     }
 
                     const bodyBlob = new Blob(chunks);
                     if (controller.signal.aborted) return;
 
-                    updateTrace({state: "idle", bodyBlob, contentLength, received: bodyBlob.size, error: null});
+                    updateTrace({
+                        state: "success",
+                        bodyBlob, contentLength,
+                        received: bodyBlob.size,
+                        progress: 100,
+                        error: null
+                    });
+
                 } else {
-                    updateTrace({state: "idle", bodyBlob: null, contentLength, received: 0, error: null});
+                    updateTrace({
+                        state: "success",
+                        bodyBlob: null, contentLength, received: 0, progress: 100,
+                        error: null
+                    });
                 }
             } catch (e: any) {
 
-                // AbortError
+                // cancel
                 if (e?.name === "AbortError") {
-                    updateTrace({...INIT_TRACE, error: e});
+                    updateTrace({ ...INIT_TRACE, state: "idle" });
                     return;
                 }
 
                 // NetworkError
                 const error = new Error(e?.message || String(e));
                 error.name = e?.name || "Error";
-                updateTrace({...INIT_TRACE, error});
+                updateTrace({...INIT_TRACE, state: "error", error});
 
             } finally {
                 isFetchingRef.current = false;

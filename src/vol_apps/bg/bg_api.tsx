@@ -70,6 +70,17 @@ const buildEndpoint = ({
     };
 }
 
+/**
+ * 计算多个任务的整体进度（等权重平均）
+ * @param progresses 每个任务的进度（0~100）
+ * @returns 整体进度百分比（0~100）
+ */
+function calculateOverallProgress(progresses: number[]): number {
+    if (progresses.length === 0) return 0;
+    const sum = progresses.reduce((a, b) => a + b, 0);
+    return Math.min(sum / progresses.length, 100);
+}
+
 export const useFetchWallpaper = (props: {
     language: Language;
     date?: YYYY_MM_DD;
@@ -108,31 +119,26 @@ export const useFetchWallpaper = (props: {
 
         return () => {
             setIsPending(false);
-            // jsonTrace.cancel();
-            // jpgTrace.cancel();
+            jsonTrace.cancel();
+            jpgTrace.cancel();
         };
     }, [props.language, props.date, jsonTrace.start, jpgTrace.start, props.autoStart]);
 
-    // console.log('jpgTotal:', jpgTrace.trace.contentLength);
-    // console.log('jsonReceived:', jsonTrace.trace.received);
-    // console.log('jpgReceived:', jpgTrace.trace.received);
-
     // 进度计算（
-    const jpgTotal = jpgTrace.trace.contentLength;
-    const jsonReceived = jsonTrace.trace.received;
-    const jpgReceived = jpgTrace.trace.received;
-    const rev = jsonReceived + jpgReceived;
-    const percent = jpgTotal !== null
-        ? (rev / (jsonReceived + jpgTotal)) * 100
-        : 0;
+    const percent = calculateOverallProgress([
+        jsonTrace.trace.progress,
+        jpgTrace.trace.progress,
+    ]);
+
+    // const smoothPercent = useSmoothNumber(percent, 250, 125);
 
     // 统一的状态监听
     useEffect(() => {
-        const jsonDone = jsonTrace.trace.state === "idle" && jsonTrace.trace.error === null && jsonTrace.trace.bodyBlob !== null;
-        const jpgDone = jpgTrace.trace.state === "idle" && jpgTrace.trace.error === null && jpgTrace.trace.bodyBlob !== null;
+        const jsonDone = jsonTrace.trace.state === "success" && jsonTrace.trace.bodyBlob
+        const jpgDone = jpgTrace.trace.state === "success" && jpgTrace.trace.bodyBlob
 
-        const jsonError = jsonTrace.trace.error && jsonTrace.trace.error.name !== "AbortError";
-        const jpgError = jpgTrace.trace.error && jpgTrace.trace.error.name !== "AbortError";
+        const jsonError = jsonTrace.trace.error
+        const jpgError = jpgTrace.trace.error
 
         // 处理错误（任一发生错误即失败）
         if (jsonError || jpgError) {
@@ -146,8 +152,6 @@ export const useFetchWallpaper = (props: {
             Promise.all([getJpgBase64(), getJson()])
                 .then(([jpgBase64, jsonData]) => {
                     if (jpgBase64 && jsonData) {
-                        console.log(jpgBase64);
-                        console.log(jsonData);
                         setCurrentJpg(jpgBase64);
                         setCurrentJson(jsonData);
                         setIsPending(false);
@@ -173,11 +177,10 @@ export const useFetchWallpaper = (props: {
     ]);
 
     return {
-        // 主要数据
         currentJpg,
         currentJson,
         isPending,
         succeed,
-        percent,
+        percent
     };
 };
