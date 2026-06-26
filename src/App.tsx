@@ -11,6 +11,7 @@ import {Menu} from "@/vol_apps/menu/menu_legacy";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {Language} from "@/vol_apps/language/language";
 import "@/vol_apps/04_persist_atoms/migration.ts";
+import {Backup} from "@/vol_apps/backupDirectory/backup.tsx";
 // import {useLogDoubleClickPath} from "@/vol_apps/02_hooks/useLogDoubleClickPath";
 
 export const App = () => {
@@ -24,6 +25,7 @@ export const App = () => {
                 <Language/>
                 <Theme/>
                 <CmOpen/>
+                <Backup/>
             </div>
             <div className={"fixed top-2 right-2"}>
                 <Version/>
@@ -31,8 +33,6 @@ export const App = () => {
             <SearchBar/>
             <Tile_app/>
             <DndFile/>
-            {/*<BingWallpaperArchiveProvider>*/}
             <BgApp/>
-            {/*</BingWallpaperArchiveProvider>*/}
         </>);
 };

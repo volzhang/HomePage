@@ -185,15 +185,6 @@ export const useBgLogic = () => {
         setBgBingDate(nextDate);
     };
 
-    // /**
-    //  * query 结束 → 终止 UI pending
-    //  */
-    //
-    // useEffect(() => {
-    //     if (!isPending || currentJpg) prevCtrl.stop();
-    //     if (!isPending || currentJpg) nextCtrl.stop();
-    // }, [isPending, currentJpg]);
-
     /**
      * 文件夹轮播
      */

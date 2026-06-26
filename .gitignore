@@ -11,7 +11,7 @@ node_modules
 dist-ssr
 *.local
 
-# Editor directories and files
+# Editor directories and backupDirectory
 .vscode/*
 !.vscode/extensions.json
 .idea

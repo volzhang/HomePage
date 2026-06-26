@@ -116,7 +116,7 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
  * - 版本号目前固定为 0，后续如需升级可在此处调整。
  */
 
-export const persistedStoresBackup = async (): Promise<void> => {
+export const getPersistedStoresBackupData = (): Record<string, any> => {
     const registered = new Map(persistedStores);
     const result: Record<string, any> = {};
 
@@ -135,9 +135,16 @@ export const persistedStoresBackup = async (): Promise<void> => {
         }
     })
 
+    return result;
+};
+
+export const persistedStoresBackup = async (): Promise<void> => {
+    const result = getPersistedStoresBackupData();
     const filename = `DB[${VERSION}]${timeStamp()}.json`;
     await downloadAsJsonFile(result, filename);
 };
+
+
 
 /**
  * 从指定 store 获取当前内存状态，并过滤掉不可持久化的数据。

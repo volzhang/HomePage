@@ -21,7 +21,7 @@ export const EMPTY = Symbol("empty");
 
 // @formatter:off
 // 单信号
-const createSignal = <T>(initialValue: T): Signal<T> => {
+export const createSignal = <T>(initialValue: T): Signal<T> => {
     let value = initialValue;
     const listeners = new Set<Listener>();
     const emit = () => listeners.forEach(fn => fn());

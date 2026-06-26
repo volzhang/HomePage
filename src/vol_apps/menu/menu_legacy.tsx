@@ -21,6 +21,7 @@ import {
 } from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
 import {useSettingStore} from "../settings/setting_store";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {backupOpenSignal} from "@/vol_apps/backupDirectory/backup.tsx";
 
 //这里手动复制了Button的secondary样式
 const cn_str = "border bg-background " +
@@ -93,6 +94,10 @@ export function Menu() {
                                     <MenubarItem
                                         onClick={async () => await persistedStoresRestore(await jsonFilePickerAPI())}>
                                         {t("Import Backup")}
+                                    </MenubarItem>
+                                    <MenubarItem
+                                        onClick = {()=>{backupOpenSignal.set(true)}}>
+                                        {t("Backup Setting")}
                                     </MenubarItem>
                                 </MenubarGroup>
                             </MenubarSubContent>

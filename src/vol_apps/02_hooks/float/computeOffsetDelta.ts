@@ -1,5 +1,45 @@
 import type {Delta, FloatingAnchorType, FloatingDirection, Size} from "@/vol_apps/00_types/Types";
 
+/**
+ * ================================================================
+ * 定位计算笔记 (computeOffsetDelta.ts)
+ * ================================================================
+ *
+ * 【中心思想】
+ * 把相对定位，转换成“向量加法”。
+ *
+ * 最终坐标 = 起点 + 向量1 + 向量2 + 向量3 + 向量4
+ *
+ * 【设计思路】—— 4 层独立的位移向量
+ * 1. 锚点本体偏移（Anchor Size）：
+ *    锚点是有面积的，先把锚点从左上角推到自己的边缘（喷发口）。
+ *
+ * 2. 目标本体偏移（Target Size）：
+ *    目标也是有面积的，把目标从左上角拉到自己的边缘（接驳点）。
+ *
+ * 3. 对齐策略偏移（Anchor Type）：
+ *    锚点和目标宽度/高度可能不同，start / center / end 负责在交叉轴上滑动对齐。
+ *
+ * 4. 用户自定义间距（Offset）：
+ *    纯外挂，按方向向量移动一段固定距离。
+ *
+ * 【使用方法】
+ * 外部只需要调用唯一出口：getPostionFromAnchorToTarget(...)
+ *
+ * 传入 6 个条件：
+ *   - anchorPosition: 锚点左上角在视口中的绝对坐标
+ *   - anchorSize:     锚点的宽高
+ *   - targetSize:     浮层的宽高
+ *   - direction:      浮层相对锚点的方位（top / bottom / left / right）
+ *   - anchorType:     浮层在锚点上的对齐方式（start / center / end）
+ *   - offset:         间距（px）
+ *
+ * 返回：浮层左上角在视口中的绝对坐标 { top, left }
+ *
+ * ================================================================
+ */
+
+
 const computeOffsetDelta = (
     {
         direction,
