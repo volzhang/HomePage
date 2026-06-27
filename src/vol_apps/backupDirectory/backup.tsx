@@ -1,37 +1,114 @@
-import {useCenteredFloating} from "@/vol_apps/02_hooks/float/useCenteredFloating.ts";
+import {useModalPortal} from "@/vol_apps/02_hooks/float/useModalPortal.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {toast} from "sonner";
-import {get, set} from "idb-keyval";
+import {del, get, set} from "idb-keyval";
 import {getPersistedStoresBackupData} from "@/vol_apps/tool/backupAndRestore.ts";
 import {tryStringify} from "@/vol_apps/tool/isType/isValidType.ts";
 import {createSignal} from "@/vol_apps/04_persist_atoms";
-
-const IDB_KEY = "HomePageBackup"
+import {useEffect, useState} from "react";
+import {MessageCircleHeart, X} from "lucide-react";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 export const backupOpenSignal = createSignal<boolean>(false);
 
+const computeSHA256Hex = async (text: string): Promise<string> => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const ensureReadWritePermission = async (directoryHandle: FileSystemDirectoryHandle): Promise<boolean> => {
+    //@ts-ignore
+    const permission = await directoryHandle.queryPermission({mode: "readwrite"});
+    if (permission === "granted") return true;
+    //@ts-ignore
+    const requestPermission = await directoryHandle.requestPermission({mode: "readwrite"});
+    return requestPermission === "granted";
+};
+
+const syncBackupHash = async (directoryHandle: FileSystemDirectoryHandle): Promise<string> => {
+    try {
+        const subDirHandle = await directoryHandle.getDirectoryHandle(DIR_NAME, {create: false});
+        const fileHandle = await subDirHandle.getFileHandle(FILE_NAME);
+        const file = await fileHandle.getFile();
+        const text = await file.text();
+        return await computeSHA256Hex(text);
+    } catch (e) {
+        return ""
+    }
+};
+
+const IDB_KEY = "HomePageBackup"
+const DIR_NAME = "HomePageBackup"
+const FILE_NAME = `DB_latest.json`
+const CHECK_DURATION = 1000 * 60 * 20
+
 export const Backup = () => {
+    const {t} = useLanguage("backup");
+
     const open = backupOpenSignal.use()
     const close = () => backupOpenSignal.set(false)
 
-    // const [open, setOpen] = useState(false);
+    // 这个功能不完全语义单一，但是为了保持简单，先不优化
+    // 1.检查前置是否通畅(dir_handle 的存在性/权限)
+    // 2.用户是否已启用功能
+    const [directoryHandle, setDirectoryHandle] = useState<FileSystemDirectoryHandle | null>(null);
+    const [directoryReady, setDirectoryReady] = useState(false);
 
-    const {floatingRef, floatingStyle, floatingPortal} = useCenteredFloating({
+    const checkDirectoryHandle  = async (mute: boolean = true):Promise<FileSystemDirectoryHandle|null> => {
+        const h = await get(IDB_KEY);
+        if (!h) {
+            if (!mute) toast.info(t("Select a directory first."));
+            setDirectoryHandle(null)
+            return null;
+        }
+        const permission = await ensureReadWritePermission(h)
+        if (!permission) {
+            if (!mute) toast.info(t("Permission denied"));
+            setDirectoryHandle(null)
+            return null
+        }
+        setDirectoryHandle(h)
+        return h;
+    };
+
+    const initDirectoryHandleState = async () => {
+        await checkDirectoryHandle (true)
+        setDirectoryReady(true);
+    }
+
+    useEffect(() => {
+        void initDirectoryHandleState ();
+    }, []);
+
+    // 启动后，尝试静默更新一次
+    useEffect(() => {
+        if (!directoryReady) return;
+        if (!directoryHandle) return
+        void handleBackup(true)
+    }, [directoryReady]);
+
+    // 20分钟一次，静默更新本地存档
+    useEffect(() => {
+        if (!directoryHandle) return
+        const id = window.setInterval(() => {
+            void handleBackup(true)
+        }, CHECK_DURATION)
+        return () => {
+            clearInterval(id);
+        }
+    }, [directoryHandle]);
+
+    const {modalPortal} = useModalPortal({
         open,
-        duration: 250,
+        onOpenChange: (isOpen: boolean) => {backupOpenSignal.set(isOpen)},
+        duration: 200,
         exitDuration: 200,
         scale: 90,
-        zIndex: 999,
+        zIndex: 30,
     });
-
-    const ensureReadWritePermission = async (handle: FileSystemDirectoryHandle) => {
-        //@ts-ignore
-        const permission = await handle.queryPermission({mode: "readwrite"});
-        if (permission === "granted") return true;
-        //@ts-ignore
-        const requestPermission = await handle.requestPermission({mode: "readwrite"});
-        return requestPermission === "granted";
-    };
 
     const handleSelectDir = async () => {
         try {
@@ -39,82 +116,101 @@ export const Backup = () => {
             const h = await window.showDirectoryPicker();
             if (await ensureReadWritePermission(h)) {
                 await set(IDB_KEY, h);
-                toast.success("已选择备份目录");
+                setDirectoryHandle(h)
+                // 非静默同步一次，响应用户操作
+                await handleBackup(false)
             } else {
-                toast.error("Permission denied");
+                toast.info(t("Permission denied."));
             }
         } catch (error) {
             if (error instanceof DOMException && error.name === "AbortError") return;
         }
     }
 
-    const handleBackup = async () => {
-        const dirHandle = await get(IDB_KEY);
-
-        if (!dirHandle) {
-            toast.error("Select directory first.")
-            return
-        }
-
-        if (!await ensureReadWritePermission(dirHandle)) {
-            toast.error("Permission denied.")
-            return
-        }
+    const handleBackup = async (mute: boolean = true) => {
+        const dirHandle = await checkDirectoryHandle(mute)
+        if (!dirHandle) return
 
         try {
-            const backupData = getPersistedStoresBackupData();
-            const jsonContent = tryStringify(backupData);
-            const blob = new Blob([jsonContent], {type: "application/json;charset=utf-8"});
+            const diskHash = await syncBackupHash(dirHandle);
 
-            const subDirHandle = await dirHandle.getDirectoryHandle(IDB_KEY, {create: true});
-            const fileHandle = await subDirHandle.getFileHandle("HomePageBackup.json", {create: true});
+            const backupData = getPersistedStoresBackupData();
+            const jsonContent = tryStringify(backupData);   //  tryStringify:(...)=>string
+            const newHash = await computeSHA256Hex(jsonContent);
+
+            if (newHash === diskHash) {
+                if (!mute) toast.success(t("The local backup is already up to date. No update was needed."));
+                return
+            }
+
+            const blob = new Blob([jsonContent], {type: "application/json;charset=utf-8"});
+            const subDirHandle = await dirHandle.getDirectoryHandle(DIR_NAME, {create: true});
+            const fileHandle = await subDirHandle.getFileHandle(FILE_NAME, {create: true});
             const writable = await fileHandle.createWritable();
             await writable.write(blob);
             await writable.close();
 
-            toast.success("手动备份成功");
+            if (!mute) toast.success(t("Local backup updated."));
+
         } catch (error: unknown) {
             if (error instanceof Error && error.name === "NotFoundError") {
-                toast.error("目录已不存在或无法访问，请重新选择。");
-                await set(IDB_KEY, null);
+                if (!mute) toast.error(t("The directory no longer exists or is inaccessible. Please select it again."));
+
+                await del(IDB_KEY);
+                setDirectoryHandle(null);
                 return;
             }
             const message = error instanceof Error ? error.message : String(error);
-            toast.error("写入失败: " + message);
+            if (!mute) toast.error(t("Failed to write local backup: ") + message);
         }
     };
 
     return (
-        <>
-            {/*<Button variant={"outline"} onClick={toggle}>打开居中弹窗</Button>*/}
-            {floatingPortal(
-                <div
-                    ref={floatingRef}
-                    style={floatingStyle}
+        modalPortal(
+            <div className={"relative bg-background text-foreground border w-200 h-fit flex flex-col p-2 gap-2"}>
+                <div className={"absolute top-0 right-0"}
+                     onClick={close}
                 >
-                    <div className={"bg-background text-foreground border w-200 h-100 flex flex-col p-2 gap-2"}>
-
-                        <div>
-                            <p>选择一个本地目录</p>
-                            <p>插件将在此目录下创建 HomePageBackup 文件夹，</p>
-                            <p>所有读写操作仅限此文件夹内，不会影响其他文件。</p>
-                        </div>
-                        <div>
-                            <p>写入内容：</p>
-                            <p>最新的 JSON 存档文件（backup.json）</p>
-                            <p>{`文件大小通常 <10 MB，若包含大量图标或高清壁纸可能更大。`}</p>
-                        </div>
-                        <div>
-                            <p>操作安全：</p>
-                            <p>只覆写存档文件，不会删除任何文件。</p>
-                        </div>
-
-                        <Button className={"w-fit"} onClick={handleSelectDir}> 选择文件夹 </Button>
-                        <Button className={"w-fit"} onClick={handleBackup}> 写入文件 </Button>
-                        <Button className={"w-fit"} onClick={close}> 关闭 </Button>
-                    </div>
+                    <X />
                 </div>
-            )}
-        </>
+                <div>
+                    <p>{t("Select a local directory.")}</p>
+                    <p>{t("The plugin will create a HomePageBackup folder in the selected directory.")}</p>
+                    <p>{t("All read and write operations are limited to this folder and will not affect other files.")}</p>
+                </div>
+                <div>
+                    <p>{t("Backup Contents:")}</p>
+                    <p>{t("Latest backup file: DB_latest.json")}</p>
+                    <p>{t("File size is typically under 10 MB, but may be larger if many icons or high-resolution wallpapers are included.")}</p>
+                </div>
+                <div>
+                    <p>{t("Sync Behavior:")}</p>
+                    <p>{t("The plugin checks the local backup every 20 minutes. If it is outdated, it will overwrite it with the latest backup.")}</p>
+                    <p>{t("Only the backup file is overwritten. No files are deleted.")}</p>
+                </div>
+                <div className={"flex flex-row items-center gap-2"}>
+                    <Button className={"w-fit"} onClick={handleSelectDir}> {t("Select Directory")} </Button>
+                    {
+                        directoryHandle !== null ? (
+                            <Button onClick={async () => {
+                                    await del(IDB_KEY);
+                                    setDirectoryHandle(null);
+                                }}
+                            >{t("Disable Auto Backup")}</Button>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <MessageCircleHeart />
+                                <p>{t("Auto Backup Disabled")}</p>
+                            </div>
+                        )
+                    }
+
+                </div>
+                <Button className={"w-fit"} onClick={() => {
+                    void handleBackup(false)
+                }}> {t("Check Sync")} </Button>
+
+            </div>
+        )
     );
 };

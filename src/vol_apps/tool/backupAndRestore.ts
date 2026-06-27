@@ -144,8 +144,6 @@ export const persistedStoresBackup = async (): Promise<void> => {
     await downloadAsJsonFile(result, filename);
 };
 
-
-
 /**
  * 从指定 store 获取当前内存状态，并过滤掉不可持久化的数据。
  *

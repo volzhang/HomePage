@@ -108,6 +108,7 @@ export const resources: RESOURCES = {
             "Backup": "存档",
             "Download Backup": "下载存档",
             "Import Backup": "恢复存档",
+            "Auto Backup": "自动备份",
 
             "Chrome/Edge Bookmarks": "Chrome/Edge 书签",
             "Import links from an HTML bookmarks file": "从HTML书签文件中导入",
@@ -147,6 +148,39 @@ export const resources: RESOURCES = {
 
             "Cancel": "取消",
             "Continue": "继续",
+        },
+
+        backup: {
+            "Select a directory first.":"先选择目录。",
+            "Permission denied.":"未得到授权。",
+            "The local backup is already up to date. No update was needed."
+                :"本地存档已是最新，无需备份。",
+            "Local backup updated.":"本地存档已更新",
+            "The directory no longer exists or is inaccessible. Please select it again."
+                :"目录已不存在或无法访问，请重新选择。",
+            "Failed to write local backup: ":"更新存档失败：",
+
+            "Select Directory":"选择目录",
+            "Disable Auto Backup":"禁用自动同步",
+            "Auto Backup Disabled":"自动同步功能：当前未启用",
+            "Check Sync":"检查同步",
+
+            "Select a local directory.":"选择一个本地目录，",
+            "The plugin will create a HomePageBackup folder in the selected directory."
+                :"插件将在此目录下创建 HomePageBackup 文件夹，",
+            "All read and write operations are limited to this folder and will not affect other files."
+                :"所有读写操作仅限此文件夹内，不会影响其他文件。",
+
+            "Backup Contents:":"写入内容：",
+            "Latest backup file: DB_latest.json":"最新的存档文件：DB_latest.json",
+            "File size is typically under 10 MB, but may be larger if many icons or high-resolution wallpapers are included."
+                :"文件大小通常 <10 MB，若包含大量图标或高清壁纸可能更大。",
+
+            "Sync Behavior:":"读写规则：",
+            "The plugin checks the local backup every 20 minutes. If it is outdated, it will overwrite it with the latest backup."
+                :"功能启用时，每20分钟读一次本地存档。检查对比，若存档不是最新，则写入一次最新存档。",
+            "Only the backup file is overwritten. No files are deleted."
+                :"只覆写存档文件，不删除任何文件。",
         },
 
         // tile: {

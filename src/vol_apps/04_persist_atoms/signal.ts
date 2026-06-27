@@ -15,6 +15,7 @@ export const STORE_CONFIG = {
     searchStyle: 2,
     tagStyle: 20,
     ts: 20,
+    cm: 15,
 };
 
 export const EMPTY = Symbol("empty");
@@ -239,7 +240,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         reset,
 
         slots,
-        persisit:debouncedPersist
+        persisit: debouncedPersist
     };
 };
 

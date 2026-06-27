@@ -1,7 +1,7 @@
 // hooks/useFloating.ts
 import {useAnchorPosition} from "./useAnchorPosition";
 import type {FloatingAnchorType, UseFloatAnimationOptions} from "@/vol_apps/00_types/Types";
-import {useBetterPortal} from "@/vol_apps/02_hooks/float/useBetterPortal";
+import {useBetterPortal} from "@/vol_apps/02_hooks/float/useBetterPortal.ts";
 import {usePureFloatStyles} from "@/vol_apps/02_hooks/float/usePureFloatStyles";
 
 /**

@@ -57,19 +57,7 @@ type CreatePersistedStoreOptions<S> =
 	storageType?: StorageType;
 };
 
-// const isPromise = (value: unknown): value is Promise<unknown> =>
-// 	!!value && typeof (value as Promise<unknown>).then === "function";
-
 export const persistedStores = new Map<string, PersistedStoreEntry>();
-
-// export const persistedStoresRehydrate = async (): Promise<void> => {
-// 	const promises: Promise<unknown>[] = [];
-// 	for (const entry of persistedStores.values()) {
-// 		const result = entry.store.persist.rehydrate();
-// 		if (isPromise(result)) promises.push(result);
-// 	}
-// 	if (promises.length > 0) await Promise.all(promises);
-// };
 
 export function createPersistedStore<S>(
 	name: string,

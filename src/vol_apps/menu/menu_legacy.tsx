@@ -97,7 +97,7 @@ export function Menu() {
                                     </MenubarItem>
                                     <MenubarItem
                                         onClick = {()=>{backupOpenSignal.set(true)}}>
-                                        {t("Backup Setting")}
+                                        {t("Auto Backup")}
                                     </MenubarItem>
                                 </MenubarGroup>
                             </MenubarSubContent>

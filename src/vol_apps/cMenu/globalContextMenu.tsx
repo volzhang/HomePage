@@ -15,6 +15,7 @@ import {Plus, Download, Upload, Image} from "lucide-react";
 import {useState, type PropsWithChildren} from "react";
 import {useSettingStore} from "../settings/setting_store";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {backupOpenSignal} from "@/vol_apps/backupDirectory/backup.tsx";
 
 export function GlobalContextMenu({children}: PropsWithChildren) {
     const {tilesVisible, addTile, setTileInEditId, setTileUiVisible, setTilesVisible} = useTileStore();
@@ -76,6 +77,10 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
                                 onClick={() => jsonFilePickerAPI().then(file => persistedStoresRestore(file))}>
                                 {t("Import Backup")}
                                 <Upload className={"ml-auto"}/>
+                            </ContextMenuItem>
+                            <ContextMenuItem
+                                onClick = {()=>{backupOpenSignal.set(true)}}>
+                                {t("Auto Backup")}
                             </ContextMenuItem>
                         </ContextMenuSubContent>
                     </ContextMenuSub>
