@@ -32,13 +32,12 @@ const SyncButton = ({
         // 为了美观，不用原生的disabled，手动简单处理
         <Button
             variant={"outline"}
-            className={cn("items-center disabled:opacity-100", className)}
+            className={cn("items-center", className)}
             onClick={() => {
                 if (disabled) return;
                 setDisabled(true)
                 onClick?.()
             }}
-            // disabled={disabled}
         >
             <LoaderCircle strokeWidth={4}
                           className={cn(`animate-[spin_600ms_linear_infinite]`, "scale-x-120 scale-y-120")}
@@ -231,14 +230,15 @@ export const Backup = () => {
 
                     <SyncButton
                         onClick={() => {void handleBackup(false)}}
-                        className={"h-10 hover:bg-sBlue hover:text-white"}>
+                        className={"h-10 hover:bg-sBlue! hover:text-white!"}>
                         <p className={"text-[16px]"}>{t("Check Sync")}</p>
                     </SyncButton>
 
                     <Button
-                        className={"h-10 hover:bg-sBlue hover:text-white"}
+                        variant={"outline"}
+                        className={"h-10 hover:bg-sBlue! hover:text-white!"}
                         disabled={directoryHandle === null}
-                        variant={"outline"} onClick={async () => {
+                        onClick={async () => {
                         await del(IDB_KEY);
                         setDirectoryHandle(null);
                     }}>
@@ -256,8 +256,8 @@ export const Backup = () => {
                 <Accordion type={"single"} value={accordionValue} collapsible
                            onValueChange={setAccordionValue}>
                     <AccordionItem value={"info"}>
-                        <AccordionTrigger className={"mx-4 text-[16px]] [&>svg]:hidden"}>
-                            <div className={cn("flex items-center gap-2 hover:text-sBlue")}>
+                        <AccordionTrigger className={"mx-4 text-[16px] [&>svg]:hidden"}>
+                            <div className={cn("flex items-center gap-2")}>
                                 <MessageCircleHeart/>
                                 {
                                     <p>
