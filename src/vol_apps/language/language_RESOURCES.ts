@@ -161,8 +161,8 @@ export const resources: RESOURCES = {
             "Failed to write local backup: ":"更新存档失败：",
 
             "Select Directory":"选择目录",
-            "Disable Auto Backup":"禁用自动同步",
-            "Auto Backup Disabled":"自动同步功能：当前未启用",
+            "Disable Auto Backup":"禁用自动备份",
+            "Auto Backup Disabled":"自动备份：当前未启用",
             "Check Sync":"检查同步",
 
             "Select a local directory.":"选择一个本地目录，",
@@ -181,6 +181,9 @@ export const resources: RESOURCES = {
                 :"功能启用时，每20分钟读一次本地存档。检查对比，若存档不是最新，则写入一次最新存档。",
             "Only the backup file is overwritten. No files are deleted."
                 :"只覆写存档文件，不删除任何文件。",
+
+            "Collapse Details":"收起说明",
+            "More Details...":"更多说明..."
         },
 
         // tile: {

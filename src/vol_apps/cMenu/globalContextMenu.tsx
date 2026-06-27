@@ -11,7 +11,7 @@ import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 
-import {Plus, Download, Upload, Image} from "lucide-react";
+import {Plus, Download, Upload, Image, Save} from "lucide-react";
 import {useState, type PropsWithChildren} from "react";
 import {useSettingStore} from "../settings/setting_store";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
@@ -81,6 +81,7 @@ export function GlobalContextMenu({children}: PropsWithChildren) {
                             <ContextMenuItem
                                 onClick = {()=>{backupOpenSignal.set(true)}}>
                                 {t("Auto Backup")}
+                                <Save className={"ml-auto"}/>
                             </ContextMenuItem>
                         </ContextMenuSubContent>
                     </ContextMenuSub>

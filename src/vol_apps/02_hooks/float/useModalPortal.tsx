@@ -43,7 +43,7 @@ export function useModalPortal({
                     position: "fixed",
                     inset: 0,
                     zIndex,
-                    backgroundColor: "rgba(0, 0, 0, 0.6)", // bg-black/60
+                    backgroundColor: "rgba(0, 0, 0, 0.5)", // bg-black/50
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
