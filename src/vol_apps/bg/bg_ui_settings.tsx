@@ -1,12 +1,11 @@
 import type {BgLogic} from "@/vol_apps/bg/bg_logic";
-import {useId} from "react";
+import {useId, type ReactNode} from "react";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/action/filePicker";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {Folder, Image, MessageCircleHeart} from "lucide-react";
-import type {BgType, SizeType} from "@/vol_apps/bg/bg_store";
-
+import type {BgType, SizeType} from "@/vol_apps/bg/bg_atom.ts";
 
 const BUTTON_CLASS = cn(
     "border bg-popover text-foreground",
@@ -26,7 +25,7 @@ export const MyRadio = (
     }: {
         title: string,
         options: { value: string, label: string }[],
-        children?: React.ReactNode,
+        children?: ReactNode,
 
         value?: string;
         onValueChange?: (value: string) => void;

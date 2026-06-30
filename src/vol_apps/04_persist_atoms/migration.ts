@@ -183,6 +183,33 @@ const tileStyleSchema = v.object({
     textOpacity: v.number(),
 })
 
+const fontMetaSchema = v.object({ fullName: v.string(), family: v.string() });
+const cmSchema = v.object({
+    isVisible: v.boolean(),
+    doc: v.string(),
+    name: v.string(),
+    type: v.string(),
+    enableLineNumbers: v.boolean(),
+    enableLineWrapping: v.boolean(),
+    fontPx: v.number(),
+    fontWeight: v.number(),
+    fontLineHeight: v.number(),
+    fontMeta: fontMetaSchema,
+    fontBase64: v.string(),
+});
+
+const bgSchema = v.object({
+    bgImg: v.string(),
+    bgType: v.picklist(['default', 'bing', 'custom', 'custom_dir']),
+    bgBingCopyright: v.string(),
+    bgSize: v.picklist(['auto', 'cover', 'contain']),
+    bgRepeat: v.boolean(),
+    bgCenter: v.boolean(),
+    otherVisible: v.optional(v.boolean()),     // 旧存储可能没有该字段
+    bgBingDate: v.optional(v.nullable(v.string())),
+    carouselRandom: v.boolean(),
+    carouselInterval: v.number(),
+});
 
 type CONFIGS = {
     storeName:StoreName,
@@ -197,6 +224,8 @@ export const MIGRATION_CONFIGS:CONFIGS = [
     { storeName: "searchStyle" as const, stateSchema: searchStyleSchema, legacyDb: "idb" as const },
     { storeName: "tagStyle" as const, stateSchema: tagStyleSchema, legacyDb: "idb" as const },
     { storeName: "ts" as const, stateSchema: tileStyleSchema, legacyDb: "idb" as const },
+    { storeName: "cm" as const, stateSchema: cmSchema, legacyDb: "idb" as const },
+    { storeName: "bg" as const, stateSchema: bgSchema, legacyDb: "idb" as const },
 ];
 
 void (async function executeMigrations() {

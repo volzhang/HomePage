@@ -1,5 +1,4 @@
 import {useMemo, useEffect, useState, useRef, useCallback} from "react";
-import {useBgStore, img} from "./bg_store";
 import {bgInitState, setBackground} from "./bg_util";
 import {useFileCarousel} from "@/vol_apps/02_hooks/useFileCarousel";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
@@ -8,37 +7,27 @@ import {toast} from "sonner";
 import {useDoubleClick} from "../02_hooks/useDoubleClick";
 import {useSettingStore} from "@/vol_apps/settings/setting_store";
 import {useUserActivation} from "@/vol_apps/02_hooks/useUserInteracted";
-import {useStoreHydrated} from "@/vol_apps/tool/useStoreHydrated.ts";
 import {languageConfig, useLanguage} from "@/vol_apps/language/useLanguage.ts";
-import {useSignal} from "@/vol_apps/04_persist_atoms/signal";
+import {storeHub, useSignal} from "@/vol_apps/04_persist_atoms/signal";
 import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
 import {useFetchWallpaper, getDateWithOffset} from "@/vol_apps/bg/bg_api.tsx";
 import {useFixedPending} from "@/vol_apps/02_hooks/usePending.ts";
+import {bgStore, img} from "@/vol_apps/bg/bg_atom.ts";
 // import {waitForDoubleFrame} from "@/vol_apps/03_utils/waitForDoubleFrame.ts";
 
 export type BgLogic = ReturnType<typeof useBgLogic>;
 export const useBgLogic = () => {
-    const {
-        bgImg,
-        bgType,
-        bgSize,
-        bgRepeat,
-        bgCenter,
-        otherVisible,
-        bgBingDate,
-        bgBingCopyright,
-        setBgImg,
-        setBgType,
-        setBgRepeat,
-        setBgCenter,
-        setBgSize,
-        setOtherVisible,
-        setBgBingDate,
-        setBgBingCopyright,
 
-        carouselRandom, setCarouselRandom,
-        carouselInterval, setCarouselInterval,
-    } = useBgStore();
+    const { bgImg, setBgImg } = useSignal(bgStore("bgImg"));
+    const { bgType, setBgType } = useSignal(bgStore("bgType"));
+    const { bgSize, setBgSize } = useSignal(bgStore("bgSize"));
+    const { bgRepeat, setBgRepeat } = useSignal(bgStore("bgRepeat"));
+    const { bgCenter, setBgCenter } = useSignal(bgStore("bgCenter"));
+    const { otherVisible, setOtherVisible } = useSignal(bgStore("otherVisible"));
+    const { bgBingDate, setBgBingDate } = useSignal(bgStore("bgBingDate"));
+    const { bgBingCopyright, setBgBingCopyright } = useSignal(bgStore("bgBingCopyright"));
+    const { carouselRandom, setCarouselRandom } = useSignal(bgStore("carouselRandom"));
+    const { carouselInterval, setCarouselInterval } = useSignal(bgStore("carouselInterval"));
 
     const {open} = useSettingStore()
 
@@ -50,8 +39,8 @@ export const useBgLogic = () => {
     const {language} = useSignal(languageConfig("language"))
 
     // 日期
-    const yesterday = getDateWithOffset(undefined, -2)
-    const date = useMemo(() => bgBingDate ?? yesterday, [bgBingDate]);
+    const latestday = getDateWithOffset(undefined, -2)
+    const date = useMemo(() => bgBingDate ?? latestday, [bgBingDate]);
     const preDate = useMemo(() => getDateWithOffset(date, -1), [date]);
     const nextDate = useMemo(() => getDateWithOffset(date, +1), [date]);
 
@@ -145,7 +134,9 @@ export const useBgLogic = () => {
     /**
      * 应用背景
      */
-    const hydrated = useStoreHydrated(useBgStore)
+    // const hydrated = useStoreHydrated(useBgStore)
+    const hydrated = storeHub.getStore("bg").useStoreHydrated()
+
     const prevParams = useRef(bgInitState);
 
     useEffect(() => {
@@ -165,12 +156,6 @@ export const useBgLogic = () => {
         document.body.classList.toggle("hide-others", !otherVisible);
         return () => document.body.classList.remove("hide-others");
     }, [otherVisible]);
-
-    /**
-     * UI pending（独立于 query）
-     */
-    // const nextCtrl = usePendingWithTimeout(60*1000, 2000);
-    // const prevCtrl = usePendingWithTimeout(60*1000, 2000);
 
     /**
      * 用户操作

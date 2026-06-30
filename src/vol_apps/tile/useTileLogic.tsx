@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useRef, useState} from "react";
-import {useBgStore} from "@/vol_apps/bg/bg_store";
+
 import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
 import {enhanceUrl, extractMainDomain} from "@/vol_apps/tool/action/enhanceUrl";
@@ -9,6 +9,8 @@ import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {apiFaviconVemetric} from "@/vol_apps/tool/api/apiFaviconVemetric.ts";
 // import {useFetchFavicon} from "@/vol_apps/tile/favicon_vemetric/useFaviconVemetric.ts";
 import {useFixedPending} from "@/vol_apps/02_hooks/usePending.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
+import {bgStore} from "@/vol_apps/bg/bg_atom.ts";
 
 export type TileLogic = ReturnType<typeof useTileLogic>;
 export const useTileLogic = () => {
@@ -21,7 +23,9 @@ export const useTileLogic = () => {
         setTileUiVisible, setTileInEditId,
         updateTile, removeTile
     } = useTileStore()
-    const {bgImg} = useBgStore()
+    // const {bgImg} = useBgStore()
+
+    const {bgImg} = useSignal(bgStore("bgImg"))
     const displayTiles = tilesByTag(isBroadMatches ? "ANY" : "ALL")!
 
     // 缓存当前视图 id 顺序，方便找到左邻居

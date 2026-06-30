@@ -1,9 +1,9 @@
-import {createStoreConfig, getSignal, useSignal} from "@/vol_apps/04_persist_atoms";
+import {initStoreState, getSignal, useSignal} from "@/vol_apps/04_persist_atoms";
 import {useCallback} from "react";
 import {type NamespaceDict, resources} from "@/vol_apps/language/language_RESOURCES.ts";
 
 export type Language = "en" | "cn"
-export const languageConfig = createStoreConfig({
+export const languageConfig = initStoreState({
     storeName:"language",
     fields:{
         language:"en" as Language,

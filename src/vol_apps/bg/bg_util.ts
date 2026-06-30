@@ -1,5 +1,5 @@
-import {createStore, get} from "idb-keyval";
-import {img} from "@/vol_apps/bg/bg_store.ts";
+import {get} from "idb-keyval";
+import {img} from "@/vol_apps/bg/bg_atom.ts";
 
 let layerA: HTMLDivElement;
 let layerB: HTMLDivElement;
@@ -24,10 +24,15 @@ export const bgInitState = {
 
 export const initBgLayer = async () => {
     // 1. 从 IndexedDB 恢复上次的状态
-    const data = await get("bg", createStore("localforage", "keyvaluepairs"));
+
+    // const data = await get("bg", createStore("localforage", "keyvaluepairs"));
+    // 新signal框架直接使用默认数据库
+    const data = await get("bg")
+
     if (data !== undefined) {
-        const date = JSON.parse(data);
-        const state = date.state;
+        // const date = JSON.parse(data);
+        // 新signal框架不需要解析，因为直接保存的对象
+        const state = data.state;
         if (state !== undefined) {
             bgInitState.bgImg = state?.bgImg;
             bgInitState.bgSize = state?.bgSize;

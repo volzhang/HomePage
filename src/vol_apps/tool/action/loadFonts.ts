@@ -1,5 +1,5 @@
 //@ts-ignore
-import type {FontItem} from "@/vol_apps/cm/cm_store";
+import type {FontItem} from "@/vol_apps/cm/legacy/cm_store.ts.legacy";
 
 export const loadAllFonts = async (): Promise<FontItem[]> => {
     try {

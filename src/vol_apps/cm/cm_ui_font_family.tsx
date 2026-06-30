@@ -1,4 +1,4 @@
-import {useCmStore} from "@/vol_apps/cm/cm_store";
+
 import {Button} from "@/components/ui/button";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import {loadFonts} from "@/vol_apps/tool/action/loadFonts";
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {cmStore} from "@/vol_apps/cm/cm_atom.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
 
 const FONT_DEFAULT = {
 	fullName: "monospace",
@@ -16,7 +18,8 @@ const FONT_DEFAULT = {
 export const CmUiFontFamily = ({className}:{className?:string}) => {
 
 	const {t} = useLanguage()
-	const {fontMeta, setFontMeta} = useCmStore();
+	const {fontMeta, setFontMeta} = useSignal(cmStore("fontMeta"));
+
 	// noinspection DuplicatedCode
 	const [open, setOpen] = useState(false);
 	const [fontList, setFontList] = useState<FontItem[]>([]);

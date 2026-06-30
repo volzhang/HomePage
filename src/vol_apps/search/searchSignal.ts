@@ -6,7 +6,7 @@ import search_baidu from "@/assets/search_baidu.png";
 import search_yahoo from "@/assets/search_yahoo.png";
 import search_brave from "@/assets/search_brave.svg";
 import search_ecosia from "@/assets/search_ecosia.svg";
-import {createStoreConfig, getSignal} from "@/vol_apps/04_persist_atoms";
+import {initStoreState, getSignal} from "@/vol_apps/04_persist_atoms";
 
 type Engine = {
     id: number;			//标识
@@ -29,14 +29,14 @@ export const SEARCH_ENGINES: Engine[] = [
     {id: 7, pos: 7, name: "Ecosia",     url: "https://www.ecosia.org/search",    param: "q",   homeUrl: "https://www.ecosia.org/", icon: search_ecosia},
 ] as const;
 
-export const searchConfig = createStoreConfig({
+export const searchConfig = initStoreState({
     storeName: "search",
     fields: {
         engineInUseId: 0 as number
     }
 })
 
-export const searchStyleConfig = createStoreConfig({
+export const searchStyleConfig = initStoreState({
     storeName: "searchStyle",
     fields: {
         visible: true,

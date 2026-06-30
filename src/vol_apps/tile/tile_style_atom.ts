@@ -1,12 +1,12 @@
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
-import {createStoreConfig} from "@/vol_apps/04_persist_atoms";
+import {initStoreState} from "@/vol_apps/04_persist_atoms";
 
 const FONT_DEFAULT: FontItem = {
     fullName: "System Default",
     family: `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif`,
 };
 
-export const tileStyleConfig = createStoreConfig({
+export const tileStyleConfig = initStoreState({
     storeName: "ts",
     fields: {
         backgroundColor: "#ffffff",

@@ -8,6 +8,7 @@ import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
 import {capitalize} from "@/vol_apps/03_utils/capitalize.ts";
 import {createDebouncedSet} from "@/vol_apps/03_utils/createDebouncedSet.ts";
 
+// 全局信号数量注册
 export const STORE_CONFIG = {
     theme: 2,
     language: 2,
@@ -15,7 +16,8 @@ export const STORE_CONFIG = {
     searchStyle: 2,
     tagStyle: 20,
     ts: 20,
-    cm: 15,
+    cm: 20,
+    bg: 12,
 };
 
 export const EMPTY = Symbol("empty");
@@ -368,7 +370,7 @@ export const getSignal = <T>(
     );
 };
 
-export const createStoreConfig =
+export const initStoreState =
     <TFields extends Record<string, any>>(
         config: {
             storeName: StoreName;

@@ -1,12 +1,16 @@
-import {useCmStore} from "@/vol_apps/cm/cm_store";
+
 import {Button} from "@/components/ui/button";
 import {getFileExt} from "@/vol_apps/tool/action/getFileExt";
 import {FolderOpen} from "lucide-react";
 import {toast} from "sonner";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
+import {cmStore} from "@/vol_apps/cm/cm_atom.ts";
 
 export const CmUiOpenDoc = () => {
 
-	const {setDoc, setName, setType} = useCmStore();
+	const { setDoc } = useSignal(cmStore("doc"));
+	const { setName } = useSignal(cmStore("name"));
+	const { setType } = useSignal(cmStore("type"));
 
 	const handleClick = async () => {
 		try {

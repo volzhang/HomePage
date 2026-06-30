@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PanelRightClose, PanelRightOpen, RotateCcw, Trash2 } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { useBgStore } from "@/vol_apps/bg/bg_store";
+
 import { useTileStore } from "@/vol_apps/tile/tile_store";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
-import {storeHub} from "@/vol_apps/04_persist_atoms";
+import {storeHub, useSignal} from "@/vol_apps/04_persist_atoms";
+import {bgStore} from "@/vol_apps/bg/bg_atom.ts";
 
 interface TileUiInEditBodyProps {
     children: ReactNode;
@@ -20,7 +21,9 @@ export const Tile_ui_inEdit_body = memo(({
                                              setStylesIsOpen,
                                          }: TileUiInEditBodyProps) => {
     const { t } = useLanguage();
-    const bgImg = useBgStore().bgImg;
+    // const bgImg = useBgStore().bgImg;
+    const {bgImg} = useSignal(bgStore("bgImg"))
+
     const { removeTile, tileInEditId, setTileUiVisible } = useTileStore();
 
     const atomChanged = storeHub.getStore("ts").useStoreChanged() // 整体是否有改动

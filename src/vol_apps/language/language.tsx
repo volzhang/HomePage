@@ -6,7 +6,7 @@ import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {languageConfig} from "@/vol_apps/language/useLanguage.ts";
 
 export const Language = () => {
-    const {language, setLanguage, languageHydrated} = useSignal(...languageConfig("language"))
+    const {language, setLanguage, languageHydrated} = useSignal(languageConfig("language"))
 
     const [open, setOpen] = useState<boolean>(false);
 

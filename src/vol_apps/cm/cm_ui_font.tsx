@@ -3,10 +3,12 @@ import {Input} from "@/components/ui/input";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Slider} from "@/components/ui/slider";
 import {cn} from "@/lib/utils";
-import {useCmStore} from "@/vol_apps/cm/cm_store";
+
 import {CmUiFontFamily} from "@/vol_apps/cm/cm_ui_font_family";
 import {useEffect, useState} from "react";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
+import {cmStore} from "@/vol_apps/cm/cm_atom.ts";
 
 const MIN_FONT_SIZE = 8;
 const MAX_FONT_SIZE = 128;
@@ -20,11 +22,15 @@ const MAX_LINE_HEIGHT = 256;
 export const CmUiFont = () => {
 	const {t} = useLanguage()
 
-	const {
-		fontPx, setFontPx,
-		fontWeight, setFontWeight,
-		fontLineHeight, setFontLineHeight,
-	} = useCmStore();
+	// const {
+	// 	fontPx, setFontPx,
+	// 	fontWeight, setFontWeight,
+	// 	fontLineHeight, setFontLineHeight,
+	// } = useCmStore();
+
+	const { fontPx, setFontPx } = useSignal(cmStore("fontPx"));
+	const { fontWeight, setFontWeight } = useSignal(cmStore("fontWeight"));
+	const { fontLineHeight, setFontLineHeight } = useSignal(cmStore("fontLineHeight"));
 
 	const [inputFontSize, setInputFontSize] = useState<string>(fontPx.toString());
 	const [inputFontWeight, setInputFontWeight] = useState<string>(fontWeight.toString());
