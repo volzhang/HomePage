@@ -3,11 +3,15 @@ import {useBgLogic} from "@/vol_apps/bg/bg_logic";
 import {Settings} from "@/vol_apps/settings/settings";
 
 export function BgApp() {
-    const logic = useBgLogic()
+    const { handlePrev, handleNext, handleDirChange, percent, fixedPending } =
+        useBgLogic();
     return (
         <>
-            <Settings {...logic}/>
-            <BgUiCopyright {...logic}/>
+            <Settings handleDirChange = {handleDirChange}/>
+            <BgUiCopyright handlePrev={handlePrev}
+                           handleNext={handleNext}
+                           percent={percent}
+                           fixedPending={fixedPending}/>
         </>
     );
 }

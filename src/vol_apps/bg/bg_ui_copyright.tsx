@@ -2,9 +2,11 @@ import {Button} from "@/components/ui/button";
 import {Spinner} from "@/components/ui/spinner";
 import {ChevronLeft, ChevronRight, CircleCheck} from "lucide-react";
 import {cn} from "@/lib/utils";
-import type {BgLogic} from "@/vol_apps/bg/bg_logic";
 import {getDateWithOffset} from "@/vol_apps/bg/bg_api.tsx";
 import {useCallback} from "react";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
+import {bgStore} from "@/vol_apps/bg/bg_atom.ts";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 const TransitionColors = "transition-all duration-300 ease-in-out"
 
@@ -43,15 +45,27 @@ const IsPending = ({percent}: any) => {
     )
 }
 
+type Props = {
+    handlePrev: () => void;
+    handleNext: () => void;
+    percent: number;
+    fixedPending: boolean;
+};
+
 export const BgUiCopyright = (
     {
-        bgType, bgBingCopyright, bgBingDate, handleNext, handlePrev,
-        // isPending,
-        percent, t, fixedPending,
-    }: BgLogic) => {
+        handleNext, handlePrev,
+        percent, fixedPending,
+    }: Props) => {
 
-    const afterYestoday = useCallback(() => (
-                getDateWithOffset(undefined, -1) === bgBingDate)
+    const {t} = useLanguage("bg");
+    const { bgType } = useSignal(bgStore("bgType"));
+    const { bgBingCopyright } = useSignal(bgStore("bgBingCopyright"));
+    const { bgBingDate } = useSignal(bgStore("bgBingDate"));
+
+    const disabledDate = useCallback(() => (
+                getDateWithOffset(undefined, -2) === bgBingDate)
+            || (getDateWithOffset(undefined, -1) === bgBingDate)
             || (getDateWithOffset() === bgBingDate)
         , [bgBingDate])
 
@@ -99,7 +113,7 @@ export const BgUiCopyright = (
                                                 TransitionColors,
                                             )}
                                             onClick={handleNext}
-                                            disabled={fixedPending || afterYestoday()}
+                                            disabled={fixedPending || disabledDate()}
                                             aria-label={"Next Wallpaper"}
                                         >
                                             {fixedPending
@@ -107,7 +121,7 @@ export const BgUiCopyright = (
                                                     ? <CircleCheck className={cn("text-foreground bg-transparent", TransitionColors)}/>
                                                     : <Spinner className={cn("text-sBlue bg-transparent", TransitionColors)}/>
                                                 : <ChevronLeft
-                                                    className={cn("text-foreground bg-transparent", afterYestoday() && "opacity-0", TransitionColors,)}/>
+                                                    className={cn("text-foreground bg-transparent", disabledDate() && "opacity-0", TransitionColors,)}/>
                                             }
                                         </Button>
                                         {/* 右箭头 */}

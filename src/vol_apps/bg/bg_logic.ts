@@ -15,7 +15,6 @@ import {useFixedPending} from "@/vol_apps/02_hooks/usePending.ts";
 import {bgStore, img} from "@/vol_apps/bg/bg_atom.ts";
 // import {waitForDoubleFrame} from "@/vol_apps/03_utils/waitForDoubleFrame.ts";
 
-export type BgLogic = ReturnType<typeof useBgLogic>;
 export const useBgLogic = () => {
 
     const { bgImg, setBgImg } = useSignal(bgStore("bgImg"));
@@ -36,6 +35,7 @@ export const useBgLogic = () => {
     }, [open]);
 
     const {t} = useLanguage("bg");
+
     const {language} = useSignal(languageConfig("language"))
 
     // 日期
@@ -291,31 +291,14 @@ export const useBgLogic = () => {
         // 新增 文件夹轮播
         handleDirChange,
 
-        bgType,
-        bgRepeat,
-        bgCenter,
-        bgSize,
-        otherVisible,
-
-        setBgType,
-        setBgRepeat,
-        setBgCenter,
-        setBgSize,
-        setOtherVisible,
-        setBgImg,
-
         carouselInterval, setCarouselInterval,
         carouselRandom, setCarouselRandom,
-
-        bgBingCopyright,
-        bgBingDate,
 
         handleNext,
         handlePrev,
 
-        percent, isPending,
+        percent,
         fixedPending,
-        t,
     };
 }
 

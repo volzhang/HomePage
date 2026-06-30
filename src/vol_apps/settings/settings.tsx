@@ -10,7 +10,7 @@ import {
     DrawerDescription,
 } from "@/components/ui/drawer";
 import {cn} from "@/lib/utils";
-import {type BgLogic} from "@/vol_apps/bg/bg_logic";
+
 import {Content} from "@/vol_apps/bg/bg_ui_settings";
 import {Setting_tag} from "@/vol_apps/settings/setting_tag";
 import {Setting_tiles} from "@/vol_apps/settings/setting_tiles";
@@ -74,7 +74,7 @@ const Option =
         )
     }
 
-export const Settings = (props: BgLogic) => {
+export const Settings = ({handleDirChange}: {handleDirChange:()=>void}) => {
 
     const {
         open, setOpen,
@@ -94,7 +94,7 @@ export const Settings = (props: BgLogic) => {
     const getCase = () => {
         if (value === "background") return (
             <div className={"h-full w-full flex flex-col"}>
-                <Content {...props}/>
+                <Content handleDirChange={handleDirChange}/>
                 <div className={"w-full h-0.5 shrink-0"}></div>
             </div>
         )

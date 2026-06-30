@@ -1,11 +1,13 @@
-import type {BgLogic} from "@/vol_apps/bg/bg_logic";
+
 import {useId, type ReactNode} from "react";
 import {ImgFilePickerBtn} from "@/vol_apps/tool/action/filePicker";
 import {blobToString} from "@/vol_apps/tool/a2b/blobToString";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {Folder, Image, MessageCircleHeart} from "lucide-react";
-import type {BgType, SizeType} from "@/vol_apps/bg/bg_atom.ts";
+import {bgStore, type BgType, type SizeType} from "@/vol_apps/bg/bg_atom.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
+import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 
 const BUTTON_CLASS = cn(
     "border bg-popover text-foreground",
@@ -80,15 +82,19 @@ export const MyRadio = (
 }
 
 export const Content = (
-    {
-        handleDirChange,
-        bgRepeat, bgCenter, otherVisible, bgSize, bgType,
-        setBgType, setBgRepeat, setOtherVisible, setBgCenter, setBgImg, setBgSize,
-        carouselRandom, setCarouselRandom,
-        carouselInterval, setCarouselInterval,
-        t,
-    }: BgLogic
+    {handleDirChange}: {handleDirChange:()=>void}
 ) => {
+
+    const {t} = useLanguage("bg")
+
+    const {bgType, setBgType} = useSignal(bgStore("bgType"));
+    const {bgRepeat, setBgRepeat} = useSignal(bgStore("bgRepeat"));
+    const {bgCenter, setBgCenter} = useSignal(bgStore("bgCenter"));
+    const {bgSize, setBgSize} = useSignal(bgStore("bgSize"));
+    const {otherVisible, setOtherVisible} = useSignal(bgStore("otherVisible"));
+    const {setBgImg} = useSignal(bgStore("bgImg"));
+    const {carouselRandom, setCarouselRandom} = useSignal(bgStore("carouselRandom"));
+    const {carouselInterval, setCarouselInterval} = useSignal(bgStore("carouselInterval"));
 
     const bgTypeOptions = [
         {value: "bing", label: t("Bing Wallpaper")},
