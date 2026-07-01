@@ -13,6 +13,7 @@ export const STORE_CONFIG = {
     theme: 2,
     language: 2,
     search: 2,
+    search2: 10,
     searchStyle: 2,
     tagStyle: 20,
     ts: 20,
@@ -358,15 +359,45 @@ export const useSignal: UseSignal = (...args: any[]) => {
     };
 };
 
-export const getSignal = <T>(
-    storeName: StoreName,
-    fieldName: string,
-    defaultValue: T,
-) => {
+// export const getSignal = <T>(
+//     storeName: StoreName,
+//     fieldName: string,
+//     defaultValue: T,
+// ) => {
+//     return storeHub.resolveSignal(
+//         storeName,
+//         fieldName,
+//         defaultValue
+//     );
+// };
+
+type GetSignal = {
+    <T, F extends string>(
+        storeName: StoreName,
+        fieldName: F,
+        defaultValue: T,
+    ): Expanded<T>;
+
+    <T, F extends string>(
+        tuple: [StoreName, F, T],
+    ): Expanded<T>;
+};
+
+export const getSignal: GetSignal = (...args: any[]) => {
+    let storeName: StoreName;
+    let fieldName: string;
+    let defaultValue: any;
+
+    if (Array.isArray(args[0])) {
+        [storeName, fieldName, defaultValue] = args[0];
+    } else {
+        [storeName, fieldName, defaultValue] = args;
+    }
+
     return storeHub.resolveSignal(
         storeName,
         fieldName,
-        defaultValue
+        defaultValue,
     );
 };
 

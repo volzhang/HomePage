@@ -3,33 +3,21 @@ import {useAnchorPosition} from "./useAnchorPosition";
 import type {FloatingAnchorType, UseFloatAnimationOptions} from "@/vol_apps/00_types/Types";
 import {useBetterPortal} from "@/vol_apps/02_hooks/float/useBetterPortal.ts";
 import {usePureFloatStyles} from "@/vol_apps/02_hooks/float/usePureFloatStyles";
-
-/**
- * 统一处理浮层定位与进出动画的 Hook。
- * 返回锚点 ref（可绑定到任意 HTML 元素）、完整 style 对象以及原始坐标。
- *
- * @param open - 控制浮层是否打开
- * @param direction - 弹出方向，默认 "bottom"
- * @param align - 对齐方式，默认 "start"
- * @param scale - 隐藏时缩放百分比，默认 95
- * @param duration - 入场动画时长 (ms)，默认 200
- * @param exitDuration - 出场动画时长 (ms)，默认 150
- * @param zIndex - 堆叠层级，默认 1
- * @param offset - 浮层与锚点间距 (px)，默认 4
- *
- * @returns `{ anchorRef, floatingStyle, position }`
- * - `anchorRef`：回调 ref，直接赋给任意元素的 `ref` 即可（不挑元素类型）
- * - `floatingRef`: 回调 ref，直接赋给任意元素的 `ref` 即可（不挑元素类型）
- * - `floatingStyle`：包含定位、动画、层级等内联样式
- */
+import type {CSSProperties} from "react";
+// import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys.ts";
+// import {useClickOutsideToClose} from "@/vol_apps/02_hooks/05_useClickOutsideToClose.ts";
+// import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/06_useFocusOutsideToClose.ts";
+// import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs.ts";
 
 type useFloatingOptions = UseFloatAnimationOptions & {
     align?: FloatingAnchorType;
     zIndex?: number;
+    // onOpenChange?: (open: boolean) => void;
 }
 
 export function useFloating({
                                 open,
+                                // onOpenChange,
                                 direction = "bottom",
                                 align = "start",
                                 scale = 95,
@@ -57,7 +45,7 @@ export function useFloating({
         offset
     });
 
-    const floatingStyle: React.CSSProperties = {
+    const floatingStyle: CSSProperties = {
         zIndex,
         position: "fixed",
         top: fixedPosition.top,
@@ -69,7 +57,8 @@ export function useFloating({
         transition: styles.transition,
     };
 
-    return {anchorRef, floatingRef, floatingStyle, floatingPortal: portal};
+    return {anchorRef, floatingRef, floatingStyle, floatingPortal: portal,
+        portalMounted: visible};
 }
 
 

@@ -301,5 +301,8 @@ export const resources: RESOURCES = {
         //toast
         "can not open link":"无法打开链接",
 
+        "search...":"搜索...",
+        "Custom":"自定义",
+        "No content found":"没有匹配的内容",
     }
 } as const;

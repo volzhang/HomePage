@@ -1,7 +1,7 @@
-import {
+import React, {
     type ButtonHTMLAttributes, type ReactNode, type CSSProperties,
     createContext, forwardRef, useContext, useState, cloneElement, useCallback, useMemo, Children, isValidElement,
-    startTransition,
+    startTransition, type ReactElement, type Ref, type ReactPortal,
 } from "react";
 import {cn} from "@/lib/utils";
 import {CheckIcon} from "lucide-react";
@@ -39,12 +39,12 @@ export const SelectContext = createContext<{
     open: boolean;
     onOpenChange?: (open: boolean) => void;
 
-    anchorRef?: React.Ref<any>;
-    floatingRef?: React.Ref<any>;
+    anchorRef?: Ref<any>;
+    floatingRef?: Ref<any>;
     floatingStyle?: CSSProperties;
-    floatingPortal?: (node: ReactNode) => React.ReactPortal | null;
+    floatingPortal?: (node: ReactNode) => ReactPortal | null;
 
-    autoFocusRef?: React.Ref<any>;
+    autoFocusRef?: Ref<any>;
 
     duration?: number;
     exitDuration?: number;
@@ -55,8 +55,8 @@ export const useSelectContext = () => useContext(SelectContext);
 
 interface UListProps {
     children?:
-        | React.ReactElement<OptionProps>
-        | React.ReactElement<OptionProps>[];
+        | ReactElement<OptionProps>
+        | ReactElement<OptionProps>[];
     options?: { label: ReactNode; value: string }[];
     menuClassName?: string;
     itemClassName?: string;
@@ -179,7 +179,7 @@ export const Option = forwardRef<HTMLButtonElement, OptionProps>(({
 })
 
 interface TriggerProps {
-    children: React.ReactElement<any>;
+    children: ReactElement<any>;
     triggerClassName?: string;
 }
 
@@ -194,7 +194,7 @@ export const Trigger = ({children, triggerClassName, ...rest}: TriggerProps) => 
     return cloneElement(child, {
         ref: mergedRef,
         className: cn(TRIGGER_CLASS, triggerClassName, child.props.className),
-        onClick: (e: React.MouseEvent) => {
+        onClick: (e: MouseEvent) => {
             child.props.onClick?.(e);
             if (!e.defaultPrevented) {
                 onOpenChange?.(!open);
@@ -265,6 +265,7 @@ export const SelectComponent = ({
     // 定位与动画
     const {anchorRef, floatingRef, floatingStyle, floatingPortal} = useFloating({
         open,
+        // onOpenChange,
         direction,
         align,
         offset,
