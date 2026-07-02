@@ -1,7 +1,7 @@
-import {initStoreState, useSignal} from "@/vol_apps/04_persist_atoms";
+import {createSignal, initStoreState, useSignal} from "@/vol_apps/04_persist_atoms";
 import {cn} from "@/lib/utils.ts";
 import {Check, Search} from "lucide-react";
-import React, {type FormEventHandler, type KeyboardEventHandler, useMemo} from "react";
+import React, {type KeyboardEventHandler, type ReactNode, useEffect, useMemo} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink.ts";
 import {useFloating} from "@/vol_apps/02_hooks/float/useFloating.ts";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys.ts";
@@ -9,6 +9,10 @@ import {useClickOutsideToClose} from "@/vol_apps/02_hooks/05_useClickOutsideToCl
 import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/06_useFocusOutsideToClose.ts";
 import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs.ts";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {useModalPortal} from "@/vol_apps/02_hooks/float/useModalPortal.tsx";
+import {timeout} from "@dnd-kit/dom/utilities";
+import {toast} from "sonner";
+import {Button} from "@/components/ui/button.tsx";
 
 // import search_bing from "@/assets/search_bing.svg";
 // import search_google from "@/assets/search_google.png";
@@ -24,7 +28,7 @@ type SearchEngine = {
     queryStringPrefix: string;      // search engine queryStringPrefix, for example, https://www.bing.com/search?q=
     homepageUrl: string;        // search engine homepage url, for example, https://www.bing.com/
     name: string;
-    icon: string;
+    icon: string;       //base64 string(img type), default ""
 };
 
 // const defaultEngines: SearchEngine[] = [
@@ -53,14 +57,119 @@ export const searchStore = initStoreState({
     storeName: "search2",
     fields: {
         engineInUseId: 0,
-        SearchEngines: [] as SearchEngine[],
+        customEngines: [] as SearchEngine[],
         visible: true,
     }
 })
 
-export const getEngineById = (engineInUseId: number) => {
-    return defaultEngines.find(e => e.id === engineInUseId) ?? defaultEngines[0];
-};
+const useSearchStore = () => {
+    const {engineInUseId, setEngineInUseId} = useSignal(searchStore("engineInUseId"))
+    const {customEngines, setCustomEngines} = useSignal(searchStore("customEngines"))
+
+    const getEngines = (): SearchEngine[] => {
+        const engines: SearchEngine[] = []
+        defaultEngines.forEach(engine => {
+            engines.push(engine)
+        })
+        customEngines.forEach(engine => {
+            engines.push(engine)
+        })
+        return engines;
+    }
+
+    const getEngineById = (id: number): SearchEngine | null => {
+        const custom = customEngines.find(e => e.id === id);
+        if (custom) return custom;
+        const def = defaultEngines.find(e => e.id === id);
+        if (def) return def;
+        console.error("no engine found", id, "fallback to bing");
+        return null
+    }
+
+    const getCurrentEngine = (): SearchEngine | null => {
+        return getEngineById(engineInUseId)
+    }
+
+    const getCurrentEngineName = (): string => {
+        const engine = getCurrentEngine()
+        if (engine) return engine.name
+        return "unknown"
+    }
+
+    const generateNewEngineId = (): number => {
+        const usedIds = new Set<number>();
+        defaultEngines.forEach(e => usedIds.add(e.id));
+        customEngines.forEach(e => usedIds.add(e.id));
+        return Math.max(...usedIds) + 1;
+    };
+
+    // 只能修改自定义引擎
+    const updateEngineById = (id: number, updates: Partial<SearchEngine>): void => {
+        if (Object.keys(updates).length === 0) return;
+
+        // 只能修改自定义引擎
+        const baseEngine = customEngines.find(e => e.id === id);
+        if (!baseEngine) return
+
+        const updatedEngine = {...baseEngine, ...updates};
+
+        const existingIndex = customEngines.findIndex(e => e.id === id);
+        let newEngines: SearchEngine[];
+        if (existingIndex !== -1) {
+            newEngines = [...customEngines];
+            newEngines[existingIndex] = updatedEngine;
+        } else {
+            newEngines = [...customEngines, updatedEngine];
+        }
+        setCustomEngines(newEngines)
+    }
+
+    const {t} = useLanguage()
+    const creatNewengine = (): number => {
+        const newId = generateNewEngineId();
+        const newEngine: SearchEngine = {
+            id: newId,
+            name: `${t("Custom Search")} ${newId}`,
+            queryStringPrefix: "",
+            homepageUrl: "",
+            icon: "",
+        };
+        setCustomEngines([...customEngines, newEngine]);
+        setEngineInUseId(newId)
+        return newId;
+    }
+
+    const deleteEngineById = (id: number): void => {
+        // 只能删除自定义引擎
+        const baseEngine = customEngines.find(e => e.id === id);
+        if (!baseEngine) return;
+
+        const newEngines = customEngines.filter(e => e.id !== id);
+        setCustomEngines(newEngines);
+
+        if (engineInUseId === id) {
+            toast.info("fallback to bing");
+            setEngineInUseId(0);
+        }
+    }
+
+    return {
+        engineInUseId, setEngineInUseId,
+        customEngines, setCustomEngines,
+        getEngines,
+        getCurrentEngine,
+        getCurrentEngineName,
+        getEngineById,
+        generateNewEngineId,
+        updateEngineById,
+        creatNewengine,
+        deleteEngineById,
+    }
+}
+
+const selectIsOpenSiganle = createSignal<boolean>(false)
+const customIsOpenSignal = createSignal<boolean>(false)
+// const customEngineInEdit = createSignal<number | null>(null)
 
 const LEADING_HEIGHT = "leading-[44px]"
 const BOX_HEIGHT = "h-[60px]"
@@ -77,7 +186,7 @@ const WRAPPER = "group flex mx-auto " +
 // icon & name
 const WRAPPER_FLEX = "flex flex-col justify-start"
 const COLORS = "bg-transparent text-sBlue group-hover:bg-white"
-const BOX_FLEX = "flex items-center"
+const BOX_FLEX = "flex items-center whitespace-nowrap"
 
 const ICON_WRAPPER = cn(WRAPPER_FLEX, COLORS,
     "w-[64px]", "pl-[16px] pr-[12px] select-none",
@@ -102,18 +211,14 @@ const HOVER = "hover:bg-sBlue hover:text-white"
 const FOCUS = "focus:bg-sBlue focus:text-white"
 const BUTTON = cn(RESET_BUTTON, FOCUS, HOVER)
 
-const autoResize: FormEventHandler<HTMLTextAreaElement> = (e) => {
-    const el = e.currentTarget;
-    el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
-};
-
 const SearchIcon = () => {
-    const {engineInUseId} = useSignal(searchStore("engineInUseId"))
-    const engine = getEngineById(engineInUseId)
+    const {getCurrentEngine} = useSearchStore()
+    const engine = getCurrentEngine()
     const onClick = () => {
+        if (!engine) return
         openLinkInNewTab(engine.homepageUrl)
     }
+
     return (
         <button className={cn(BUTTON, ICON_WRAPPER)} onClick={onClick}>
             <div className={ICON_BOX}><Search strokeWidth={3} size={30}/></div>
@@ -121,56 +226,99 @@ const SearchIcon = () => {
     )
 }
 
+const BetterTextarea = ({
+                            value,
+                            onValueChange,
+                            onKeyDown,
+                            className,
+                            disabled,
+                            placeholder
+                        }: {
+    value?: string,
+    disabled?: boolean
+    onValueChange?: (v: string) => void
+    onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement>,
+    className?: string
+    placeholder?: string
+}) => {
+    const ref = React.useRef<HTMLTextAreaElement>(null);
+
+    const resize = () => {
+        const el = ref.current;
+        if (!el) return;
+        el.style.height = "auto";
+        el.style.height = `${el.scrollHeight}px`;
+    };
+
+    useEffect(() => {
+        resize();
+    }, [value]);
+
+    return (
+        <>
+            <textarea
+                ref={ref}
+                placeholder={placeholder}
+                className={className}
+                disabled={disabled}
+                readOnly={disabled}
+                rows={1}
+                onInput={resize}
+                onKeyDown={(e) => {
+                    if (e.key === "Escape") {
+                        e.preventDefault()
+                        e.currentTarget.blur()
+                    }
+                    onKeyDown?.(e)
+                }}
+                value={value}
+                onChange={(e) => onValueChange?.(e.currentTarget.value)}
+            />
+        </>
+    )
+}
 
 const SearchInput = () => {
-    const {engineInUseId} = useSignal(searchStore("engineInUseId"))
-    const engine = getEngineById(engineInUseId)
+    const {getCurrentEngine} = useSearchStore()
+    const engine = getCurrentEngine()
+    const [value, setValue] = React.useState("")
 
     const onKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
         if (e.key === "Enter") {
             if (e.shiftKey) return;     // Shift + Enter 什么都不用做，让 textarea 默认插入换行
             e.preventDefault()
             const keyword = e.currentTarget.value
-            const prefix = engine.queryStringPrefix
+            const prefix = engine?.queryStringPrefix
             const url = prefix + encodeURIComponent(keyword)
             openLinkInNewTab(url)
             return;
         }
-        if (e.key === "Escape") {
-            e.preventDefault()
-            e.currentTarget.blur()
-        }
     }
 
-    return <textarea
+    return <BetterTextarea
+        value={value}
+        onValueChange={setValue}
         className={TEXTAREA}
-        rows={1}
-        onInput={autoResize}
         onKeyDown={onKeyDown}
     />
 }
 
 const duration = 250
 const exitDuration = 250
+const scale = 90
+const zIndex = 30
 const RESET_INPUT = "m-0 p-0 outline-0"
 const ITEMS = cn("text-xl w-full px-2 py-1.5 h-fit rounded-[5px]")
 
 const EngineName = () => {
-    const [open, setOpen] = React.useState(false)
-    const onClick = () => setOpen(!open)
-    const onClose = () => setOpen(false)
 
-    const {
-        anchorRef,
-        floatingRef, floatingStyle,
-        floatingPortal, portalMounted
-    } = useFloating({
-        open,
-        direction: 'bottom',
-        duration,
-        exitDuration,
-        align: 'end',
-        offset: 8,
+    const open = selectIsOpenSiganle.use()
+    const onClose = () => selectIsOpenSiganle.set(false)
+    const onClick = () => selectIsOpenSiganle.set(!open)
+
+    const {anchorRef, floatingRef, floatingStyle, floatingPortal, portalMounted} = useFloating({
+        open, duration, exitDuration, scale, zIndex,
+        direction: 'bottom', align: 'end', offset: 8,
     });
 
     // 关闭行为
@@ -182,8 +330,8 @@ const EngineName = () => {
     const mergedAnchorRef = useMergeRefs(anchorRef, clickOutsideIgnoreRef, focusOutsideIgnoreRef);
     const mergedFloatingRef = useMergeRefs(floatingRef, clickOutsideRef, focusOutsideRef);
 
-    const {engineInUseId} = useSignal(searchStore("engineInUseId"))
-    const name = getEngineById(engineInUseId).name
+    const {getCurrentEngineName} = useSearchStore()
+    const name = getCurrentEngineName()
 
     const RotationIcon = useMemo(() => {
         return <span className={"inline-block text-[16px] translate-y-px translate-x-1"} style={{
@@ -198,9 +346,15 @@ const EngineName = () => {
             <button ref={mergedAnchorRef} className={cn(BUTTON, NAME_WRAPPER)} onClick={onClick}>
                 <p className={NAME_BOX}>{name}{RotationIcon}</p>
             </button>
+            {/* floatingPortal需要和按钮锚定位置，不拆分 */}
             {floatingPortal(
                 <div ref={mergedFloatingRef} style={floatingStyle} className={"focus:outline-0"}>
-                    <EngineSetting onOpenChange={setOpen}/>
+                    <SelectEngine mounted={portalMounted}>
+                        <>
+                            <HR/>
+                            <CustomEngineButton/>
+                        </>
+                    </SelectEngine>
                 </div>
             )}
         </>
@@ -208,22 +362,30 @@ const EngineName = () => {
 }
 
 const HR = () => <hr className={"p-0 m-0 border my-1 w-full"}/>
+const LINE = () => <div className={"border flex w-px my-1"}></div>
 
-const EngineSetting = ({onOpenChange}: { onOpenChange?: (o: boolean) => void }) => {
+const SelectEngine = ({
+                          mounted,
+                          children
+                      }: {
+    mounted: boolean,
+    children?: ReactNode
+}) => {
+
+    const onOpenChange = (o: boolean) => selectIsOpenSiganle.set(o)
     const [value, setValue] = React.useState("")
-    const {engineInUseId, setEngineInUseId} = useSignal(searchStore("engineInUseId"))
-    const name = getEngineById(engineInUseId).name
+
+    const {engineInUseId, setEngineInUseId, getEngines} = useSearchStore()
+    const engines = getEngines()
+
     const {t} = useLanguage()
 
     // 处理排序逻辑
     const filteredAndSorted = React.useMemo(() => {
-        // 如果输入为空或只有空白，直接返回原始顺序（浅拷贝，避免修改原数组）
-        if (value.trim() === "") {
-            return [...defaultEngines];
-        }
-
+        // 如果输入为空或只有空白，直接返回原始顺序
+        if (value.trim() === "") return [...engines];
         const lowerValue = value.toLowerCase();
-        return defaultEngines
+        return engines
             .filter(engine => engine.name.toLowerCase().includes(lowerValue))
             .sort((a, b) => {
                 const aIndex = a.name.toLowerCase().indexOf(lowerValue);
@@ -231,16 +393,24 @@ const EngineSetting = ({onOpenChange}: { onOpenChange?: (o: boolean) => void }) 
                 if (aIndex !== bIndex) return aIndex - bIndex;
                 return a.name.length - b.name.length;
             });
-    }, [value]);
+
+    }, [value, engines]);
 
     const onSelect = (engine: SearchEngine) => {
         setEngineInUseId(engine.id);
-        onOpenChange?.(false)
+        onOpenChange(false)
     };
+
+    useEffect(() => {
+        if (!mounted) return;
+        const el = document.querySelector(`[data-engine-id="${engineInUseId}"]`);
+        if (!el) return;
+        el.scrollIntoView({block: "nearest"});
+    }, [mounted, engineInUseId]);
 
     return (
         <div className={cn(
-            "w-fit max-w-[216px] h-fit max-h-150",
+            "w-fit max-w-[250px] h-fit max-h-124",
             "rounded-md bg-background text-foreground",
             "flex flex-col items-start justify-start p-1"
         )}>
@@ -257,11 +427,12 @@ const EngineSetting = ({onOpenChange}: { onOpenChange?: (o: boolean) => void }) 
                 {filteredAndSorted.length > 0
                     ? filteredAndSorted.map(engine =>
                         <button key={engine.id}
-                                className={cn(BUTTON, ITEMS, "justify-between")}
+                                data-engine-id={engine.id}
+                                className={cn(BUTTON, ITEMS, "justify-between whitespace-nowrap")}
                                 onClick={() => onSelect(engine)}
                         >
-                            {engine.name}
-                            {engine.name === name && <Check/>}
+                            {engine.name === "" ? "\u200b" : engine.name}
+                            {engine.id === engineInUseId && <Check/>}
                         </button>
                     )
                     : <p className={cn("h-full w-full text-xl px-2 py-1.5 flex items-center justify-start")}>
@@ -269,10 +440,125 @@ const EngineSetting = ({onOpenChange}: { onOpenChange?: (o: boolean) => void }) 
                 }
             </div>
             <div className={"flex shrink-0 w-full flex-col items-start justify-start"}>
-                <HR/>
-                <button className={cn(BUTTON, ITEMS)}>{t("Custom")}</button>
+                {children}
             </div>
         </div>
+    )
+}
+
+const CustomEngineButton = () => {
+    const {t} = useLanguage()
+    const onClick = () => {
+        selectIsOpenSiganle.set(false)
+        timeout(() => customIsOpenSignal.set(true), exitDuration)
+    }
+    return <button className={cn(BUTTON, ITEMS)} onClick={onClick}>{t("Custom")}</button>
+}
+
+const InsertEngineButton = () => {
+    const {t} = useLanguage()
+    const {creatNewengine, setEngineInUseId} = useSearchStore()
+    const onClick = () => {
+        const newId = creatNewengine()
+        setEngineInUseId(newId)
+    }
+    return <Button variant={"outline"} className={"w-full h-10"} onClick={onClick}>{t("Create")}</Button>
+}
+
+const FIELDS: Array<Exclude<keyof SearchEngine, "id">> = [
+    "name",
+    "queryStringPrefix",
+    "homepageUrl",
+    "icon",
+];
+
+const FIELD_LABELS: Record<Exclude<keyof SearchEngine, "id">, string> = {
+    name: "Name",
+    queryStringPrefix: "QueryPrefix URL",
+    homepageUrl: "Homepage URL",
+    icon: "Icon",
+};
+
+// const ITEMS = cn("text-xl w-full px-2 py-1.5 h-fit rounded-[5px]")
+
+const FIELD_GROUP = "flex flex-row h-fit items-center justify-start mt-2"
+const FIELD_NAME = "w-48 h-fit text-xl px-2 py-1.5 rounded-[5px] flex items-center justify-start text-foreground/50"
+const FIELD_CONTENT = "flex flex-1 text-xl px-2 py-1.5 rounded-[5px] items-center justify-start"
+
+const CustomEnginePortal = () => {
+
+    const open = customIsOpenSignal.use()
+    const onOpenChange = (o: boolean) => customIsOpenSignal.set(o)
+    const {modalPortal, portalMounted} = useModalPortal({open, onOpenChange, duration, exitDuration, scale, zIndex});
+    const {engineInUseId, updateEngineById, deleteEngineById, getCurrentEngine} = useSearchStore()
+
+    const currentEngine = getCurrentEngine()
+
+    const {t} = useLanguage()
+
+    const canBeRemoved: boolean = currentEngine !== null && currentEngine.id >= defaultEngines.length
+
+    return (
+        <>
+            {modalPortal(
+                <div className={"h-140 w-fit flex flex-row bg-background text-foreground gap-1 rounded-md overflow-hidden"}>
+                    <div className={"relative flex flex-col"}>
+                        <SelectEngine mounted={portalMounted}/>
+                        <div className={"absolute bottom-2 left-2 right-1"}>
+                            {/*<HR/>*/}
+                            <InsertEngineButton/>
+                        </div>
+                    </div>
+                    <LINE/>
+                    <div className={cn("relative flex flex-col w-150 mb-3 ml-1 mr-3 gap-6 h-140 pt-3")}>
+                        <div className={"flex flex-col w-full h-fit max-h-115 overflow-y-auto "}>
+                            {
+                                currentEngine === null
+                                    ? <>loading</>
+                                    : FIELDS.map(key => {
+                                        const value = currentEngine[key] || "";
+                                        const disabled = defaultEngines.some(e => e.id === currentEngine.id)
+                                        const onValueChange = (v: string) => updateEngineById(engineInUseId, {[key]: v})
+
+                                        if (key === "icon") return (
+                                            <div key={key} className={FIELD_GROUP}>
+                                                <div className={FIELD_NAME}>{FIELD_LABELS[key]}</div>
+                                                <button className={cn(FIELD_CONTENT, "border text-sBlue",
+                                                    "hover:bg-sBlue hover:text-white", "cursor-pointer")}>{t("custom icon")}</button>
+                                            </div>
+                                        )
+
+                                        return (
+                                            <div key={key} className={FIELD_GROUP}>
+                                                <div className={FIELD_NAME}>{FIELD_LABELS[key]}</div>
+                                                <BetterTextarea className={cn(RESET_TEXTAREA, FIELD_CONTENT, !disabled && "border bg-white text-black")}
+                                                                // placeholder="\u200b"
+                                                                disabled={disabled}
+                                                                value={value}
+                                                                onValueChange={onValueChange}/>
+                                            </div>
+                                        )
+                                    })
+                            }
+
+                            {canBeRemoved &&
+                                <div>
+                                    <div className={FIELD_GROUP}>
+                                        <div className={FIELD_NAME}>{t("Delete")}</div>
+                                        <button className={cn(FIELD_CONTENT, "border",
+                                            "text-red-500 hover:bg-red-500 hover:text-white cursor-pointer"
+                                        )}
+                                                onClick={() => deleteEngineById(engineInUseId)}
+                                        >{t("delete this search engine")}</button>
+                                    </div>
+                                </div>}
+                        </div>
+                        <Button className={"absolute bottom-2 left-0 right-0 h-10"}
+                                variant={"outline"} onClick={() => onOpenChange(false)}>{t("OK")}</Button>
+                    </div>
+                </div>
+            )}
+        </>
     )
 }
 
@@ -284,6 +570,7 @@ export const SearchBar2 = () => {
                 <SearchIcon/>
                 <SearchInput/>
                 <EngineName/>
+                <CustomEnginePortal/>
             </div>}
         </>
     )

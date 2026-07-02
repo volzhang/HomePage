@@ -1,6 +1,7 @@
 import { useBetterPortal } from "./useBetterPortal";
 import { usePureFloatStyles } from "./usePureFloatStyles";
 import type {ReactNode} from "react";
+import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys.ts";
 
 interface UseCenteredFloatingOptions {
     open: boolean;
@@ -21,6 +22,9 @@ export function useModalPortal({
                                     }: UseCenteredFloatingOptions) {
 
     const { portal, visible } = useBetterPortal({ open, exitDuration });
+
+    const onClose = ()=>onOpenChange?.(false);
+    useKeyEscapeToClose(open, onClose)
 
     const anim = usePureFloatStyles({
         open: visible,
@@ -67,5 +71,5 @@ export function useModalPortal({
             </div>
         );
 
-    return { modalPortal };
+    return { modalPortal, portalMounted:visible};
 }

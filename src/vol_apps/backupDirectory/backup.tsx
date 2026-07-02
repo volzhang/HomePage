@@ -148,8 +148,8 @@ export const Backup = () => {
         onOpenChange: (isOpen: boolean) => {
             backupOpenSignal.set(isOpen)
         },
-        duration: 300,
-        exitDuration: 200,
+        duration: 250,
+        exitDuration: 250,
         scale: 90,
         zIndex: 30,
     });

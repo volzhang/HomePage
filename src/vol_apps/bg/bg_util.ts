@@ -7,10 +7,10 @@ let layerB: HTMLDivElement;
 let current = "a";
 
 export const bgInitState = {
-    bgImg:img,
-    bgSize:"auto",
-    bgRepeat:true,
-    bgCenter:false,
+    bgImg: img,
+    bgSize: "auto",
+    bgRepeat: true,
+    bgCenter: false,
 }
 
 // waitForDoubleFrame 替代 void next.offsetHeight;
@@ -44,10 +44,15 @@ export const initBgLayer = async () => {
     // 2. 预加载背景图，确保整张图解码完成
     await new Promise<void>((resolve) => {
         const preloadImg = new Image();
-        preloadImg.onload = () => resolve();
-        preloadImg.onerror = () => {
-            resolve(); // 不阻塞初始化
+        preloadImg.onload = async () => {
+            try {
+                await preloadImg.decode();
+            } catch {
+
+            }
+            resolve();
         };
+        preloadImg.onerror = () => resolve();
         preloadImg.src = bgInitState.bgImg;
     });
 
