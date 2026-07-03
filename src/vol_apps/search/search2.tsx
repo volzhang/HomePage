@@ -191,7 +191,7 @@ const NAME_BOX = cn(BOX_FLEX, BOX_HEIGHT, "text-[19px] font-semibold")
 // input
 const RESET_TEXTAREA = "block w-full resize-none overflow-hidden border-0 p-0 m-0 bg-transparent outline-none"
 const TEXTAREA = cn(RESET_TEXTAREA,
-    "px-1 py-[8px] text-[23px] group-hover:bg-white focus:text-black text-sBlue",
+    "px-1 py-[8px] text-[22px] group-hover:bg-white focus:text-black text-sBlue",
     TRANSITION,
     LEADING_HEIGHT)
 
@@ -210,15 +210,15 @@ const CurrentIcon = () => {
         <div className={ICON_BOX}>
             {hasIcon
                 ?
-                <div className={"relative w-[32px] h-[32px]"}>
+                <div className={"relative w-[30px] h-[30px]"}>
                     <img
                         className="absolute max-w-none select-none"
                         style={{
-                            width: `${32}px`,
-                            height: `${32}px`,
+                            width: `${30}px`,
+                            height: `${30}px`,
                             left: "50%",
                             top: "50%",
-                            transform: `translate(calc(-50% + ${0}px), calc(-50% + ${0}px))`,
+                            transform: `translate(calc(-50%), calc(-50%))`,
                         }}
                         src={engine?.icon}
                         alt="icon"
