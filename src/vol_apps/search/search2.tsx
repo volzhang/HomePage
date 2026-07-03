@@ -542,9 +542,7 @@ const CustomEnginePortal = () => {
             const reader = new FileReader();
             reader.onload = () => {
                 const base64 = reader.result as string;
-                console.log(1, base64);//成功
                 updateEngineById(engineInUseId, {icon: base64});
-                console.log(2, currentEngine?.icon);
             };
             reader.readAsDataURL(file);
         } catch (error) {
