@@ -139,7 +139,7 @@ const useSearchStore = () => {
         setCustomEngines(newEngines);
 
         if (engineInUseId === id) {
-            toast.info("fallback to bing");
+            toast.info(t("fallback to default search engine Bing"));
             setEngineInUseId(0);
         }
     }
