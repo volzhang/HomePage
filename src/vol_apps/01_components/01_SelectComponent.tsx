@@ -263,9 +263,8 @@ export const SelectComponent = ({
                                     // className,
                                 }: SelectProps) => {
     // 定位与动画
-    const {anchorRef, floatingRef, floatingStyle, floatingPortal} = useFloating({
+    const {anchorRef, floatingRef, floatingStyle, floatingPortal, portalMounted} = useFloating({
         open,
-        // onOpenChange,
         direction,
         align,
         offset,
@@ -277,7 +276,7 @@ export const SelectComponent = ({
 
     const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
     const {clickOutsideRef, clickOutsideIgnoreRef} = useClickOutsideToClose({open, onClose});
-    const {focusOutsideRef, focusOutsideIgnoreRef, autoFocusRef} = useFocusOutsideToClose({open, onClose});
+    const {focusOutsideRef, focusOutsideIgnoreRef, autoFocusRef} = useFocusOutsideToClose({open:portalMounted, onClose});
 
     const mergedAnchor = useMergeRefsLoose(anchorRef, clickOutsideIgnoreRef, focusOutsideIgnoreRef);
 
