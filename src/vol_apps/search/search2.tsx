@@ -429,7 +429,7 @@ const SelectEngine = ({
 
     return (
         <div className={cn(
-            "w-fit max-w-[250px] h-fit max-h-124",
+            "w-fit max-w-[250px] h-fit max-h-125",
             "rounded-md bg-background text-foreground",
             "flex flex-col items-start justify-start p-1"
         )}>
