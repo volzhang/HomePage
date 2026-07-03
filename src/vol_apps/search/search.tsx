@@ -1,7 +1,7 @@
-import {createSignal, initStoreState, useSignal} from "@/vol_apps/04_persist_atoms";
+import {createSignal, useSignal} from "@/vol_apps/04_persist_atoms";
 import {cn} from "@/lib/utils.ts";
 import {Check, Search} from "lucide-react";
-import React, {type KeyboardEventHandler, type ReactNode, useEffect, useMemo} from "react";
+import React, {type KeyboardEventHandler, type ReactNode, useEffect, useLayoutEffect, useRef} from "react";
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink.ts";
 import {useFloating} from "@/vol_apps/02_hooks/float/useFloating.ts";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys.ts";
@@ -10,153 +10,10 @@ import {useFocusOutsideToClose} from "@/vol_apps/02_hooks/06_useFocusOutsideToCl
 import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs.ts";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {useModalPortal} from "@/vol_apps/02_hooks/float/useModalPortal.tsx";
-import {timeout} from "@dnd-kit/dom/utilities";
-import {toast} from "sonner";
+
 import {Button} from "@/components/ui/button.tsx";
 
-import search_bing from "@/assets/search_bing.svg";
-import search_google from "@/assets/search_google.png";
-import search_duckduckgo from "@/assets/search_duckduckgo.svg";
-import search_yandex from "@/assets/search_yandex.png";
-import search_baidu from "@/assets/search_baidu.png";
-import search_yahoo from "@/assets/search_yahoo.png";
-import search_brave from "@/assets/search_brave.svg";
-import search_ecosia from "@/assets/search_ecosia.svg";
-
-type SearchEngine = {
-    id: number;
-    queryStringPrefix: string;      // search engine queryStringPrefix, for example, https://www.bing.com/search?q=
-    homepageUrl: string;        // search engine homepage url, for example, https://www.bing.com/
-    name: string;
-    icon: string;       //base64 string(img type), default ""
-};
-
-const defaultEngines: SearchEngine[] = [
-    {id: 0, name: "Bing", queryStringPrefix: "https://www.bing.com/search?q=", homepageUrl: "https://www.bing.com/", icon: search_bing},
-    {id: 1, name: "Google", queryStringPrefix: "https://www.google.com/search?q=", homepageUrl: "https://www.google.com/", icon: search_google},
-    {id: 3, name: "Yandex", queryStringPrefix: "https://yandex.com/search?text=", homepageUrl: "https://yandex.com/", icon: search_yandex},
-    {id: 5, name: "Yahoo!", queryStringPrefix: "https://search.yahoo.com/search?p=", homepageUrl: "https://search.yahoo.com/", icon: search_yahoo},
-    {id: 2, name: "DuckDuckGo", queryStringPrefix: "https://duckduckgo.com/?q=", homepageUrl: "https://duckduckgo.com/", icon: search_duckduckgo},
-    {id: 6, name: "Brave", queryStringPrefix: "https://search.brave.com/search?q=", homepageUrl: "https://search.brave.com/", icon: search_brave},
-    {id: 7, name: "Ecosia", queryStringPrefix: "https://www.ecosia.org/search?q=", homepageUrl: "https://www.ecosia.org/", icon: search_ecosia},
-    {id: 4, name: "Baidu", queryStringPrefix: "https://www.baidu.com/s?wd=", homepageUrl: "https://www.baidu.com/", icon: search_baidu},
-]
-
-export const searchStore = initStoreState({
-    storeName: "search",
-    fields: {
-        engineInUseId: 0,
-        customEngines: [] as SearchEngine[],
-        visible: true,
-    }
-})
-
-const useSearchStore = () => {
-    const {engineInUseId, setEngineInUseId} = useSignal(searchStore("engineInUseId"))
-    const {customEngines, setCustomEngines} = useSignal(searchStore("customEngines"))
-
-    const getEngines = (): SearchEngine[] => {
-        const engines: SearchEngine[] = []
-        defaultEngines.forEach(engine => {
-            engines.push(engine)
-        })
-        customEngines.forEach(engine => {
-            engines.push(engine)
-        })
-        return engines;
-    }
-
-    const getEngineById = (id: number): SearchEngine | null => {
-        const custom = customEngines.find(e => e.id === id);
-        if (custom) return custom;
-        const def = defaultEngines.find(e => e.id === id);
-        if (def) return def;
-        console.error("no engine found", id, "fallback to bing");
-        return null
-    }
-
-    const getCurrentEngine = (): SearchEngine | null => {
-        return getEngineById(engineInUseId)
-    }
-
-    const getCurrentEngineName = (): string => {
-        const engine = getCurrentEngine()
-        if (engine) return engine.name
-        return t("unknown")
-    }
-
-    const generateNewEngineId = (): number => {
-        const usedIds = new Set<number>();
-        defaultEngines.forEach(e => usedIds.add(e.id));
-        customEngines.forEach(e => usedIds.add(e.id));
-        return Math.max(...usedIds) + 1;
-    };
-
-    // 只能修改自定义引擎
-    const updateEngineById = (id: number, updates: Partial<SearchEngine>): void => {
-        if (Object.keys(updates).length === 0) return;
-
-        // 只能修改自定义引擎
-        const baseEngine = customEngines.find(e => e.id === id);
-        if (!baseEngine) return
-
-        const updatedEngine = {...baseEngine, ...updates};
-
-        const existingIndex = customEngines.findIndex(e => e.id === id);
-        let newEngines: SearchEngine[];
-        if (existingIndex !== -1) {
-            newEngines = [...customEngines];
-            newEngines[existingIndex] = updatedEngine;
-        } else {
-            newEngines = [...customEngines, updatedEngine];
-        }
-        setCustomEngines(newEngines)
-    }
-
-    const {t} = useLanguage()
-    const creatNewengine = (): number => {
-        const newId = generateNewEngineId();
-        const n = newId - defaultEngines.length
-
-        const newEngine: SearchEngine = {
-            id: newId,
-            name: `${t("Custom Search")} ${n === 0 ? "" : n}`,
-            queryStringPrefix: "",
-            homepageUrl: "",
-            icon: "",
-        };
-        setCustomEngines([...customEngines, newEngine]);
-        setEngineInUseId(newId)
-        return newId;
-    }
-
-    const deleteEngineById = (id: number): void => {
-        // 只能删除自定义引擎
-        const baseEngine = customEngines.find(e => e.id === id);
-        if (!baseEngine) return;
-
-        const newEngines = customEngines.filter(e => e.id !== id);
-        setCustomEngines(newEngines);
-
-        if (engineInUseId === id) {
-            toast.info(t("fallback to default search engine Bing"));
-            setEngineInUseId(0);
-        }
-    }
-
-    return {
-        engineInUseId, setEngineInUseId,
-        customEngines, setCustomEngines,
-        getEngines,
-        getCurrentEngine,
-        getCurrentEngineName,
-        getEngineById,
-        generateNewEngineId,
-        updateEngineById,
-        creatNewengine,
-        deleteEngineById,
-    }
-}
+import {defaultEngines, type SearchEngine, searchStore, useSearchStore} from "@/vol_apps/search/searchSignal.ts";
 
 const selectIsOpenSiganle = createSignal<boolean>(false)
 const customIsOpenSignal = createSignal<boolean>(false)
@@ -186,12 +43,11 @@ const ICON_BOX = cn(BOX_FLEX, BOX_HEIGHT)
 const NAME_WRAPPER = cn(WRAPPER_FLEX, COLORS,
     "w-fit", "pl-[16px] pr-[20px] select-none",
     TRANSITION)
-const NAME_BOX = cn(BOX_FLEX, BOX_HEIGHT, "text-[19px] font-semibold")
+const NAME_BOX = cn(BOX_FLEX, BOX_HEIGHT, "text-[19px] font-semibold select-none")
 
 // input
 const RESET_TEXTAREA = "block w-full resize-none overflow-hidden border-0 p-0 m-0 bg-transparent outline-none"
-const TEXTAREA = cn(RESET_TEXTAREA,
-    "px-1 py-[8px] text-[22px] group-hover:bg-white focus:text-black text-sBlue",
+const TEXTAREA = cn("px-1 py-[8px] text-[22px] group-hover:bg-white focus:text-black text-sBlue",
     TRANSITION,
     LEADING_HEIGHT)
 
@@ -205,27 +61,18 @@ const CurrentIcon = () => {
     const {getCurrentEngine} = useSearchStore()
     const engine = getCurrentEngine()
     const hasIcon = engine?.icon !== ""
-
+    if (hasIcon) return (
+        <div className={ICON_BOX}>
+            <div className={"relative w-[30px] h-[30px]"}>
+                <img src={engine?.icon} alt="icon"
+                     className="absolute w-[30px] h-[30px] select-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                />
+            </div>
+        </div>
+    )
     return (
         <div className={ICON_BOX}>
-            {hasIcon
-                ?
-                <div className={"relative w-[30px] h-[30px]"}>
-                    <img
-                        className="absolute max-w-none select-none"
-                        style={{
-                            width: `${30}px`,
-                            height: `${30}px`,
-                            left: "50%",
-                            top: "50%",
-                            transform: `translate(calc(-50%), calc(-50%))`,
-                        }}
-                        src={engine?.icon}
-                        alt="icon"
-                    />
-                </div>
-                :
-                <Search strokeWidth={3} size={30}/>}
+            <Search strokeWidth={3} size={30}/>
         </div>
     )
 }
@@ -234,8 +81,7 @@ const SearchIcon = () => {
     const {getCurrentEngine} = useSearchStore()
     const engine = getCurrentEngine()
     const onClick = () => {
-        if (!engine) return
-        openLinkInNewTab(engine.homepageUrl)
+        if (engine) openLinkInNewTab(engine.homepageUrl)
     }
 
     return (
@@ -244,6 +90,13 @@ const SearchIcon = () => {
         </button>
     )
 }
+
+
+// BetterTextarea: a controlled textarea component
+// 1. default styles are removed
+// 2. rows resized by `value` prop
+// 3. blur on Escape press
+// const RESET_TEXTAREA = "block w-full resize-none overflow-hidden border-0 p-0 m-0 bg-transparent outline-none"
 
 const BetterTextarea = ({
                             value,
@@ -262,15 +115,13 @@ const BetterTextarea = ({
 }) => {
     const ref = React.useRef<HTMLTextAreaElement>(null);
 
-    const resize = () => {
+    useLayoutEffect(() => {
+        // resize rows
         const el = ref.current;
         if (!el) return;
         el.style.height = "auto";
         el.style.height = `${el.scrollHeight}px`;
-    };
 
-    useEffect(() => {
-        resize();
     }, [value]);
 
     return (
@@ -278,11 +129,11 @@ const BetterTextarea = ({
             <textarea
                 ref={ref}
                 placeholder={placeholder}
-                className={className}
+                className={cn(RESET_TEXTAREA, className)}
                 disabled={disabled}
-                readOnly={disabled}
+                // readOnly={disabled}
                 rows={1}
-                onInput={resize}
+                // onInput={resize}
                 onKeyDown={(e) => {
                     if (e.key === "Escape") {
                         e.preventDefault()
@@ -329,6 +180,13 @@ const zIndex = 30
 const RESET_INPUT = "m-0 p-0 outline-0"
 const ITEMS = cn("text-xl w-full px-2 py-1.5 h-fit rounded-[5px]")
 
+const RotationIcon = ({open}: { open: boolean }) =>
+    <span className={"inline-block text-[16px] translate-y-px translate-x-1 select-none"} style={{
+        opacity: 0.5,
+        transform: open ? "rotate(180deg)" : "rotate(0deg)",
+        transition: `transform ${open ? duration : exitDuration}ms ease-in-out`,
+    }}>▼</span>
+
 const EngineName = () => {
 
     const open = selectIsOpenSiganle.use()
@@ -352,18 +210,11 @@ const EngineName = () => {
     const {getCurrentEngineName} = useSearchStore()
     const name = getCurrentEngineName()
 
-    const RotationIcon = useMemo(() => {
-        return <span className={"inline-block text-[16px] translate-y-px translate-x-1"} style={{
-            opacity: 0.5,
-            transform: open ? "rotate(180deg)" : "rotate(0deg)",
-            transition: `transform ${open ? duration : exitDuration}ms ease-in-out`,
-        }}>▼</span>
-    }, [open])
 
     return (
         <>
             <button ref={mergedAnchorRef} className={cn(BUTTON, NAME_WRAPPER)} onClick={onClick}>
-                <p className={NAME_BOX}>{name}{RotationIcon}</p>
+                <p className={NAME_BOX}>{name}<RotationIcon open={open}/></p>
             </button>
             {/* floatingPortal需要和按钮锚定位置，不拆分 */}
             {floatingPortal(
@@ -420,6 +271,7 @@ const SelectEngine = ({
         onOpenChange(false)
     };
 
+    // 自动定位视口到 current engine
     useEffect(() => {
         if (!mounted) return;
         const el = document.querySelector(`[data-engine-id="${engineInUseId}"]`);
@@ -442,7 +294,7 @@ const SelectEngine = ({
                 </div>
                 <HR/>
             </div>
-            <div className={"flex flex-col items-start justify-start w-full overflow-y-auto gap-1"}>
+            <div className={"flex flex-col items-start justify-start w-full overflow-y-auto gap-1 select-none"}>
                 {filteredAndSorted.length > 0
                     ? filteredAndSorted.map(engine =>
                         <button key={engine.id}
@@ -466,13 +318,20 @@ const SelectEngine = ({
 }
 
 const CustomEngineButton = () => {
-    const {t} = useLanguage()
+    const timeRef = useRef<number | null>(null);
+    useEffect(() => {
+        return () => {
+            if (timeRef.current) clearTimeout(timeRef.current);
+        };
+    }, []);
+    const { t } = useLanguage();
     const onClick = () => {
-        selectIsOpenSiganle.set(false)
-        timeout(() => customIsOpenSignal.set(true), exitDuration)
+        selectIsOpenSiganle.set(false);
+        if (timeRef.current) clearTimeout(timeRef.current);
+        timeRef.current = setTimeout(() => customIsOpenSignal.set(true), exitDuration);
     }
-    return <button className={cn(BUTTON, ITEMS)} onClick={onClick}>{t("Custom")}</button>
-}
+    return <button className={cn(BUTTON, ITEMS)} onClick={onClick}>{t("Custom")}</button>;
+};
 
 const InsertEngineButton = () => {
     const {t} = useLanguage()
@@ -484,21 +343,12 @@ const InsertEngineButton = () => {
     return <Button variant={"outline"} className={"w-full h-10"} onClick={onClick}>{t("New Custom")}</Button>
 }
 
-const FIELDS: Array<Exclude<keyof SearchEngine, "id">> = [
+const FIELDS = [
     "name",
     "queryStringPrefix",
     "homepageUrl",
     "icon",
-];
-
-// const FIELD_LABELS: Record<Exclude<keyof SearchEngine, "id">, string> = {
-//     name: "Name",
-//     queryStringPrefix: "QueryPrefix URL",
-//     homepageUrl: "Homepage URL",
-//     icon: "Icon",
-// };
-
-// const ITEMS = cn("text-xl w-full px-2 py-1.5 h-fit rounded-[5px]")
+] as const;
 
 const FIELD_GROUP = "flex flex-row h-fit items-center justify-start mt-2"
 const FIELD_NAME = "w-48 h-fit text-xl px-2 py-1.5 rounded-[5px] flex items-center justify-start text-foreground/50"
@@ -550,12 +400,13 @@ const CustomEnginePortal = () => {
         }
     }
 
-    const FIELD_LABELS: Record<Exclude<keyof SearchEngine, "id">, string> = {
+    // const FIELD_LABELS: Record<Exclude<keyof SearchEngine, "id">, string> = {
+    const FIELD_LABELS = {
         name: t("Name"),
         queryStringPrefix: t("Search URL Prefix"),
         homepageUrl: t("Homepage URL"),
         icon: t("Icon"),
-    };
+    } as const;
 
     return (
         <>
@@ -596,7 +447,7 @@ const CustomEnginePortal = () => {
                                         return (
                                             <div key={key} className={FIELD_GROUP}>
                                                 <div className={FIELD_NAME}>{FIELD_LABELS[key]}</div>
-                                                <BetterTextarea className={cn(RESET_TEXTAREA, FIELD_CONTENT, !disabled && "border bg-white text-black")}
+                                                <BetterTextarea className={cn(FIELD_CONTENT, !disabled && "border bg-white text-black")}
                                                     // placeholder="\u200b"
                                                                 disabled={disabled}
                                                                 value={value}
@@ -607,18 +458,14 @@ const CustomEnginePortal = () => {
                             }
 
                             {canBeRemoved &&
-                                <>
-                                    <div>
-                                        <div className={FIELD_GROUP}>
-                                            <div className={FIELD_NAME}>{t("Delete")}</div>
-                                            <button className={cn(FIELD_CONTENT, "border",
-                                                "text-red-500 hover:bg-red-500 hover:text-white cursor-pointer"
-                                            )}
-                                                    onClick={() => deleteEngineById(engineInUseId)}
-                                            >{t("delete this search engine")}</button>
-                                        </div>
-                                    </div>
-                                </>
+                                <div className={FIELD_GROUP}>
+                                    <div className={FIELD_NAME}>{t("Delete")}</div>
+                                    <button className={cn(FIELD_CONTENT, "border",
+                                        "text-red-500 hover:bg-red-500 hover:text-white cursor-pointer"
+                                    )}
+                                            onClick={() => deleteEngineById(engineInUseId)}
+                                    >{t("delete this search engine")}</button>
+                                </div>
                             }
                         </div>
                         <Button className={"absolute bottom-2 left-0 right-0 h-10"}
@@ -630,7 +477,7 @@ const CustomEnginePortal = () => {
     )
 }
 
-export const SearchBar2 = () => {
+export const SearchBar = () => {
     const {visible, visibleHydrated} = useSignal(searchStore("visible"))
     return (
         <>

@@ -11,7 +11,7 @@ import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {Language} from "@/vol_apps/language/language";
 import "@/vol_apps/04_persist_atoms/migration.ts";
 import {Backup} from "@/vol_apps/backupDirectory/backup.tsx";
-import {SearchBar2} from "@/vol_apps/search/search2.tsx";
+import {SearchBar} from "@/vol_apps/search/search.tsx";
 // import {useLogDoubleClickPath} from "@/vol_apps/02_hooks/useLogDoubleClickPath";
 
 export const App = () => {
@@ -32,7 +32,7 @@ export const App = () => {
             </div>
             {/*<SearchBar/>*/}
             <div className={"mt-[120px] mb-[50px] w-full mx-auto"}>
-                <SearchBar2/>
+                <SearchBar/>
             </div>
             <Tile_app/>
             <DndFile/>
