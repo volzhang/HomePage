@@ -12,8 +12,7 @@ import {createDebouncedSet} from "@/vol_apps/03_utils/createDebouncedSet.ts";
 export const STORE_CONFIG = {
     theme: 2,
     language: 2,
-    search: 2,
-    search2: 10,
+    search: 5,
     searchStyle: 2,
     tagStyle: 20,
     ts: 20,

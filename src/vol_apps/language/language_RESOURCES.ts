@@ -13,7 +13,7 @@ export const resources: RESOURCES = {
             "Please select folder first": "请先选择目录",
             "Permission denied": "已拒绝授权",
             "Image changed": "图片已切换",
-            "Custom carousel permission expired. Please select a folder again.":"自定义循环的权限过期，请再次选择文件夹授权。",
+            "Custom carousel permission expired. Please select a folder again.": "自定义循环的权限过期，请再次选择文件夹授权。",
 
             "Double-click on empty space to go to the next image.": "鼠标双击空白处可切换至下一张。",
             "This feature is currently not enabled.": "该功能当前未启用。",
@@ -48,33 +48,33 @@ export const resources: RESOURCES = {
         },
 
         tagBar: {
-            "Setting":"设置",
+            "Setting": "设置",
 
             "Visible": "显示",
             "Invisible": "隐藏",
 
-            "Tile Matching":"瓷砖匹配",
-            "Matches Any Active Tag":"匹配任一激活的标签",
-            "Matches All Active Tags":"匹配所有激活的标签",
+            "Tile Matching": "瓷砖匹配",
+            "Matches Any Active Tag": "匹配任一激活的标签",
+            "Matches All Active Tags": "匹配所有激活的标签",
 
-            "Default":"默认",
-            "Custom":"自定义",
-            "Styles":"样式",
+            "Default": "默认",
+            "Custom": "自定义",
+            "Styles": "样式",
 
             "Background": "背景",
             "Background Color": "背景色",
             "Background Opacity": "背景透明度",
 
-            "Text & Font":"文本 & 字体",
+            "Text & Font": "文本 & 字体",
             "Font Size": "字体 大小",
             "Font Weight": "字体 粗细",
             "Text Color": "文本 颜色",
             "Text Opacity": "文本 透明度",
 
-            "Spacing & Radius":"间距 & 圆角",
-            "Tag Gap":"标签 间距",
-            "Tag Padding":"标签 内边距",
-            "Tag Radius":"标签 圆角",
+            "Spacing & Radius": "间距 & 圆角",
+            "Tag Gap": "标签 间距",
+            "Tag Padding": "标签 内边距",
+            "Tag Radius": "标签 圆角",
 
             "Left-click a tag to select only this one.\nRight-click a tag to open menu for more operations.\nClick me to toggle mode.\nCurrently: tiles match ANY selected tags":
                 "左键点击标签，则唯一选中此标签。\n右键点击标签，可打开菜单，支持更多操作。\n点击我切换模式。\n当前：瓷砖匹配 任一 选中标签。",
@@ -116,7 +116,7 @@ export const resources: RESOURCES = {
             "Privacy Policy": "隐私政策",
         },
 
-        dndFile : {
+        dndFile: {
             "Waiting for file release": "等待释放文件...",
             "Not a file": "未知内容",
             "Unable to read file": "不支持查看此文件",
@@ -151,39 +151,32 @@ export const resources: RESOURCES = {
         },
 
         backup: {
-            "Select a directory first.":"先选择目录。",
-            "Permission denied.":"未得到授权。",
-            "The local backup is already up to date. No update was needed."
-                :"本地存档已是最新，无需备份。",
-            "Local backup updated.":"本地存档已更新",
-            "The directory no longer exists or is inaccessible. Please select it again."
-                :"目录已不存在或无法访问，请重新选择。",
-            "Failed to write local backup: ":"更新存档失败：",
+            "Select a directory first.": "先选择目录。",
+            "Permission denied.": "未得到授权。",
+            "The local backup is already up to date. No update was needed.": "本地存档已是最新，无需备份。",
+            "Local backup updated.": "本地存档已更新",
+            "The directory no longer exists or is inaccessible. Please select it again.": "目录已不存在或无法访问，请重新选择。",
+            "Failed to write local backup: ": "更新存档失败：",
 
-            "Select Directory":"选择目录",
-            "Disable Auto Backup":"禁用自动备份",
-            "Auto Backup Disabled":"自动备份：当前未启用",
-            "Check Sync":"检查同步",
+            "Select Directory": "选择目录",
+            "Disable Auto Backup": "禁用自动备份",
+            "Auto Backup Disabled": "自动备份：当前未启用",
+            "Check Sync": "检查同步",
 
-            "Select a local directory.":"选择一个本地目录，",
-            "The plugin will create a HomePageBackup folder in the selected directory."
-                :"插件将在此目录下创建 HomePageBackup 文件夹，",
-            "All read and write operations are limited to this folder and will not affect other files."
-                :"所有读写操作仅限此文件夹内，不会影响其他文件。",
+            "Select a local directory.": "选择一个本地目录，",
+            "The plugin will create a HomePageBackup folder in the selected directory.": "插件将在此目录下创建 HomePageBackup 文件夹，",
+            "All read and write operations are limited to this folder and will not affect other files.": "所有读写操作仅限此文件夹内，不会影响其他文件。",
 
-            "Backup Contents:":"写入内容：",
-            "Latest backup file: DB_latest.json":"最新的存档文件：DB_latest.json",
-            "File size is typically under 10 MB, but may be larger if many icons or high-resolution wallpapers are included."
-                :"文件大小通常 <10 MB，若包含大量图标或高清壁纸可能更大。",
+            "Backup Contents:": "写入内容：",
+            "Latest backup file: DB_latest.json": "最新的存档文件：DB_latest.json",
+            "File size is typically under 10 MB, but may be larger if many icons or high-resolution wallpapers are included.": "文件大小通常 <10 MB，若包含大量图标或高清壁纸可能更大。",
 
-            "Sync Behavior:":"读写规则：",
-            "The plugin checks the local backup every 20 minutes. If it is outdated, it will overwrite it with the latest backup."
-                :"功能启用时，每20分钟读一次本地存档。检查对比，若存档不是最新，则写入一次最新存档。",
-            "Only the backup file is overwritten. No files are deleted."
-                :"只覆写存档文件，不删除任何文件。",
+            "Sync Behavior:": "读写规则：",
+            "The plugin checks the local backup every 20 minutes. If it is outdated, it will overwrite it with the latest backup.": "功能启用时，每20分钟读一次本地存档。检查对比，若存档不是最新，则写入一次最新存档。",
+            "Only the backup file is overwritten. No files are deleted.": "只覆写存档文件，不删除任何文件。",
 
-            "Collapse Details":"收起说明",
-            "More Details...":"更多说明..."
+            "Collapse Details": "收起说明",
+            "More Details...": "更多说明..."
         },
 
         // tile: {
@@ -299,10 +292,24 @@ export const resources: RESOURCES = {
         "TileWall": "磁砖墙",
 
         //toast
-        "can not open link":"无法打开链接",
+        "can not open link": "无法打开链接",
 
-        "search...":"搜索...",
-        "Custom":"自定义",
-        "No content found":"没有匹配的内容",
+        "search...": "搜索...",
+        "Custom": "自定义",
+        "No content found": "没有匹配的内容",
+
+        // Searchbar
+
+        "New Custom": "新建自定义",
+        // "Name":"名字",
+        "Search URL Prefix": "搜索引擎地址前缀",
+        "Homepage URL": "搜索引擎主页",
+        "icon": "图标",
+        "custom icon": "自定义图标",
+        "Delete": "删除",
+        "delete this search engine": "删除搜索引擎",
+        "Custom Search": "自定义搜索引擎",
+        "unknown": "未知",
+        "fallback to default search engine Bing": "回退至默认引擎 Bing"
     }
 } as const;

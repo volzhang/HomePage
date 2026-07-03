@@ -14,14 +14,14 @@ import {timeout} from "@dnd-kit/dom/utilities";
 import {toast} from "sonner";
 import {Button} from "@/components/ui/button.tsx";
 
-// import search_bing from "@/assets/search_bing.svg";
-// import search_google from "@/assets/search_google.png";
-// import search_duckduckgo from "@/assets/search_duckduckgo.svg";
-// import search_yandex from "@/assets/search_yandex.png";
-// import search_baidu from "@/assets/search_baidu.png";
-// import search_yahoo from "@/assets/search_yahoo.png";
-// import search_brave from "@/assets/search_brave.svg";
-// import search_ecosia from "@/assets/search_ecosia.svg";
+import search_bing from "@/assets/search_bing.svg";
+import search_google from "@/assets/search_google.png";
+import search_duckduckgo from "@/assets/search_duckduckgo.svg";
+import search_yandex from "@/assets/search_yandex.png";
+import search_baidu from "@/assets/search_baidu.png";
+import search_yahoo from "@/assets/search_yahoo.png";
+import search_brave from "@/assets/search_brave.svg";
+import search_ecosia from "@/assets/search_ecosia.svg";
 
 type SearchEngine = {
     id: number;
@@ -31,30 +31,19 @@ type SearchEngine = {
     icon: string;       //base64 string(img type), default ""
 };
 
-// const defaultEngines: SearchEngine[] = [
-//     {id: 0, name: "Bing", queryStringPrefix: "https://www.bing.com/search?q=", homepageUrl: "https://www.bing.com/", icon: search_bing},
-//     {id: 1, name: "Google", queryStringPrefix: "https://www.google.com/search?q=", homepageUrl: "https://www.google.com/", icon: search_google},
-//     {id: 3, name: "Yandex", queryStringPrefix: "https://yandex.com/search?text=", homepageUrl: "https://yandex.com/", icon: search_yandex},
-//     {id: 5, name: "Yahoo!", queryStringPrefix: "https://search.yahoo.com/search?p=", homepageUrl: "https://search.yahoo.com/", icon: search_yahoo},
-//     {id: 2, name: "DuckDuckGo", queryStringPrefix: "https://duckduckgo.com/?q=", homepageUrl: "https://duckduckgo.com/", icon: search_duckduckgo},
-//     {id: 6, name: "Brave", queryStringPrefix: "https://search.brave.com/search?q=", homepageUrl: "https://search.brave.com/", icon: search_brave},
-//     {id: 7, name: "Ecosia", queryStringPrefix: "https://www.ecosia.org/search?q=", homepageUrl: "https://www.ecosia.org/", icon: search_ecosia},
-//     {id: 4, name: "Baidu", queryStringPrefix: "https://www.baidu.com/s?wd=", homepageUrl: "https://www.baidu.com/", icon: search_baidu},
-// ]
-
 const defaultEngines: SearchEngine[] = [
-    {id: 0, name: "Bing", queryStringPrefix: "https://www.bing.com/search?q=", homepageUrl: "https://www.bing.com/", icon: ""},
-    {id: 1, name: "Google", queryStringPrefix: "https://www.google.com/search?q=", homepageUrl: "https://www.google.com/", icon: ""},
-    {id: 3, name: "Yandex", queryStringPrefix: "https://yandex.com/search?text=", homepageUrl: "https://yandex.com/", icon: ""},
-    {id: 5, name: "Yahoo!", queryStringPrefix: "https://search.yahoo.com/search?p=", homepageUrl: "https://search.yahoo.com/", icon: ""},
-    {id: 2, name: "DuckDuckGo", queryStringPrefix: "https://duckduckgo.com/?q=", homepageUrl: "https://duckduckgo.com/", icon: ""},
-    {id: 6, name: "Brave", queryStringPrefix: "https://search.brave.com/search?q=", homepageUrl: "https://search.brave.com/", icon: ""},
-    {id: 7, name: "Ecosia", queryStringPrefix: "https://www.ecosia.org/search?q=", homepageUrl: "https://www.ecosia.org/", icon: ""},
-    {id: 4, name: "Baidu", queryStringPrefix: "https://www.baidu.com/s?wd=", homepageUrl: "https://www.baidu.com/", icon: ""},
+    {id: 0, name: "Bing", queryStringPrefix: "https://www.bing.com/search?q=", homepageUrl: "https://www.bing.com/", icon: search_bing},
+    {id: 1, name: "Google", queryStringPrefix: "https://www.google.com/search?q=", homepageUrl: "https://www.google.com/", icon: search_google},
+    {id: 3, name: "Yandex", queryStringPrefix: "https://yandex.com/search?text=", homepageUrl: "https://yandex.com/", icon: search_yandex},
+    {id: 5, name: "Yahoo!", queryStringPrefix: "https://search.yahoo.com/search?p=", homepageUrl: "https://search.yahoo.com/", icon: search_yahoo},
+    {id: 2, name: "DuckDuckGo", queryStringPrefix: "https://duckduckgo.com/?q=", homepageUrl: "https://duckduckgo.com/", icon: search_duckduckgo},
+    {id: 6, name: "Brave", queryStringPrefix: "https://search.brave.com/search?q=", homepageUrl: "https://search.brave.com/", icon: search_brave},
+    {id: 7, name: "Ecosia", queryStringPrefix: "https://www.ecosia.org/search?q=", homepageUrl: "https://www.ecosia.org/", icon: search_ecosia},
+    {id: 4, name: "Baidu", queryStringPrefix: "https://www.baidu.com/s?wd=", homepageUrl: "https://www.baidu.com/", icon: search_baidu},
 ]
 
 export const searchStore = initStoreState({
-    storeName: "search2",
+    storeName: "search",
     fields: {
         engineInUseId: 0,
         customEngines: [] as SearchEngine[],
@@ -93,7 +82,7 @@ const useSearchStore = () => {
     const getCurrentEngineName = (): string => {
         const engine = getCurrentEngine()
         if (engine) return engine.name
-        return "unknown"
+        return t("unknown")
     }
 
     const generateNewEngineId = (): number => {
@@ -127,9 +116,11 @@ const useSearchStore = () => {
     const {t} = useLanguage()
     const creatNewengine = (): number => {
         const newId = generateNewEngineId();
+        const n = newId - defaultEngines.length
+
         const newEngine: SearchEngine = {
             id: newId,
-            name: `${t("Custom Search")} ${newId}`,
+            name: `${t("Custom Search")} ${n === 0 ? "" : n}`,
             queryStringPrefix: "",
             homepageUrl: "",
             icon: "",
@@ -169,7 +160,6 @@ const useSearchStore = () => {
 
 const selectIsOpenSiganle = createSignal<boolean>(false)
 const customIsOpenSignal = createSignal<boolean>(false)
-// const customEngineInEdit = createSignal<number | null>(null)
 
 const LEADING_HEIGHT = "leading-[44px]"
 const BOX_HEIGHT = "h-[60px]"
@@ -211,6 +201,35 @@ const HOVER = "hover:bg-sBlue hover:text-white"
 const FOCUS = "focus:bg-sBlue focus:text-white"
 const BUTTON = cn(RESET_BUTTON, FOCUS, HOVER)
 
+const CurrentIcon = () => {
+    const {getCurrentEngine} = useSearchStore()
+    const engine = getCurrentEngine()
+    const hasIcon = engine?.icon !== ""
+
+    return (
+        <div className={ICON_BOX}>
+            {hasIcon
+                ?
+                <div className={"relative w-[32px] h-[32px]"}>
+                    <img
+                        className="absolute max-w-none select-none"
+                        style={{
+                            width: `${32}px`,
+                            height: `${32}px`,
+                            left: "50%",
+                            top: "50%",
+                            transform: `translate(calc(-50% + ${0}px), calc(-50% + ${0}px))`,
+                        }}
+                        src={engine?.icon}
+                        alt="icon"
+                    />
+                </div>
+                :
+                <Search strokeWidth={3} size={30}/>}
+        </div>
+    )
+}
+
 const SearchIcon = () => {
     const {getCurrentEngine} = useSearchStore()
     const engine = getCurrentEngine()
@@ -221,7 +240,7 @@ const SearchIcon = () => {
 
     return (
         <button className={cn(BUTTON, ICON_WRAPPER)} onClick={onClick}>
-            <div className={ICON_BOX}><Search strokeWidth={3} size={30}/></div>
+            <CurrentIcon/>
         </button>
     )
 }
@@ -462,7 +481,7 @@ const InsertEngineButton = () => {
         const newId = creatNewengine()
         setEngineInUseId(newId)
     }
-    return <Button variant={"outline"} className={"w-full h-10"} onClick={onClick}>{t("Create")}</Button>
+    return <Button variant={"outline"} className={"w-full h-10"} onClick={onClick}>{t("New Custom")}</Button>
 }
 
 const FIELDS: Array<Exclude<keyof SearchEngine, "id">> = [
@@ -472,12 +491,12 @@ const FIELDS: Array<Exclude<keyof SearchEngine, "id">> = [
     "icon",
 ];
 
-const FIELD_LABELS: Record<Exclude<keyof SearchEngine, "id">, string> = {
-    name: "Name",
-    queryStringPrefix: "QueryPrefix URL",
-    homepageUrl: "Homepage URL",
-    icon: "Icon",
-};
+// const FIELD_LABELS: Record<Exclude<keyof SearchEngine, "id">, string> = {
+//     name: "Name",
+//     queryStringPrefix: "QueryPrefix URL",
+//     homepageUrl: "Homepage URL",
+//     icon: "Icon",
+// };
 
 // const ITEMS = cn("text-xl w-full px-2 py-1.5 h-fit rounded-[5px]")
 
@@ -497,6 +516,48 @@ const CustomEnginePortal = () => {
     const {t} = useLanguage()
 
     const canBeRemoved: boolean = currentEngine !== null && currentEngine.id >= defaultEngines.length
+
+    const handleIconClick = async () => {
+        try {
+            // @ts-ignore
+            const [fileHandle] = await window.showOpenFilePicker({
+                types: [
+                    {
+                        description: "Images",
+                        accept: {
+                            "image/png": [".png"],
+                            "image/jpeg": [".jpg", ".jpeg"],
+                            "image/webp": [".webp"],
+                            "image/svg+xml": [".svg"],
+                            "image/bmp": [".bmp"],
+                            "image/x-icon": [".ico"],
+                        },
+                    },
+                ],
+                multiple: false,
+                excludeAcceptAllOption: true,
+            });
+            const file = await fileHandle.getFile();
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64 = reader.result as string;
+                console.log(1, base64);//成功
+                updateEngineById(engineInUseId, {icon: base64});
+                console.log(2, currentEngine?.icon);
+            };
+            reader.readAsDataURL(file);
+        } catch (error) {
+            // 取消或失败
+        }
+    }
+
+    const FIELD_LABELS: Record<Exclude<keyof SearchEngine, "id">, string> = {
+        name: t("Name"),
+        queryStringPrefix: t("Search URL Prefix"),
+        homepageUrl: t("Homepage URL"),
+        icon: t("Icon"),
+    };
 
     return (
         <>
@@ -521,18 +582,24 @@ const CustomEnginePortal = () => {
                                         const onValueChange = (v: string) => updateEngineById(engineInUseId, {[key]: v})
 
                                         if (key === "icon") return (
-                                            <div key={key} className={FIELD_GROUP}>
-                                                <div className={FIELD_NAME}>{FIELD_LABELS[key]}</div>
-                                                <button className={cn(FIELD_CONTENT, "border text-sBlue",
-                                                    "hover:bg-sBlue hover:text-white", "cursor-pointer")}>{t("custom icon")}</button>
-                                            </div>
+                                            disabled ? null :
+                                                <div key={key} className={FIELD_GROUP}>
+                                                    <div className={cn(FIELD_NAME, "w-35")}>{FIELD_LABELS[key]}</div>
+                                                    <div className={cn(FIELD_NAME, "w-13 h-[44px]")}>
+                                                        <CurrentIcon/>
+                                                    </div>
+                                                    <button className={cn(FIELD_CONTENT, "border text-sBlue",
+                                                        "hover:bg-sBlue hover:text-white", "cursor-pointer"
+                                                    )} onClick={handleIconClick}
+                                                    >{t("custom icon")}</button>
+                                                </div>
                                         )
 
                                         return (
                                             <div key={key} className={FIELD_GROUP}>
                                                 <div className={FIELD_NAME}>{FIELD_LABELS[key]}</div>
                                                 <BetterTextarea className={cn(RESET_TEXTAREA, FIELD_CONTENT, !disabled && "border bg-white text-black")}
-                                                                // placeholder="\u200b"
+                                                    // placeholder="\u200b"
                                                                 disabled={disabled}
                                                                 value={value}
                                                                 onValueChange={onValueChange}/>
@@ -542,16 +609,19 @@ const CustomEnginePortal = () => {
                             }
 
                             {canBeRemoved &&
-                                <div>
-                                    <div className={FIELD_GROUP}>
-                                        <div className={FIELD_NAME}>{t("Delete")}</div>
-                                        <button className={cn(FIELD_CONTENT, "border",
-                                            "text-red-500 hover:bg-red-500 hover:text-white cursor-pointer"
-                                        )}
-                                                onClick={() => deleteEngineById(engineInUseId)}
-                                        >{t("delete this search engine")}</button>
+                                <>
+                                    <div>
+                                        <div className={FIELD_GROUP}>
+                                            <div className={FIELD_NAME}>{t("Delete")}</div>
+                                            <button className={cn(FIELD_CONTENT, "border",
+                                                "text-red-500 hover:bg-red-500 hover:text-white cursor-pointer"
+                                            )}
+                                                    onClick={() => deleteEngineById(engineInUseId)}
+                                            >{t("delete this search engine")}</button>
+                                        </div>
                                     </div>
-                                </div>}
+                                </>
+                            }
                         </div>
                         <Button className={"absolute bottom-2 left-0 right-0 h-10"}
                                 variant={"outline"} onClick={() => onOpenChange(false)}>{t("OK")}</Button>

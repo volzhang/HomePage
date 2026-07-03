@@ -1,10 +1,10 @@
-import { memo, type ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { PanelRightClose, PanelRightOpen, RotateCcw, Trash2 } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {memo, type ReactNode} from "react";
+import {Button} from "@/components/ui/button";
+import {cn} from "@/lib/utils";
+import {PanelRightClose, PanelRightOpen, RotateCcw, Trash2} from "lucide-react";
+import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 
-import { useTileStore } from "@/vol_apps/tile/tile_store";
+import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {storeHub, useSignal} from "@/vol_apps/04_persist_atoms";
 import {bgStore} from "@/vol_apps/bg/bg_atom.ts";
@@ -20,11 +20,10 @@ export const Tile_ui_inEdit_body = memo(({
                                              stylesIsOpen,
                                              setStylesIsOpen,
                                          }: TileUiInEditBodyProps) => {
-    const { t } = useLanguage();
-    // const bgImg = useBgStore().bgImg;
+    const {t} = useLanguage();
     const {bgImg} = useSignal(bgStore("bgImg"))
 
-    const { removeTile, tileInEditId, setTileUiVisible } = useTileStore();
+    const {removeTile, tileInEditId, setTileUiVisible} = useTileStore();
 
     const atomChanged = storeHub.getStore("ts").useStoreChanged() // 整体是否有改动
     const resetStyles = storeHub.getStore("ts").reset
@@ -65,9 +64,9 @@ export const Tile_ui_inEdit_body = memo(({
                         onClick={() => setStylesIsOpen(!stylesIsOpen)}
                     >
                         {stylesIsOpen ? (
-                            <PanelRightClose className="scale-130" />
+                            <PanelRightClose className="scale-130"/>
                         ) : (
-                            <PanelRightOpen className="scale-130" />
+                            <PanelRightOpen className="scale-130"/>
                         )}
                     </Button>
                 </HoverCardTrigger>
@@ -90,7 +89,7 @@ export const Tile_ui_inEdit_body = memo(({
                             )}
                             onClick={resetStyles}
                         >
-                            <RotateCcw className="scale-130" />
+                            <RotateCcw className="scale-130"/>
                         </Button>
                     </HoverCardTrigger>
                     <HoverCardContent className="w-auto" side="top" sideOffset={18}>
@@ -112,7 +111,7 @@ export const Tile_ui_inEdit_body = memo(({
                         )}
                         onClick={handleRemoveTile}
                     >
-                        <Trash2 className="scale-130" />
+                        <Trash2 className="scale-130"/>
                     </Button>
                 </HoverCardTrigger>
                 <HoverCardContent className="w-auto" side="top" sideOffset={18}>
