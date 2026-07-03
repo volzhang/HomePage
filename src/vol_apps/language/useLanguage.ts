@@ -21,11 +21,12 @@ syncLanguage();
 languageSignal.subscribe(syncLanguage)
 
 export const useLanguage = (namespace?: string) => {
-    const {language} = useSignal(...languageConfig("language"));
+    const {language} = useSignal(languageConfig("language"));
+
     const t = useCallback(
         (key: string): string => {
-            const lang = languageSignal.get();
-            const dict = resources?.[lang];
+            // const lang = languageSignal.get();
+            const dict = resources?.[language];
             if (!dict) return key;
 
             if (!namespace) {
