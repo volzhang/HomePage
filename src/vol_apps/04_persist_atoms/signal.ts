@@ -13,7 +13,6 @@ export const STORE_CONFIG = {
     theme: 2,
     language: 2,
     search: 5,
-    searchStyle: 2,
     tagStyle: 20,
     ts: 20,
     cm: 20,

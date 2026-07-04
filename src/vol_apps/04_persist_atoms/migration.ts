@@ -147,7 +147,7 @@ const colorStringSchema = v.string()
 const themeSchema = v.object({theme: v.picklist(['light', 'dark'])})
 const languageSchema = v.object({language: v.picklist(['en', 'cn'])})
 const searchSchema = v.object({engineInUseId: v.number()})
-const searchStyleSchema = v.object({visible: v.boolean()})
+// const searchStyleSchema = v.object({visible: v.boolean()})
 const tagStyleSchema = v.object({
     visible: v.boolean(),
     height: v.number(),
@@ -221,7 +221,7 @@ export const MIGRATION_CONFIGS:CONFIGS = [
     { storeName: "theme" as const, stateSchema: themeSchema, legacyDb: "localstorage" as const },
     { storeName: "language" as const, stateSchema: languageSchema, legacyDb: "localstorage" as const },
     { storeName: "search" as const, stateSchema: searchSchema, legacyDb: "idb" as const },
-    { storeName: "searchStyle" as const, stateSchema: searchStyleSchema, legacyDb: "idb" as const },
+    // { storeName: "searchStyle" as const, stateSchema: searchStyleSchema, legacyDb: "idb" as const },
     { storeName: "tagStyle" as const, stateSchema: tagStyleSchema, legacyDb: "idb" as const },
     { storeName: "ts" as const, stateSchema: tileStyleSchema, legacyDb: "idb" as const },
     { storeName: "cm" as const, stateSchema: cmSchema, legacyDb: "idb" as const },
