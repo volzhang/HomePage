@@ -58,12 +58,13 @@ const createExpandedSignal = <T>(
 
     const defaultValueSignal = createSignal<T|Empty>(EMPTY)
     const changed = createDerivedSignal<boolean>(()=>{
-        // 这里并不优雅和逻辑严密
+        // 默认值确定后才比较变更，保证迁移/水合值不提前被标记为 changed
         if (defaultValueSignal.get() === EMPTY) return false;
         else {return !deepEqual(valueSignal.get(), defaultValueSignal.get())}
     }, [valueSignal, defaultValueSignal]);
 
     const setDefault = (value: T) => {
+        // 只允许第一次设置默认值，确保先到先得
         if (defaultValueSignal.get() === EMPTY) defaultValueSignal.set(value)
     }
     const getDefault = defaultValueSignal.get
@@ -80,6 +81,7 @@ const createExpandedSignal = <T>(
     const isHydrated = hydrated.get
     const useHydrated = hydrated.use
     const hydrate = (next?: T) => {
+        // 水合仅执行一次，迁移或 IDB 恢复时调用
         if (!hydrated.get()) {
             hydrated.set(true)
             if (next !== undefined) valueSignal.set(next)
@@ -91,6 +93,7 @@ const createExpandedSignal = <T>(
 // @formatter:on
 
 const createStore = (storeName: StoreName, maxSlots: number,): Store => {
+    // 一次性分配固定槽位，保证引用稳定
     const slots: SignalSlot<unknown>[] = Array.from({length: maxSlots}, () => ({
         signal: createExpandedSignal<any>(EMPTY),
         fieldName: EMPTY,
@@ -102,6 +105,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
             // defaultValue 由useSignal设置，先到先得。建议使用统一props。
             existing.signal.setDefault(defaultValue)
 
+            // 未水合 或 水合后值仍为 EMPTY 时补设默认值（迁移/水合优先）
             if (!existing.signal.isHydrated()) {
                 existing.signal.set(defaultValue)       // 如果没有水合过，设置值
                 // existing.signal.emit()
@@ -140,7 +144,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
                     snapshot[s.fieldName as string] = s.signal.get();
                 })
             return snapshot;
-        }, [...valueSignalsArray, ...defaultValueSignalsArray]
+        }, [...valueSignalsArray, ...defaultValueSignalsArray]          // 依赖所有槽位，确保结构稳定
     );
 
     // 全量合法 State
@@ -165,7 +169,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         }
     }
 
-    // 变化部分的State
+    // 变化部分的State（仅含偏离默认值的字段）
     const getChangedState = (): Record<string, any> => {
         const currentState = stateSignal.get();
         const changed: Record<string, any> = {};
@@ -187,7 +191,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         return set(storeName, {state: changed, version: 1.0});
     }, 500);
 
-    // 订阅写库方法
+    // 订阅写库方法（changed 在水合/迁移完成后才真正生效，避免误写）
     stateSignal.subscribe(() => debouncedPersist());
 
     const hydratedSignal = createDerivedSignal<boolean>(
@@ -210,6 +214,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
 
     const useStoreHydrated = () => hydratedSignal.use()
     const hydrate = (state?: Record<string, any>) => {
+        // 恢复存档 / 迁移数据：优先激活对应槽位
         if (state !== undefined) {
             for (const [fieldName, value] of Object.entries(state)) {
                 const existingSlot = slots.find(s => s.fieldName === fieldName);
@@ -225,6 +230,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
                 }
             }
         }
+        // 其余已激活槽位也标记为 hydrated（无值则保留默认值）
         slots.forEach(slot => slot.signal.hydrate());
     };
 
@@ -242,7 +248,7 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         reset,
 
         slots,
-        persisit: debouncedPersist
+        persist: debouncedPersist           // 供迁移/调试等手动触发写入
     };
 };
 
@@ -261,7 +267,7 @@ const createStoreHub = (): StoreHub => {
             try {
                 const saved = await get(name);
                 if (saved && saved.state && typeof saved.state === 'object') store.hydrate(saved.state);
-                else store.hydrate();
+                else store.hydrate();       // 无存档则标记所有已激活槽位为 hydrated
             } catch {
                 store.hydrate();
             }
@@ -298,25 +304,6 @@ const createStoreHub = (): StoreHub => {
 };
 
 export const storeHub = createStoreHub();
-
-// export const useSignal = <T, F extends string>(
-//     storeName: StoreName, fieldName: F, defaultValue: T,
-// ) => {
-//     const signal = storeHub.resolveSignal(storeName, fieldName, defaultValue);
-//     const setterName = `set${capitalize(fieldName)}` as const;
-//     const hydratedName = `${fieldName}Hydrated` as const;
-//     return {
-//         [fieldName]: signal.use(),
-//         [setterName]: signal.set,
-//         [hydratedName]: signal.useHydrated(),
-//     } as {
-//         [K in F]: T;
-//     } & {
-//         [K in F as `set${Capitalize<K>}`]: (value: T) => void;
-//     } & {
-//         [K in F as `${K}Hydrated`]: boolean;
-//     };
-// };
 
 type UseSignal = {
     <T, F extends string>(storeName: StoreName, fieldName: F, defaultValue: T): {
@@ -357,18 +344,6 @@ export const useSignal: UseSignal = (...args: any[]) => {
         [hydratedName]: signal.useHydrated(),
     };
 };
-
-// export const getSignal = <T>(
-//     storeName: StoreName,
-//     fieldName: string,
-//     defaultValue: T,
-// ) => {
-//     return storeHub.resolveSignal(
-//         storeName,
-//         fieldName,
-//         defaultValue
-//     );
-// };
 
 type GetSignal = {
     <T, F extends string>(
