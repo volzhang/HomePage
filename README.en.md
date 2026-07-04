@@ -23,13 +23,18 @@ No data collection, privacy-first, no ads.
 - 💾 **Seamless Cross-Device** — One-click JSON export/import for easy backup and migration
 - 🌍 **Bilingual Support** — Supports English and Simplified Chinese
 
-## Tech Stack
+## Tech Stack & Current Status
 
 - Vite + TypeScript  
 - React  
-- TailwindCSS + Shadcn  
-- Zustand + idb-keyval (compatible with legacy localforage IndexedDB data)
-- MirrorCode6
+- TailwindCSS + shadcn/ui  
+- Zustand (being gradually replaced) + idb-keyval (compatible with legacy localforage IndexedDB data)
+
+The project is undergoing a low-level refactor to reduce third-party dependencies and improve long-term maintainability.
+
+State management is being migrated from Zustand to a custom Signal-based framework, currently about 90% complete.
+
+UI components are being progressively replaced with custom implementations, while preserving the existing visual style and user experience.
 
 ## Try It Now
 

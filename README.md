@@ -18,12 +18,19 @@
 - 💾 **跨设备无缝** ：一键导出/导入 JSON 文件，轻松实现多设备间的迁移和备份。
 - 🌍 **中英双语** ：支持英语和简体中文，界面简洁友好。
 
-## 技术栈
-- Vite + TypeScript
-- React
-- TailwindCSS + Shadcn
-- Zustand + idb-keyval (compatible with legacy localforage IndexedDB data)
-- MirrorCode6
+## 技术栈与当前状态
+
+- Vite + TypeScript  
+- React  
+- TailwindCSS + shadcn/ui
+- Zustand（逐步替换中） + idb-keyval（兼容 localforage 的 IndexedDB 数据）
+
+
+项目正在进行重构，以减少第三方依赖并提升长期可维护性。
+
+状态管理正在从 Zustand 迁移到自实现 Signal 框架，当前已迁移约 90%。
+
+UI 组件逐步由自制实现替代 shadcn/ui，视觉风格保持一致，不影响现有使用体验。
 
 ## 立即体验
 
@@ -44,10 +51,10 @@
 目前项目还处于早期阶段，未来计划大致如下（按优先级排序）：
 
 - 🌙 深色/浅色模式（v3.4.0 已实现初步版本)
-- 🔍 搜索引擎增强：手动添加引擎 + 本地瓷砖搜索 + 高级模式
+- 🔍 搜索引擎增强：手动添加引擎 + 本地瓷砖搜索 + 高级模式 （v3.12.0 已实现初步版本）
 - ⚙️ 瓷砖图标：自动抓取主流网站 favicon （v3.3.6 已实现）
 - 💡 实用的本地小工具，比如，待办，便利贴。(v3.7.0 已实现初步版本)
-- 📱 移动端 / 平板适配
+- 📱 移动端 / 平板适配。
 
 ## 欢迎反馈
 欢迎在👉 [Issues](https://github.com/volzhang/HomePage/issues) 提出你最想要的功能，我会根据反馈调整优先级～
