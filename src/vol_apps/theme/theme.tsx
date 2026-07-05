@@ -4,13 +4,13 @@ import {useEffect} from "react";
 import {initStoreState, useSignal} from "@/vol_apps/04_persist_atoms";
 
 type Theme = "dark" | "light";
-export const themeConfig = initStoreState({
+export const themeStore = initStoreState({
     storeName: "theme",
     fields: { theme: "dark" as Theme},
 });
 
 export const Theme = () => {
-    const {theme, setTheme, themeHydrated} = useSignal(...themeConfig("theme"));
+    const {theme, setTheme, themeHydrated} = useSignal(themeStore("theme"));
 
     useEffect(() => {
         const root = document.documentElement;

@@ -2,7 +2,7 @@ import {cn} from "@/lib/utils.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms";
 import type {CSSProperties} from "react";
 import {tagStyleConfig} from "@/vol_apps/tag/TagStyleAtom.ts";
-import {themeConfig} from "@/vol_apps/theme/theme.tsx";
+import {themeStore} from "@/vol_apps/theme/theme.tsx";
 
 const computeTagItemStyle = (
     checked: boolean,
@@ -62,7 +62,7 @@ const computeTagItemStyle = (
 };
 
 export const useTagItemStyleFromAtom = (checked: boolean) => {
-    const {theme} = useSignal(...themeConfig("theme"))
+    const {theme} = useSignal(...themeStore("theme"))
 
     const { textColor } = useSignal(tagStyleConfig("textColor"));
     const { textOpacity } = useSignal(tagStyleConfig("textOpacity"));
