@@ -1,7 +1,7 @@
 import React, {
     type ButtonHTMLAttributes, type ReactNode, type CSSProperties,
     createContext, forwardRef, useContext, useState, cloneElement, useCallback, useMemo, Children, isValidElement,
-    startTransition, type ReactElement, type Ref, type ReactPortal,
+    type ReactElement, type Ref, type ReactPortal,
 } from "react";
 import {cn} from "@/lib/utils";
 import {CheckIcon} from "lucide-react";
@@ -11,6 +11,7 @@ import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
 import {useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
+import {useDelayed} from "@/vol_apps/02_hooks/useDelayed.ts";
 
 export const MENU_CLASS = cn(
     "flex flex-col border items-center",
@@ -154,15 +155,24 @@ export const Option = forwardRef<HTMLButtonElement, OptionProps>(({
         ? selectedValue === value
         : false
 
+
+    const Clickhandler = useDelayed<React.MouseEvent<HTMLButtonElement>>((e)=>{
+        if (value) onValueChange?.(value)
+        onClick?.(e)
+    }, exitDuration);
+
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         onOpenChange?.(false);
         //优先渲染动画，保持流畅
-        setTimeout(() => {
-            startTransition(()=>{
-                if (value) onValueChange?.(value)
-                onClick?.(e)
-            })
-        }, exitDuration)
+
+        // setTimeout(() => {
+        //     startTransition(()=>{
+        //         if (value) onValueChange?.(value)
+        //         onClick?.(e)
+        //     })
+        // }, exitDuration)
+
+        Clickhandler(e)
     };
 
     return (

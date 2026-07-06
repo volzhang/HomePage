@@ -1,18 +1,18 @@
-import { memo, useState, useEffect } from "react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { NumberField, NumberFieldXY } from "@/vol_apps/tile/NumberField";
-import { FontFamily } from "@/vol_apps/tile/FontFamilyField";
-import { ColorPickerField } from "@/vol_apps/tile/ColorPickerField";
+import {memo, useState, useEffect} from "react";
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
+import {NumberField, NumberFieldXY} from "@/vol_apps/tile/NumberField";
+import {FontFamily} from "@/vol_apps/tile/FontFamilyField";
+import {ColorPickerField} from "@/vol_apps/tile/ColorPickerField";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {tileStyleConfig} from "@/vol_apps/tile/tile_style_atom.ts";
 
 // ==================== 背景设置 ====================
 const BackgroundSection = memo(() => {
-    const { t } = useLanguage();
+    const {t} = useLanguage();
 
-    const { backgroundColor, setBackgroundColor } = useSignal(...tileStyleConfig("backgroundColor"))
-    const { backgroundOpacity, setBackgroundOpacity } = useSignal(...tileStyleConfig("backgroundOpacity"))
+    const {backgroundColor, setBackgroundColor} = useSignal(...tileStyleConfig("backgroundColor"))
+    const {backgroundOpacity, setBackgroundOpacity} = useSignal(...tileStyleConfig("backgroundOpacity"))
 
     return (
         <AccordionItem value="TileBackground">
@@ -41,9 +41,9 @@ const BackgroundSection = memo(() => {
 
 // ==================== 尺寸与圆角 ====================
 const SizeRadiusSection = memo(() => {
-    const { t } = useLanguage();
-    const { tileSize, setTileSize } = useSignal(...tileStyleConfig("tileSize"))
-    const { tileRadius, setTileRadius } = useSignal(...tileStyleConfig("tileRadius"))
+    const {t} = useLanguage();
+    const {tileSize, setTileSize} = useSignal(...tileStyleConfig("tileSize"))
+    const {tileRadius, setTileRadius} = useSignal(...tileStyleConfig("tileRadius"))
 
     return (
         <AccordionItem value="TileSize&Radius">
@@ -74,11 +74,11 @@ const SizeRadiusSection = memo(() => {
 
 // ==================== 图标设置 ====================
 const IconSection = memo(() => {
-    const { t } = useLanguage();
-    const { iconBorderSize, setIconBorderSize } = useSignal(...tileStyleConfig("iconBorderSize"))
-    const { iconBorderOffset, setIconBorderOffset } = useSignal(...tileStyleConfig("iconBorderOffset"))
-    const { iconSize, setIconSize } = useSignal(...tileStyleConfig("iconSize"))
-    const { iconOffset, setIconOffset } = useSignal(...tileStyleConfig("iconOffset"))
+    const {t} = useLanguage();
+    const {iconBorderSize, setIconBorderSize} = useSignal(...tileStyleConfig("iconBorderSize"))
+    const {iconBorderOffset, setIconBorderOffset} = useSignal(...tileStyleConfig("iconBorderOffset"))
+    const {iconSize, setIconSize} = useSignal(...tileStyleConfig("iconSize"))
+    const {iconOffset, setIconOffset} = useSignal(...tileStyleConfig("iconOffset"))
 
     return (
         <AccordionItem value="TileIcon">
@@ -97,9 +97,9 @@ const IconSection = memo(() => {
                     <NumberFieldXY
                         label={t("Icon Border Offset")}
                         x={iconBorderOffset.x}
-                        onChangeX={(x) => setIconBorderOffset({ ...iconBorderOffset, x })}
+                        onChangeX={(x) => setIconBorderOffset({...iconBorderOffset, x})}
                         y={iconBorderOffset.y}
-                        onChangeY={(y) => setIconBorderOffset({ ...iconBorderOffset, y })}
+                        onChangeY={(y) => setIconBorderOffset({...iconBorderOffset, y})}
                         // fallback={tileStyleInit.iconBorderOffset}
                         min={-100} max={100} step={1}
                     />
@@ -113,9 +113,9 @@ const IconSection = memo(() => {
                     <NumberFieldXY
                         label={t("Icon Offset")}
                         x={iconOffset.x}
-                        onChangeX={(x) => setIconOffset({ ...iconOffset, x })}
+                        onChangeX={(x) => setIconOffset({...iconOffset, x})}
                         y={iconOffset.y}
-                        onChangeY={(y) => setIconOffset({ ...iconOffset, y })}
+                        onChangeY={(y) => setIconOffset({...iconOffset, y})}
                         // fallback={tileStyleInit.iconOffset}
                         min={-100} max={100} step={1}
                     />
@@ -127,13 +127,13 @@ const IconSection = memo(() => {
 
 // ==================== 文本与字体 ====================
 const TextFontSection = memo(() => {
-    const { t } = useLanguage();
-    const { font, setFont } = useSignal(...tileStyleConfig("font"))
-    const { fontSize, setFontSize } = useSignal(...tileStyleConfig("fontSize"))
-    const { fontWeight, setFontWeight } = useSignal(...tileStyleConfig("fontWeight"))
-    const { textColor, setTextColor } = useSignal(...tileStyleConfig("textColor"))
-    const { textOpacity, setTextOpacity } = useSignal(...tileStyleConfig("textOpacity"))
-    const { textOffset, setTextOffset } = useSignal(...tileStyleConfig("textOffset"))
+    const {t} = useLanguage();
+    const {font, setFont} = useSignal(...tileStyleConfig("font"))
+    const {fontSize, setFontSize} = useSignal(...tileStyleConfig("fontSize"))
+    const {fontWeight, setFontWeight} = useSignal(...tileStyleConfig("fontWeight"))
+    const {textColor, setTextColor} = useSignal(...tileStyleConfig("textColor"))
+    const {textOpacity, setTextOpacity} = useSignal(...tileStyleConfig("textOpacity"))
+    const {textOffset, setTextOffset} = useSignal(...tileStyleConfig("textOffset"))
 
     return (
         <AccordionItem value="TileText&Font">
@@ -142,7 +142,7 @@ const TextFontSection = memo(() => {
             </AccordionTrigger>
             <AccordionContent>
                 <div className="flex flex-col gap-2">
-                    <FontFamily value={font} onChange={setFont} />
+                    <FontFamily value={font} onChange={setFont}/>
                     <NumberField
                         label={t("Font Size")}
                         value={fontSize}
@@ -171,9 +171,9 @@ const TextFontSection = memo(() => {
                     <NumberFieldXY
                         label={t("Text Offset")}
                         x={textOffset.x}
-                        onChangeX={(x) => setTextOffset({ ...textOffset, x })}
+                        onChangeX={(x) => setTextOffset({...textOffset, x})}
                         y={textOffset.y}
-                        onChangeY={(y) => setTextOffset({ ...textOffset, y })}
+                        onChangeY={(y) => setTextOffset({...textOffset, y})}
                         // fallback={tileStyleInit.textOffset}
                         min={-100} max={100} step={1}
                     />
@@ -185,10 +185,10 @@ const TextFontSection = memo(() => {
 
 // ==================== 轮廓设置 ====================
 const OutlineSection = memo(() => {
-    const { t } = useLanguage();
-    const { tileOutlineThickness, setTileOutlineThickness } = useSignal(...tileStyleConfig("tileOutlineThickness"))
-    const { tileOutlineColor, setTileOutlineColor } = useSignal(...tileStyleConfig("tileOutlineColor"))
-    const { tileOutlineOpacity, setTileOutlineOpacity } = useSignal(...tileStyleConfig("tileOutlineOpacity"))
+    const {t} = useLanguage();
+    const {tileOutlineThickness, setTileOutlineThickness} = useSignal(...tileStyleConfig("tileOutlineThickness"))
+    const {tileOutlineColor, setTileOutlineColor} = useSignal(...tileStyleConfig("tileOutlineColor"))
+    const {tileOutlineOpacity, setTileOutlineOpacity} = useSignal(...tileStyleConfig("tileOutlineOpacity"))
 
     return (
         <AccordionItem value="TileOutline">
@@ -225,7 +225,7 @@ interface TileUiInEditStylesProps {
     tileUiVisible: boolean;
 }
 
-export const Tile_ui_inEdit_styles = memo(({ tileUiVisible }: TileUiInEditStylesProps) => {
+export const Tile_ui_inEdit_styles = memo(({tileUiVisible}: TileUiInEditStylesProps) => {
     const [value, setValue] = useState<string[]>([]);
 
     useEffect(() => {
@@ -236,11 +236,11 @@ export const Tile_ui_inEdit_styles = memo(({ tileUiVisible }: TileUiInEditStyles
         <div className="overflow-hidden relative">
             <div className="ml-6 px-0">
                 <Accordion type="multiple" className="w-full" value={value} onValueChange={setValue}>
-                    <BackgroundSection />
-                    <SizeRadiusSection />
-                    <IconSection />
-                    <TextFontSection />
-                    <OutlineSection />
+                    <BackgroundSection/>
+                    <SizeRadiusSection/>
+                    <IconSection/>
+                    <TextFontSection/>
+                    <OutlineSection/>
                 </Accordion>
             </div>
         </div>

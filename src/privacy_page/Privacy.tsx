@@ -37,7 +37,7 @@ const ui = {
 const contentMap: Record<Lang, Section[]> = {
     zh: [
         {
-            title: "1. 项目初衷",
+            title: "1. 初衷",
             content: (
                 <>
                     许多主页扩展要么依赖云端且功能复杂。 <br/>
