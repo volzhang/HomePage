@@ -1,7 +1,7 @@
 import React, {
     type ButtonHTMLAttributes, type ReactNode, type CSSProperties,
     createContext, forwardRef, useContext, useState, cloneElement, useCallback, useMemo, Children, isValidElement,
-    type ReactElement, type Ref, type ReactPortal,
+    type ReactElement, type Ref, type ReactPortal, startTransition,
 } from "react";
 import {cn} from "@/lib/utils";
 import {CheckIcon} from "lucide-react";
@@ -12,6 +12,7 @@ import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
 import {useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
 import {useDelayed} from "@/vol_apps/02_hooks/useDelayed.ts";
+import {useKeyboardNavigation} from "@/vol_apps/02_hooks/07_useKeyboardNavigation.ts";
 
 export const MENU_CLASS = cn(
     "flex flex-col border items-center",
@@ -26,6 +27,7 @@ export const ITEM_CLASS = cn(
     "h-8 text-foreground",
     "text-sm rounded-sm",
     "bg-popover hover:bg-foreground/10",
+    "focus:outline-none focus:bg-foreground/10",
     "whitespace-nowrap",
     "select-none",
     "p-2"
@@ -45,7 +47,8 @@ export const SelectContext = createContext<{
     floatingStyle?: CSSProperties;
     floatingPortal?: (node: ReactNode) => ReactPortal | null;
 
-    autoFocusRef?: Ref<any>;
+    // autoFocusRef?: Ref<any>;
+    itemRef?: (index: number) => (node: HTMLElement | null) => void;
 
     duration?: number;
     exitDuration?: number;
@@ -75,7 +78,9 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
     const {
         open, onOpenChange,
         floatingStyle, floatingPortal,
-        floatingRef, autoFocusRef,
+        floatingRef,
+        // autoFocusRef,
+        itemRef,
     } = useSelectContext();
 
     const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
@@ -89,23 +94,38 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
     );
 
     // 自动给第一个元素注入 autoFocusRef（合并已有 ref）
+    // const processedChildren = useMemo(
+    //     () =>
+    //         optionElements.map((child, index) => {
+    //             if (
+    //                 index === 0 &&
+    //                 isValidElement(child) &&
+    //                 child.type === Option // 确保是 Option 组件
+    //             ) {
+    //                 const existingRef = (child as any).ref;
+    //                 const merged = existingRef
+    //                     ? useMergeRefsLoose(autoFocusRef, existingRef)
+    //                     : autoFocusRef;
+    //                 return cloneElement(child, {ref: merged} as any);
+    //             }
+    //             return child;
+    //         }),
+    //     [optionElements, autoFocusRef]
+    // );
+
+
+    // 新版本的焦点处理
     const processedChildren = useMemo(
         () =>
             optionElements.map((child, index) => {
-                if (
-                    index === 0 &&
-                    isValidElement(child) &&
-                    child.type === Option // 确保是 Option 组件
-                ) {
-                    const existingRef = (child as any).ref;
-                    const merged = existingRef
-                        ? useMergeRefsLoose(autoFocusRef, existingRef)
-                        : autoFocusRef;
-                    return cloneElement(child, {ref: merged} as any);
+                if (isValidElement(child) && child.type === Option) {
+                    return cloneElement(child, {
+                        ref: itemRef?.(index),
+                    } as any);
                 }
                 return child;
             }),
-        [optionElements, autoFocusRef]
+        [optionElements, itemRef]
     );
 
     return (
@@ -119,7 +139,7 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
                     ? processedChildren
                     : options?.map((opt, index) => (
                         <Option
-                            ref={index === 0 ? autoFocusRef : undefined}
+                            ref={itemRef?.(index)}
                             key={opt.value}
                             value={opt.value}
                             itemClassName={itemClassName}
@@ -128,6 +148,19 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
                             {opt.label}
                         </Option>
                     ))
+
+                    // options?.map((opt, index) => (
+                    //     <Option
+                    //         ref={index === 0 ? autoFocusRef : undefined}
+                    //         key={opt.value}
+                    //         value={opt.value}
+                    //         itemClassName={itemClassName}
+                    //         checkIconClassName={checkIconClassName}
+                    //     >
+                    //         {opt.label}
+                    //     </Option>
+                    // ))
+
                 }
             </ul>
         )
@@ -155,23 +188,15 @@ export const Option = forwardRef<HTMLButtonElement, OptionProps>(({
         ? selectedValue === value
         : false
 
-
-    const Clickhandler = useDelayed<React.MouseEvent<HTMLButtonElement>>((e)=>{
-        if (value) onValueChange?.(value)
-        onClick?.(e)
+    const Clickhandler = useDelayed<React.MouseEvent<HTMLButtonElement>>((e) => {
+        startTransition(() => {
+            if (value) onValueChange?.(value)
+            onClick?.(e)
+        })
     }, exitDuration);
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         onOpenChange?.(false);
-        //优先渲染动画，保持流畅
-
-        // setTimeout(() => {
-        //     startTransition(()=>{
-        //         if (value) onValueChange?.(value)
-        //         onClick?.(e)
-        //     })
-        // }, exitDuration)
-
         Clickhandler(e)
     };
 
@@ -286,7 +311,11 @@ export const SelectComponent = ({
 
     const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
     const {clickOutsideRef, clickOutsideIgnoreRef} = useClickOutsideToClose({open, onClose});
-    const {focusOutsideRef, focusOutsideIgnoreRef, autoFocusRef} = useFocusOutsideToClose({open:portalMounted, onClose});
+    const {
+        focusOutsideRef, focusOutsideIgnoreRef,
+        // autoFocusRef
+    } = useFocusOutsideToClose({open: portalMounted, onClose});
+    const {itemRef} = useKeyboardNavigation({open: portalMounted})
 
     const mergedAnchor = useMergeRefsLoose(anchorRef, clickOutsideIgnoreRef, focusOutsideIgnoreRef);
 
@@ -295,11 +324,13 @@ export const SelectComponent = ({
     const contextValue = useMemo(() => ({
         value, onValueChange,
         open, onOpenChange,
+
         anchorRef: mergedAnchor,
         floatingRef: mergedFloating,
         floatingPortal,
 
-        autoFocusRef,
+        // autoFocusRef,
+        itemRef,
 
         floatingStyle,
         duration,

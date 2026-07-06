@@ -14,6 +14,7 @@ import {useModalPortal} from "@/vol_apps/02_hooks/float/useModalPortal.tsx";
 import {Button} from "@/components/ui/button.tsx";
 
 import {defaultEngines, type SearchEngine, searchStore, useSearchStore} from "@/vol_apps/search/searchSignal.ts";
+import {useKeyboardNavigation} from "@/vol_apps/02_hooks/07_useKeyboardNavigation.ts";
 
 const selectIsOpenSiganle = createSignal<boolean>(false)
 const customIsOpenSignal = createSignal<boolean>(false)
@@ -250,6 +251,8 @@ const SelectEngine = ({
 
     const {t} = useLanguage()
 
+    const {itemRef} = useKeyboardNavigation({open:mounted})
+
     // 处理排序逻辑
     const filteredAndSorted = React.useMemo(() => {
         // 如果输入为空或只有空白，直接返回原始顺序
@@ -296,9 +299,10 @@ const SelectEngine = ({
             </div>
             <div className={"flex flex-col items-start justify-start w-full overflow-y-auto gap-1 select-none"}>
                 {filteredAndSorted.length > 0
-                    ? filteredAndSorted.map(engine =>
+                    ? filteredAndSorted.map((engine, index) =>
                         <button key={engine.id}
                                 data-engine-id={engine.id}
+                                ref={itemRef(index)}
                                 className={cn(BUTTON, ITEMS, "justify-between whitespace-nowrap")}
                                 onClick={() => onSelect(engine)}
                         >
