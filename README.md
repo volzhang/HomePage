@@ -23,12 +23,6 @@
 - Vite + TypeScript  
 - React  
 - TailwindCSS + shadcn/ui
-- Zustand（逐步替换中） + idb-keyval（兼容 localforage 的 IndexedDB 数据）
-
-
-项目正在进行重构，以减少第三方依赖并提升长期可维护性。
-
-状态管理正在从 Zustand 迁移到自实现 Signal 框架，当前已迁移约 90%。
 
 UI 组件逐步由自制实现替代 shadcn/ui，视觉风格保持一致，不影响现有使用体验。
 

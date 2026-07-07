@@ -28,11 +28,6 @@ No data collection, privacy-first, no ads.
 - Vite + TypeScript  
 - React  
 - TailwindCSS + shadcn/ui  
-- Zustand (being gradually replaced) + idb-keyval (compatible with legacy localforage IndexedDB data)
-
-The project is undergoing a low-level refactor to reduce third-party dependencies and improve long-term maintainability.
-
-State management is being migrated from Zustand to a custom Signal-based framework, currently about 90% complete.
 
 UI components are being progressively replaced with custom implementations, while preserving the existing visual style and user experience.
 
