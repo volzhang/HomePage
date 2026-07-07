@@ -1,6 +1,6 @@
 import React, {
     type ButtonHTMLAttributes, type ReactNode, type CSSProperties,
-    createContext, forwardRef, useContext, useState, cloneElement, useCallback, useMemo, Children, isValidElement,
+    createContext, useContext, useState, cloneElement, useCallback, useMemo, Children, isValidElement,
     type ReactElement, type Ref, type ReactPortal, startTransition,
 } from "react";
 import {cn} from "@/lib/utils";
@@ -11,7 +11,7 @@ import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
 import {useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
-import {useDelayed} from "@/vol_apps/02_hooks/useDelayed.ts";
+import {useDelayed} from "@/vol_apps/02_hooks/02_useDelayed.ts";
 import {useKeyboardNavigation} from "@/vol_apps/02_hooks/07_useKeyboardNavigation.ts";
 
 export const MENU_CLASS = cn(
@@ -47,7 +47,6 @@ export const SelectContext = createContext<{
     floatingStyle?: CSSProperties;
     floatingPortal?: (node: ReactNode) => ReactPortal | null;
 
-    // autoFocusRef?: Ref<any>;
     itemRef?: (index: number) => (node: HTMLElement | null) => void;
 
     duration?: number;
@@ -57,7 +56,7 @@ export const SelectContext = createContext<{
 
 export const useSelectContext = () => useContext(SelectContext);
 
-interface UListProps {
+interface ContentProps {
     children?:
         | ReactElement<OptionProps>
         | ReactElement<OptionProps>[];
@@ -66,20 +65,20 @@ interface UListProps {
     itemClassName?: string;
     checkIconClassName?: string;
     className?: string;
+
+    ref?: React.Ref<HTMLUListElement>;
 }
 
-export const Content = forwardRef<HTMLUListElement, UListProps>(({
-                                                                     children,
-                                                                     options,
-                                                                     menuClassName,
-                                                                     itemClassName,
-                                                                     checkIconClassName,
-                                                                 }, ref) => {
+
+export const Content = ({
+                            children,
+                            options,
+                            ref,
+                            menuClassName, itemClassName, checkIconClassName
+                        }: ContentProps) => {
     const {
         open, onOpenChange,
-        floatingStyle, floatingPortal,
-        floatingRef,
-        // autoFocusRef,
+        floatingStyle, floatingPortal, floatingRef,
         itemRef,
     } = useSelectContext();
 
@@ -93,28 +92,6 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
         [children]
     );
 
-    // 自动给第一个元素注入 autoFocusRef（合并已有 ref）
-    // const processedChildren = useMemo(
-    //     () =>
-    //         optionElements.map((child, index) => {
-    //             if (
-    //                 index === 0 &&
-    //                 isValidElement(child) &&
-    //                 child.type === Option // 确保是 Option 组件
-    //             ) {
-    //                 const existingRef = (child as any).ref;
-    //                 const merged = existingRef
-    //                     ? useMergeRefsLoose(autoFocusRef, existingRef)
-    //                     : autoFocusRef;
-    //                 return cloneElement(child, {ref: merged} as any);
-    //             }
-    //             return child;
-    //         }),
-    //     [optionElements, autoFocusRef]
-    // );
-
-
-    // 新版本的焦点处理
     const processedChildren = useMemo(
         () =>
             optionElements.map((child, index) => {
@@ -135,54 +112,43 @@ export const Content = forwardRef<HTMLUListElement, UListProps>(({
                 className={cn(MENU_CLASS, menuClassName,)}
                 style={floatingStyle}
             >
-                {children
-                    ? processedChildren
-                    : options?.map((opt, index) => (
-                        <Option
-                            ref={itemRef?.(index)}
-                            key={opt.value}
-                            value={opt.value}
-                            itemClassName={itemClassName}
-                            checkIconClassName={checkIconClassName}
-                        >
-                            {opt.label}
-                        </Option>
-                    ))
-
-                    // options?.map((opt, index) => (
-                    //     <Option
-                    //         ref={index === 0 ? autoFocusRef : undefined}
-                    //         key={opt.value}
-                    //         value={opt.value}
-                    //         itemClassName={itemClassName}
-                    //         checkIconClassName={checkIconClassName}
-                    //     >
-                    //         {opt.label}
-                    //     </Option>
-                    // ))
-
+                {
+                    children
+                        ? processedChildren
+                        : options?.map((opt, index) => (
+                            <Option
+                                ref={itemRef?.(index)}
+                                key={opt.value}
+                                value={opt.value}
+                                itemClassName={itemClassName}
+                                checkIconClassName={checkIconClassName}
+                            >
+                                {opt.label}
+                            </Option>
+                        ))
                 }
             </ul>
         )
     );
-});
+}
 
 interface OptionProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "value"> {
     value?: string;
     children: ReactNode;
     itemClassName?: string;
     checkIconClassName?: string;
+
+    ref?: React.Ref<HTMLButtonElement>;
 }
 
-export const Option = forwardRef<HTMLButtonElement, OptionProps>(({
-                                                                      value,
-                                                                      children,
-                                                                      itemClassName,
-                                                                      checkIconClassName,
-                                                                      onClick,
-                                                                      ...buttonProps
-                                                                  }: OptionProps, ref) => {
-
+export const Option = ({
+                           value,
+                           children,
+                           ref,
+                           itemClassName, checkIconClassName,
+                           onClick,
+                           ...buttonProps
+                       }: OptionProps) => {
     const {value: selectedValue, onValueChange, onOpenChange, exitDuration} = useSelectContext();
     const isSelected = value
         ? selectedValue === value
@@ -211,7 +177,7 @@ export const Option = forwardRef<HTMLButtonElement, OptionProps>(({
             </button>
         </li>
     );
-})
+}
 
 interface TriggerProps {
     children: ReactElement<any>;
