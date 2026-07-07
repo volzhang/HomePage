@@ -17,6 +17,7 @@ export const STORE_CONFIG = {
     ts: 20,
     cm: 20,
     bg: 12,
+    tile: 10,
 };
 
 export const EMPTY = Symbol("empty");

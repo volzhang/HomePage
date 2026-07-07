@@ -7,7 +7,6 @@ import {
     ContextMenuSubTrigger,
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore";
 import {jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
 
@@ -16,6 +15,7 @@ import {useState, type PropsWithChildren} from "react";
 import {useSettingStore} from "../settings/setting_store";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {backupOpenSignal} from "@/vol_apps/backupDirectory/backup.tsx";
+import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
 
 export function GlobalContextMenu({children}: PropsWithChildren) {
     const {tilesVisible, addTile, setTileInEditId, setTileUiVisible, setTilesVisible} = useTileStore();

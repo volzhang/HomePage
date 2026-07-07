@@ -1,6 +1,6 @@
 import {MyRadio} from "@/vol_apps/bg/bg_ui_settings";
-import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
 
 export const Setting_tiles = () => {
     const {tilesVisible, setTilesVisible} = useTileStore()

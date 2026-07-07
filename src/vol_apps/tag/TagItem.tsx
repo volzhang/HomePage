@@ -28,8 +28,6 @@ export const TagItem = (props: TagItemProps) => {
 
     const {t} = useLanguage("tagBar")
 
-    // const {tagStyles} = props
-
     if (props.type === "tag") {
         const {tag, renameTag, deleteTag, checkOnlyThisTag, deleteTilesWithOnlyThisTag, toggleTag} = props
         const {inputRef, inputValue, setInputValue, inEdit, setInEdit, handleRename, handleDefault} = useEditTag({tag, renameTag})
@@ -102,74 +100,6 @@ export const TagItem = (props: TagItemProps) => {
         )
     }
 }
-
-// type TagStyles = {
-//     textOpacity: number,
-//     textColor: string,
-//     textPadding: { x: number, y: number },
-//     fontSize: number,
-//     fontWeight: number,
-//     font: FontItem,
-//     backgroundColor: string,
-//     backgroundOpacity: number,
-//     radius: number,
-// }
-
-// export const useTagItemStyle = (
-//     {
-//         checked,
-//         tagStyles,
-//     }: {
-//         checked: boolean
-//         tagStyles: TagStyles
-//     }
-// ) => {
-//
-//     const {theme} = useThemeAtom()
-//
-//     const textColorStyle = (() => {
-//         if (tagStyles.textColor === "auto") {
-//             if (tagStyles.textOpacity === 1.01) return {}
-//             if (theme === "light") return {color: `rgba(10,10,10, ${tagStyles.textOpacity})`}
-//             if (theme === "dark") return {color: `rgba(250,250,250, ${tagStyles.textOpacity})`}
-//         } else {
-//             const r = parseInt(tagStyles.textColor.slice(1, 3), 16)
-//             const g = parseInt(tagStyles.textColor.slice(3, 5), 16)
-//             const b = parseInt(tagStyles.textColor.slice(5, 7), 16)
-//             return {color: `rgba(${r}, ${g}, ${b}, ${tagStyles.textOpacity})`}
-//         }
-//     })()
-//
-//     const backgroundColorStyle = (() => {
-//         if (tagStyles.backgroundColor === "auto") {
-//             if (tagStyles.backgroundOpacity === 1.01) return {}
-//             if (theme === "light") return {backgroundColor: `rgba(250,250,250, ${tagStyles.backgroundOpacity})`}
-//             if (theme === "dark") return {backgroundColor: `rgba(10,10,10, ${tagStyles.backgroundOpacity})`}
-//         } else {
-//             const r = parseInt(tagStyles.backgroundColor.slice(1, 3), 16)
-//             const g = parseInt(tagStyles.backgroundColor.slice(3, 5), 16)
-//             const b = parseInt(tagStyles.backgroundColor.slice(5, 7), 16)
-//             return {backgroundColor: `rgba(${r}, ${g}, ${b}, ${tagStyles.backgroundOpacity})`}
-//         }
-//     })()
-//
-//     return {
-//         className: cn(
-//             "border-none bg-background text-foreground",
-//             "dark:bg-input/30",
-//             checked && "bg-sBlue! text-white!"
-//         ),
-//         style: {
-//             fontSize: `${tagStyles.fontSize}px`,
-//             fontWeight: tagStyles.fontWeight,
-//             fontFamily: tagStyles.font.family,
-//             padding: `${tagStyles.textPadding.y}px ${tagStyles.textPadding.x}px`,
-//             borderRadius: `${tagStyles.radius}px`,
-//             ...textColorStyle,
-//             ...backgroundColorStyle,
-//         } satisfies React.CSSProperties
-//     }
-// }
 
 const useEditTag = (
     {

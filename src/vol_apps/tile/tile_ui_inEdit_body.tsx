@@ -4,10 +4,10 @@ import {cn} from "@/lib/utils";
 import {PanelRightClose, PanelRightOpen, RotateCcw, Trash2} from "lucide-react";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 
-import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {storeHub, useSignal} from "@/vol_apps/04_persist_atoms";
 import {bgStore} from "@/vol_apps/bg/bg_atom.ts";
+import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
 
 interface TileUiInEditBodyProps {
     children: ReactNode;

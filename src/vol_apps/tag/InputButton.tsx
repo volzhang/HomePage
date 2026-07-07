@@ -60,7 +60,7 @@ export const InputButton = ({
                 />
                 <div onClick={handleClick}
                      className={cn(
-                         "absolute inset-0 select-none",
+                         "absolute inset-0 select-none cursor-pointer",
                          inEdit ? "pointer-events-none" : "pointer-events-auto",
                      )}
                 ></div>

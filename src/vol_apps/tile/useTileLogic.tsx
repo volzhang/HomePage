@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 
-import {useTileStore} from "@/vol_apps/tile/tile_store";
+// import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
 import {enhanceUrl, extractMainDomain} from "@/vol_apps/tool/action/enhanceUrl";
 import {openLinkInCurrentTab, openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
@@ -11,6 +11,7 @@ import {apiFaviconVemetric} from "@/vol_apps/tool/api/apiFaviconVemetric.ts";
 import {useFixedPending} from "@/vol_apps/02_hooks/usePending.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {bgStore} from "@/vol_apps/bg/bg_atom.ts";
+import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
 
 export type TileLogic = ReturnType<typeof useTileLogic>;
 export const useTileLogic = () => {

@@ -47,7 +47,7 @@ const computeTagItemStyle = (
         className: cn(
             "border-none bg-background text-foreground",
             "dark:bg-input/30",
-            checked && "bg-sBlue! text-white!"
+            checked && "bg-sBlue! text-white!",
         ),
         style: {
             fontSize: `${fontSize}px`,

@@ -1,7 +1,8 @@
-import {persistedStores} from "@/vol_apps/tool/createPersistedStore";
+
 import {isLikelyTextFile} from "@/vol_apps/tool/isType/isLikelyTextFile";
 import {isPlainObject} from "@/vol_apps/tool/isType/isPlainObject";
 import {isValidType} from "@/vol_apps/tool/isType/isValidType";
+import {storeHub} from "@/vol_apps/04_persist_atoms";
 
 export const isLikelyBackUpFile = async (file: File): Promise<boolean> => {
 	// 1. 必须是文本
@@ -32,7 +33,8 @@ export const isLikelyBackUpFile = async (file: File): Promise<boolean> => {
 	// 5. key + value 校验
 	for (const [key, value] of entries) {
 		// key 必须是已注册 store（核心特征）
-		if (!persistedStores.has(key)) continue;
+		// if (!persistedStores.has(key)) continue;
+		if (Object.keys(storeHub.stores).includes(key)) continue;
 
 		// value 必须合法
 		if (!isValidType(value)) return false;

@@ -10,7 +10,7 @@ import {
     MenubarSubContent
 } from "@/components/ui/menubar";
 import {cn} from "@/lib/utils";
-import {useTileStore} from "@/vol_apps/tile/tile_store";
+
 import {openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
 import {persistedStoresBackup, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore";
 import {bookmarkFilePickerAPI, jsonFilePickerAPI} from "@/vol_apps/tool/action/filePicker";
@@ -22,6 +22,7 @@ import {
 import {useSettingStore} from "../settings/setting_store";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {backupOpenSignal} from "@/vol_apps/backupDirectory/backup.tsx";
+import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
 
 //这里手动复制了Button的secondary样式
 const cn_str = "border bg-background " +

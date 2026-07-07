@@ -1,9 +1,10 @@
-import {useTileStoreBase} from "@/vol_apps/tile/tile_store";
-import {persistedStores, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
+// import {useTileStoreBase} from "@/vol_apps/tile/tile_store";
+// import {persistedStores, LatestStoreVersion} from "@/vol_apps/tool/createPersistedStore";
 import {downloadAsJsonFile, timeStamp} from "@/vol_apps/tool/action/download";
 import {isPlainObject} from "@/vol_apps/tool/isType/isPlainObject";
 import {storeHub} from "@/vol_apps/04_persist_atoms";
 import {VERSION} from "@/main.tsx";
+import type {Tag, Tile} from "@/vol_apps/tile/tile_store_types.ts";
 
 // ----------------------------------------------------------------------
 // 工具函数：解析备份值，兼容旧备份中字符串化存储的情况
@@ -20,15 +21,62 @@ import {VERSION} from "@/main.tsx";
  * 该函数的作用：
  * 将任何可能的字符串形式还原为对象，方便后续统一处理。
  */
-const parseBackupValue = (value: any) => {
-    if (typeof value !== "string") return value;
+// const parseBackupValue = (value: any) => {
+//     if (typeof value !== "string") return value;
+//
+//     try {
+//         return JSON.parse(value);
+//     } catch {
+//         return value;
+//     }
+// };
 
-    try {
-        return JSON.parse(value);
-    } catch {
-        return value;
-    }
+// ------------------ 辅助：处理 tile2 的追加合并 ------------------
+/**
+ * 合并 tiles 的逻辑，与 useTileStore2 中的 appendTiles 一致。
+ * 使用信号对象直接操作，避免依赖 React hook。
+ */
+const appendTilesToTileStore = (newTiles: Tile[]) => {
+    // 获取 tiles 信号
+    const tilesSig = storeHub.getStore("tile").getSignal("tiles")
+
+    const current = tilesSig?.get() as Tile[];
+
+    // 去重：避免 url 和 name 都相同的重复项
+    const appended = newTiles.filter(
+        t => !current.some(c => c.url === t.url && c.meta.name === t.meta.name)
+    );
+    if (appended.length === 0) return;
+
+    // 计算新的 id
+    const startId = current.length === 0 ? 0 : Math.max(...current.map(t => t.id)) + 1;
+    const appendedWithIds = appended.map((tile, index) => ({
+        ...tile,
+        id: startId + index,
+    }));
+
+    const merged = [...current, ...appendedWithIds];
+    tilesSig?.set(merged);
+
+    // 更新 tags（类似 setTiles 内部调用的 updateTags）
+    // 因为 tile store 的 updateTags 逻辑是独立的，我们在此手动执行
+    const tagsSig = storeHub.getStore("tile").getSignal("tags")
+    const names = [
+        ...new Set(
+            merged.flatMap(tile => tile.meta.tags || [])
+        )
+    ].filter(Boolean);
+    const oldMap = new Map(
+        tagsSig?.get().map((tag: Tag) => [tag.name, tag.checked])
+    );
+    const newTags = names.map((name, index) => ({
+        id: index,
+        name,
+        checked: oldMap.get(name) ?? false
+    }));
+    tagsSig?.set(newTags);
 };
+
 
 // ------------------ 恢复 ------------------
 /**
@@ -73,32 +121,43 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
         // find storeName
         if (!(storeName in backupData)) return
         const state = backupData[storeName]?.state;
-        store.setState(state)
-    })
-
-    const registered = new Map(persistedStores);
-
-    for (const [key, entry] of registered) {
-        if (!Object.prototype.hasOwnProperty.call(backupData, key)) continue;
-
-        const value = backupData[key];
-        const runtimeSnapshot = parseBackupValue(value);
-        const stateToRestore = runtimeSnapshot.state;
-
-        if (!stateToRestore) {
-            console.warn(`Missing "state" field in backup for key "${key}"`);
-            continue;
+        if (storeName === "tile" && mergeTileTiles && Array.isArray(state.tiles)) {
+            appendTilesToTileStore(state.tiles);
+        } else {
+            store.setState(state)
         }
+    })
+    
+    // const registered = new Map(persistedStores);
 
-        const store = entry.store as any;
+    // for (const [key, entry] of registered) {
+    //     if (!Object.prototype.hasOwnProperty.call(backupData, key)) continue;
+    //
+    //     const value = backupData[key];
+    //     const runtimeSnapshot = parseBackupValue(value);
+    //     const stateToRestore = runtimeSnapshot.state;
+    //
+    //     if (!stateToRestore) {
+    //         console.warn(`Missing "state" field in backup for key "${key}"`);
+    //         continue;
+    //     }
+    //
+    //     const store = entry.store as any;
 
         // 特殊处理 tile 合并模式
-        if (key === "tile" && mergeTileTiles && Array.isArray(stateToRestore.tiles)) {
-            useTileStoreBase.getState().appendTiles(stateToRestore.tiles);
-        } else {
-            store.setState(stateToRestore);
-        }
-    }
+        // if (key === "tile" && mergeTileTiles && Array.isArray(stateToRestore.tiles)) {
+        //     useTileStoreBase.getState().appendTiles(stateToRestore.tiles);
+        // } else {
+        //     store.setState(stateToRestore);
+        // }
+
+        // 特殊处理 tile2 的合并模式
+        // if (storeName === "tile2" && mergeTileTiles && Array.isArray(stateToRestore.tiles)) {
+        //     appendTilesToTileStore(stateToRestore.tiles);
+        // } else {
+        //     store.setState(stateToRestore);
+        // }
+    // }
 };
 
 // ------------------ 备份 ------------------
@@ -117,15 +176,15 @@ export const persistedStoresRestore = async (file: File, mergeTileTiles: boolean
  */
 
 export const getPersistedStoresBackupData = (): Record<string, any> => {
-    const registered = new Map(persistedStores);
+    // const registered = new Map(persistedStores);
     const result: Record<string, any> = {};
 
-    for (const [key] of registered.entries()) {
-        const snapshot = getCurrentPersistedSnapshot(key);
-        if (snapshot !== null) {
-            result[key] = snapshot;
-        }
-    }
+    // for (const [key] of registered.entries()) {
+    //     const snapshot = getCurrentPersistedSnapshot(key);
+    //     if (snapshot !== null) {
+    //         result[key] = snapshot;
+    //     }
+    // }
 
     // 合并 storeHub
     Object.entries(storeHub.getStores()).forEach(([storeName, store]) => {
@@ -157,19 +216,19 @@ export const persistedStoresBackup = async (): Promise<void> => {
  * @returns 标准化的备份快照对象，若 store 未注册则返回 null
  */
 
-const getCurrentPersistedSnapshot = (storeKey: string) => {
-    const entry = persistedStores.get(storeKey);
-    if (!entry) return null;
-
-    const currentState = entry.store.getState();
-
-    // 过滤掉函数类型，因为函数无法被 JSON.stringify 正常序列化
-    const plainState = Object.fromEntries(
-        Object.entries(currentState).filter(([, value]) => typeof value !== "function")
-    );
-
-    return {
-        state: plainState,
-        version: LatestStoreVersion,
-    };
-};
+// const getCurrentPersistedSnapshot = (storeKey: string) => {
+//     const entry = persistedStores.get(storeKey);
+//     if (!entry) return null;
+//
+//     const currentState = entry.store.getState();
+//
+//     // 过滤掉函数类型，因为函数无法被 JSON.stringify 正常序列化
+//     const plainState = Object.fromEntries(
+//         Object.entries(currentState).filter(([, value]) => typeof value !== "function")
+//     );
+//
+//     return {
+//         state: plainState,
+//         version: LatestStoreVersion,
+//     };
+// };

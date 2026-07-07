@@ -211,6 +211,36 @@ const bgSchema = v.object({
     carouselInterval: v.number(),
 });
 
+// ---- Tile 相关 schema ----
+const tagSchema = v.object({
+    id: v.number(),
+    name: v.string(),
+    checked: v.boolean(),
+});
+
+const metaSchema = v.object({
+    name: v.string(),
+    alt: v.string(),
+    icon: v.string(),
+    tags: v.array(v.string()),
+});
+
+const tileSchema = v.object({
+    id: v.number(),
+    url: v.string(),
+    meta: metaSchema,
+});
+
+const tileStateSchema = v.object({
+    tiles: v.array(tileSchema),
+    tilesVisible: v.boolean(),
+    tileUiVisible: v.boolean(),
+    tileInEditId: v.number(),
+    tags: v.array(tagSchema),
+    untaggedChecked: v.boolean(),
+    isBroadMatches: v.boolean(),
+});
+
 type CONFIGS = {
     storeName:StoreName,
     stateSchema:BaseSchema<any, any, any>,
@@ -226,6 +256,7 @@ export const MIGRATION_CONFIGS:CONFIGS = [
     { storeName: "ts" as const, stateSchema: tileStyleSchema, legacyDb: "idb" as const },
     { storeName: "cm" as const, stateSchema: cmSchema, legacyDb: "idb" as const },
     { storeName: "bg" as const, stateSchema: bgSchema, legacyDb: "idb" as const },
+    { storeName: "tile" as const, stateSchema: tileStateSchema, legacyDb: "idb" as const },
 ];
 
 void (async function executeMigrations() {

@@ -5,10 +5,11 @@ import {memo, useEffect, useState} from "react";
 import {NumberField, NumberFieldXY} from "@/vol_apps/tile/NumberField";
 import {FontFamily} from "@/vol_apps/tile/FontFamilyField";
 import {ColorPickerField} from "@/vol_apps/tile/ColorPickerField";
-import {useTileStore} from "@/vol_apps/tile/tile_store";
+
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {storeHub, useSignal} from "@/vol_apps/04_persist_atoms";
 import {tagStyleConfig} from "@/vol_apps/tag/TagStyleAtom.ts";
+import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
 
 
 // ==================== 可见性 ====================

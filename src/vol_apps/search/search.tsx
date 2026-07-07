@@ -37,12 +37,12 @@ const COLORS = "bg-transparent text-sBlue group-hover:bg-white"
 const BOX_FLEX = "flex items-center whitespace-nowrap"
 
 const ICON_WRAPPER = cn(WRAPPER_FLEX, COLORS,
-    "w-[64px]", "pl-[16px] pr-[12px] select-none",
+    "w-[64px]", "pl-[16px] pr-[12px] select-none cursor-pointer",
     TRANSITION)
 const ICON_BOX = cn(BOX_FLEX, BOX_HEIGHT)
 
 const NAME_WRAPPER = cn(WRAPPER_FLEX, COLORS,
-    "w-fit", "pl-[16px] pr-[20px] select-none",
+    "w-fit", "pl-[16px] pr-[20px] select-none cursor-pointer",
     TRANSITION)
 const NAME_BOX = cn(BOX_FLEX, BOX_HEIGHT, "text-[19px] font-semibold select-none")
 
