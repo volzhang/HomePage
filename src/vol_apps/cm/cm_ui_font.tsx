@@ -157,10 +157,10 @@ export const CmUiFont = () => {
 									className={"w-52"}
 								/>
 							</div>
-							{/* 测试 */}
-							<div>
-								<input type={"range"} className={"bg-sBlue"} min={0} max={100} defaultValue={"50"}></input>
-							</div>
+							{/*/!* 测试 *!/*/}
+							{/*<div>*/}
+							{/*	<input type={"range"} className={"bg-sBlue"} min={0} max={100} defaultValue={"50"}></input>*/}
+							{/*</div>*/}
 						</div>
 					</div>
 				</PopoverContent>
