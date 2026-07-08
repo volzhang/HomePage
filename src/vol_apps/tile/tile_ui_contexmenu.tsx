@@ -1,28 +1,29 @@
 import {UnorderedList} from "@/vol_apps/01_components/UnorderedList";
 import {type TileLogic, useTileLogic} from "@/vol_apps/tile/useTileLogic";
-import {create} from "zustand";
+
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
 import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs";
 import {useFloatStyles} from "@/vol_apps/02_hooks/float/useFloatStyles";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {createSignal} from "@/vol_apps/04_persist_atoms";
+import React from "react";
 
-type ContextMenuStore = {
-    contextMenuOpen: boolean
-    contextMenuPosition: { x: number, y: number }
-    setContextMenuOpen: (contextMenuOpen: boolean) => void
-    setContextMenuPosition: (contextMenuPosition: { x: number, y: number }) => void
+const contextMenuOpenSig = createSignal<boolean>(false)
+const contextMenuPositionSig = createSignal<{ x: number, y: number }>({x: 0, y: 0})
+
+export const useTileContextMenuStore = () => {
+    const contextMenuOpen = contextMenuOpenSig.use()
+    const contextMenuPosition = contextMenuPositionSig.use()
+    const setContextMenuOpen = (o: boolean) => contextMenuOpenSig.set(o)
+    const setContextMenuPosition = (p: { x: number, y: number }) => contextMenuPositionSig.set(p)
+
+    return {
+        contextMenuOpen, contextMenuPosition,
+        setContextMenuOpen, setContextMenuPosition,
+    }
 }
-
-const TileContextMenuStore = create<ContextMenuStore>((set) => ({
-    contextMenuOpen: false,
-    contextMenuPosition: {x: 0, y: 0},
-    setContextMenuOpen: (contextMenuOpen: boolean) => set({contextMenuOpen}),
-    setContextMenuPosition: (contextMenuPosition: { x: number, y: number }) => set({contextMenuPosition}),
-}))
-
-export const useTileContextMenuStore = () => TileContextMenuStore()
 
 const ContextMenu = (
     {contextMenuOptions}: TileLogic

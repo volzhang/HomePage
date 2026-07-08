@@ -2,8 +2,7 @@
 import {type Tag, type Tile, TutorialsTiles, type TileUpdate, defaultTile, tutorialTags} from "@/vol_apps/tile/tile_store_types.ts";
 import {initStoreState, useSignal, getSignal, storeHub} from "@/vol_apps/04_persist_atoms";
 
-// 初始化 store（已存在）
-const TileStore = initStoreState({
+export const tileStore = initStoreState({
     storeName: 'tile',
     fields: {
         tiles: TutorialsTiles as Tile[],
@@ -16,29 +15,29 @@ const TileStore = initStoreState({
     }
 });
 
-// 辅助函数（与原版一致）
+// 辅助函数
 const ensureAtLeastOneTile = (tiles: Tile[]): Tile[] => {
     return tiles.length > 0 ? tiles : [{...defaultTile, id: 0}];
 };
 
 export const useTileStore = () => {
     // -------- 获取响应式状态值（用于渲染）--------
-    const {tiles} = useSignal(TileStore("tiles"));
-    const {tilesVisible} = useSignal(TileStore("tilesVisible"));
-    const {tileUiVisible} = useSignal(TileStore("tileUiVisible"));
-    const {tileInEditId} = useSignal(TileStore("tileInEditId"));
-    const {tags} = useSignal(TileStore("tags"));
-    const {untaggedChecked} = useSignal(TileStore("untaggedChecked"));
-    const {isBroadMatches} = useSignal(TileStore("isBroadMatches"));
+    const {tiles} = useSignal(tileStore("tiles"));
+    const {tilesVisible} = useSignal(tileStore("tilesVisible"));
+    const {tileUiVisible} = useSignal(tileStore("tileUiVisible"));
+    const {tileInEditId} = useSignal(tileStore("tileInEditId"));
+    const {tags} = useSignal(tileStore("tags"));
+    const {untaggedChecked} = useSignal(tileStore("untaggedChecked"));
+    const {isBroadMatches} = useSignal(tileStore("isBroadMatches"));
 
     // -------- 获取信号对象（用于 actions 中读写最新值）--------
-    const tilesSig = getSignal(TileStore("tiles"));
-    const tilesVisibleSig = getSignal(TileStore("tilesVisible"));
-    const tileUiVisibleSig = getSignal(TileStore("tileUiVisible"));
-    const tileInEditIdSig = getSignal(TileStore("tileInEditId"));
-    const tagsSig = getSignal(TileStore("tags"));
-    const untaggedCheckedSig = getSignal(TileStore("untaggedChecked"));
-    const isBroadMatchesSig = getSignal(TileStore("isBroadMatches"));
+    const tilesSig = getSignal(tileStore("tiles"));
+    const tilesVisibleSig = getSignal(tileStore("tilesVisible"));
+    const tileUiVisibleSig = getSignal(tileStore("tileUiVisible"));
+    const tileInEditIdSig = getSignal(tileStore("tileInEditId"));
+    const tagsSig = getSignal(tileStore("tags"));
+    const untaggedCheckedSig = getSignal(tileStore("untaggedChecked"));
+    const isBroadMatchesSig = getSignal(tileStore("isBroadMatches"));
 
     // -------- 核心更新函数（包含 updateTags 逻辑）--------
     const updateTags = (newTiles?: Tile[]) => {
