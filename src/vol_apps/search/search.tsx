@@ -174,9 +174,9 @@ const SearchInput = () => {
     />
 }
 
-const duration = 250
-const exitDuration = 250
-const scale = 90
+const duration = 150
+const exitDuration = 100
+const scale = 98
 const zIndex = 30
 const RESET_INPUT = "m-0 p-0 outline-0"
 const ITEMS = cn("text-xl w-full px-2 py-1.5 h-fit rounded-[5px]")

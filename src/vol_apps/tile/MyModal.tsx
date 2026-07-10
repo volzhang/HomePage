@@ -26,7 +26,8 @@ export const MyModal = ({
 
     const floatingStyle = useFloatStyles({
         open, direction: "bottom", offset: 32,
-        duration: 300, exitDuration:300
+        duration: 150, exitDuration: 100,
+        scale: 95
     })
 
     useKeyEscapeToClose(open, () => onOpenChange(false));

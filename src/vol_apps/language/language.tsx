@@ -19,7 +19,8 @@ export const Language = () => {
                     setLanguage(v as "cn" | "en");
                 }}
                     open={open} onOpenChange={setOpen}
-                    duration={200} exitDuration={200}
+                    duration={150} exitDuration={100}
+                    scale={98}
                 >
                     <Select.Trigger>
                         {/* Trigger 能自己搞定open状态 Button只是为了样式*/}

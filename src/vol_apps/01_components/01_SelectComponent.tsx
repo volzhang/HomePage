@@ -246,6 +246,7 @@ interface SelectProps {
     exitDuration?: number;
 
     className?: string;
+    scale?: number;
 }
 
 export const SelectComponent = ({
@@ -258,8 +259,10 @@ export const SelectComponent = ({
                                     direction = "bottom",
                                     align = "start",
                                     offset = 4,
-                                    duration = 200,
+                                    duration = 150,
                                     exitDuration = 100,
+                                    scale = 95,
+
 
                                     // className,
                                 }: SelectProps) => {
@@ -270,7 +273,8 @@ export const SelectComponent = ({
         align,
         offset,
         duration,
-        exitDuration
+        exitDuration,
+        scale
     });
 
     // 有很多hook，先统一处理和合并绑定，然后分发

@@ -32,7 +32,7 @@ export const TutorialsTiles: Tile[] = tutorialConfig.map((item, index) => ({
 }));
 
 export const tutorialTags: Tag[] = [
-    {id: 0, name: english_tag, checked: true},
+    {id: 0, name: english_tag, checked: false},
     {id: 1, name: chinese_tag, checked: false},
 ]
 
