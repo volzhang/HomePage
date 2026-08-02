@@ -151,7 +151,8 @@
     }
 
     html {
-        @apply bg-background;
+        /*@apply bg-background;*/
+        background-color: oklch(1 0 0) !important;
         height: 100%;
     }
 

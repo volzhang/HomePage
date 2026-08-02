@@ -14,135 +14,129 @@ export const bgInitState = {
 }
 
 // waitForDoubleFrame 替代 void next.offsetHeight;
-// const waitForDoubleFrame = () => {
-//     return new Promise(resolve => {
-//         requestAnimationFrame(() => {
-//             requestAnimationFrame(resolve);
-//         });
-//     });
-// }
+const waitForDoubleFrame = () => {
+    return new Promise(resolve => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(resolve);
+        });
+    });
+}
 
 export const initBgLayer = async () => {
-    // 1. 从 IndexedDB 恢复上次的状态
-
-    // const data = await get("bg", createStore("localforage", "keyvaluepairs"));
-    // 新signal框架直接使用默认数据库
-    const data = await get("bg")
+    const data = await get("bg");
 
     if (data !== undefined) {
-        // const date = JSON.parse(data);
-        // 新signal框架不需要解析，因为直接保存的对象
         const state = data.state;
         if (state !== undefined) {
             if (state?.bgImg) bgInitState.bgImg = state.bgImg;
-            if (state?.bgSize  !== undefined) bgInitState.bgSize  = state.bgSize;
+            if (state?.bgSize !== undefined) bgInitState.bgSize = state.bgSize;
             if (state?.bgRepeat !== undefined) bgInitState.bgRepeat = state.bgRepeat;
             if (state?.bgCenter !== undefined) bgInitState.bgCenter = state.bgCenter;
-            // bgInitState.bgImg = state?.bgImg;
-            // bgInitState.bgSize = state?.bgSize;
-            // bgInitState.bgRepeat = state?.bgRepeat;
-            // bgInitState.bgCenter = state?.bgCenter;
         }
     }
 
-    // 2. 预加载背景图，确保整张图解码完成
+    // 预加载 + 解码
+    const preloadImg = new Image();
     await new Promise<void>((resolve) => {
-        const preloadImg = new Image();
         preloadImg.onload = async () => {
-            try {
-                await preloadImg.decode();
-            } catch {
-
-            }
+            try { await preloadImg.decode(); } catch {}
             resolve();
         };
         preloadImg.onerror = () => resolve();
         preloadImg.src = bgInitState.bgImg;
     });
 
-    // 3. 图片完全就绪，创建图层并插入 DOM
+    try {
+        const bitmap = await createImageBitmap(preloadImg);
+        bitmap.close();
+    } catch {}
+
+    // 建层，先透明
     layerA = document.createElement("div");
     layerB = document.createElement("div");
     layerA.id = "bg-layer-a";
     layerB.id = "bg-layer-b";
 
     const baseStyle = `
-    position: fixed;
-    inset: 0;
-    background-image: url(${bgInitState.bgImg});
-    background-size: ${bgInitState.bgSize};
-    background-position: ${bgInitState.bgCenter ? "center" : "top left"};
-    background-repeat: ${bgInitState.bgRepeat ? "repeat" : "no-repeat"};
-    transition: opacity 1s;
-    will-change: opacity;
-    z-index: -999;
-    pointer-events: none;
-  `;
-    layerA.style.cssText = baseStyle + "opacity:1;";
-    layerB.style.cssText = baseStyle + "opacity:0;";
+        position: fixed;
+        inset: 0;
+        background-image: url(${bgInitState.bgImg});
+        background-size: ${bgInitState.bgSize};
+        background-position: ${bgInitState.bgCenter ? "center" : "top left"};
+        background-repeat: ${bgInitState.bgRepeat ? "repeat" : "no-repeat"};
+        transition: opacity 1s;
+        will-change: opacity;
+        z-index: -999;
+        pointer-events: none;
+        opacity: 0;
+    `;
+    layerA.style.cssText = baseStyle;
+    layerB.style.cssText = baseStyle;
+
     document.body.appendChild(layerB);
     document.body.appendChild(layerA);
+
+    await waitForDoubleFrame();
+
+    layerA.style.opacity = "1";
 };
 
 // export const initBgLayer = async () => {
-//     const data = await get("bg");
-//     if (data?.state !== undefined) {
+//     // 1. 从 IndexedDB 恢复上次的状态
+//
+//     // const data = await get("bg", createStore("localforage", "keyvaluepairs"));
+//     // 新signal框架直接使用默认数据库
+//     const data = await get("bg")
+//
+//     if (data !== undefined) {
+//         // const date = JSON.parse(data);
+//         // 新signal框架不需要解析，因为直接保存的对象
 //         const state = data.state;
-//         if (state?.bgImg) bgInitState.bgImg = state.bgImg;
-//         if (state?.bgSize !== undefined) bgInitState.bgSize = state.bgSize;
-//         if (state?.bgRepeat !== undefined) bgInitState.bgRepeat = state.bgRepeat;
-//         if (state?.bgCenter !== undefined) bgInitState.bgCenter = state.bgCenter;
+//         if (state !== undefined) {
+//             if (state?.bgImg) bgInitState.bgImg = state.bgImg;
+//             if (state?.bgSize  !== undefined) bgInitState.bgSize  = state.bgSize;
+//             if (state?.bgRepeat !== undefined) bgInitState.bgRepeat = state.bgRepeat;
+//             if (state?.bgCenter !== undefined) bgInitState.bgCenter = state.bgCenter;
+//         }
 //     }
 //
-//     // 1. 真正等图片完全解码
-//     const preloadImg = new Image();
-//     preloadImg.src = bgInitState.bgImg;
-//     try {
-//         await preloadImg.decode();
-//         // 现代浏览器优先
-//     } catch {
-//         // 兜底老写法
-//         await new Promise<void>(resolve => {
-//             preloadImg.onload = () => resolve();
-//             preloadImg.onerror = () => resolve();
-//         });
-//     }
+//     // 2. 预加载背景图，确保整张图解码完成
+//     await new Promise<void>((resolve) => {
+//         const preloadImg = new Image();
+//         preloadImg.onload = async () => {
+//             try {
+//                 await preloadImg.decode();
+//             } catch {}
+//             resolve();
+//         };
+//         preloadImg.onerror = () => resolve();
+//         preloadImg.src = bgInitState.bgImg;
+//     });
 //
-//     // 2. 建层，但先全透明
+//     await waitForDoubleFrame()
+//
+//     // 3. 图片完全就绪，创建图层并插入 DOM
 //     layerA = document.createElement("div");
 //     layerB = document.createElement("div");
 //     layerA.id = "bg-layer-a";
 //     layerB.id = "bg-layer-b";
 //
 //     const baseStyle = `
-//         position: fixed;
-//         inset: 0;
-//         background-image: url(${bgInitState.bgImg});
-//         background-size: ${bgInitState.bgSize};
-//         background-position: ${bgInitState.bgCenter ? "center" : "top left"};
-//         background-repeat: ${bgInitState.bgRepeat ? "repeat" : "no-repeat"};
-//        t
-//         will-change: opacity;
-//         z-index: -999;
-//         pointer-events: none;
-//         opacity: 0;
-//     `;
-//
-//     layerA.style.cssText = baseStyle;
-//     layerB.style.cssText = baseStyle;
+//     position: fixed;
+//     inset: 0;
+//     background-image: url(${bgInitState.bgImg});
+//     background-size: ${bgInitState.bgSize};
+//     background-position: ${bgInitState.bgCenter ? "center" : "top left"};
+//     background-repeat: ${bgInitState.bgRepeat ? "repeat" : "no-repeat"};
+//     transition: opacity 1s;
+//     will-change: opacity;
+//     z-index: -999;
+//     pointer-events: none;
+//   `;
+//     layerA.style.cssText = baseStyle + "opacity:1;";
+//     layerB.style.cssText = baseStyle + "opacity:0;";
 //     document.body.appendChild(layerB);
 //     document.body.appendChild(layerA);
-//
-//     // 3. 等两帧，让浏览器把纹理真正上传到 GPU
-//     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-//
-//     // 4. 再显示
-//     layerA.style.opacity = "1";
-//
-//     // 之后再打开 transition，只给后续切换用
-//     // await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-//     // layerA.style.transition = "opacity 1s";
-//     // layerB.style.transition = "opacity 1s";
 // };
 
 export const setBackground = async (
