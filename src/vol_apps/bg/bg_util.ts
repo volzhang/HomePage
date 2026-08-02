@@ -64,7 +64,7 @@ export const initBgLayer = async () => {
         background-size: ${bgInitState.bgSize};
         background-position: ${bgInitState.bgCenter ? "center" : "top left"};
         background-repeat: ${bgInitState.bgRepeat ? "repeat" : "no-repeat"};
-        transition: opacity 200ms;
+        transition: opacity 125ms;
         will-change: opacity;
         z-index: -999;
         pointer-events: none;

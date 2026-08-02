@@ -11,7 +11,7 @@ import{n as e}from"./rolldown-runtime-DUM6r_x0.js";import"./src-rLju2LzZ.js";imp
         background-size: ${V.bgSize};
         background-position: ${V.bgCenter?`center`:`top left`};
         background-repeat: ${V.bgRepeat?`repeat`:`no-repeat`};
-        transition: opacity 200ms;
+        transition: opacity 125ms;
         will-change: opacity;
         z-index: -999;
         pointer-events: none;
