@@ -2,9 +2,7 @@ import {type ElementType} from "react";
 import {Bookmark, Search, SquareMousePointer, Wallpaper} from "lucide-react";
 import {
     Drawer,
-    // DrawerClose,
     DrawerContent,
-    // DrawerFooter,
     DrawerHeader,
     DrawerTitle,
     DrawerDescription,

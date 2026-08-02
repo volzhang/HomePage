@@ -16,7 +16,7 @@ import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
 const VisibilityRadio = memo(() => {
     const { t } = useLanguage("tagBar");
 
-    const { visible, setVisible } = useSignal(...tagStyleConfig("visible"))
+    const { visible, setVisible } = useSignal(tagStyleConfig("visible"))
 
     const options = [
         { value: "true", label: t("Visible") },

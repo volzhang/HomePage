@@ -55,6 +55,7 @@ export function useFloating({
         // visibility: anim.visibility,
         // pointerEvents: anim.pointerEvents,
         transition: styles.transition,
+        pointerEvents: 'auto'   //需要显式确定为'auto'，否则可能被父组件干扰
     };
 
     return {anchorRef, floatingRef, floatingStyle, floatingPortal: portal,

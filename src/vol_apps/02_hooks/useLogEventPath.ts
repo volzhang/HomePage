@@ -1,15 +1,20 @@
 import { useEffect } from 'react';
 
-/**
- * 双击页面后，在控制台打印事件冒泡路径。
- * 只输出每个元素最通用的信息：tag、id、前3个类名
- */
+type EventType = keyof HTMLElementEventMap;
 
-export function useLogDoubleClickPath() {
+/**
+ * 在页面中监听指定事件，打印事件冒泡路径。
+ * @param eventType 事件类型，默认为 'dblclick'，可传入 'click'、'mousedown' 等
+ */
+export function useLogEventPath(eventType: EventType = 'dblclick') {
     useEffect(() => {
-        const onDoubleClick = (e: MouseEvent) => {
-            console.group('PATH:');
-            let node: Element | null = e.target as Element;
+        const handler = (e: Event) => {
+            const target = e.target as Element | null;
+            if (!target) return;
+
+            console.group(`🛤️ Event Path (${eventType})`);
+
+            let node: Element | null = target;
             let depth = 0;
 
             while (node) {
@@ -34,7 +39,7 @@ export function useLogDoubleClickPath() {
             console.groupEnd();
         };
 
-        document.addEventListener('dblclick', onDoubleClick);
-        return () => document.removeEventListener('dblclick', onDoubleClick);
-    }, []);
+        document.addEventListener(eventType, handler);
+        return () => document.removeEventListener(eventType, handler);
+    }, [eventType]);
 }

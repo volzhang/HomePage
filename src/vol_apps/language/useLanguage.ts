@@ -10,7 +10,7 @@ export const languageConfig = initStoreState({
     }
 })
 
-const languageSignal = getSignal(...languageConfig("language"));
+const languageSignal = getSignal(languageConfig("language"));
 
 const syncLanguage = () => {
     const l = languageSignal.get();

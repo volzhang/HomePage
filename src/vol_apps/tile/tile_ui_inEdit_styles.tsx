@@ -128,12 +128,12 @@ const IconSection = memo(() => {
 // ==================== 文本与字体 ====================
 const TextFontSection = memo(() => {
     const {t} = useLanguage();
-    const {font, setFont} = useSignal(...tileStyleConfig("font"))
-    const {fontSize, setFontSize} = useSignal(...tileStyleConfig("fontSize"))
-    const {fontWeight, setFontWeight} = useSignal(...tileStyleConfig("fontWeight"))
-    const {textColor, setTextColor} = useSignal(...tileStyleConfig("textColor"))
-    const {textOpacity, setTextOpacity} = useSignal(...tileStyleConfig("textOpacity"))
-    const {textOffset, setTextOffset} = useSignal(...tileStyleConfig("textOffset"))
+    const {font, setFont} = useSignal(tileStyleConfig("font"))
+    const {fontSize, setFontSize} = useSignal(tileStyleConfig("fontSize"))
+    const {fontWeight, setFontWeight} = useSignal(tileStyleConfig("fontWeight"))
+    const {textColor, setTextColor} = useSignal(tileStyleConfig("textColor"))
+    const {textOpacity, setTextOpacity} = useSignal(tileStyleConfig("textOpacity"))
+    const {textOffset, setTextOffset} = useSignal(tileStyleConfig("textOffset"))
 
     return (
         <AccordionItem value="TileText&Font">

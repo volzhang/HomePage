@@ -14,7 +14,7 @@ import {useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
 import {useDelayed} from "@/vol_apps/02_hooks/02_useDelayed.ts";
 import {useKeyboardNavigation} from "@/vol_apps/02_hooks/07_useKeyboardNavigation.ts";
 
-export const MENU_CLASS = cn(
+const MENU_CLASS = cn(
     "flex flex-col border items-center",
     "bg-popover text-foreground",
     "rounded-md shadow-md",
@@ -22,7 +22,7 @@ export const MENU_CLASS = cn(
     "p-1",
 );
 
-export const ITEM_CLASS = cn(
+const ITEM_CLASS = cn(
     "flex items-center justify-between w-full",
     "h-8 text-foreground",
     "text-sm rounded-sm",
@@ -33,7 +33,7 @@ export const ITEM_CLASS = cn(
     "p-2"
 );
 
-export const TRIGGER_CLASS = ""
+const TRIGGER_CLASS = ""
 
 export const SelectContext = createContext<{
     value?: string;
@@ -319,6 +319,8 @@ export const SelectComponent = ({
     );
 };
 
+
+// 典型使用例子
 export const DemoSelect = () => {
     const [lang, setLang] = useState("en");
     const [open, setOpen] = useState(false);

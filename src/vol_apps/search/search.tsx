@@ -92,7 +92,6 @@ const SearchIcon = () => {
     )
 }
 
-
 // BetterTextarea: a controlled textarea component
 // 1. default styles are removed
 // 2. rows resized by `value` prop

@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React from "react";
 import {loadFonts} from "@/vol_apps/tool/action/loadFonts";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
@@ -19,8 +19,8 @@ interface FontFamilyProps {
 export const FontFamily = ({value, onChange}: FontFamilyProps) => {
     const {t} = useLanguage()
     // noinspection DuplicatedCode
-    const [open, setOpen] = useState(false);
-    const [fontList, setFontList] = useState<FontItem[]>([]);
+    const [open, setOpen] = React.useState(false);
+    const [fontList, setFontList] = React.useState<FontItem[]>([]);
 
     const handleOpen = async () => {
         try {
@@ -28,6 +28,7 @@ export const FontFamily = ({value, onChange}: FontFamilyProps) => {
             // 把 System Default 放在第一位
             const newList: FontItem[] = [FONT_DEFAULT, ...loadedFonts];
             setFontList(newList);
+            setOpen(!open)
         } catch (error) {
             console.error("加载字体失败", error);
             setFontList([FONT_DEFAULT]);
@@ -44,10 +45,9 @@ export const FontFamily = ({value, onChange}: FontFamilyProps) => {
         duration: 200,
         exitDuration: 200,
         offset: 4,
-        zIndex: 40,
+        zIndex: 60,
         scale: 95,
     })
-
 
     return (
         <>

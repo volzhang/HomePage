@@ -5,17 +5,15 @@ import {Theme} from "@/vol_apps/theme/theme";
 import {ToasterUi} from "@/vol_apps/toaster/toaster_ui";
 import {Version} from "@/vol_apps/version/version";
 import {Cm} from "@/vol_apps/cm/cm";
-// import {SearchBar} from "@/vol_apps/search/search";
 import {Menu} from "@/vol_apps/menu/menu_legacy";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import {Language} from "@/vol_apps/language/language";
 import "@/vol_apps/04_persist_atoms/migration.ts";
 import {Backup} from "@/vol_apps/backupDirectory/backup.tsx";
 import {SearchBar} from "@/vol_apps/search/search.tsx";
-// import {useLogDoubleClickPath} from "@/vol_apps/02_hooks/useLogDoubleClickPath";
 
 export const App = () => {
-    // useLogDoubleClickPath()
+    // useLogEventPath('click')
     return (
         <>
             <ToasterUi/>

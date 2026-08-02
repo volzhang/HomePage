@@ -25,6 +25,13 @@ export function useClickOutsideToClose({ open, onClose }: UseClickOutsideToClose
 
         const handler = (e: MouseEvent) => {
             const target = e.target as Node;
+            // const target = e.target as Element;
+            // // 这是一个临时补丁 忽略所有 Command 内部的交互元素
+            // // 当前 command 没有作为独立浮层使用
+            // if (target.closest?.('[data-slot^="command-"]')) {
+            //     return;
+            // }
+
             if (!containerDOM.current) return;
             if (containerDOM.current.contains(target)) return;
             if (ignoreDOM.current?.contains(target)) return;
