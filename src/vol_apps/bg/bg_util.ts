@@ -64,7 +64,7 @@ export const initBgLayer = async () => {
         background-size: ${bgInitState.bgSize};
         background-position: ${bgInitState.bgCenter ? "center" : "top left"};
         background-repeat: ${bgInitState.bgRepeat ? "repeat" : "no-repeat"};
-        transition: opacity 1s;
+        transition: opacity 200ms;
         will-change: opacity;
         z-index: -999;
         pointer-events: none;
@@ -77,8 +77,11 @@ export const initBgLayer = async () => {
     document.body.appendChild(layerA);
 
     await waitForDoubleFrame();
-
     layerA.style.opacity = "1";
+    await waitForDoubleFrame();
+    layerA.style.transition = "opacity 1000m"
+    layerB.style.transition = "opacity 1000m"
+
 };
 
 // export const initBgLayer = async () => {
