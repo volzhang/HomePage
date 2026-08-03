@@ -170,16 +170,16 @@
     @keyframes fade-in-scale {
         0% {
             opacity: 0;
-            transform: scale(0.97);
+            transform: scale(0.95);
         }
         100% {
             opacity: 1;
-            transform: scale(1);
+            transform: scale(1.00);
         }
     }
 
     .animate-fade-in-scale {
-        animation: fade-in-scale 0.2s ease-in-out;
+        animation: fade-in-scale 200ms ease-in-out;
     }
 
     /* bg组件功能：其他可见 */
