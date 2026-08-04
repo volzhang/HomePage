@@ -1,6 +1,5 @@
-import {type ReactNode, useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 
-// import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
 import {enhanceUrl, extractMainDomain} from "@/vol_apps/tool/action/enhanceUrl";
 import {openLinkInCurrentTab, openLinkInNewTab} from "@/vol_apps/tool/action/openLink";
@@ -82,7 +81,7 @@ export const useTileLogic = () => {
     const link_ref = useRef<HTMLTextAreaElement>(null);
 
     // NAME
-    const name: ReactNode | "" = currentTile?.meta.name || ""
+    const name = currentTile?.meta.name || ""
     const setName = (name: string) => updateTile(tileInEditId, {meta: {name}})
 
     const buildLink = (input: string) => {
