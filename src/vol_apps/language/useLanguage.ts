@@ -3,10 +3,16 @@ import {useCallback} from "react";
 import {type NamespaceDict, resources} from "@/vol_apps/language/language_RESOURCES.ts";
 
 export type Language = "en" | "cn"
+
+const getBrowserLanguage = (): Language => {
+    const lang = (navigator.language || navigator.languages?.[0] || "en").toLowerCase();
+    return lang.startsWith("zh") ? "cn" : "en";
+};
+
 export const languageConfig = initStoreState({
     storeName:"language",
     fields:{
-        language:"en" as Language,
+        language: getBrowserLanguage()
     }
 })
 
