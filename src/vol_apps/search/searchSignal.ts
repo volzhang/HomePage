@@ -35,6 +35,8 @@ export const searchStore = initStoreState({
         engineInUseId: 0,
         customEngines: [] as SearchEngine[],
         visible: true,
+
+        enableTileFilter:true,
     }
 })
 

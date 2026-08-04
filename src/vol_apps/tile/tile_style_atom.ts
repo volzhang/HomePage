@@ -27,7 +27,7 @@ export const tileStyleConfig = initStoreState({
         fontWeight: 500,
         font: FONT_DEFAULT,
 
-        textOffset: {x: 0, y: 10},
+        textOffset: {x: 0, y: 8},
         textColor: "#000000",
         textOpacity: 1,
     }

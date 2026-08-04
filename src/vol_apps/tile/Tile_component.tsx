@@ -8,14 +8,14 @@ import {tileStyleConfig} from "@/vol_apps/tile/tile_style_atom";
 import {useTileBackgroundColor, useTileOutlineColor, useTileTextColor} from "@/vol_apps/tile/tile_style_hooks.ts"
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms";
-import type {TileLogic} from "@/vol_apps/tile/useTileLogic.tsx";
+// import type {TileLogic} from "@/vol_apps/tile/useTileLogic.tsx";
 
-type TileComponentProps = TileLogic & {
-    // tileId: number;
-    // link: string;
-    // icon: string;
-    // name: string;
-    // isFetchingIcon: boolean;
+type TileComponentProps = {
+    tileId: number;
+    link: string;
+    icon: string;
+    name: React.ReactNode;
+    isFetchingIcon: boolean;
     disableClick?: boolean;
     iconBorderOutline?: boolean;
     onTileRightClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
@@ -29,7 +29,6 @@ const ValidUrlTile = ({
                           disableClick,
                           onTileRightClick,
                           iconBorderOutline,
-                          // percent,
                       }: TileComponentProps) => {
     const {t} = useLanguage(); // 国际化直接在内部获取
 
@@ -46,7 +45,6 @@ const ValidUrlTile = ({
     const {fontWeight} = useSignal(tileStyleConfig("fontWeight"))
     const {font} = useSignal(tileStyleConfig("font"))
     const {textOffset} = useSignal(tileStyleConfig("textOffset"))
-
 
     const backgroundRGBAColor = useTileBackgroundColor();
     const tileOutlineRGBAColor = useTileOutlineColor();

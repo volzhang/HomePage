@@ -293,6 +293,12 @@ export const resources: RESOURCES = {
         "TagBar": "标签栏",
         "TileWall": "磁砖墙",
 
+        "Filter Tiles":"过滤瓷砖",
+        "Enable":"启用",
+        "Disable":"禁用",
+
+
+
         //toast
         "can not open link": "无法打开链接",
 
@@ -303,6 +309,7 @@ export const resources: RESOURCES = {
         // Searchbar
 
         "New Custom": "新建自定义",
+
         // "Name":"名字",
         "Search URL Prefix": "搜索引擎地址前缀",
         "Homepage URL": "搜索引擎主页",

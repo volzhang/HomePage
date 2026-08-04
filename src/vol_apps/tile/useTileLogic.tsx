@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from "react";
+import {type ReactNode, useEffect, useMemo, useRef, useState} from "react";
 
 // import {useTileStore} from "@/vol_apps/tile/tile_store";
 import {defaultIconBase64} from "@/vol_apps/tile/tile_store_types";
@@ -82,7 +82,7 @@ export const useTileLogic = () => {
     const link_ref = useRef<HTMLTextAreaElement>(null);
 
     // NAME
-    const name = currentTile?.meta.name || ""
+    const name: ReactNode | "" = currentTile?.meta.name || ""
     const setName = (name: string) => updateTile(tileInEditId, {meta: {name}})
 
     const buildLink = (input: string) => {
@@ -127,7 +127,7 @@ export const useTileLogic = () => {
         try {
             const result = await apiFaviconVemetric(cleanDomain, 128);
             if (result) {
-                updateTile(tileInEditId, { meta: { icon: result } });
+                updateTile(tileInEditId, {meta: {icon: result}});
                 // setPercent(100);
             } else {
                 // setPercent(0);

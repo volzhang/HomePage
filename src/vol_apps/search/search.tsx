@@ -19,6 +19,8 @@ import {useKeyboardNavigation} from "@/vol_apps/02_hooks/07_useKeyboardNavigatio
 const selectIsOpenSiganle = createSignal<boolean>(false)
 const customIsOpenSignal = createSignal<boolean>(false)
 
+export const searchBarValueSignal = createSignal<string>("")
+
 const LEADING_HEIGHT = "leading-[44px]"
 const BOX_HEIGHT = "h-[60px]"
 const TRANSITION = "transition-all duration-350 ease-out"
@@ -151,7 +153,11 @@ const BetterTextarea = ({
 const SearchInput = () => {
     const {getCurrentEngine} = useSearchStore()
     const engine = getCurrentEngine()
-    const [value, setValue] = React.useState("")
+
+    // const [value, setValue] = React.useState("")
+
+    const value = searchBarValueSignal.use()
+    const setValue = searchBarValueSignal.set
 
     const onKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
         if (e.key === "Enter") {
@@ -243,6 +249,7 @@ const SelectEngine = ({
 }) => {
 
     const onOpenChange = (o: boolean) => selectIsOpenSiganle.set(o)
+
     const [value, setValue] = React.useState("")
 
     const {engineInUseId, setEngineInUseId, getEngines} = useSearchStore()

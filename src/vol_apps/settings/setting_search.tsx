@@ -4,8 +4,8 @@ import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {searchStore} from "@/vol_apps/search/searchSignal.ts";
 
 export const Setting_search = () => {
-    // const {visible, setVisible} = useSignal(...searchStyleConfig("visible"))
     const {visible, setVisible} = useSignal(searchStore("visible"))
+    const {enableTileFilter, setEnableTileFilter} = useSignal(searchStore("enableTileFilter"))
     const {t} = useLanguage()
 
     const searchVisibleOptions = [
@@ -13,11 +13,20 @@ export const Setting_search = () => {
         {value: "false", label: t("Invisible")}
     ]
 
+    const enableTileFilterOptions = [
+        {value: "true", label: t("Enable")},
+        {value: "false", label: t("Disable")}
+    ]
+
     return (
         <div className={"flex flex-col gap-2.5 p-1 w-full"}>
             <MyRadio title={t("Visible")} options={searchVisibleOptions}
                      value={visible ? "true": "false"}
                      onValueChange={(value) => setVisible(value === "true")}
+            />
+            <MyRadio title={t("Filter Tiles")} options={enableTileFilterOptions}
+                     value={enableTileFilter ? "true": "false"}
+                     onValueChange={(value) => setEnableTileFilter(value === "true")}
             />
         </div>
     )

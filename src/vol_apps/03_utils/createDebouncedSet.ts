@@ -16,7 +16,15 @@ export function createDebouncedSet<Args extends any[], R>(
         });
     };
 
+    debounced.cancel = () => {
+        if (timer) {
+            clearTimeout(timer);
+            timer = undefined;
+        }
+    };
+
     debounced.flush = async (): Promise<Awaited<R>> => {
+        if (!lastArgs) throw new Error("No pending call");
         return Promise.resolve(setFn(...lastArgs!));
     };
 
