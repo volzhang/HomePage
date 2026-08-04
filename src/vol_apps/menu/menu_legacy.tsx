@@ -20,9 +20,12 @@ import {
 	netscapeBookmarkFilePhaser
 } from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
 import {useSettingStore} from "../settings/setting_store";
-import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {languageConfig, useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {backupOpenSignal} from "@/vol_apps/backupDirectory/backup.tsx";
 import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
+import {Languages} from "lucide-react";
+
 
 //这里手动复制了Button的secondary样式
 const cn_str = "border bg-background " +
@@ -36,6 +39,8 @@ export function Menu() {
 
     const {tiles, addTile, setTileInEditId, setTileUiVisible} = useTileStore();
     const {t} = useLanguage("menu")
+
+    const {setLanguage} = useSignal(languageConfig("language"));
 
     const OnAddTile = () => {
         const newTileId = tiles.length;
@@ -103,6 +108,7 @@ export function Menu() {
                                 </MenubarGroup>
                             </MenubarSubContent>
                         </MenubarSub>
+
                         <MenubarSub>
                             <MenubarSubTrigger>{t("Chrome/Edge Bookmarks")}</MenubarSubTrigger>
                             <MenubarSubContent>
@@ -113,9 +119,27 @@ export function Menu() {
                                 </MenubarGroup>
                             </MenubarSubContent>
                         </MenubarSub>
+
                         <MenubarItem onClick={() => setOpen(true)}>
                             {t("Setting")}
                         </MenubarItem>
+
+                        <MenubarSub>
+                            <MenubarSubTrigger>
+                                {t("Language")}
+                                <Languages className="size-4 text-foreground ml-2"/>
+                            </MenubarSubTrigger>
+                            <MenubarSubContent>
+                                <MenubarGroup>
+                                    <MenubarItem onClick={()=>setLanguage("en")}>
+                                        {t("English")}
+                                    </MenubarItem>
+                                    <MenubarItem onClick={()=>setLanguage("cn")}>
+                                        {t("简体中文")}
+                                    </MenubarItem>
+                                </MenubarGroup>
+                            </MenubarSubContent>
+                        </MenubarSub>
                         <MenubarItem onClick={() => openLinkInNewTab("privacy.html")}>
                             {t("Privacy Policy")}
                         </MenubarItem>

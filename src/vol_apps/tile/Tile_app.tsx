@@ -10,7 +10,6 @@ import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
 export const Tile_app = () => {
 
     const {tilesVisible, hydrated} = useTileStore();
-    // const hydrated = useStoreHydrated(useTileStoreBase)
 
     return (
         <>

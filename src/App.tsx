@@ -20,9 +20,9 @@ export const App = () => {
             <Cm/>
             <div className={"flex flex-row gap-2 pl-2 pt-2 w-fit"}>
                 <Menu/>
-                <Language/>
                 <Theme/>
                 <CmOpen/>
+                <Language/>
                 <Backup/>
             </div>
             <div className={"fixed top-2 right-2"}>

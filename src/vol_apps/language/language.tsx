@@ -24,7 +24,8 @@ export const Language = () => {
                 >
                     <Select.Trigger>
                         {/* Trigger 能自己搞定open状态 Button只是为了样式*/}
-                        <Button variant="outline" className={"w-34 flex items-center justify-between animate-fade-in-scale"}>
+                        <Button variant="outline"
+                                className={"opacity-0! hover:opacity-100! w-34 flex items-center justify-between animate-fade-in-scale"}>
                             <Languages className="size-4 text-foreground"/>
                             {language === "en" ? "English" : "简体中文"}
                             <Select.RotateIcon/>

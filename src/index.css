@@ -152,7 +152,7 @@
 
     html {
         /*@apply bg-background;*/
-        background-color: oklch(1 0 0) !important;
+        background-color: oklch(1 0 0);
         height: 100%;
     }
 

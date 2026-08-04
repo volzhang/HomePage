@@ -24,19 +24,6 @@ export const Cm = () => {
     const lineNumbersRef = useRef(new Compartment());
     const lineWrappingRef = useRef(new Compartment());
 
-    // const {
-    // 	isVisible, setIsVisible,
-    // 	doc, setDoc,
-    //
-    // 	fontPx,
-    // 	fontWeight,
-    // 	fontLineHeight,
-    // 	fontMeta, setFontMeta,
-    //
-    // 	enableLineNumbers,
-    // 	enableLineWrapping,
-    // } = useCmStore();
-
     const {fontMeta, setFontMeta} = useSignal(cmStore("fontMeta"));
     const {doc, setDoc} = useSignal(cmStore("doc"));
     const {isVisible, setIsVisible} = useSignal(cmStore("isVisible"));
