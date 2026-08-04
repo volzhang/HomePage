@@ -79,8 +79,8 @@ export const initBgLayer = async () => {
     await waitForDoubleFrame();
     layerA.style.opacity = "1";
     await waitForDoubleFrame();
-    layerA.style.transition = "opacity 1000m"
-    layerB.style.transition = "opacity 1000m"
+    layerA.style.transition = "opacity 1000ms"
+    layerB.style.transition = "opacity 1000ms"
 
 };
 
