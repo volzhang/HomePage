@@ -8,6 +8,12 @@ import {deepEqual} from "@/vol_apps/03_utils/deepEqual.ts";
 import {capitalize} from "@/vol_apps/03_utils/capitalize.ts";
 import {createDebouncedSet} from "@/vol_apps/03_utils/createDebouncedSet.ts";
 
+// 多HomePage tab 实例同步
+const channel = new BroadcastChannel("homepage_update");
+channel.onmessage = async () => {
+    void storeHub.reload();
+};
+
 // 全局信号数量注册
 export const STORE_CONFIG = {
     theme: 2,
@@ -91,6 +97,20 @@ const createExpandedSignal = <T>(
     return {...valueSignal, isHydrated, useHydrated, hydrate, isChanged, useChanged, setDefault, reset, getDefault, defaultValueSignal};
 }
 // @formatter:on
+
+const isStoreStateEqual = async (
+    storeName: StoreName,
+    state: Record<string, any>,
+): Promise<boolean> => {
+    const saved = await get(storeName);
+
+    const savedState =
+        saved?.state && typeof saved.state === "object"
+            ? saved.state
+            : {};
+
+    return deepEqual(state, savedState);
+};
 
 const createStore = (storeName: StoreName, maxSlots: number,): Store => {
     // 一次性分配固定槽位，保证引用稳定
@@ -183,12 +203,34 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
     };
 
     // 写库方法：策略，防抖+最小化写入
-    const debouncedPersist = createDebouncedSet(() => {
+    // const debouncedPersist = createDebouncedSet(() => {
+    //     const changed = getChangedState();
+    //     if (Object.keys(changed).length === 0) {
+    //         return del(storeName);
+    //     }
+    //     return set(storeName, {state: changed, version: 1.0});
+    // }, 500);
+
+
+    // 写库方法：策略，防抖+最小化写入+嵌入广播同步
+    const debouncedPersist = createDebouncedSet(async () => {
         const changed = getChangedState();
+        if (await isStoreStateEqual(storeName, changed)) return;
+
         if (Object.keys(changed).length === 0) {
-            return del(storeName);
+            const result = await del(storeName);
+            channel.postMessage("updated");
+            return result;
         }
-        return set(storeName, {state: changed, version: 1.0});
+
+        const result = await set(storeName, {
+            state: changed,
+            version: 1.0
+        });
+
+        channel.postMessage("updated");
+
+        return result;
     }, 500);
 
     // 订阅写库方法（changed 在水合/迁移完成后才真正生效，避免误写）
@@ -234,6 +276,16 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
         slots.forEach(slot => slot.signal.hydrate());
     };
 
+    const reload = async () => {
+        const saved = await get(storeName);
+        if (!saved?.state || typeof saved.state !== "object") return;
+
+        const currentState = getChangedState();
+        if (deepEqual(currentState, saved.state)) return;
+
+        setState(saved.state);
+    };
+
     return {
         activateSignal, getSignal,
 
@@ -246,9 +298,11 @@ const createStore = (storeName: StoreName, maxSlots: number,): Store => {
 
         hydrate,
         reset,
+        reload,
 
         slots,
-        persist: debouncedPersist           // 供迁移/调试等手动触发写入
+        persist: debouncedPersist        // 供迁移/调试等手动触发写入
+
     };
 };
 
@@ -277,6 +331,12 @@ const createStoreHub = (): StoreHub => {
 
     const getStore = (storeName: StoreName) => stores[storeName]
 
+    const reload = async () => {
+        await Promise.all(
+            Object.values(stores).map(store => store.reload())
+        );
+    };
+
     return {
         resolveSignal: (storeName, fieldName, defaultValue) => {
             const store = getStore(storeName);
@@ -300,10 +360,13 @@ const createStoreHub = (): StoreHub => {
         getStore,
 
         stores,
+
+        reload,
     }
 };
 
 export const storeHub = createStoreHub();
+
 
 type UseSignal = {
     <T, F extends string>(storeName: StoreName, fieldName: F, defaultValue: T): {

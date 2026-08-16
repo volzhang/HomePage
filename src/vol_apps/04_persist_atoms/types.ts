@@ -49,6 +49,7 @@ export type Store = {
 
     hydrate: (state?: Record<string, any>) => void;
     reset: () => void;
+    reload: () => Promise<void>;
 
     slots: SignalSlot<unknown>[]
     persist: ()=>Promise<void>;
@@ -62,5 +63,6 @@ export type StoreHub = {
     resolveSignal: <T>(storeName: StoreName, fieldName: string, defaultValue: T) => Expanded<T>;
     getStores: () => Record<StoreName, Store>
     getStore: (storeName: StoreName) => Store,
-    stores: Record<StoreName, Store>
+    stores: Record<StoreName, Store>,
+    reload(): Promise<void>
 };
