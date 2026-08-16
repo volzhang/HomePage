@@ -3,7 +3,6 @@ import {Input} from "@/components/ui/input";
 import {Slider} from "@/components/ui/slider";
 import {cn} from "@/lib/utils";
 
-import {CmUiFontFamily} from "@/vol_apps/cm/cm_ui_font_family";
 import {useEffect, useState} from "react";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms";
@@ -93,13 +92,13 @@ export const CmUiFont = () => {
 					<div className={"w-100 h-fit border bg-popover p-4 rounded-md text-popover-foreground shadow-md outline-hidden"}>
 						<div className="grid gap-4">
 							<div className="grid gap-3">
-								{/* 字体 */}
-								<div className="flex flex-row items-center gap-[12px]">
-									<label className={"w-10 text-sm"}>{t("Font")}</label>
-									<CmUiFontFamily className={cn("w-fit text-sm border-none",
-										// "text-[#0078d7]"
-									)}/>
-								</div>
+								{/*/!* 字体 *!/*/}
+								{/*<div className="flex flex-row items-center gap-[12px]">*/}
+								{/*	<label className={"w-10 text-sm"}>{t("Font")}</label>*/}
+								{/*	<CmUiFontFamily className={cn("w-fit text-sm border-none",*/}
+								{/*		// "text-[#0078d7]"*/}
+								{/*	)}/>*/}
+								{/*</div>*/}
 								{/* 字号 */}
 								<div className="flex flex-row items-center gap-[16px] ">
 									<label className={"w-10 text-sm"} autoFocus={true}>{t("Size")}</label>

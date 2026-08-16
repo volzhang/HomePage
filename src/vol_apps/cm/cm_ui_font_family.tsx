@@ -1,12 +1,13 @@
 import {Button} from "@/components/ui/button";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {loadFonts} from "@/vol_apps/tool/action/loadFonts";
 import type {FontItem} from "@/vol_apps/00_types/Types.ts";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {cmStore} from "@/vol_apps/cm/cm_atom.ts";
 import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {usePopover} from "@/vol_apps/02_hooks/float/myPopover.tsx";
+import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs.ts";
 
 const FONT_DEFAULT = {
     fullName: "monospace",
@@ -48,10 +49,13 @@ export const CmUiFontFamily = ({className}: { className?: string }) => {
         scale: 95,
     })
 
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
+    const mergedAnchorRef = useMergeRefs(anchorRef, buttonRef);
 
     return (
         <>
-            <Button ref={anchorRef} variant={"outline"} className={className}
+            <Button ref={mergedAnchorRef} variant={"outline"}
+                 className={className}
                     onClick={async () => {
 						if (!open) await handleOpen()
                         setOpen(!open);
@@ -63,9 +67,11 @@ export const CmUiFontFamily = ({className}: { className?: string }) => {
                     <div className={"w-75 h-fit border bg-popover p-0 rounded-md text-popover-foreground shadow-md outline-hidden"}>
                         <Command>
                             <CommandInput placeholder={t("search font ...")}/>
-                            <CommandList className="max-h-200 overflow-y-auto">
+                            <CommandList className="max-h-160 overflow-y-auto">
                                 <CommandEmpty>{t("No font found")}</CommandEmpty>
-                                <CommandGroup heading={t("Font List")}>
+                                <CommandGroup
+                                    // heading={t("Font List")}
+                                >
                                     {fontList.length > 0
                                         ? fontList.map((item) => (
                                             <CommandItem key={item.fullName} onSelect={() => {
@@ -87,6 +93,7 @@ export const CmUiFontFamily = ({className}: { className?: string }) => {
                         </Command>
                     </div>
                 </div>
+                , buttonRef.current as HTMLButtonElement
             )}
         </>
     );
