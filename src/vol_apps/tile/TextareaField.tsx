@@ -1,6 +1,6 @@
 import {cn} from "@/lib/utils";
 import React, {type Ref, useEffect, useRef, useState} from "react";
-import {useMergeRefsLoose} from "../02_hooks/01_useMergeRefs";
+import {useMergeRefs} from "../02_hooks/01_useMergeRefs";
 
 interface TextareaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
     /** 失焦或 Enter 时提交 */
@@ -33,7 +33,7 @@ export const TextareaField = ({
     const internalRef = useRef<HTMLTextAreaElement>(null);
 
     // 合并内部和外部 ref，内部 ref 用于防抖/高度自适应，外部 ref 用于聚焦等
-    const mergedRef = useMergeRefsLoose(internalRef, ref);
+    const mergedRef = useMergeRefs(internalRef, ref);
 
     const isControlled = value !== undefined;
     const initial = (isControlled ? value : defaultValue) ?? "";

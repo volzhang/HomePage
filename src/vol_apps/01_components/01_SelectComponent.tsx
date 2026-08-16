@@ -10,7 +10,7 @@ import {useFloating} from "../02_hooks/float/useFloating";
 import {useKeyEscapeToClose} from "@/vol_apps/02_hooks/useKeys";
 import {useClickOutsideToClose} from "../02_hooks/05_useClickOutsideToClose";
 import {useFocusOutsideToClose} from "../02_hooks/06_useFocusOutsideToClose";
-import {useMergeRefsLoose} from "@/vol_apps/02_hooks/01_useMergeRefs";
+import {useMergeRefs} from "@/vol_apps/02_hooks/01_useMergeRefs";
 import {useDelayed} from "@/vol_apps/02_hooks/02_useDelayed.ts";
 import {useKeyboardNavigation} from "@/vol_apps/02_hooks/07_useKeyboardNavigation.ts";
 
@@ -84,7 +84,7 @@ export const Content = ({
 
     const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
     useKeyEscapeToClose(open, onClose);
-    const mergedRef = useMergeRefsLoose(ref, floatingRef);
+    const mergedRef = useMergeRefs(ref, floatingRef);
 
     // 将 children 统一为数组
     const optionElements = useMemo(
@@ -190,7 +190,7 @@ export const Trigger = ({children, triggerClassName, ...rest}: TriggerProps) => 
     const {open, onOpenChange, anchorRef} = useSelectContext();
 
     const originalRef = getElementRef(child);
-    const mergedRef = useMergeRefsLoose(anchorRef, originalRef);
+    const mergedRef = useMergeRefs(anchorRef, originalRef);
 
     return cloneElement(child, {
         ref: mergedRef,
@@ -287,9 +287,9 @@ export const SelectComponent = ({
     } = useFocusOutsideToClose({open: portalMounted, onClose});
     const {itemRef} = useKeyboardNavigation({open: portalMounted})
 
-    const mergedAnchor = useMergeRefsLoose(anchorRef, clickOutsideIgnoreRef, focusOutsideIgnoreRef);
+    const mergedAnchor = useMergeRefs(anchorRef, clickOutsideIgnoreRef, focusOutsideIgnoreRef);
 
-    const mergedFloating = useMergeRefsLoose(floatingRef, clickOutsideRef, focusOutsideRef);
+    const mergedFloating = useMergeRefs(floatingRef, clickOutsideRef, focusOutsideRef);
 
     const contextValue = useMemo(() => ({
         value, onValueChange,

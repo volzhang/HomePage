@@ -1,10 +1,4 @@
 import {useEffect, useRef} from "react";
-import { useCallbackRef } from "@/vol_apps/02_hooks/00_useCallbackRef";
-
-interface UseClickOutsideToCloseOptions {
-    open: boolean;
-    onClose: () => void;
-}
 
 /**
  * 点击容器外部时关闭。
@@ -13,9 +7,13 @@ interface UseClickOutsideToCloseOptions {
  * - ignoreRef         – 绑定到需要忽略的元素（如 Trigger），点击该元素不会触发关闭
  */
 
-export function useClickOutsideToClose({ open, onClose }: UseClickOutsideToCloseOptions) {
-    const [clickOutsideRef, containerDOM] = useCallbackRef();
-    const [ignoreRef, ignoreDOM] = useCallbackRef();
+export function useClickOutsideToClose({open, onClose}: {
+    open: boolean,
+    onClose: () => void;
+}) {
+
+    const clickOutsideRef = useRef<HTMLElement | null>(null); // 容器
+    const ignoreRef = useRef<HTMLElement | null>(null);   // 忽略区
 
     const onCloseRef = useRef(onClose);
     onCloseRef.current = onClose;
@@ -25,22 +23,17 @@ export function useClickOutsideToClose({ open, onClose }: UseClickOutsideToClose
 
         const handler = (e: MouseEvent) => {
             const target = e.target as Node;
-            // const target = e.target as Element;
-            // // 这是一个临时补丁 忽略所有 Command 内部的交互元素
-            // // 当前 command 没有作为独立浮层使用
-            // if (target.closest?.('[data-slot^="command-"]')) {
-            //     return;
-            // }
 
-            if (!containerDOM.current) return;
-            if (containerDOM.current.contains(target)) return;
-            if (ignoreDOM.current?.contains(target)) return;
+            if (!clickOutsideRef.current) return;
+            if (clickOutsideRef.current.contains(target)) return;
+            if (ignoreRef.current && ignoreRef.current.contains(target)) return;
+
             onCloseRef.current();
         };
 
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
-    }, [open, containerDOM, ignoreDOM]);
+    }, [open])
 
-    return { clickOutsideRef, clickOutsideIgnoreRef:ignoreRef };
+    return {clickOutsideRef, clickOutsideIgnoreRef: ignoreRef};
 }
