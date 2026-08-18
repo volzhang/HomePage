@@ -4,6 +4,7 @@ import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {tagStyleConfig} from "@/vol_apps/tag/TagStyleAtom.ts";
 import {useTileStore} from "@/vol_apps/tile/tile_signal.ts";
 
+
 export const TagComponent = () => {
     const {
         toggleTag, deleteTag, hasUntaggedTiles,
@@ -12,30 +13,31 @@ export const TagComponent = () => {
         renameTag, checkOnlyThisTag, checkOnlyUntagged,
     } = useTileStore();
 
-    const { visible } = useSignal(...tagStyleConfig("visible"))
-    const { gap } = useSignal(...tagStyleConfig("gap"))
+    const {visible} = useSignal(...tagStyleConfig("visible"))
+    const {gap} = useSignal(...tagStyleConfig("gap"))
 
     const Tags = tags.map(tag => (
-        <TagItem
-            key={tag.id}
-            type={"tag"}
-            tag={tag}
-            checkOnlyThisTag={checkOnlyThisTag}
-            toggleTag={toggleTag}
-            deleteTag={deleteTag}
-            renameTag={renameTag}
-            deleteTilesWithOnlyThisTag={deleteTilesWithOnlyThisTag}
-        />
+            <TagItem
+                key={tag.id}
+                type={"tag"}
+                tag={tag}
+                checkOnlyThisTag={checkOnlyThisTag}
+                toggleTag={toggleTag}
+                deleteTag={deleteTag}
+                renameTag={renameTag}
+                deleteTilesWithOnlyThisTag={deleteTilesWithOnlyThisTag}
+            />
     ));
 
     const Untagged = hasUntaggedTiles() && (
-        <TagItem
-            type={"untagged"}
-            untaggedChecked={untaggedChecked}
-            setUntaggedChecked={setUntaggedChecked}
-            deleteUntaggedTiles={deleteUntaggedTiles}
-            checkOnlyUntagged={checkOnlyUntagged}
-        />
+
+            <TagItem
+                type={"untagged"}
+                untaggedChecked={untaggedChecked}
+                setUntaggedChecked={setUntaggedChecked}
+                deleteUntaggedTiles={deleteUntaggedTiles}
+                checkOnlyUntagged={checkOnlyUntagged}
+            />
     );
 
     return (

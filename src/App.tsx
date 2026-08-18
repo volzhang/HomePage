@@ -7,7 +7,7 @@ import {Version} from "@/vol_apps/version/version";
 import {Cm} from "@/vol_apps/cm/cm";
 import {Menu} from "@/vol_apps/menu/menu_legacy";
 import {Tile_app} from "@/vol_apps/tile/Tile_app";
-import {Language} from "@/vol_apps/language/language";
+// import {Language} from "@/vol_apps/language/language";
 import "@/vol_apps/04_persist_atoms/migration.ts";
 import {Backup} from "@/vol_apps/backupDirectory/backup.tsx";
 import {SearchBar} from "@/vol_apps/search/search.tsx";
@@ -18,14 +18,14 @@ export const App = () => {
         <>
             <ToasterUi/>
             <Cm/>
-            <div className={"flex flex-row gap-2 pl-2 pt-2 w-fit"}>
+            <div className={"flex flex-row gap-4 pl-2 pt-2 w-fit"}>
                 <Menu/>
                 <Theme/>
                 <CmOpen/>
-                <Language/>
+                {/*<Language/>*/}
                 <Backup/>
             </div>
-            <div className={"fixed top-2 right-2"}>
+            <div className={"flex flex-row gap-2 fixed top-2 right-2"}>
                 <Version/>
             </div>
             {/*<SearchBar/>*/}

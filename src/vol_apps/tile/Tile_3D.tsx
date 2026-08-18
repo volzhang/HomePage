@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, {useRef, useCallback} from 'react';
 
 interface Tilt3DProps {
     children: React.ReactNode;
@@ -6,6 +6,7 @@ interface Tilt3DProps {
     perspective?: number;
     className?: string;
     glare?: boolean;
+    glareRadius?: number;
     scale?: number;
     lift?: number;
     duration_in?: number;
@@ -15,21 +16,22 @@ interface Tilt3DProps {
 
 // 只看代码可能不完美，但是显示效果很好。
 export const Tilt_3D: React.FC<Tilt3DProps> = ({
-                                                      children,
-                                                      maxTilt = 12,
-                                                      perspective = 800,
-                                                      className = '',
-                                                      glare = true,
-                                                      scale = 1.06,
-                                                      lift = 1.055,
-                                                      duration_in = 350,
-                                                      duration_out = 350,
-                                                      radius = 16,
-                                                  }) => {
+                                                   children,
+                                                   maxTilt = 12,
+                                                   perspective = 800,
+                                                   className = '',
+                                                   glare = true,
+                                                   glareRadius = 60,
+                                                   scale = 1.06,
+                                                   lift = 1.055,
+                                                   duration_in = 350,
+                                                   duration_out = 350,
+                                                   radius = 16,
+                                               }) => {
     const cardRef = useRef<HTMLDivElement>(null);
 
-    const target = useRef({ x: 0.5, y: 0.5 });
-    const current = useRef({ x: 0.5, y: 0.5 });
+    const target = useRef({x: 0.5, y: 0.5});
+    const current = useRef({x: 0.5, y: 0.5});
     const raf = useRef<number | null>(null);
     const isHover = useRef(false);
 
@@ -119,7 +121,7 @@ export const Tilt_3D: React.FC<Tilt3DProps> = ({
     return (
         <div
             className={`inline-block ${className}`}
-            style={{ perspective: `${perspective}px` }}
+            style={{perspective: `${perspective}px`}}
         >
             <div
                 ref={cardRef}
@@ -141,7 +143,7 @@ export const Tilt_3D: React.FC<Tilt3DProps> = ({
                                 radial-gradient(
                                     circle at var(--glare-x, 50%) var(--glare-y, 50%),
                                     rgba(255,255,255,0.25),
-                                    transparent 60%
+                                    transparent ${glareRadius}%
                                 )
                             `,
                             mixBlendMode: 'screen',

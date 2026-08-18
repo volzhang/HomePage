@@ -5,6 +5,9 @@ import {ContextMenu, ContextMenuTrigger} from "@/components/ui/context-menu";
 import {TagMenuContent, UntaggedMenuContent} from "@/vol_apps/tag/TagMenuContent";
 import {useTagItemStyleFromAtom} from "@/vol_apps/tag/useTagItemStyleFromAtom.ts";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
+import {Tilt_3D} from "@/vol_apps/tile/Tile_3D.tsx";
+import {useSignal} from "@/vol_apps/04_persist_atoms";
+import {tagStyleConfig} from "@/vol_apps/tag/TagStyleAtom.ts";
 
 type TagItemProps =
     | {
@@ -27,6 +30,7 @@ type TagItemProps =
 export const TagItem = (props: TagItemProps) => {
 
     const {t} = useLanguage("tagBar")
+    const {radius} = useSignal(tagStyleConfig("radius"));
 
     if (props.type === "tag") {
         const {tag, renameTag, deleteTag, checkOnlyThisTag, deleteTilesWithOnlyThisTag, toggleTag} = props
@@ -40,22 +44,24 @@ export const TagItem = (props: TagItemProps) => {
             <>
                 <ContextMenu>
                     <ContextMenuTrigger>
-                        <InputButton
-                            ref={inputRef}
-                            value={inputValue}
-                            onValueChange={setInputValue}
-                            inEdit={inEdit}
-                            handleClick={handleClick}
-                            inputProps={{
-                                onBlur: handleRename,
-                                onKeyDown: (e) => {
-                                    if (e.key === "Enter") e.currentTarget.blur();
-                                    if (e.key === "Escape") handleDefault()
-                                }
-                            }}
-                            className={tagItemStyle.className}
-                            styles={tagItemStyle.style}
-                        />
+                        <Tilt_3D lift={1} scale={1} maxTilt={0} radius={radius} glareRadius={100}>
+                            <InputButton
+                                ref={inputRef}
+                                value={inputValue}
+                                onValueChange={setInputValue}
+                                inEdit={inEdit}
+                                handleClick={handleClick}
+                                inputProps={{
+                                    onBlur: handleRename,
+                                    onKeyDown: (e) => {
+                                        if (e.key === "Enter") e.currentTarget.blur();
+                                        if (e.key === "Escape") handleDefault()
+                                    }
+                                }}
+                                className={tagItemStyle.className}
+                                styles={tagItemStyle.style}
+                            />
+                        </Tilt_3D>
                     </ContextMenuTrigger>
                     <TagMenuContent
                         tag={tag}
@@ -82,13 +88,15 @@ export const TagItem = (props: TagItemProps) => {
             <>
                 <ContextMenu>
                     <ContextMenuTrigger>
-                        <InputButton
-                            value={t("UntaggedTiles")}
-                            inEdit={false}
-                            handleClick={handleClick}
-                            className={tagItemStyle.className}
-                            styles={tagItemStyle.style}
-                        />
+                        <Tilt_3D lift={1} scale={1} maxTilt={0} radius={radius} glareRadius={100}>
+                            <InputButton
+                                value={t("UntaggedTiles")}
+                                inEdit={false}
+                                handleClick={handleClick}
+                                className={tagItemStyle.className}
+                                styles={tagItemStyle.style}
+                            />
+                        </Tilt_3D>
                     </ContextMenuTrigger>
                     <UntaggedMenuContent
                         deleteUntaggedTiles={deleteUntaggedTiles}
