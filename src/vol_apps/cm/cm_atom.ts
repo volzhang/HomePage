@@ -3,7 +3,7 @@ import {initStoreState} from "@/vol_apps/04_persist_atoms";
 export const cmStore = initStoreState({
     storeName:"cm",
     fields:{
-        isVisible: false,
+        // isVisible: false,
         doc: "落霞与孤鹜齐飞，\n" +
             "秋水共长天一色。\n" +
             "Sunset clouds fly with lone mallards side by side,\n" +

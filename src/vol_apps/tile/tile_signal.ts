@@ -1,13 +1,15 @@
 // tile_signal.ts
 import {type Tag, type Tile, TutorialsTiles, type TileUpdate, defaultTile, tutorialTags} from "@/vol_apps/tile/tile_store_types.ts";
-import {initStoreState, useSignal, getSignal, storeHub} from "@/vol_apps/04_persist_atoms";
+import {initStoreState, useSignal, getSignal, storeHub, createSignal} from "@/vol_apps/04_persist_atoms";
+
+const tileUiVisibleSig = createSignal(false);
 
 export const tileStore = initStoreState({
     storeName: 'tile',
     fields: {
         tiles: TutorialsTiles as Tile[],
         tilesVisible: true,
-        tileUiVisible: false,
+
         tileInEditId: 0,
         tags: tutorialTags as Tag[],
         untaggedChecked: false,
@@ -24,7 +26,7 @@ export const useTileStore = () => {
     // -------- 获取响应式状态值（用于渲染）--------
     const {tiles} = useSignal(tileStore("tiles"));
     const {tilesVisible} = useSignal(tileStore("tilesVisible"));
-    const {tileUiVisible} = useSignal(tileStore("tileUiVisible"));
+    const tileUiVisible = tileUiVisibleSig.use()
     const {tileInEditId} = useSignal(tileStore("tileInEditId"));
     const {tags} = useSignal(tileStore("tags"));
     const {untaggedChecked} = useSignal(tileStore("untaggedChecked"));
@@ -33,7 +35,7 @@ export const useTileStore = () => {
     // -------- 获取信号对象（用于 actions 中读写最新值）--------
     const tilesSig = getSignal(tileStore("tiles"));
     const tilesVisibleSig = getSignal(tileStore("tilesVisible"));
-    const tileUiVisibleSig = getSignal(tileStore("tileUiVisible"));
+
     const tileInEditIdSig = getSignal(tileStore("tileInEditId"));
     const tagsSig = getSignal(tileStore("tags"));
     const untaggedCheckedSig = getSignal(tileStore("untaggedChecked"));
@@ -268,6 +270,8 @@ export const useTileStore = () => {
         untaggedCheckedSig.set(true);
     };
 
+
+
     // -------- 返回完整 store（状态 + actions）--------
     return {
         // 状态（响应式）
@@ -281,7 +285,7 @@ export const useTileStore = () => {
 
         // 简单 setter（直接使用信号 set）
         setTilesVisible: (value: boolean) => tilesVisibleSig.set(value),
-        setTileUiVisible: (value: boolean) => tileUiVisibleSig.set(value),
+        setTileUiVisible: tileUiVisibleSig.set,
         setTileInEditId: (value: number) => tileInEditIdSig.set(value),
         setUntaggedChecked: (value: boolean) => untaggedCheckedSig.set(value),
         setIsBroadMatches: (value: boolean) => isBroadMatchesSig.set(value),

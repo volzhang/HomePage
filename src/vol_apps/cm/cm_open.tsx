@@ -1,12 +1,14 @@
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {SquarePen, X} from "lucide-react";
-import {useSignal} from "@/vol_apps/04_persist_atoms";
-import {cmStore} from "@/vol_apps/cm/cm_atom.ts";
+import {createSignal, useSignal} from "@/vol_apps/04_persist_atoms";
+
 import {themeStore} from "@/vol_apps/theme/theme.tsx";
 
+export const CmIsVisibleSig = createSignal(false);
+
 export const CmOpen = () => {
-    const {setIsVisible} = useSignal(cmStore("isVisible"))
+    const setIsVisible = CmIsVisibleSig.set
     const {themeHydrated} = useSignal(themeStore("theme"));
 
     return (
@@ -25,7 +27,7 @@ export const CmOpen = () => {
 };
 
 export const CmClose = ({className}: { className: string }) => {
-    const {setIsVisible} = useSignal(cmStore("isVisible"))
+    const setIsVisible = CmIsVisibleSig.set
 
     return (
         <>

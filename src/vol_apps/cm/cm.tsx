@@ -1,5 +1,5 @@
 import {cn} from "@/lib/utils";
-import {CmClose} from "@/vol_apps/cm/cm_open";
+import {CmClose, CmIsVisibleSig} from "@/vol_apps/cm/cm_open";
 import {CmUiFont} from "@/vol_apps/cm/cm_ui_font";
 import {CmUiFontFamily} from "@/vol_apps/cm/cm_ui_font_family";
 import {CmUiLineNumbers} from "@/vol_apps/cm/cm_ui_linenumbers";
@@ -26,7 +26,8 @@ export const Cm = () => {
 
     const {fontMeta, setFontMeta} = useSignal(cmStore("fontMeta"));
     const {doc, setDoc} = useSignal(cmStore("doc"));
-    const {isVisible, setIsVisible} = useSignal(cmStore("isVisible"));
+    const isVisible = CmIsVisibleSig.use()
+    const setIsVisible = CmIsVisibleSig.set
     const {enableLineNumbers} = useSignal(cmStore("enableLineNumbers"));
     const {enableLineWrapping} = useSignal(cmStore("enableLineWrapping"));
     const {fontPx} = useSignal(cmStore("fontPx"));
