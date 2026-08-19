@@ -8,6 +8,7 @@ import {
 } from "@/vol_apps/tool/isType/isLikelyBookmarkFile.js";
 import {useSignal} from "@/vol_apps/04_persist_atoms";
 import {cmStore} from "@/vol_apps/cm/cm_atom.ts";
+import {CmIsVisibleSig} from "@/vol_apps/cm/cm_open.tsx";
 
 export interface FileHandlers {
     exportEditorContent: () => Promise<void>;
@@ -33,7 +34,8 @@ export const createFileHandlers = (file: File): FileHandlers => {
         const {setDoc} = useSignal(cmStore("doc"))
         const {setName} = useSignal(cmStore("name"))
         const {setType} = useSignal(cmStore("type"))
-        const {setIsVisible} = useSignal(cmStore("isVisible"))
+        // const {setIsVisible} = useSignal(cmStore("isVisible"))
+        const setIsVisible = CmIsVisibleSig.set
 
         setDoc(await file.text());
         setName(file.name);
