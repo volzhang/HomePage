@@ -10,15 +10,17 @@ interface UseCenteredFloatingOptions {
     duration?: number;
     exitDuration?: number;
     scale?: number;
+    backgroundColorOpacity?: number;
 }
 
 export function useModalPortal({
                                         open,
                                         onOpenChange,
-                                        zIndex = 1000,
+                                        zIndex = 20,
                                         duration = 200,
                                         exitDuration = 150,
                                         scale = 95,
+                                        backgroundColorOpacity = 0.5,
                                     }: UseCenteredFloatingOptions) {
 
     const { portal, visible } = useBetterPortal({ open, exitDuration });
@@ -47,7 +49,7 @@ export function useModalPortal({
                     position: "fixed",
                     inset: 0,
                     zIndex,
-                    backgroundColor: "rgba(0, 0, 0, 0.5)", // bg-black/50
+                    backgroundColor: `rgba(0, 0, 0, ${backgroundColorOpacity})`, // bg-black/50
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",

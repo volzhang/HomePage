@@ -2,7 +2,7 @@ import {useModalPortal} from "@/vol_apps/02_hooks/float/useModalPortal.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {toast} from "sonner";
 import {del, get, set} from "idb-keyval";
-import {getPersistedStoresBackupData} from "@/vol_apps/tool/backupAndRestore.ts";
+import {getPersistedStoresBackupData, persistedStoresRestore} from "@/vol_apps/tool/backupAndRestore.ts";
 import {tryStringify} from "@/vol_apps/tool/isType/isValidType.ts";
 import {createSignal} from "@/vol_apps/04_persist_atoms";
 import {type ReactNode, useEffect, useState} from "react";
@@ -10,7 +10,7 @@ import {Folder, LoaderCircle, MessageCircleHeart} from "lucide-react";
 import {useLanguage} from "@/vol_apps/language/useLanguage.ts";
 import {cn} from "@/lib/utils.ts";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion.tsx";
-
+import {BackUpChoose, chooseOpenSignal} from "@/vol_apps/backupDirectory/choose.tsx";
 
 const SyncButton = ({
                         children,
@@ -82,6 +82,19 @@ const syncBackupHash = async (directoryHandle: FileSystemDirectoryHandle): Promi
     }
 };
 
+const hasBackup = async (directoryHandle: FileSystemDirectoryHandle): Promise<boolean> => {
+    try {
+        const subDirHandle = await directoryHandle.getDirectoryHandle(DIR_NAME, {create: false});
+        await subDirHandle.getFileHandle(FILE_NAME);
+        return true;
+    } catch (e) {
+        if (e instanceof DOMException && e.name === "InvalidStateError") {
+            throw e;
+        }
+        return false;
+    }
+};
+
 const IDB_KEY = "HomePageBackup"
 const DIR_NAME = "HomePageBackup"
 const FILE_NAME = `DB_latest.json`
@@ -99,6 +112,9 @@ export const Backup = () => {
     const [directoryHandle, setDirectoryHandle] = useState<FileSystemDirectoryHandle | null>(null);
     const [directoryReady, setDirectoryReady] = useState(false);
 
+    // 传参用的，临时记录当前选择的 FileSystemDirectoryHandle
+    const [chooseDirectory, setChooseDirectory] = useState<FileSystemDirectoryHandle | null>(null);
+
     const checkDirectoryHandle = async (mute: boolean = true): Promise<FileSystemDirectoryHandle | null> => {
         const h = await get(IDB_KEY);
         if (!h) {
@@ -108,7 +124,7 @@ export const Backup = () => {
         }
         const permission = await ensureReadWritePermission(h)
         if (!permission) {
-            if (!mute) toast.info(t("Permission denied"));
+            if (!mute) toast.info(t("Permission denied."));
             setDirectoryHandle(null)
             return null
         }
@@ -154,18 +170,57 @@ export const Backup = () => {
         zIndex: 30,
     });
 
+    const overwrite = async (h: FileSystemDirectoryHandle|null) => {
+        if (!h) return
+
+        await set(IDB_KEY, h);
+        setDirectoryHandle(h)
+        // 非静默同步一次，响应用户操作
+        await handleBackup(false)
+        setChooseDirectory(null);
+    };
+
+    const restore = async (h: FileSystemDirectoryHandle|null) => {
+        if (!h) return
+
+        const subDirHandle = await h.getDirectoryHandle(DIR_NAME, {create: false});
+        const fileHandle = await subDirHandle.getFileHandle(FILE_NAME);
+        const file = await fileHandle.getFile();
+
+        await persistedStoresRestore(file);
+
+        await set(IDB_KEY, h);
+        setDirectoryHandle(h);
+
+        toast.success(t("Backup Restored."));
+        setChooseDirectory(null);
+    };
+
+    const cancel = () => {
+        toast.info(t("Backup Canceled."));
+        setChooseDirectory(null);
+    }
+
     const handleSelectDir = async () => {
         try {
             // @ts-ignore
             const h = await window.showDirectoryPicker();
-            if (await ensureReadWritePermission(h)) {
-                await set(IDB_KEY, h);
-                setDirectoryHandle(h)
-                // 非静默同步一次，响应用户操作
-                await handleBackup(false)
-            } else {
+
+            if (!(await ensureReadWritePermission(h))) {
                 toast.info(t("Permission denied."));
+                return;
             }
+
+            const has_backup = await hasBackup(h)
+
+            if (!has_backup) {
+                await overwrite(h)
+                return
+            }
+
+            setChooseDirectory(h);
+            chooseOpenSignal.set(true)
+
         } catch (error) {
             if (error instanceof DOMException && error.name === "AbortError") return;
         }
@@ -214,86 +269,96 @@ export const Backup = () => {
     const [accordionValue, setAccordionValue] = useState<string>("");
 
     return (
-        modalPortal(
-            <div className={cn("relative",
-                "bg-background text-foreground ",
-                "border text-md w-160 h-fit flex flex-col p-2 gap-2 rounded-md")}>
-                {/*<div className={"absolute top-0 right-0"} onClick={close}><X/></div>*/}
+        <>
+            {
+                modalPortal(
+                    <div className={cn("relative",
+                        "bg-background text-foreground ",
+                        "border text-md w-160 h-fit flex flex-col p-2 gap-2 rounded-md")}>
+                        {/*<div className={"absolute top-0 right-0"} onClick={close}><X/></div>*/}
 
-                <div className={"mx-2 mt-4 flex flex-col gap-2"}>
-                    <Button className={"h-10 hover:bg-sBlue hover:text-white"} onClick={handleSelectDir}
-                            variant={"default"}
-                    >
-                        <Folder className={"scale-x-120 scale-y-120"}/>
-                        <p className={"text-[16px]"}>{t("Select Directory")}</p>
-                    </Button>
+                        <div className={"mx-2 mt-4 flex flex-col gap-2"}>
+                            <Button className={"h-10 hover:bg-sBlue hover:text-white"} onClick={handleSelectDir}
+                                    variant={"default"}
+                            >
+                                <Folder className={"scale-x-120 scale-y-120"}/>
+                                <p className={"text-[16px]"}>{t("Select Directory")}</p>
+                            </Button>
 
-                    <SyncButton
-                        onClick={() => {void handleBackup(false)}}
-                        className={"h-10 hover:bg-sBlue! hover:text-white!"}>
-                        <p className={"text-[16px]"}>{t("Check Sync")}</p>
-                    </SyncButton>
+                            <SyncButton
+                                onClick={() => {
+                                    void handleBackup(false)
+                                }}
+                                className={"h-10 hover:bg-sBlue! hover:text-white!"}>
+                                <p className={"text-[16px]"}>{t("Check Sync")}</p>
+                            </SyncButton>
 
-                    <Button
-                        variant={"outline"}
-                        className={"h-10 hover:bg-sBlue! hover:text-white!"}
-                        disabled={directoryHandle === null}
-                        onClick={async () => {
-                        await del(IDB_KEY);
-                        setDirectoryHandle(null);
-                    }}>
-                        {
-                            <p className={"text-[16px]"}>
-                                {directoryHandle === null
-                                    ? t("Auto Backup Disabled")
-                                    : t("Disable Auto Backup")
-                                }
-                            </p>
-                        }
-                    </Button>
-                </div>
-
-                <Accordion type={"single"} value={accordionValue} collapsible
-                           onValueChange={setAccordionValue}>
-                    <AccordionItem value={"info"}>
-                        <AccordionTrigger className={"mx-4 text-[16px] [&>svg]:hidden"}>
-                            <div className={cn("flex items-center gap-2")}>
-                                <MessageCircleHeart/>
+                            <Button
+                                variant={"outline"}
+                                className={"h-10 hover:bg-sBlue! hover:text-white!"}
+                                disabled={directoryHandle === null}
+                                onClick={async () => {
+                                    await del(IDB_KEY);
+                                    setDirectoryHandle(null);
+                                }}>
                                 {
-                                    <p>
-                                        {accordionValue === 'info'
-                                            ? t("Collapse Details")   // 展开时显示
-                                            : t("More Details...") // 折叠时显示
+                                    <p className={"text-[16px]"}>
+                                        {directoryHandle === null
+                                            ? t("Auto Backup Disabled")
+                                            : t("Disable Auto Backup")
                                         }
                                     </p>
                                 }
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <div className={"space-y-4 mx-4"}>
-                                <div>
-                                    <p>{t("Select a local directory.")}</p>
-                                    <p>{t("The plugin will create a HomePageBackup folder in the selected directory.")}</p>
-                                    <p>{t("All read and write operations are limited to this folder and will not affect other files.")}</p>
-                                </div>
-                                <div>
-                                    <p>{t("Backup Contents:")}</p>
-                                    <p>{t("Latest backup file: DB_latest.json")}</p>
-                                    <p>{t("File size is typically under 10 MB, but may be larger if many icons or high-resolution wallpapers are included.")}</p>
-                                </div>
-                                <div>
-                                    <p>{t("Sync Behavior:")}</p>
-                                    <p>{t("The plugin checks the local backup every 20 minutes. If it is outdated, it will overwrite it with the latest backup.")}</p>
-                                    <p>{t("Only the backup file is overwritten. No files are deleted.")}</p>
-                                </div>
-                            </div>
+                            </Button>
+                        </div>
 
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
+                        <Accordion type={"single"} value={accordionValue} collapsible
+                                   onValueChange={setAccordionValue}>
+                            <AccordionItem value={"info"}>
+                                <AccordionTrigger className={"mx-4 text-[16px] [&>svg]:hidden"}>
+                                    <div className={cn("flex items-center gap-2")}>
+                                        <MessageCircleHeart/>
+                                        {
+                                            <p>
+                                                {accordionValue === 'info'
+                                                    ? t("Collapse Details")   // 展开时显示
+                                                    : t("More Details...") // 折叠时显示
+                                                }
+                                            </p>
+                                        }
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div className={"space-y-4 mx-4"}>
+                                        <div>
+                                            <p>{t("Select a local directory.")}</p>
+                                            <p>{t("The plugin will create a HomePageBackup folder in the selected directory.")}</p>
+                                            <p>{t("All read and write operations are limited to this folder and will not affect other files.")}</p>
+                                        </div>
+                                        <div>
+                                            <p>{t("Backup Contents:")}</p>
+                                            <p>{t("Latest backup file: DB_latest.json")}</p>
+                                            <p>{t("File size is typically under 10 MB, but may be larger if many icons or high-resolution wallpapers are included.")}</p>
+                                        </div>
+                                        <div>
+                                            <p>{t("Sync Behavior:")}</p>
+                                            <p>{t("The plugin checks the local backup every 20 minutes. If it is outdated, it will overwrite it with the latest backup.")}</p>
+                                            <p>{t("Only the backup file is overwritten. No files are deleted.")}</p>
+                                        </div>
+                                    </div>
 
-
-            </div>
-        )
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
+                )
+            }
+            <BackUpChoose
+                directoryHandle={chooseDirectory}
+                overwrite={overwrite}
+                restore={restore}
+                cancel={cancel}
+            />
+        </>
     );
 };

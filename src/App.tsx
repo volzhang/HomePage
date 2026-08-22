@@ -28,7 +28,6 @@ export const App = () => {
             <div className={"flex flex-row gap-2 fixed top-2 right-2"}>
                 <Version/>
             </div>
-            {/*<SearchBar/>*/}
             <div className={"mt-[120px] mb-[50px] w-full mx-auto"}>
                 <SearchBar/>
             </div>

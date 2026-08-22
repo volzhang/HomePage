@@ -179,7 +179,18 @@ export const resources: RESOURCES = {
             "Only the backup file is overwritten. No files are deleted.": "只覆写存档文件，不删除任何文件。",
 
             "Collapse Details": "收起说明",
-            "More Details...": "更多说明..."
+            "More Details...": "更多说明...",
+
+            "Backup Restored.": "存档已恢复。",
+            "Backup Canceled.": "已取消操作",
+
+            "A backup already exists in the selected directory.": "所选目录中已有存档。",
+            "Please choose whether to restore from this backup or discard it and overwrite it.": "请选择：从此存档恢复，或放弃此存档并覆写。",
+            "Warning: This action cannot be undone.": "警告：此操作无法撤销。",
+            "Discard & Overwrite": "放弃并覆写",
+            "Restore from Backup": "从存档恢复",
+            "Cancel": "取消"
+
         },
 
         // tile: {
