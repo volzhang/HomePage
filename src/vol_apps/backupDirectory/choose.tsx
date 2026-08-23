@@ -26,32 +26,32 @@ export const BackUpChoose = ({
     return (
         <>
             {modalPortal(
-                <div className={"bg-background text-foreground w-170 h-fit flex flex-col p-4 gap-4 rounded-md"}>
-                    <div className={"flex flex-col m-2"}>
+                <div className={"border text-md bg-background text-foreground w-170 h-fit flex flex-col p-4 gap-2 rounded-md"}>
+                    <div className={"flex flex-col m-2 text-[16px]"}>
                         <p>{t("A backup already exists in the selected directory.")}</p>
                         <p>{t("Please choose whether to restore from this backup or discard it and overwrite it.")}</p>
                         <p className={"text-red-500"}>{t("Warning: This action cannot be undone.")}</p>
                     </div>
-                    <div className={"flex flex-row gap-4"}>
+                    <div className={"flex flex-row gap-2 mt-3"}>
                         <Button variant={"outline"} onClick={() => {
                             overwrite(directoryHandle)
                             onOpenChange(false)
                         }}
-                                className={"h-10 flex-1 text-red-500 hover:bg-red-500! hover:text-white"}
+                                className={"h-10 flex-1 text-[16px] text-red-500 hover:bg-red-500! hover:text-white"}
                         >
                             {t("Discard & Overwrite")}</Button>
                         <Button variant={"outline"} onClick={() => {
                             restore(directoryHandle)
                             onOpenChange(false)
                         }}
-                                className={"h-10 flex-1 text-red-500 hover:bg-red-500! hover:text-white"}>
+                                className={"h-10 flex-1 text-[16px] text-red-500 hover:bg-red-500! hover:text-white"}>
                             {t("Restore from Backup")}</Button>
                     </div>
                     <Button variant={"outline"} onClick={() => {
                         cancel?.()
                         onOpenChange(false)
                     }}
-                            className={"h-10 flex-1 hover:bg-sBlue! hover:text-white"}
+                            className={"h-10 flex-1 text-[16px] hover:bg-sBlue! hover:text-white"}
                     >
 
 
