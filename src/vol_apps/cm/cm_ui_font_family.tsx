@@ -93,7 +93,6 @@ export const CmUiFontFamily = ({className}: { className?: string }) => {
                         </Command>
                     </div>
                 </div>
-                , buttonRef.current as HTMLButtonElement
             )}
         </>
     );
