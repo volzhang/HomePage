@@ -24,26 +24,6 @@ const syncTheme = () => {
 syncTheme();
 themeSignal.subscribe(syncTheme);
 
-// export const Theme = () => {
-//     const {theme, setTheme, themeHydrated} = useSignal(themeStore("theme"));
-//
-//     const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
-//
-//     return (
-//         <>
-//             <>
-//                 {themeHydrated && (
-//                     <Button className={"animate-fade-in-scale"}
-//                         variant="outline" size="icon" onClick={toggleTheme}>
-//                         {theme === "light" ? <Sun /> : <Moon />}
-//                     </Button>
-//                 )}
-//             </>
-//         </>
-//     );
-//
-// };
-
 export const Theme = () => {
     const {theme, setTheme, themeHydrated} = useSignal(themeStore("theme"));
 

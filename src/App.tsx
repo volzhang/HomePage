@@ -11,6 +11,7 @@ import {Tile_app} from "@/vol_apps/tile/Tile_app";
 import "@/vol_apps/04_persist_atoms/migration.ts";
 import {Backup} from "@/vol_apps/backupDirectory/backup.tsx";
 import {SearchBar} from "@/vol_apps/search/search.tsx";
+// import {ThemeToggle} from "@/vol_apps/theme/theme3.tsx";
 
 export const App = () => {
     // useLogEventPath('click')
@@ -21,8 +22,8 @@ export const App = () => {
             <div className={"flex flex-row gap-4 pl-2 pt-2 w-fit"}>
                 <Menu/>
                 <Theme/>
+                {/*<ThemeToggle/>*/}
                 <CmOpen/>
-                {/*<Language/>*/}
                 <Backup/>
             </div>
             <div className={"flex flex-row gap-2 fixed top-2 right-2"}>

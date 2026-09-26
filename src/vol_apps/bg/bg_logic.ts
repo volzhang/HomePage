@@ -96,7 +96,14 @@ export const useBgLogic = () => {
      * bgType 切换
      */
 
+    const hydrated = storeHub.getStore("bg").useStoreHydrated();
+    const prevBgTypeRef = useRef<string | null>(null);
+
     useEffect(() => {
+        if (!hydrated) return;
+        const typeChanged = prevBgTypeRef.current !== null && prevBgTypeRef.current !== bgType;
+        prevBgTypeRef.current = bgType;
+
         const run = async () => {
             if (bgType === "bing" && currentJpg) {
                 if (currentJpg !== bgImg) setBgImg(currentJpg);
@@ -117,6 +124,7 @@ export const useBgLogic = () => {
             }
 
             if (bgType === "custom_dir") {
+                if (!typeChanged) return;
                 const h = await get("dh");
                 if (!h) {
                     toast.info(t("Please select folder first"));
@@ -129,14 +137,12 @@ export const useBgLogic = () => {
             }
         };
         void run();
-    }, [bgType, currentJpg]);
+    }, [bgType, currentJpg, hydrated]);
 
     /**
      * 应用背景
      */
     // const hydrated = useStoreHydrated(useBgStore)
-    const hydrated = storeHub.getStore("bg").useStoreHydrated()
-
     const prevParams = useRef(bgInitState);
 
     useEffect(() => {
